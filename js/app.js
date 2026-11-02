@@ -3871,7 +3871,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         this.mediaActorsOnStage = [
             {
                 id: 'actor_thayquan_1',
-                name: 'Thầy Nguyễn Tá Quan 3D',
+                name: 'Thầy Giáo Sư Phạm 3D',
                 role: 'Diễn viên chính',
                 icon: '👨‍🏫',
                 color: '#1d4ed8',
@@ -3884,7 +3884,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             },
             {
                 id: 'actor_dog_1',
-                name: 'Chú Chó Thám Tử 3D',
+                name: 'Linh Vật Chó Con 3D',
                 role: 'Nhân vật 3D tương tác',
                 icon: '🐶',
                 color: '#b45309',
@@ -4071,7 +4071,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             if (!this.checkMediaAIPermission()) return;
             this.mediaActorsOnStage.push({
                 id: 'actor_thayquan_' + Date.now(),
-                name: 'Thầy Nguyễn Tá Quan 3D',
+                name: 'Thầy Giáo Sư Phạm 3D',
                 role: 'Diễn viên chính',
                 icon: '👨‍🏫',
                 color: '#1d4ed8',
@@ -4092,7 +4092,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             if (!this.checkMediaAIPermission()) return;
             this.mediaActorsOnStage.push({
                 id: 'actor_dog_' + Date.now(),
-                name: 'Chú Chó Thám Tử 3D',
+                name: 'Linh Vật Chó Con 3D',
                 role: 'Thú nhân hóa 3D',
                 icon: '🐶',
                 color: '#b45309',
@@ -4126,7 +4126,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.mediaActorsOnStage = [
                 {
                     id: 'actor_thayquan_1',
-                    name: 'Thầy Nguyễn Tá Quan 3D',
+                    name: 'Thầy Giáo Sư Phạm 3D',
                     role: 'Diễn viên chính',
                     icon: '👨‍🏫',
                     color: '#1d4ed8',
@@ -4139,7 +4139,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 },
                 {
                     id: 'actor_dog_1',
-                    name: 'Chú Chó Thám Tử 3D',
+                    name: 'Linh Vật Chó Con 3D',
                     role: 'Nhân vật 3D tương tác',
                     icon: '🐶',
                     color: '#b45309',
@@ -4424,7 +4424,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         if (genre === 'genre_hybrid') {
             prompt += `Thầy Nguyễn Tá Quan in elegant white shirt with soulful eyes, sitting and interacting with 3D anthropomorphic detective dog, two-stage audio lip-sync mouth movement, `;
         } else if (genre === 'genre_human') {
-            prompt += `Thầy Nguyễn Tá Quan walking slowly at relaxed Bolero pace, alternating leg strides, natural arms swinging, `;
+            prompt += `A professional male teacher in smart white shirt walking slowly and naturally at a relaxed pace, alternating leg strides, natural arms swinging, `;
         } else {
             prompt += `3D animated anthropomorphic characters, realistic lighting and shadows, `;
         }
@@ -4948,7 +4948,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 ]
             },
             equipment: {
-                teacher: "Bài giảng điện tử tương tác EduStudio PPT 16:9, Video tình huống Bolero/Hoạt hình 3D, Phiếu học tập số 1 và số 2.",
+                teacher: "Bài giảng điện tử tương tác EduStudio PPT 16:9, Video tình huống sư phạm / Hoạt hình 3D, Phiếu học tập số 1 và số 2.",
                 student: "Sách giáo khoa, vở ghi bài, bút viết, bảng nhóm."
             },
             activities: [
