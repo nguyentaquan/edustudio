@@ -23,6 +23,7 @@ export class SmartTKBUI {
         this.selectedClass = '8A1';
         this.selectedTeacher = 'Thầy Nguyễn Tá Quan';
         this.selectedRoom = 'room_tin';
+        this.pccmFilter = 'all'; // 'all', 'Tổ Tự Nhiên', 'Tổ Xã Hội', 'official'
 
         // Trạng thái hoán đổi 1 chạm (Click-to-Swap)
         this.swapSource = null; // { classId, day, period }
@@ -155,9 +156,12 @@ export class SmartTKBUI {
         } else if (this.currentViewMode === 'teacher') {
             teacherSelect.style.display = 'inline-block';
             const teachers = this.engine.getAllTeachers();
-            teacherSelect.innerHTML = teachers.map(t => 
-                `<option value="${t}" ${t === this.selectedTeacher ? 'selected' : ''}>👨‍🏫 ${t}</option>`
-            ).join('');
+            teacherSelect.innerHTML = teachers.map(t => {
+                const assign = this.engine.assignments.find(a => a.teacher === t);
+                const dept = assign?.department || '';
+                const deptBadge = dept ? ` [${dept}]` : '';
+                return `<option value="${t}" ${t === this.selectedTeacher ? 'selected' : ''}>👨‍🏫 ${t}${deptBadge}</option>`;
+            }).join('');
         } else if (this.currentViewMode === 'room') {
             roomSelect.style.display = 'inline-block';
             roomSelect.innerHTML = this.engine.specialRooms.map(r => 
@@ -307,10 +311,19 @@ export class SmartTKBUI {
             }
         }
 
+        const teacherAssign = this.engine.assignments.find(a => a.teacher === teacherName);
+        const deptName = teacherAssign?.department || 'Tổ Chuyên Môn';
+        const isNatural = deptName.includes('Tự Nhiên');
+
         let html = `
             <div style="margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                <div style="font-weight: 800; font-size: 1.05rem; color: #1e293b;">
-                    👨‍🏫 Thời Khóa Biểu Giảng Dạy: <span style="color: #1d4ed8;">${teacherName}</span>
+                <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                    <div style="font-weight: 800; font-size: 1.05rem; color: #1e293b;">
+                        👨‍🏫 Thời Khóa Biểu Giảng Dạy: <span style="color: #1d4ed8;">${teacherName}</span>
+                    </div>
+                    <span style="background: ${isNatural ? '#ecfdf5' : '#fdf2f8'}; color: ${isNatural ? '#065f46' : '#9d174d'}; padding: 0.2rem 0.65rem; border-radius: 20px; font-weight: 800; font-size: 0.75rem; border: 1px solid ${isNatural ? '#a7f3d0' : '#fbcfe8'};">
+                        🏢 ${deptName}
+                    </span>
                 </div>
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
                     <div style="background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 700; font-size: 0.8rem; border: 1px solid #bfdbfe;">
@@ -748,46 +761,159 @@ export class SmartTKBUI {
      * TAB 2: PHÂN CÔNG CHUYÊN MÔN (PCCM) - THÊM / SỬA / XÓA
      */
     renderPCCMTable() {
-        const tbody = document.getElementById('tkbPCCMTableBody');
-        if (!tbody) return;
+        const panePCCM = document.getElementById('tkb-pane-pccm');
+        if (!panePCCM) return;
 
-        // Thêm nút Thêm mới ở đầu bảng nếu chưa có
-        let tableCard = tbody.closest('.tkb-config-card');
-        if (tableCard && !document.getElementById('btnTKBAddPCCM')) {
-            const headerDiv = tableCard.querySelector('div');
-            if (headerDiv) {
-                const actionWrap = document.createElement('div');
-                actionWrap.style.cssText = 'display: flex; gap: 0.5rem;';
-                actionWrap.innerHTML = `
-                    <button id="btnTKBAddPCCM" onclick="window.smartTKBUI.openPCCMModal(-1)" style="background: #2563eb; color: #fff; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
-                        ➕ Thêm Phân Công Giáo Viên
-                    </button>
-                    <button onclick="window.smartTKBUI.handleAutoSolve()" style="background: #059669; color: #fff; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
-                        ⚡ AI Xếp Lại TKB
-                    </button>
-                `;
-                headerDiv.appendChild(actionWrap);
-            }
+        const officialList = this.engine.officialPCCM || [];
+        const allAssignments = this.engine.assignments || [];
+
+        // Lọc danh sách phân công chi tiết
+        let filteredAssignments = allAssignments;
+        if (this.pccmFilter === 'Tổ Tự Nhiên') {
+            filteredAssignments = allAssignments.filter(a => a.department === 'Tổ Tự Nhiên');
+        } else if (this.pccmFilter === 'Tổ Xã Hội') {
+            filteredAssignments = allAssignments.filter(a => a.department === 'Tổ Xã Hội');
         }
 
-        tbody.innerHTML = this.engine.assignments.map((a, index) => {
-            const roomDef = a.roomReq ? this.engine.specialRooms.find(r => r.id === a.roomReq) : null;
-            return `
-                <tr>
-                    <td style="text-align: center; font-weight: 700; color: #64748b;">${index + 1}</td>
-                    <td style="font-weight: 700; color: #1e293b;">${a.teacher}</td>
-                    <td><span style="font-weight: 600; color: #0f172a;">${a.subject}</span></td>
-                    <td style="text-align: center;"><span style="background: #e0e7ff; color: #3730a3; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Lớp ${a.classId}</span></td>
-                    <td style="text-align: center; font-weight: 700; color: #1d4ed8;">${a.periods} tiết/tuần</td>
-                    <td style="text-align: center;">${a.doublePeriod ? '<span class="tkb-badge-double">Có (Tiết kép)</span>' : '<span style="color: #94a3b8;">Không</span>'}</td>
-                    <td>${roomDef ? `<span class="tkb-badge-room">${roomDef.icon} ${roomDef.name}</span>` : '<span style="color: #94a3b8;">Phòng lớp</span>'}</td>
-                    <td style="text-align: center;">
-                        <button onclick="window.smartTKBUI.openPCCMModal(${index})" style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.72rem; font-weight: 700; cursor: pointer; margin-right: 0.25rem;">✏️ Sửa</button>
-                        <button onclick="window.smartTKBUI.deletePCCMRow(${index})" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.72rem; font-weight: 700; cursor: pointer;">🗑️</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+        const naturalCount = allAssignments.filter(a => a.department === 'Tổ Tự Nhiên').reduce((acc, a) => acc + a.periods, 0);
+        const socialCount = allAssignments.filter(a => a.department === 'Tổ Xã Hội').reduce((acc, a) => acc + a.periods, 0);
+
+        panePCCM.innerHTML = `
+            <div class="tkb-config-card">
+                <!-- HEADER & TOOLBAR -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a; display: flex; align-items: center; gap: 0.4rem;">
+                            <span>📋</span> <span>BẢNG PHÂN CÔNG CHUYÊN MÔN - NĂM HỌC 2026-2027</span>
+                        </h3>
+                        <p style="margin: 0.2rem 0 0 0; font-size: 0.8rem; color: #64748b;">
+                            Trường THCS Bán Trú Canh Thuận • 2 Tổ bộ môn (Tổ Tự Nhiên: <strong>${naturalCount} tiết</strong> | Tổ Xã Hội: <strong>${socialCount} tiết</strong>)
+                        </p>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="window.smartTKBUI.openPCCMModal(-1)" style="background: #2563eb; color: #fff; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
+                            ➕ Thêm Phân Công
+                        </button>
+                        <button onclick="window.smartTKBUI.handleAutoSolve()" style="background: #059669; color: #fff; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
+                            ⚡ AI Xếp Lại TKB
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BỘ LỌC TỔ BỘ MÔN & BẢNG CHÍNH THỨC BGDĐT -->
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 0.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <button onclick="window.smartTKBUI.setPCCMFilter('all')" style="padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; ${this.pccmFilter === 'all' ? 'background: #1e293b; color: #fff;' : 'background: #fff; color: #475569; border: 1px solid #cbd5e1;'}">
+                        🌐 Toàn Bộ Phân Công (${allAssignments.length})
+                    </button>
+                    <button onclick="window.smartTKBUI.setPCCMFilter('Tổ Tự Nhiên')" style="padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; ${this.pccmFilter === 'Tổ Tự Nhiên' ? 'background: #059669; color: #fff;' : 'background: #fff; color: #047857; border: 1px solid #cbd5e1;'}">
+                        🌿 Tổ Tự Nhiên (${allAssignments.filter(a => a.department === 'Tổ Tự Nhiên').length})
+                    </button>
+                    <button onclick="window.smartTKBUI.setPCCMFilter('Tổ Xã Hội')" style="padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; ${this.pccmFilter === 'Tổ Xã Hội' ? 'background: #b45309; color: #fff;' : 'background: #fff; color: #92400e; border: 1px solid #cbd5e1;'}">
+                        📚 Tổ Xã Hội (${allAssignments.filter(a => a.department === 'Tổ Xã Hội').length})
+                    </button>
+                    <button onclick="window.smartTKBUI.setPCCMFilter('official')" style="padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-weight: 800; border: none; cursor: pointer; ${this.pccmFilter === 'official' ? 'background: #dc2626; color: #fff; box-shadow: 0 2px 6px rgba(220,38,38,0.3);' : 'background: #fff; color: #b91c1c; border: 1px solid #fca5a5;'}">
+                        🏛️ Bảng PCCM Chính Thức BGDĐT (20 Thầy Cô)
+                    </button>
+                </div>
+
+                ${this.pccmFilter === 'official' ? `
+                    <!-- VIEW 1: BẢNG PHÂN CÔNG CHUYÊN MÔN GỐC CHUẨN BGDĐT -->
+                    <div style="margin-bottom: 0.75rem; background: #fff1f2; border: 1px solid #fecdd3; padding: 0.6rem 1rem; border-radius: 8px; color: #9f1239; font-size: 0.82rem; font-weight: 600;">
+                        📌 Đây là bản Phân công chuyên môn chính thức năm học 2026 - 2027 được phê duyệt của Trường THCS Bán Trú Canh Thuận gồm đúng 20 Thầy Cô giáo chủ chốt.
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="tkb-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">TT</th>
+                                    <th style="width: 220px; text-align: left;">Họ và Tên</th>
+                                    <th style="width: 140px;">Tổ Bộ Môn</th>
+                                    <th style="text-align: left;">Phân Công Học Kỳ I</th>
+                                    <th style="text-align: left;">Phân Công Học Kỳ II</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${officialList.map(t => {
+                                    const isQuan = t['Họ và tên'].includes('Nguyễn Tá Quan');
+                                    const isNat = (t['Tổ bộ môn'] || '').includes('Tự Nhiên');
+                                    return `
+                                        <tr style="${isQuan ? 'background: #eff6ff; font-weight: 700;' : ''}">
+                                            <td style="text-align: center; font-weight: 700; color: #64748b;">${t['TT']}</td>
+                                            <td style="font-weight: 700; color: ${isQuan ? '#1d4ed8' : '#0f172a'}; text-align: left;">
+                                                ${isQuan ? '⭐ ' : ''}${t['Họ và tên']}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.2rem 0.55rem; border-radius: 12px; font-weight: 700; font-size: 0.75rem; border: 1px solid ${isNat ? '#a7f3d0' : '#fbcfe8'};">
+                                                    ${t['Tổ bộ môn']}
+                                                </span>
+                                            </td>
+                                            <td style="text-align: left; line-height: 1.5; color: #334155; white-space: pre-line;">${t['Phân công HK I'] || '—'}</td>
+                                            <td style="text-align: left; line-height: 1.5; color: #64748b; white-space: pre-line;">${t['Phân công HK II'] || '—'}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                ` : `
+                    <!-- VIEW 2: BẢNG MA TRẬN TIẾT GIẢNG DẠY THEO LỚP -->
+                    <div style="overflow-x: auto;">
+                        <table class="tkb-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">STT</th>
+                                    <th style="text-align: left;">Giáo Viên Phụ Trách</th>
+                                    <th>Tổ Bộ Môn</th>
+                                    <th>Môn Học</th>
+                                    <th>Lớp Học</th>
+                                    <th>Số Tiết/Tuần</th>
+                                    <th>Tiết Kép</th>
+                                    <th>Phòng Bộ Môn</th>
+                                    <th style="width: 100px;">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filteredAssignments.map((a, index) => {
+                                    const roomDef = a.roomReq ? this.engine.specialRooms.find(r => r.id === a.roomReq) : null;
+                                    const isQuan = a.teacher.includes('Nguyễn Tá Quan');
+                                    const isNat = (a.department || '').includes('Tự Nhiên');
+                                    const rawIndex = allAssignments.indexOf(a);
+
+                                    return `
+                                        <tr style="${isQuan ? 'background: #f0fdf4;' : ''}">
+                                            <td style="text-align: center; font-weight: 700; color: #64748b;">${index + 1}</td>
+                                            <td style="font-weight: 700; color: ${isQuan ? '#15803d' : '#1e293b'}; text-align: left;">
+                                                ${isQuan ? '👨‍🏫 ' : ''}${a.teacher}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.72rem;">
+                                                    ${a.department || '—'}
+                                                </span>
+                                            </td>
+                                            <td><span style="font-weight: 600; color: #0f172a;">${a.subject}</span></td>
+                                            <td style="text-align: center;"><span style="background: #e0e7ff; color: #3730a3; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Lớp ${a.classId}</span></td>
+                                            <td style="text-align: center; font-weight: 800; color: #1d4ed8;">${a.periods} tiết/tuần</td>
+                                            <td style="text-align: center;">${a.doublePeriod ? '<span class="tkb-badge-double">Có (Tiết kép)</span>' : '<span style="color: #94a3b8;">Không</span>'}</td>
+                                            <td>${roomDef ? `<span class="tkb-badge-room">${roomDef.icon} ${roomDef.name}</span>` : '<span style="color: #94a3b8;">Phòng lớp</span>'}</td>
+                                            <td style="text-align: center;">
+                                                <button onclick="window.smartTKBUI.openPCCMModal(${rawIndex})" style="background: #3b82f6; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; margin-right: 0.25rem;">✏ Sửa</button>
+                                                <button onclick="window.smartTKBUI.deletePCCMRow(${rawIndex})" style="background: #ef4444; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">🗑 Xóa</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `}
+            </div>
+        `;
+    }
+
+    setPCCMFilter(filterName) {
+        this.pccmFilter = filterName;
+        this.renderPCCMTable();
     }
 
     openPCCMModal(index) {

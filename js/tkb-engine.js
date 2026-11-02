@@ -67,6 +67,8 @@ export class SmartTKBEngine {
         if (typeof CANH_THUAN_TKB_DATA !== 'undefined' && CANH_THUAN_TKB_DATA) {
             this.schoolConfig = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.schoolConfig));
             this.classes = [...CANH_THUAN_TKB_DATA.classes];
+            this.teachers = CANH_THUAN_TKB_DATA.teachers || [];
+            this.officialPCCM = CANH_THUAN_TKB_DATA.officialPCCM || [];
             this.assignments = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.assignments));
             this.timetable = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.timetable));
             this.saveState();
@@ -362,7 +364,12 @@ export class SmartTKBEngine {
         for (const a of this.assignments) {
             if (a.teacher) set.add(a.teacher);
         }
-        return Array.from(set).sort();
+        const list = Array.from(set);
+        return list.sort((a, b) => {
+            if (a.includes("Nguyễn Tá Quan")) return -1;
+            if (b.includes("Nguyễn Tá Quan")) return 1;
+            return a.localeCompare(b, 'vi');
+        });
     }
 
     getTeacherTimetable(teacherName) {
@@ -495,6 +502,8 @@ export class SmartTKBEngine {
                 schoolConfig: this.schoolConfig,
                 specialRooms: this.specialRooms,
                 classes: this.classes,
+                teachers: this.teachers || [],
+                officialPCCM: this.officialPCCM || [],
                 subjects: this.subjects,
                 assignments: this.assignments,
                 timetable: this.timetable,
@@ -520,6 +529,8 @@ export class SmartTKBEngine {
                 this.schoolConfig = data.schoolConfig || this.schoolConfig;
                 this.specialRooms = data.specialRooms || this.specialRooms;
                 this.classes = data.classes;
+                this.teachers = (data.teachers && data.teachers.length > 0) ? data.teachers : (CANH_THUAN_TKB_DATA.teachers || []);
+                this.officialPCCM = (data.officialPCCM && data.officialPCCM.length > 0) ? data.officialPCCM : (CANH_THUAN_TKB_DATA.officialPCCM || []);
                 this.subjects = data.subjects || this.subjects;
                 this.assignments = data.assignments;
                 this.timetable = data.timetable;

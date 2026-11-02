@@ -1,7 +1,8 @@
 /**
- * DỮ LIỆU THỜI KHÓA BIỂU CHÍNH THỨC - TRƯỜNG THCS BÁN TRÚ CANH THUẬN
- * NĂM HỌC 2026 - 2027 (Áp dụng từ Tuần 9 ngày 02/11/2026 đến Tuần 13)
- * Tác giả & Chủ quản: Thầy Nguyễn Tá Quan
+ * DỮ LIỆU THỜI KHÓA BIỂU & PHÂN CÔNG CHUYÊN MÔN CHÍNH THỨC
+ * TRƯỜNG THCS BÁN TRÚ CANH THUẬN - NĂM HỌC 2026 - 2027
+ * Tác giả & Chủ quản Dự án: Thầy Nguyễn Tá Quan
+ * (Đồng bộ 100% Phân công chuyên môn chính thức BGDĐT & TKB Tuần 9)
  */
 
 export const CANH_THUAN_TKB_DATA = {
@@ -10,7 +11,7 @@ export const CANH_THUAN_TKB_DATA = {
     "academicYear": "2026 - 2027",
     "semester": "Học kỳ I",
     "applyFromDate": "02/11/2026",
-    "note": "Áp dụng từ tuần 9 ngày 02/11/2026 đến tuần 13"
+    "note": "Áp dụng từ tuần 9 ngày 02/11/2026 đến tuần 13 (Phân công chuyên môn chuẩn BGDĐT)"
   },
   "classes": [
     "6A1",
@@ -23,113 +24,525 @@ export const CANH_THUAN_TKB_DATA = {
     "9A1",
     "9A2"
   ],
+  "teachers": [
+    {
+      "fullName": "Nguyễn Thị Hồng Duyên",
+      "displayName": "Cô Nguyễn Thị Hồng Duyên",
+      "shortName": "Cô Duyên",
+      "gender": "F",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Khoa học Tự nhiên",
+        "Công nghệ",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Hà Thị Thúy Hòa",
+      "displayName": "Cô Hà Thị Thúy Hòa",
+      "shortName": "Cô Hòa",
+      "gender": "F",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Tin học",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Dương Thị Ngọc Lành",
+      "displayName": "Cô Dương Thị Ngọc Lành",
+      "shortName": "Cô Lành",
+      "gender": "F",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Khoa học Tự nhiên",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Nguyễn Đình Minh",
+      "displayName": "Thầy Nguyễn Đình Minh",
+      "shortName": "Thầy Minh",
+      "gender": "M",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Toán"
+      ]
+    },
+    {
+      "fullName": "Nguyễn Thị Hồng Phúc",
+      "displayName": "Cô Nguyễn Thị Hồng Phúc",
+      "shortName": "Cô Phúc",
+      "gender": "F",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Khoa học Tự nhiên"
+      ]
+    },
+    {
+      "fullName": "Nguyễn Tá Quan",
+      "displayName": "Thầy Nguyễn Tá Quan",
+      "shortName": "Thầy Quan",
+      "gender": "M",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Toán",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Lê Quốc Thái",
+      "displayName": "Thầy Lê Quốc Thái",
+      "shortName": "Thầy Thái",
+      "gender": "M",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Giáo dục thể chất",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Nguyễn Thanh Tuấn",
+      "displayName": "Thầy Nguyễn Thanh Tuấn",
+      "shortName": "Thầy T.Tuấn",
+      "gender": "M",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Khoa học Tự nhiên",
+        "Toán",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Lương Văn Tuấn",
+      "displayName": "Thầy Lương Văn Tuấn",
+      "shortName": "Thầy L.Tuấn",
+      "gender": "M",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Nguyễn Tú Tài",
+      "displayName": "Thầy Nguyễn Tú Tài",
+      "shortName": "Thầy Tài",
+      "gender": "M",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Giáo dục thể chất"
+      ]
+    },
+    {
+      "fullName": "Võ Thị Hồng Ánh",
+      "displayName": "Cô Võ Thị Hồng Ánh",
+      "shortName": "Cô Ánh",
+      "gender": "F",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Toán"
+      ]
+    },
+    {
+      "fullName": "Nguyễn Bá Công",
+      "displayName": "Thầy Nguyễn Bá Công",
+      "shortName": "Thầy Công",
+      "gender": "M",
+      "department": "Tổ Xã Hội",
+      "subjects": [
+        "Lịch sử và Địa lí (Địa lí)"
+      ]
+    },
+    {
+      "fullName": "Nguyễn Bá Hiền",
+      "displayName": "Thầy Nguyễn Bá Hiền",
+      "shortName": "Thầy Hiền",
+      "gender": "M",
+      "department": "Tổ Xã Hội",
+      "subjects": [
+        "Lịch sử và Địa lí (Lịch sử)",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Đoàn Thị Hồ",
+      "displayName": "Cô Đoàn Thị Hồ",
+      "shortName": "Cô Hồ",
+      "gender": "F",
+      "department": "Tổ Xã Hội",
+      "subjects": [
+        "Ngữ Văn",
+        "Giáo dục địa phương",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Phạm Thị Nhàn",
+      "displayName": "Cô Phạm Thị Nhàn",
+      "shortName": "Cô Nhàn",
+      "gender": "F",
+      "department": "Tổ Xã Hội",
+      "subjects": [
+        "Ngữ Văn",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Nguyễn Thị Nương",
+      "displayName": "Cô Nguyễn Thị Nương",
+      "shortName": "Cô Nương",
+      "gender": "F",
+      "department": "Tổ Xã Hội",
+      "subjects": [
+        "Ngữ Văn",
+        "GDCD"
+      ]
+    },
+    {
+      "fullName": "Đoàn Văn Rích",
+      "displayName": "Thầy Đoàn Văn Rích",
+      "shortName": "Thầy Rích",
+      "gender": "M",
+      "department": "Tổ Xã Hội",
+      "subjects": [
+        "GDCD",
+        "Giáo dục địa phương"
+      ]
+    },
+    {
+      "fullName": "Lê Thị Anh Thư",
+      "displayName": "Cô Lê Thị Anh Thư",
+      "shortName": "Cô Thư",
+      "gender": "F",
+      "department": "Tổ Xã Hội",
+      "subjects": [
+        "Nghệ Thuật"
+      ]
+    },
+    {
+      "fullName": "Trần Thị Thanh Thảo",
+      "displayName": "Cô Trần Thị Thanh Thảo",
+      "shortName": "Cô Thảo",
+      "gender": "F",
+      "department": "Tổ Xã Hội",
+      "subjects": [
+        "Tiếng Anh"
+      ]
+    },
+    {
+      "fullName": "Trần Duy Trung",
+      "displayName": "Thầy Trần Duy Trung",
+      "shortName": "Thầy Trung",
+      "gender": "M",
+      "department": "Tổ Xã Hội",
+      "subjects": [
+        "Tiếng Anh",
+        "HĐ TN, hướng nghiệp"
+      ]
+    },
+    {
+      "fullName": "Thầy Tú",
+      "displayName": "Thầy Tú (Công Nghệ)",
+      "shortName": "Thầy Tú",
+      "gender": "M",
+      "department": "Tổ Tự Nhiên",
+      "subjects": [
+        "Công nghệ"
+      ]
+    }
+  ],
+  "officialPCCM": [
+    {
+      "TT": "1",
+      "Họ và tên": "Nguyễn Thị Hồng Duyên",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "Khoa học Tự nhiên: 9A1, 9A2\nCông nghệ: 9A1\nHĐ TN, hướng nghiệp: 9A1",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "2",
+      "Họ và tên": "Hà Thị Thúy Hòa",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "Tin học: 6A1, 6A2, 6A3, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2\nHĐ TN, hướng nghiệp: 6A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "3",
+      "Họ và tên": "Dương Thị Ngọc Lành",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "Khoa học Tự nhiên: 6A1, 6A2, 6A3\nHĐ TN, hướng nghiệp: 6A1, 6A3",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "4",
+      "Họ và tên": "Nguyễn Đình Minh",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "Toán: 6A2, 6A3, 7A1, 7A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "5",
+      "Họ và tên": "Nguyễn Thị Hồng Phúc",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "Khoa học Tự nhiên: 7A1, 7A2, 8A1",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "6",
+      "Họ và tên": "Nguyễn Tá Quan",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "HĐ TN, hướng nghiệp: 6A1, 6A2, 8A1, 8A2\nToán: 8A1, 8A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "7",
+      "Họ và tên": "Lê Quốc Thái",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "Giáo dục thể chất: 6A1\nHĐ TN, hướng nghiệp: 8A1, 8A2, 9A1, 9A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "8",
+      "Họ và tên": "Nguyễn Thanh Tuấn",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "HĐ TN, hướng nghiệp: 6A2, 6A3, 7A2\nKhoa học Tự nhiên: 7A2, 8A1, 8A2\nToán: 9A1, 9A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "9",
+      "Họ và tên": "Lương Văn Tuấn",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "HĐ TN, hướng nghiệp: 7A1",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "10",
+      "Họ và tên": "Nguyễn Tú Tài",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "Giáo dục thể chất: 6A2, 6A3, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "11",
+      "Họ và tên": "Võ Thị Hồng Ánh",
+      "Tổ bộ môn": "Tổ Tự Nhiên",
+      "Phân công HK I": "Toán: 6A1",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "12",
+      "Họ và tên": "Nguyễn Bá Công",
+      "Tổ bộ môn": "Tổ Xã Hội",
+      "Phân công HK I": "Lịch sử và Địa lí: 6A1, 6A2, 6A3, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "13",
+      "Họ và tên": "Nguyễn Bá Hiền",
+      "Tổ bộ môn": "Tổ Xã Hội",
+      "Phân công HK I": "Lịch sử và Địa lí: 6A1, 6A2, 6A3, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2\nHĐ TN, hướng nghiệp: 8A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "14",
+      "Họ và tên": "Đoàn Thị Hồ",
+      "Tổ bộ môn": "Tổ Xã Hội",
+      "Phân công HK I": "Giáo dục địa phương: 6A1, 6A2, 6A3\nNgữ Văn: 9A1, 9A2\nHĐ TN, hướng nghiệp: 9A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "15",
+      "Họ và tên": "Phạm Thị Nhàn",
+      "Tổ bộ môn": "Tổ Xã Hội",
+      "Phân công HK I": "Ngữ Văn: 6A1, 6A2, 6A3\nHĐ TN, hướng nghiệp: 6A3",
+      "Phân công HK II": "Ngữ Văn: 6A1, 6A2, 6A3",
+      "null": [
+        ""
+      ]
+    },
+    {
+      "TT": "16",
+      "Họ và tên": "Nguyễn Thị Nương",
+      "Tổ bộ môn": "Tổ Xã Hội",
+      "Phân công HK I": "Ngữ Văn: 7A1, 7A2, 8A1, 8A2\nGDCD: 9A1",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "17",
+      "Họ và tên": "Đoàn Văn Rích",
+      "Tổ bộ môn": "Tổ Xã Hội",
+      "Phân công HK I": "GDCD: 6A1, 6A2, 6A3, 7A1, 7A2, 8A1, 8A2, 9A2\nGiáo dục địa phương: 7A1, 7A2, 8A1, 8A2, 9A1, 9A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "18",
+      "Họ và tên": "Lê Thị Anh Thư",
+      "Tổ bộ môn": "Tổ Xã Hội",
+      "Phân công HK I": "Nghệ Thuật: 6A1, 6A2, 6A3, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "19",
+      "Họ và tên": "Trần Thị Thanh Thảo",
+      "Tổ bộ môn": "Tổ Xã Hội",
+      "Phân công HK I": "Tiếng Anh: 7A1, 7A2, 9A1, 9A2",
+      "Phân công HK II": ""
+    },
+    {
+      "TT": "20",
+      "Họ và tên": "Trần Duy Trung",
+      "Tổ bộ môn": "Tổ Xã Hội",
+      "Phân công HK I": "Tiếng Anh: 6A1, 6A2, 6A3, 8A1, 8A2\nHĐ TN, hướng nghiệp: 7A1, 7A2",
+      "Phân công HK II": ""
+    }
+  ],
   "timetable": {
     "6A1": {
       "0": [
         {
           "subject": "Chào Cờ",
           "teacher": "Toàn Trường",
+          "shortTeacher": "Toàn Trường",
+          "department": "",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         }
       ],
       "1": [
         {
           "subject": "GDTC",
-          "teacher": "Thầy Thái",
+          "teacher": "Thầy Lê Quốc Thái",
+          "shortTeacher": "Thái",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Toán",
-          "teacher": "Cô Ánh",
+          "teacher": "Cô Võ Thị Hồng Ánh",
+          "shortTeacher": "Ánh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "SHDC",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Cô Ánh",
+          "teacher": "Cô Võ Thị Hồng Ánh",
+          "shortTeacher": "Ánh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Công Nghệ",
-          "teacher": "Thầy Tú",
+          "teacher": "Thầy Tú (Công Nghệ)",
+          "shortTeacher": "Tú",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "2": [
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "3": [
         {
           "subject": "Toán",
-          "teacher": "Cô Ánh",
+          "teacher": "Cô Võ Thị Hồng Ánh",
+          "shortTeacher": "Ánh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Cô Ánh",
+          "teacher": "Cô Võ Thị Hồng Ánh",
+          "shortTeacher": "Ánh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         }
       ],
@@ -137,48 +550,66 @@ export const CANH_THUAN_TKB_DATA = {
         {
           "subject": "HĐCĐ",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Tin Học",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": "room_tin"
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "SHL",
-          "teacher": "Thầy L.Tuấn",
+          "teacher": "Thầy Lương Văn Tuấn",
+          "shortTeacher": "L.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "5": [
         {
           "subject": "GDTC",
-          "teacher": "Thầy Thái",
+          "teacher": "Thầy Lê Quốc Thái",
+          "shortTeacher": "Thái",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "GDCD",
-          "teacher": "Cô Rích",
+          "teacher": "Thầy Đoàn Văn Rích",
+          "shortTeacher": "Rích",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         null
@@ -189,156 +620,214 @@ export const CANH_THUAN_TKB_DATA = {
         {
           "subject": "Chào Cờ",
           "teacher": "Toàn Trường",
+          "shortTeacher": "Toàn Trường",
+          "department": "",
           "room": null
         },
         {
           "subject": "Tin Học",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": "room_tin"
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "SHDC",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "HĐCĐ",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "1": [
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         }
       ],
       "2": [
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "3": [
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Công Nghệ",
-          "teacher": "Thầy Tú",
+          "teacher": "Thầy Tú (Công Nghệ)",
+          "shortTeacher": "Tú",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "GDCD",
-          "teacher": "Cô Rích",
+          "teacher": "Thầy Đoàn Văn Rích",
+          "shortTeacher": "Rích",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "4": [
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         }
       ],
       "5": [
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "SHL",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         null
@@ -349,156 +838,214 @@ export const CANH_THUAN_TKB_DATA = {
         {
           "subject": "Chào Cờ",
           "teacher": "Toàn Trường",
+          "shortTeacher": "Toàn Trường",
+          "department": "",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "1": [
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "2": [
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tin Học",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": "room_tin"
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "3": [
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "GDCD",
-          "teacher": "Cô Rích",
+          "teacher": "Thầy Đoàn Văn Rích",
+          "shortTeacher": "Rích",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Công Nghệ",
-          "teacher": "Thầy Tú",
+          "teacher": "Thầy Tú (Công Nghệ)",
+          "shortTeacher": "Tú",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "4": [
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "SHDC",
-          "teacher": "Cô Lành",
+          "teacher": "Cô Dương Thị Ngọc Lành",
+          "shortTeacher": "Lành",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "HĐCĐ",
-          "teacher": "Cô Nhàn",
+          "teacher": "Cô Phạm Thị Nhàn",
+          "shortTeacher": "Nhàn",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "5": [
         {
           "subject": "SHL",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         null
@@ -509,156 +1056,214 @@ export const CANH_THUAN_TKB_DATA = {
         {
           "subject": "Chào Cờ",
           "teacher": "Toàn Trường",
+          "shortTeacher": "Toàn Trường",
+          "department": "",
           "room": null
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "1": [
         {
           "subject": "SHDC",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Công Nghệ",
-          "teacher": "Thầy Tú",
+          "teacher": "Thầy Tú (Công Nghệ)",
+          "shortTeacher": "Tú",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "2": [
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         }
       ],
       "3": [
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         }
       ],
       "4": [
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "HĐCĐ",
-          "teacher": "Thầy L.Tuấn",
+          "teacher": "Thầy Lương Văn Tuấn",
+          "shortTeacher": "L.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "SHL",
-          "teacher": "Thầy L.Tuấn",
+          "teacher": "Thầy Lương Văn Tuấn",
+          "shortTeacher": "L.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Tin Học",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": "room_tin"
         }
       ],
       "5": [
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "GDCD",
-          "teacher": "Cô Rích",
+          "teacher": "Thầy Đoàn Văn Rích",
+          "shortTeacher": "Rích",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         null
@@ -669,156 +1274,214 @@ export const CANH_THUAN_TKB_DATA = {
         {
           "subject": "Chào Cờ",
           "teacher": "Toàn Trường",
+          "shortTeacher": "Toàn Trường",
+          "department": "",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "SHDC",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "1": [
         {
           "subject": "GDCD",
-          "teacher": "Cô Rích",
+          "teacher": "Thầy Đoàn Văn Rích",
+          "shortTeacher": "Rích",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "HĐCĐ",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         }
       ],
       "2": [
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "3": [
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Công Nghệ",
-          "teacher": "Thầy Tú",
+          "teacher": "Thầy Tú (Công Nghệ)",
+          "shortTeacher": "Tú",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "4": [
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "Tin Học",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": "room_tin"
         },
         {
           "subject": "SHL",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "5": [
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy Minh",
+          "teacher": "Thầy Nguyễn Đình Minh",
+          "shortTeacher": "Minh",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         null
@@ -829,156 +1492,214 @@ export const CANH_THUAN_TKB_DATA = {
         {
           "subject": "Chào Cờ",
           "teacher": "Toàn Trường",
+          "shortTeacher": "Toàn Trường",
+          "department": "",
           "room": null
         },
         {
           "subject": "Toán",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         }
       ],
       "1": [
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "2": [
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "HĐCĐ",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "3": [
         {
           "subject": "Công Nghệ",
-          "teacher": "Thầy Tú",
+          "teacher": "Thầy Tú (Công Nghệ)",
+          "shortTeacher": "Tú",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "4": [
         {
           "subject": "Tin Học",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": "room_tin"
         },
         {
           "subject": "SHL",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy Phúc",
+          "teacher": "Cô Nguyễn Thị Hồng Phúc",
+          "shortTeacher": "Phúc",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         }
       ],
       "5": [
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "GDCD",
-          "teacher": "Cô Rích",
+          "teacher": "Thầy Đoàn Văn Rích",
+          "shortTeacher": "Rích",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "SHDC",
-          "teacher": "Thầy Thái",
+          "teacher": "Thầy Lê Quốc Thái",
+          "shortTeacher": "Thái",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         null
@@ -989,156 +1710,214 @@ export const CANH_THUAN_TKB_DATA = {
         {
           "subject": "Chào Cờ",
           "teacher": "Toàn Trường",
+          "shortTeacher": "Toàn Trường",
+          "department": "",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "Toán",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Tin Học",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": "room_tin"
         }
       ],
       "1": [
         {
           "subject": "Công Nghệ",
-          "teacher": "Thầy Tú",
+          "teacher": "Thầy Tú (Công Nghệ)",
+          "shortTeacher": "Tú",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "SHDC",
-          "teacher": "Thầy Thái",
+          "teacher": "Thầy Lê Quốc Thái",
+          "shortTeacher": "Thái",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "2": [
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Toán",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         }
       ],
       "3": [
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Toán",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "4": [
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Toán",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "HĐCĐ",
           "teacher": "Thầy Nguyễn Tá Quan",
+          "shortTeacher": "Quan",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "SHL",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "5": [
         {
           "subject": "GDCD",
-          "teacher": "Cô Rích",
+          "teacher": "Thầy Đoàn Văn Rích",
+          "shortTeacher": "Rích",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Thầy Trung",
+          "teacher": "Thầy Trần Duy Trung",
+          "shortTeacher": "Trung",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         null
@@ -1149,156 +1928,214 @@ export const CANH_THUAN_TKB_DATA = {
         {
           "subject": "Chào Cờ",
           "teacher": "Toàn Trường",
+          "shortTeacher": "Toàn Trường",
+          "department": "",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "1": [
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "HĐCĐ",
-          "teacher": "Thầy Thái",
+          "teacher": "Thầy Lê Quốc Thái",
+          "shortTeacher": "Thái",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "SHDC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "2": [
         {
           "subject": "KHTN",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "GDCD",
-          "teacher": "Cô Nương",
+          "teacher": "Cô Nguyễn Thị Nương",
+          "shortTeacher": "Nương",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "3": [
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "4": [
         {
           "subject": "Toán",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Tin Học",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": "room_tin"
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "5": [
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Công Nghệ",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "SHL",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         null
@@ -1309,156 +2146,214 @@ export const CANH_THUAN_TKB_DATA = {
         {
           "subject": "Chào Cờ",
           "teacher": "Toàn Trường",
+          "shortTeacher": "Toàn Trường",
+          "department": "",
           "room": null
         },
         {
           "subject": "SHDC",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         }
       ],
       "1": [
         {
           "subject": "Địa Lí",
-          "teacher": "Thầy Công",
+          "teacher": "Thầy Nguyễn Bá Công",
+          "shortTeacher": "Công",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "GDCD",
-          "teacher": "Cô Rích",
+          "teacher": "Thầy Đoàn Văn Rích",
+          "shortTeacher": "Rích",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         },
         {
           "subject": "Công Nghệ",
-          "teacher": "Thầy Tú",
+          "teacher": "Thầy Tú (Công Nghệ)",
+          "shortTeacher": "Tú",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "HĐCĐ",
-          "teacher": "Thầy Thái",
+          "teacher": "Thầy Lê Quốc Thái",
+          "shortTeacher": "Thái",
+          "department": "Tổ Tự Nhiên",
           "room": null
         }
       ],
       "2": [
         {
           "subject": "Toán",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Ngữ Văn",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tin Học",
-          "teacher": "Thầy Hòa",
+          "teacher": "Cô Hà Thị Thúy Hòa",
+          "shortTeacher": "Hòa",
+          "department": "Tổ Tự Nhiên",
           "room": "room_tin"
         }
       ],
       "3": [
         {
           "subject": "Lịch Sử",
-          "teacher": "Cô Hiền",
+          "teacher": "Thầy Nguyễn Bá Hiền",
+          "shortTeacher": "Hiền",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         }
       ],
       "4": [
         {
           "subject": "Ngữ Văn",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "SHL",
-          "teacher": "Thầy Hồ",
+          "teacher": "Cô Đoàn Thị Hồ",
+          "shortTeacher": "Hồ",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Toán",
-          "teacher": "Thầy T.Tuấn",
+          "teacher": "Thầy Nguyễn Thanh Tuấn",
+          "shortTeacher": "T.Tuấn",
+          "department": "Tổ Tự Nhiên",
           "room": null
         },
         {
           "subject": "Nghệ Thuật",
-          "teacher": "Cô Thư",
+          "teacher": "Cô Lê Thị Anh Thư",
+          "shortTeacher": "Thư",
+          "department": "Tổ Xã Hội",
           "room": "room_amnhac"
         }
       ],
       "5": [
         {
           "subject": "KHTN",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "KHTN",
-          "teacher": "Cô Duyên",
+          "teacher": "Cô Nguyễn Thị Hồng Duyên",
+          "shortTeacher": "Duyên",
+          "department": "Tổ Tự Nhiên",
           "room": "room_khtn"
         },
         {
           "subject": "GDTC",
-          "teacher": "Thầy Tài",
+          "teacher": "Thầy Nguyễn Tú Tài",
+          "shortTeacher": "Tài",
+          "department": "Tổ Tự Nhiên",
           "room": "room_gdtc"
         },
         {
           "subject": "Tiếng Anh",
-          "teacher": "Cô Thảo",
+          "teacher": "Cô Trần Thị Thanh Thảo",
+          "shortTeacher": "Thảo",
+          "department": "Tổ Xã Hội",
           "room": null
         },
         null
@@ -1467,7 +2362,224 @@ export const CANH_THUAN_TKB_DATA = {
   },
   "assignments": [
     {
-      "teacher": "Cô Duyên",
+      "teacher": "Cô Dương Thị Ngọc Lành",
+      "department": "Tổ Tự Nhiên",
+      "subject": "KHTN",
+      "classId": "6A1",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": "room_khtn"
+    },
+    {
+      "teacher": "Cô Dương Thị Ngọc Lành",
+      "department": "Tổ Tự Nhiên",
+      "subject": "KHTN",
+      "classId": "6A2",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": "room_khtn"
+    },
+    {
+      "teacher": "Cô Dương Thị Ngọc Lành",
+      "department": "Tổ Tự Nhiên",
+      "subject": "KHTN",
+      "classId": "6A3",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": "room_khtn"
+    },
+    {
+      "teacher": "Cô Dương Thị Ngọc Lành",
+      "department": "Tổ Tự Nhiên",
+      "subject": "SHDC",
+      "classId": "6A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Cô Dương Thị Ngọc Lành",
+      "department": "Tổ Tự Nhiên",
+      "subject": "SHDC",
+      "classId": "6A3",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "SHDC",
+      "classId": "6A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Tin Học",
+      "classId": "6A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": "room_tin"
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Tin Học",
+      "classId": "6A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": "room_tin"
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Tin Học",
+      "classId": "6A3",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": "room_tin"
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Tin Học",
+      "classId": "7A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": "room_tin"
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Tin Học",
+      "classId": "7A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": "room_tin"
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Tin Học",
+      "classId": "8A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": "room_tin"
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Tin Học",
+      "classId": "8A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": "room_tin"
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Tin Học",
+      "classId": "9A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": "room_tin"
+    },
+    {
+      "teacher": "Cô Hà Thị Thúy Hòa",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Tin Học",
+      "classId": "9A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": "room_tin"
+    },
+    {
+      "teacher": "Cô Lê Thị Anh Thư",
+      "department": "Tổ Xã Hội",
+      "subject": "Nghệ Thuật",
+      "classId": "6A1",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": "room_amnhac"
+    },
+    {
+      "teacher": "Cô Lê Thị Anh Thư",
+      "department": "Tổ Xã Hội",
+      "subject": "Nghệ Thuật",
+      "classId": "6A2",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": "room_amnhac"
+    },
+    {
+      "teacher": "Cô Lê Thị Anh Thư",
+      "department": "Tổ Xã Hội",
+      "subject": "Nghệ Thuật",
+      "classId": "6A3",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": "room_amnhac"
+    },
+    {
+      "teacher": "Cô Lê Thị Anh Thư",
+      "department": "Tổ Xã Hội",
+      "subject": "Nghệ Thuật",
+      "classId": "7A1",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": "room_amnhac"
+    },
+    {
+      "teacher": "Cô Lê Thị Anh Thư",
+      "department": "Tổ Xã Hội",
+      "subject": "Nghệ Thuật",
+      "classId": "7A2",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": "room_amnhac"
+    },
+    {
+      "teacher": "Cô Lê Thị Anh Thư",
+      "department": "Tổ Xã Hội",
+      "subject": "Nghệ Thuật",
+      "classId": "8A1",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": "room_amnhac"
+    },
+    {
+      "teacher": "Cô Lê Thị Anh Thư",
+      "department": "Tổ Xã Hội",
+      "subject": "Nghệ Thuật",
+      "classId": "8A2",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": "room_amnhac"
+    },
+    {
+      "teacher": "Cô Lê Thị Anh Thư",
+      "department": "Tổ Xã Hội",
+      "subject": "Nghệ Thuật",
+      "classId": "9A1",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": "room_amnhac"
+    },
+    {
+      "teacher": "Cô Lê Thị Anh Thư",
+      "department": "Tổ Xã Hội",
+      "subject": "Nghệ Thuật",
+      "classId": "9A2",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": "room_amnhac"
+    },
+    {
+      "teacher": "Cô Nguyễn Thị Hồng Duyên",
+      "department": "Tổ Tự Nhiên",
       "subject": "Công Nghệ",
       "classId": "9A1",
       "periods": 1,
@@ -1475,7 +2587,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Duyên",
+      "teacher": "Cô Nguyễn Thị Hồng Duyên",
+      "department": "Tổ Tự Nhiên",
       "subject": "KHTN",
       "classId": "9A1",
       "periods": 4,
@@ -1483,7 +2596,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_khtn"
     },
     {
-      "teacher": "Cô Duyên",
+      "teacher": "Cô Nguyễn Thị Hồng Duyên",
+      "department": "Tổ Tự Nhiên",
       "subject": "KHTN",
       "classId": "9A2",
       "periods": 4,
@@ -1491,7 +2605,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_khtn"
     },
     {
-      "teacher": "Cô Duyên",
+      "teacher": "Cô Nguyễn Thị Hồng Duyên",
+      "department": "Tổ Tự Nhiên",
       "subject": "SHL",
       "classId": "9A1",
       "periods": 1,
@@ -1499,127 +2614,80 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Hiền",
-      "subject": "Lịch Sử",
-      "classId": "6A1",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Hiền",
-      "subject": "Lịch Sử",
-      "classId": "6A2",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Hiền",
-      "subject": "Lịch Sử",
-      "classId": "6A3",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Hiền",
-      "subject": "Lịch Sử",
+      "teacher": "Cô Nguyễn Thị Hồng Phúc",
+      "department": "Tổ Tự Nhiên",
+      "subject": "KHTN",
       "classId": "7A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": "room_khtn"
     },
     {
-      "teacher": "Cô Hiền",
-      "subject": "Lịch Sử",
+      "teacher": "Cô Nguyễn Thị Hồng Phúc",
+      "department": "Tổ Tự Nhiên",
+      "subject": "KHTN",
       "classId": "7A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": "room_khtn"
     },
     {
-      "teacher": "Cô Hiền",
-      "subject": "Lịch Sử",
+      "teacher": "Cô Nguyễn Thị Hồng Phúc",
+      "department": "Tổ Tự Nhiên",
+      "subject": "KHTN",
       "classId": "8A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": "room_khtn"
     },
     {
-      "teacher": "Cô Hiền",
-      "subject": "Lịch Sử",
-      "classId": "8A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Hiền",
-      "subject": "Lịch Sử",
+      "teacher": "Cô Nguyễn Thị Nương",
+      "department": "Tổ Xã Hội",
+      "subject": "GDCD",
       "classId": "9A1",
-      "periods": 2,
+      "periods": 1,
       "doublePeriod": false,
       "roomReq": null
     },
     {
-      "teacher": "Cô Hiền",
-      "subject": "Lịch Sử",
-      "classId": "9A2",
-      "periods": 2,
-      "doublePeriod": false,
+      "teacher": "Cô Nguyễn Thị Nương",
+      "department": "Tổ Xã Hội",
+      "subject": "Ngữ Văn",
+      "classId": "7A1",
+      "periods": 4,
+      "doublePeriod": true,
       "roomReq": null
     },
     {
-      "teacher": "Cô Hiền",
-      "subject": "SHL",
+      "teacher": "Cô Nguyễn Thị Nương",
+      "department": "Tổ Xã Hội",
+      "subject": "Ngữ Văn",
+      "classId": "7A2",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": null
+    },
+    {
+      "teacher": "Cô Nguyễn Thị Nương",
+      "department": "Tổ Xã Hội",
+      "subject": "Ngữ Văn",
+      "classId": "8A1",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": null
+    },
+    {
+      "teacher": "Cô Nguyễn Thị Nương",
+      "department": "Tổ Xã Hội",
+      "subject": "Ngữ Văn",
       "classId": "8A2",
-      "periods": 1,
-      "doublePeriod": false,
+      "periods": 4,
+      "doublePeriod": true,
       "roomReq": null
     },
     {
-      "teacher": "Cô Lành",
-      "subject": "KHTN",
-      "classId": "6A1",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": "room_khtn"
-    },
-    {
-      "teacher": "Cô Lành",
-      "subject": "KHTN",
-      "classId": "6A2",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": "room_khtn"
-    },
-    {
-      "teacher": "Cô Lành",
-      "subject": "KHTN",
-      "classId": "6A3",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": "room_khtn"
-    },
-    {
-      "teacher": "Cô Lành",
-      "subject": "SHDC",
-      "classId": "6A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Lành",
-      "subject": "SHDC",
-      "classId": "6A3",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Nhàn",
+      "teacher": "Cô Phạm Thị Nhàn",
+      "department": "Tổ Xã Hội",
       "subject": "HĐCĐ",
       "classId": "6A3",
       "periods": 1,
@@ -1627,7 +2695,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Nhàn",
+      "teacher": "Cô Phạm Thị Nhàn",
+      "department": "Tổ Xã Hội",
       "subject": "Ngữ Văn",
       "classId": "6A1",
       "periods": 4,
@@ -1635,7 +2704,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Nhàn",
+      "teacher": "Cô Phạm Thị Nhàn",
+      "department": "Tổ Xã Hội",
       "subject": "Ngữ Văn",
       "classId": "6A2",
       "periods": 4,
@@ -1643,7 +2713,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Nhàn",
+      "teacher": "Cô Phạm Thị Nhàn",
+      "department": "Tổ Xã Hội",
       "subject": "Ngữ Văn",
       "classId": "6A3",
       "periods": 4,
@@ -1651,183 +2722,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Nương",
-      "subject": "GDCD",
-      "classId": "9A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Nương",
-      "subject": "Ngữ Văn",
-      "classId": "7A1",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Nương",
-      "subject": "Ngữ Văn",
-      "classId": "7A2",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Nương",
-      "subject": "Ngữ Văn",
-      "classId": "8A1",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Nương",
-      "subject": "Ngữ Văn",
-      "classId": "8A2",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Rích",
-      "subject": "GDCD",
-      "classId": "6A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Rích",
-      "subject": "GDCD",
-      "classId": "6A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Rích",
-      "subject": "GDCD",
-      "classId": "6A3",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Rích",
-      "subject": "GDCD",
-      "classId": "7A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Rích",
-      "subject": "GDCD",
-      "classId": "7A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Rích",
-      "subject": "GDCD",
-      "classId": "8A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Rích",
-      "subject": "GDCD",
-      "classId": "8A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Rích",
-      "subject": "GDCD",
-      "classId": "9A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Cô Thư",
-      "subject": "Nghệ Thuật",
-      "classId": "6A1",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": "room_amnhac"
-    },
-    {
-      "teacher": "Cô Thư",
-      "subject": "Nghệ Thuật",
-      "classId": "6A2",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": "room_amnhac"
-    },
-    {
-      "teacher": "Cô Thư",
-      "subject": "Nghệ Thuật",
-      "classId": "6A3",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": "room_amnhac"
-    },
-    {
-      "teacher": "Cô Thư",
-      "subject": "Nghệ Thuật",
-      "classId": "7A1",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": "room_amnhac"
-    },
-    {
-      "teacher": "Cô Thư",
-      "subject": "Nghệ Thuật",
-      "classId": "7A2",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": "room_amnhac"
-    },
-    {
-      "teacher": "Cô Thư",
-      "subject": "Nghệ Thuật",
-      "classId": "8A1",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": "room_amnhac"
-    },
-    {
-      "teacher": "Cô Thư",
-      "subject": "Nghệ Thuật",
-      "classId": "8A2",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": "room_amnhac"
-    },
-    {
-      "teacher": "Cô Thư",
-      "subject": "Nghệ Thuật",
-      "classId": "9A1",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": "room_amnhac"
-    },
-    {
-      "teacher": "Cô Thư",
-      "subject": "Nghệ Thuật",
-      "classId": "9A2",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": "room_amnhac"
-    },
-    {
-      "teacher": "Cô Thảo",
+      "teacher": "Cô Trần Thị Thanh Thảo",
+      "department": "Tổ Xã Hội",
       "subject": "Tiếng Anh",
       "classId": "7A1",
       "periods": 3,
@@ -1835,7 +2731,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Thảo",
+      "teacher": "Cô Trần Thị Thanh Thảo",
+      "department": "Tổ Xã Hội",
       "subject": "Tiếng Anh",
       "classId": "7A2",
       "periods": 3,
@@ -1843,7 +2740,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Thảo",
+      "teacher": "Cô Trần Thị Thanh Thảo",
+      "department": "Tổ Xã Hội",
       "subject": "Tiếng Anh",
       "classId": "9A1",
       "periods": 3,
@@ -1851,7 +2749,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Thảo",
+      "teacher": "Cô Trần Thị Thanh Thảo",
+      "department": "Tổ Xã Hội",
       "subject": "Tiếng Anh",
       "classId": "9A2",
       "periods": 3,
@@ -1859,7 +2758,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Cô Ánh",
+      "teacher": "Cô Võ Thị Hồng Ánh",
+      "department": "Tổ Tự Nhiên",
       "subject": "Toán",
       "classId": "6A1",
       "periods": 4,
@@ -1867,159 +2767,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Công",
-      "subject": "Địa Lí",
-      "classId": "6A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Công",
-      "subject": "Địa Lí",
-      "classId": "6A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Công",
-      "subject": "Địa Lí",
-      "classId": "6A3",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Công",
-      "subject": "Địa Lí",
-      "classId": "7A1",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Công",
-      "subject": "Địa Lí",
-      "classId": "7A2",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Công",
-      "subject": "Địa Lí",
-      "classId": "8A1",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Công",
-      "subject": "Địa Lí",
-      "classId": "8A2",
-      "periods": 2,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Công",
-      "subject": "Địa Lí",
-      "classId": "9A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Công",
-      "subject": "Địa Lí",
-      "classId": "9A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "SHDC",
-      "classId": "6A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "Tin Học",
-      "classId": "6A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": "room_tin"
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "Tin Học",
-      "classId": "6A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": "room_tin"
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "Tin Học",
-      "classId": "6A3",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": "room_tin"
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "Tin Học",
-      "classId": "7A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": "room_tin"
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "Tin Học",
-      "classId": "7A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": "room_tin"
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "Tin Học",
-      "classId": "8A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": "room_tin"
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "Tin Học",
-      "classId": "8A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": "room_tin"
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "Tin Học",
-      "classId": "9A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": "room_tin"
-    },
-    {
-      "teacher": "Thầy Hòa",
-      "subject": "Tin Học",
-      "classId": "9A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": "room_tin"
-    },
-    {
-      "teacher": "Thầy Hồ",
+      "teacher": "Cô Đoàn Thị Hồ",
+      "department": "Tổ Xã Hội",
       "subject": "Ngữ Văn",
       "classId": "9A1",
       "periods": 4,
@@ -2027,7 +2776,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Hồ",
+      "teacher": "Cô Đoàn Thị Hồ",
+      "department": "Tổ Xã Hội",
       "subject": "Ngữ Văn",
       "classId": "9A2",
       "periods": 4,
@@ -2035,7 +2785,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Hồ",
+      "teacher": "Cô Đoàn Thị Hồ",
+      "department": "Tổ Xã Hội",
       "subject": "SHDC",
       "classId": "9A2",
       "periods": 1,
@@ -2043,7 +2794,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Hồ",
+      "teacher": "Cô Đoàn Thị Hồ",
+      "department": "Tổ Xã Hội",
       "subject": "SHL",
       "classId": "9A2",
       "periods": 1,
@@ -2051,7 +2803,53 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy L.Tuấn",
+      "teacher": "Thầy Lê Quốc Thái",
+      "department": "Tổ Tự Nhiên",
+      "subject": "GDTC",
+      "classId": "6A1",
+      "periods": 2,
+      "doublePeriod": true,
+      "roomReq": "room_gdtc"
+    },
+    {
+      "teacher": "Thầy Lê Quốc Thái",
+      "department": "Tổ Tự Nhiên",
+      "subject": "HĐCĐ",
+      "classId": "9A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Lê Quốc Thái",
+      "department": "Tổ Tự Nhiên",
+      "subject": "HĐCĐ",
+      "classId": "9A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Lê Quốc Thái",
+      "department": "Tổ Tự Nhiên",
+      "subject": "SHDC",
+      "classId": "8A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Lê Quốc Thái",
+      "department": "Tổ Tự Nhiên",
+      "subject": "SHDC",
+      "classId": "8A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Lương Văn Tuấn",
+      "department": "Tổ Tự Nhiên",
       "subject": "HĐCĐ",
       "classId": "7A1",
       "periods": 1,
@@ -2059,7 +2857,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy L.Tuấn",
+      "teacher": "Thầy Lương Văn Tuấn",
+      "department": "Tổ Tự Nhiên",
       "subject": "SHL",
       "classId": "6A1",
       "periods": 1,
@@ -2067,7 +2866,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy L.Tuấn",
+      "teacher": "Thầy Lương Văn Tuấn",
+      "department": "Tổ Tự Nhiên",
       "subject": "SHL",
       "classId": "7A1",
       "periods": 1,
@@ -2075,39 +2875,242 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Minh",
-      "subject": "Toán",
+      "teacher": "Thầy Nguyễn Bá Công",
+      "department": "Tổ Xã Hội",
+      "subject": "Địa Lí",
+      "classId": "6A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Công",
+      "department": "Tổ Xã Hội",
+      "subject": "Địa Lí",
       "classId": "6A2",
-      "periods": 4,
-      "doublePeriod": true,
+      "periods": 1,
+      "doublePeriod": false,
       "roomReq": null
     },
     {
-      "teacher": "Thầy Minh",
-      "subject": "Toán",
+      "teacher": "Thầy Nguyễn Bá Công",
+      "department": "Tổ Xã Hội",
+      "subject": "Địa Lí",
       "classId": "6A3",
-      "periods": 4,
-      "doublePeriod": true,
+      "periods": 1,
+      "doublePeriod": false,
       "roomReq": null
     },
     {
-      "teacher": "Thầy Minh",
-      "subject": "Toán",
+      "teacher": "Thầy Nguyễn Bá Công",
+      "department": "Tổ Xã Hội",
+      "subject": "Địa Lí",
       "classId": "7A1",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Công",
+      "department": "Tổ Xã Hội",
+      "subject": "Địa Lí",
+      "classId": "7A2",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Công",
+      "department": "Tổ Xã Hội",
+      "subject": "Địa Lí",
+      "classId": "8A1",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Công",
+      "department": "Tổ Xã Hội",
+      "subject": "Địa Lí",
+      "classId": "8A2",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Công",
+      "department": "Tổ Xã Hội",
+      "subject": "Địa Lí",
+      "classId": "9A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Công",
+      "department": "Tổ Xã Hội",
+      "subject": "Địa Lí",
+      "classId": "9A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "Lịch Sử",
+      "classId": "6A1",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "Lịch Sử",
+      "classId": "6A2",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "Lịch Sử",
+      "classId": "6A3",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "Lịch Sử",
+      "classId": "7A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "Lịch Sử",
+      "classId": "7A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "Lịch Sử",
+      "classId": "8A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "Lịch Sử",
+      "classId": "8A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "Lịch Sử",
+      "classId": "9A1",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "Lịch Sử",
+      "classId": "9A2",
+      "periods": 2,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Bá Hiền",
+      "department": "Tổ Xã Hội",
+      "subject": "SHL",
+      "classId": "8A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Thanh Tuấn",
+      "department": "Tổ Tự Nhiên",
+      "subject": "KHTN",
+      "classId": "8A2",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": "room_khtn"
+    },
+    {
+      "teacher": "Thầy Nguyễn Thanh Tuấn",
+      "department": "Tổ Tự Nhiên",
+      "subject": "SHDC",
+      "classId": "7A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Thanh Tuấn",
+      "department": "Tổ Tự Nhiên",
+      "subject": "SHL",
+      "classId": "6A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Thanh Tuấn",
+      "department": "Tổ Tự Nhiên",
+      "subject": "SHL",
+      "classId": "6A3",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Thanh Tuấn",
+      "department": "Tổ Tự Nhiên",
+      "subject": "SHL",
+      "classId": "7A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Thanh Tuấn",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Toán",
+      "classId": "9A1",
       "periods": 4,
       "doublePeriod": true,
       "roomReq": null
     },
     {
-      "teacher": "Thầy Minh",
+      "teacher": "Thầy Nguyễn Thanh Tuấn",
+      "department": "Tổ Tự Nhiên",
       "subject": "Toán",
-      "classId": "7A2",
+      "classId": "9A2",
       "periods": 4,
       "doublePeriod": true,
       "roomReq": null
     },
     {
       "teacher": "Thầy Nguyễn Tá Quan",
+      "department": "Tổ Tự Nhiên",
       "subject": "HĐCĐ",
       "classId": "6A1",
       "periods": 1,
@@ -2116,6 +3119,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "teacher": "Thầy Nguyễn Tá Quan",
+      "department": "Tổ Tự Nhiên",
       "subject": "HĐCĐ",
       "classId": "6A2",
       "periods": 1,
@@ -2124,6 +3128,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "teacher": "Thầy Nguyễn Tá Quan",
+      "department": "Tổ Tự Nhiên",
       "subject": "HĐCĐ",
       "classId": "8A1",
       "periods": 1,
@@ -2132,6 +3137,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "teacher": "Thầy Nguyễn Tá Quan",
+      "department": "Tổ Tự Nhiên",
       "subject": "HĐCĐ",
       "classId": "8A2",
       "periods": 1,
@@ -2140,6 +3146,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "teacher": "Thầy Nguyễn Tá Quan",
+      "department": "Tổ Tự Nhiên",
       "subject": "SHL",
       "classId": "8A1",
       "periods": 1,
@@ -2148,6 +3155,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "teacher": "Thầy Nguyễn Tá Quan",
+      "department": "Tổ Tự Nhiên",
       "subject": "Toán",
       "classId": "8A1",
       "periods": 4,
@@ -2156,6 +3164,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "teacher": "Thầy Nguyễn Tá Quan",
+      "department": "Tổ Tự Nhiên",
       "subject": "Toán",
       "classId": "8A2",
       "periods": 4,
@@ -2163,183 +3172,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Phúc",
-      "subject": "KHTN",
-      "classId": "7A1",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": "room_khtn"
-    },
-    {
-      "teacher": "Thầy Phúc",
-      "subject": "KHTN",
-      "classId": "7A2",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": "room_khtn"
-    },
-    {
-      "teacher": "Thầy Phúc",
-      "subject": "KHTN",
-      "classId": "8A1",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": "room_khtn"
-    },
-    {
-      "teacher": "Thầy T.Tuấn",
-      "subject": "KHTN",
-      "classId": "8A2",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": "room_khtn"
-    },
-    {
-      "teacher": "Thầy T.Tuấn",
-      "subject": "SHDC",
-      "classId": "7A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy T.Tuấn",
-      "subject": "SHL",
-      "classId": "6A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy T.Tuấn",
-      "subject": "SHL",
-      "classId": "6A3",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy T.Tuấn",
-      "subject": "SHL",
-      "classId": "7A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy T.Tuấn",
-      "subject": "Toán",
-      "classId": "9A1",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy T.Tuấn",
-      "subject": "Toán",
-      "classId": "9A2",
-      "periods": 4,
-      "doublePeriod": true,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Thái",
-      "subject": "GDTC",
-      "classId": "6A1",
-      "periods": 2,
-      "doublePeriod": true,
-      "roomReq": "room_gdtc"
-    },
-    {
-      "teacher": "Thầy Thái",
-      "subject": "HĐCĐ",
-      "classId": "9A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Thái",
-      "subject": "HĐCĐ",
-      "classId": "9A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Thái",
-      "subject": "SHDC",
-      "classId": "8A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Thái",
-      "subject": "SHDC",
-      "classId": "8A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Trung",
-      "subject": "HĐCĐ",
-      "classId": "7A2",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Trung",
-      "subject": "SHDC",
-      "classId": "7A1",
-      "periods": 1,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Trung",
-      "subject": "Tiếng Anh",
-      "classId": "6A1",
-      "periods": 3,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Trung",
-      "subject": "Tiếng Anh",
-      "classId": "6A2",
-      "periods": 3,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Trung",
-      "subject": "Tiếng Anh",
-      "classId": "6A3",
-      "periods": 3,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Trung",
-      "subject": "Tiếng Anh",
-      "classId": "8A1",
-      "periods": 3,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Trung",
-      "subject": "Tiếng Anh",
-      "classId": "8A2",
-      "periods": 3,
-      "doublePeriod": false,
-      "roomReq": null
-    },
-    {
-      "teacher": "Thầy Tài",
+      "teacher": "Thầy Nguyễn Tú Tài",
+      "department": "Tổ Tự Nhiên",
       "subject": "GDTC",
       "classId": "6A2",
       "periods": 2,
@@ -2347,7 +3181,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_gdtc"
     },
     {
-      "teacher": "Thầy Tài",
+      "teacher": "Thầy Nguyễn Tú Tài",
+      "department": "Tổ Tự Nhiên",
       "subject": "GDTC",
       "classId": "6A3",
       "periods": 2,
@@ -2355,7 +3190,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_gdtc"
     },
     {
-      "teacher": "Thầy Tài",
+      "teacher": "Thầy Nguyễn Tú Tài",
+      "department": "Tổ Tự Nhiên",
       "subject": "GDTC",
       "classId": "7A1",
       "periods": 2,
@@ -2363,7 +3199,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_gdtc"
     },
     {
-      "teacher": "Thầy Tài",
+      "teacher": "Thầy Nguyễn Tú Tài",
+      "department": "Tổ Tự Nhiên",
       "subject": "GDTC",
       "classId": "7A2",
       "periods": 2,
@@ -2371,7 +3208,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_gdtc"
     },
     {
-      "teacher": "Thầy Tài",
+      "teacher": "Thầy Nguyễn Tú Tài",
+      "department": "Tổ Tự Nhiên",
       "subject": "GDTC",
       "classId": "8A1",
       "periods": 2,
@@ -2379,7 +3217,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_gdtc"
     },
     {
-      "teacher": "Thầy Tài",
+      "teacher": "Thầy Nguyễn Tú Tài",
+      "department": "Tổ Tự Nhiên",
       "subject": "GDTC",
       "classId": "8A2",
       "periods": 2,
@@ -2387,7 +3226,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_gdtc"
     },
     {
-      "teacher": "Thầy Tài",
+      "teacher": "Thầy Nguyễn Tú Tài",
+      "department": "Tổ Tự Nhiên",
       "subject": "GDTC",
       "classId": "9A1",
       "periods": 2,
@@ -2395,7 +3235,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_gdtc"
     },
     {
-      "teacher": "Thầy Tài",
+      "teacher": "Thầy Nguyễn Tú Tài",
+      "department": "Tổ Tự Nhiên",
       "subject": "GDTC",
       "classId": "9A2",
       "periods": 2,
@@ -2403,7 +3244,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": "room_gdtc"
     },
     {
-      "teacher": "Thầy Tài",
+      "teacher": "Thầy Nguyễn Tú Tài",
+      "department": "Tổ Tự Nhiên",
       "subject": "SHDC",
       "classId": "9A1",
       "periods": 1,
@@ -2411,7 +3253,107 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Tú",
+      "teacher": "Thầy Nguyễn Đình Minh",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Toán",
+      "classId": "6A2",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Đình Minh",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Toán",
+      "classId": "6A3",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Đình Minh",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Toán",
+      "classId": "7A1",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Nguyễn Đình Minh",
+      "department": "Tổ Tự Nhiên",
+      "subject": "Toán",
+      "classId": "7A2",
+      "periods": 4,
+      "doublePeriod": true,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Trần Duy Trung",
+      "department": "Tổ Xã Hội",
+      "subject": "HĐCĐ",
+      "classId": "7A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Trần Duy Trung",
+      "department": "Tổ Xã Hội",
+      "subject": "SHDC",
+      "classId": "7A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Trần Duy Trung",
+      "department": "Tổ Xã Hội",
+      "subject": "Tiếng Anh",
+      "classId": "6A1",
+      "periods": 3,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Trần Duy Trung",
+      "department": "Tổ Xã Hội",
+      "subject": "Tiếng Anh",
+      "classId": "6A2",
+      "periods": 3,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Trần Duy Trung",
+      "department": "Tổ Xã Hội",
+      "subject": "Tiếng Anh",
+      "classId": "6A3",
+      "periods": 3,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Trần Duy Trung",
+      "department": "Tổ Xã Hội",
+      "subject": "Tiếng Anh",
+      "classId": "8A1",
+      "periods": 3,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Trần Duy Trung",
+      "department": "Tổ Xã Hội",
+      "subject": "Tiếng Anh",
+      "classId": "8A2",
+      "periods": 3,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Tú (Công Nghệ)",
+      "department": "Tổ Tự Nhiên",
       "subject": "Công Nghệ",
       "classId": "6A1",
       "periods": 1,
@@ -2419,7 +3361,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Tú",
+      "teacher": "Thầy Tú (Công Nghệ)",
+      "department": "Tổ Tự Nhiên",
       "subject": "Công Nghệ",
       "classId": "6A2",
       "periods": 1,
@@ -2427,7 +3370,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Tú",
+      "teacher": "Thầy Tú (Công Nghệ)",
+      "department": "Tổ Tự Nhiên",
       "subject": "Công Nghệ",
       "classId": "6A3",
       "periods": 1,
@@ -2435,7 +3379,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Tú",
+      "teacher": "Thầy Tú (Công Nghệ)",
+      "department": "Tổ Tự Nhiên",
       "subject": "Công Nghệ",
       "classId": "7A1",
       "periods": 1,
@@ -2443,7 +3388,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Tú",
+      "teacher": "Thầy Tú (Công Nghệ)",
+      "department": "Tổ Tự Nhiên",
       "subject": "Công Nghệ",
       "classId": "7A2",
       "periods": 1,
@@ -2451,7 +3397,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Tú",
+      "teacher": "Thầy Tú (Công Nghệ)",
+      "department": "Tổ Tự Nhiên",
       "subject": "Công Nghệ",
       "classId": "8A1",
       "periods": 1,
@@ -2459,7 +3406,8 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Tú",
+      "teacher": "Thầy Tú (Công Nghệ)",
+      "department": "Tổ Tự Nhiên",
       "subject": "Công Nghệ",
       "classId": "8A2",
       "periods": 1,
@@ -2467,8 +3415,81 @@ export const CANH_THUAN_TKB_DATA = {
       "roomReq": null
     },
     {
-      "teacher": "Thầy Tú",
+      "teacher": "Thầy Tú (Công Nghệ)",
+      "department": "Tổ Tự Nhiên",
       "subject": "Công Nghệ",
+      "classId": "9A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Đoàn Văn Rích",
+      "department": "Tổ Xã Hội",
+      "subject": "GDCD",
+      "classId": "6A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Đoàn Văn Rích",
+      "department": "Tổ Xã Hội",
+      "subject": "GDCD",
+      "classId": "6A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Đoàn Văn Rích",
+      "department": "Tổ Xã Hội",
+      "subject": "GDCD",
+      "classId": "6A3",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Đoàn Văn Rích",
+      "department": "Tổ Xã Hội",
+      "subject": "GDCD",
+      "classId": "7A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Đoàn Văn Rích",
+      "department": "Tổ Xã Hội",
+      "subject": "GDCD",
+      "classId": "7A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Đoàn Văn Rích",
+      "department": "Tổ Xã Hội",
+      "subject": "GDCD",
+      "classId": "8A1",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Đoàn Văn Rích",
+      "department": "Tổ Xã Hội",
+      "subject": "GDCD",
+      "classId": "8A2",
+      "periods": 1,
+      "doublePeriod": false,
+      "roomReq": null
+    },
+    {
+      "teacher": "Thầy Đoàn Văn Rích",
+      "department": "Tổ Xã Hội",
+      "subject": "GDCD",
       "classId": "9A2",
       "periods": 1,
       "doublePeriod": false,
