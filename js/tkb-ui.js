@@ -475,6 +475,38 @@ export class SmartTKBUI {
     /**
      * Kiểu dáng màu sắc sư phạm theo phân môn
      */
+    /**
+     * BẢNG MÀU CHỮ ĐỘC BẢN CHO TỪNG GIÁO VIÊN (KHÔNG DÙNG FILL COLOR NỀN - CHUẨN SƯ PHẠM THẦY QUAN)
+     * Mỗi Thầy Cô sở hữu một mã màu chữ riêng biệt, sắc nét, tương phản hoàn hảo trên nền trắng
+     */
+    getTeacherColor(teacherName, shortTeacher = '') {
+        const compact = this.getCompactTeacherName(teacherName, shortTeacher);
+        const map = {
+            'Quan': '#15803d',     // ⭐ Thầy Quan: Xanh lá cây đậm ngọc bích
+            'T. Tuấn': '#1d4ed8',  // Thầy Nguyễn Thanh Tuấn: Xanh dương đậm
+            'L. Tuấn': '#c2410c',  // Thầy Lương Văn Tuấn: Cam sẫm
+            'Minh': '#6d28d9',     // Thầy Minh: Tím sẫm
+            'Nhàn': '#be123c',     // Cô Nhàn: Đỏ Ruby
+            'Hòa': '#0e7490',      // Cô Hòa: Xanh Cyan đậm
+            'Lành': '#047857',     // Cô Lành: Xanh ngọc lục bảo
+            'Duyên': '#7e22ce',    // Cô Duyên: Tím hoa cà đậm
+            'Hiền': '#9a3412',     // Thầy Hiền: Nâu cam đất
+            'Công': '#334155',     // Thầy Công: Xám than đậm
+            'Hồ': '#a21caf',       // Cô Hồ: Hồng tím đậm
+            'Nương': '#4338ca',    // Cô Nương: Xanh Chàm Indigo
+            'Thái': '#4d7c0f',     // Thầy Thái: Xanh rêu
+            'Tài': '#b91c1c',      // Thầy Tài: Đỏ đô
+            'Rích': '#0f766e',     // Thầy Rích: Xanh cổ vịt Teal
+            'Thư': '#be185d',      // Cô Thư: Hồng sen đậm
+            'Thảo': '#0369a1',     // Cô Thảo: Xanh biển đậm
+            'Trung': '#1e3a8a',    // Thầy Trung: Xanh Navy sẫm
+            'Phúc': '#4f46e5',     // Cô Phúc: Tím xanh Indigo
+            'Ánh': '#b45309',      // Cô Ánh: Vàng đồng đậm
+            'Tú': '#78350f'        // Thầy Tú: Nâu đất
+        };
+        return map[compact] || '#1d4ed8';
+    }
+
     getSubjectBadgeStyle(subject) {
         if (!subject) return { bg: '#f8fafc', border: '#e2e8f0', color: '#64748b' };
         if (subject.includes('Toán')) return { bg: '#eff6ff', border: '#bfdbfe', color: '#1d4ed8' };
@@ -502,31 +534,55 @@ export class SmartTKBUI {
         const classes = this.engine.classes; // ['6A1', '6A2', '6A3', '7A1', '7A2', '8A1', '8A2', '9A1', '9A2']
         const currentGrade = this.gradeFilter || 'all';
 
+        // Danh sách 21 Thầy Cô giáo và mã màu chữ riêng biệt
+        const legendTeachers = [
+            { name: 'Quan', label: '⭐ Thầy Quan', color: '#15803d' },
+            { name: 'T. Tuấn', label: 'T. Tuấn', color: '#1d4ed8' },
+            { name: 'L. Tuấn', label: 'L. Tuấn', color: '#c2410c' },
+            { name: 'Minh', label: 'Minh', color: '#6d28d9' },
+            { name: 'Nhàn', label: 'Nhàn', color: '#be123c' },
+            { name: 'Hòa', label: 'Hòa', color: '#0e7490' },
+            { name: 'Lành', label: 'Lành', color: '#047857' },
+            { name: 'Duyên', label: 'Duyên', color: '#7e22ce' },
+            { name: 'Hiền', label: 'Hiền', color: '#9a3412' },
+            { name: 'Công', label: 'Công', color: '#334155' },
+            { name: 'Hồ', label: 'Hồ', color: '#a21caf' },
+            { name: 'Nương', label: 'Nương', color: '#4338ca' },
+            { name: 'Thái', label: 'Thái', color: '#4d7c0f' },
+            { name: 'Tài', label: 'Tài', color: '#b91c1c' },
+            { name: 'Rích', label: 'Rích', color: '#0f766e' },
+            { name: 'Thư', label: 'Thư', color: '#be185d' },
+            { name: 'Thảo', label: 'Thảo', color: '#0369a1' },
+            { name: 'Trung', label: 'Trung', color: '#1e3a8a' },
+            { name: 'Phúc', label: 'Phúc', color: '#4f46e5' },
+            { name: 'Ánh', label: 'Ánh', color: '#b45309' },
+            { name: 'Tú', label: 'Tú', color: '#78350f' }
+        ];
+
         let html = `
             <!-- ================================================================= -->
-            <!-- 1. BẢNG TỔNG THỂ TOÀN TRƯỜNG (COMPACT MASTER MATRIX) TRÊN CÙNG   -->
+            <!-- 1. BẢNG TỔNG THỂ TOÀN TRƯỜNG (COMPACT MASTER MATRIX) ĐẶT TRÊN CÙNG -->
             <!-- ================================================================= -->
             <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                
+                <!-- HEADER & ACTION BUTTONS -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.75rem;">
                     <div>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
                             <span style="font-size: 1.3rem;">🏫</span>
-                            <h2 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: -0.3px;">
+                            <h2 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a; text-transform: uppercase;">
                                 Bảng Tổng Thể Thời Khóa Biểu Toàn Trường (9 Lớp)
                             </h2>
-                            <span style="background: #3b82f6; color: #fff; padding: 0.15rem 0.55rem; border-radius: 20px; font-size: 0.7rem; font-weight: 800;">
-                                BẢN TỔNG QUAN
+                            <span style="background: #10b981; color: #fff; padding: 0.15rem 0.55rem; border-radius: 20px; font-size: 0.7rem; font-weight: 800;">
+                                KHÔNG DÙNG FILL COLOR • MỖI GV 1 MÀU CHỮ
                             </span>
                         </div>
-                        <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #64748b;">
-                            Trường THCS Bán Trú Canh Thuận • Áp dụng Tuần 9 (02/11/2026) • Tên giáo viên thu gọn chuẩn: <em>Quan, T. Tuấn, L. Tuấn, Nhàn, Minh, Duyên...</em>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.82rem; color: #64748b;">
+                            Trường THCS Bán Trú Canh Thuận • Áp dụng Tuần 9 đến Tuần 13 • Nền trắng tinh khiết, mỗi Thầy Cô một sắc màu chữ riêng biệt.
                         </p>
                     </div>
 
                     <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                        <button onclick="window.smartTKBUI.toggleMasterColorMode()" style="background: #f8fafc; color: #1e293b; border: 1px solid #cbd5e1; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;" title="Chuyển đổi giao diện Dịu Mắt (Trắng sạch) hoặc Phân màu">
-                            <span>🎨</span> <span>${this.masterColorMode === 'pastel' ? 'Chế Độ: Phân Màu Môn' : 'Chế Độ: Dịu Mắt (Khuyên Dùng)'}</span>
-                        </button>
                         <button onclick="window.smartTKBUI.printTimetable()" style="background: #1e293b; color: #fff; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
                             <span>🖨️</span> <span>In Bảng Tổng Thể A4</span>
                         </button>
@@ -536,17 +592,32 @@ export class SmartTKBUI {
                     </div>
                 </div>
 
-                <!-- BÀN CỜ TỔNG THỂ 9 LỚP -->
-                <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px;">
-                    <table class="tkb-table" style="margin: 0; width: 100%; min-width: 980px; border-collapse: collapse; font-size: 0.78rem;">
+                <!-- BẢNG CHÚ GIẢI MÀU SẮC GIÁO VIÊN (TEACHER COLOR LEGEND) -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 0.85rem; margin-bottom: 1rem;">
+                    <div style="font-size: 0.75rem; font-weight: 800; color: #475569; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.3px;">
+                        🎨 Chú Giải Mã Màu Chữ Từng Thầy Cô (21 Giáo Viên):
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
+                        ${legendTeachers.map(t => `
+                            <span style="display: inline-flex; align-items: center; gap: 0.3rem; background: #ffffff; border: 1px solid #cbd5e1; padding: 0.15rem 0.5rem; border-radius: 14px; font-size: 0.72rem; font-weight: 800; color: ${t.color}; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${t.color};"></span>
+                                ${t.label}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- BÀN CỜ TỔNG THỂ 9 LỚP - 100% NỀN TRẮNG (KHÔNG FILL MÀU NỀN) -->
+                <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);">
+                    <table class="tkb-table" style="margin: 0; width: 100%; min-width: 980px; border-collapse: collapse; font-size: 0.78rem; background: #ffffff;">
                         <thead>
                             <tr style="background: #0f172a; color: #ffffff;">
                                 <th rowspan="2" style="width: 80px; text-align: center; border-right: 1px solid #334155; padding: 6px;">Thứ</th>
                                 <th rowspan="2" style="width: 48px; text-align: center; border-right: 2px solid #64748b; padding: 6px;">Tiết</th>
-                                <th colspan="3" style="text-align: center; background: #1e3a8a; border-right: 2px solid #64748b; padding: 4px; font-weight: 800;">KHỐI 6</th>
-                                <th colspan="2" style="text-align: center; background: #065f46; border-right: 2px solid #64748b; padding: 4px; font-weight: 800;">KHỐI 7</th>
-                                <th colspan="2" style="text-align: center; background: #831843; border-right: 2px solid #64748b; padding: 4px; font-weight: 800;">KHỐI 8 (Lớp Thầy Quan)</th>
-                                <th colspan="2" style="text-align: center; background: #581c87; padding: 4px; font-weight: 800;">KHỐI 9</th>
+                                <th colspan="3" style="text-align: center; background: #1e3a8a; border-right: 2px solid #64748b; padding: 5px; font-weight: 800;">KHỐI 6</th>
+                                <th colspan="2" style="text-align: center; background: #065f46; border-right: 2px solid #64748b; padding: 5px; font-weight: 800;">KHỐI 7</th>
+                                <th colspan="2" style="text-align: center; background: #831843; border-right: 2px solid #64748b; padding: 5px; font-weight: 800;">KHỐI 8 (Lớp Thầy Quan)</th>
+                                <th colspan="2" style="text-align: center; background: #581c87; padding: 5px; font-weight: 800;">KHỐI 9</th>
                             </tr>
                             <tr style="background: #1e293b; color: #ffffff;">
                                 ${classes.map(c => {
@@ -566,17 +637,14 @@ export class SmartTKBUI {
         for (let d = 0; d < this.engine.DAYS.length; d++) {
             const dayName = this.engine.DAYS[d];
             const maxPeriods = (d === 5) ? 4 : 5; // Thứ 7 có 4 tiết, các ngày khác 5 tiết
-            const isAlternateDay = (d % 2 === 1);
 
             for (let p = 0; p < maxPeriods; p++) {
-                html += `
-                    <tr style="${isAlternateDay ? 'background: #fbfcfe;' : 'background: #ffffff;'}">
-                `;
+                html += `<tr style="background: #ffffff;">`;
 
                 // Cột Thứ gộp dòng (rowspan)
                 if (p === 0) {
                     html += `
-                        <td rowspan="${maxPeriods}" style="text-align: center; vertical-align: middle; font-weight: 800; background: ${isAlternateDay ? '#f1f5f9' : '#e2e8f0'}; color: #0f172a; border-right: 1px solid #cbd5e1; border-bottom: 2px solid #94a3b8; font-size: 0.82rem; padding: 4px;">
+                        <td rowspan="${maxPeriods}" style="text-align: center; vertical-align: middle; font-weight: 800; background: #f8fafc; color: #0f172a; border-right: 1px solid #cbd5e1; border-bottom: 2px solid #94a3b8; font-size: 0.82rem; padding: 4px;">
                             ${dayName}
                         </td>
                     `;
@@ -589,7 +657,7 @@ export class SmartTKBUI {
                     </td>
                 `;
 
-                // 9 Cột Lớp
+                // 9 Cột Lớp: TUYỆT ĐỐI NỀN TRẮNG (NO FILL COLOR), MÀU CHO TÊN GIÁO VIÊN
                 for (let cIdx = 0; cIdx < classes.length; cIdx++) {
                     const c = classes[cIdx];
                     const isBorderGroup = (c === '6A3' || c === '7A2' || c === '8A2');
@@ -597,38 +665,20 @@ export class SmartTKBUI {
 
                     if (cell) {
                         const shortTeacher = this.getCompactTeacherName(cell.teacher, cell.shortTeacher);
-                        const style = this.getSubjectBadgeStyle(cell.subject);
+                        const teacherColor = this.getTeacherColor(cell.teacher, cell.shortTeacher);
                         const isQuanSlot = cell.teacher && cell.teacher.includes('Nguyễn Tá Quan');
 
                         let cellContent = '';
-                        const isCleanMode = (this.masterColorMode !== 'pastel');
-
-                        // Màu chữ giáo viên chuẩn sư phạm: dịu mắt, không hoa mắt
-                        // Thầy Quan: xanh lá đậm nổi bật; Giáo viên khác: màu mực xanh học đường thanh lịch (#1d4ed8)
-                        let teacherTextColor = '#1d4ed8';
-                        if (isQuanSlot) {
-                            teacherTextColor = '#15803d'; // Xanh ngọc bích thương hiệu Thầy Quan
-                        } else if (cell.department === 'Tổ Xã Hội') {
-                            teacherTextColor = '#4338ca'; // Chàm dịu cho Tổ Xã Hội
-                        }
-
-                        // Màu nền ô: Chế độ Clean nền trắng sạch, không loang lổ nhiều màu
-                        let cellBg = isCleanMode ? '#ffffff' : style.bg;
-                        if (isQuanSlot) {
-                            cellBg = '#f0fdf4'; // Nền xanh nhạt dịu mắt cho tiết của Thầy Quan
-                        }
-
                         if (cell.subject === 'Chào Cờ' || cell.subject === 'Chào cờ') {
                             cellContent = `
-                                <div style="font-weight: 800; color: #dc2626; font-size: 0.74rem;">Chào cờ</div>
+                                <div style="font-weight: 800; color: #dc2626; font-size: 0.75rem;">Chào cờ</div>
                             `;
-                            cellBg = '#fef2f2';
                         } else {
                             cellContent = `
                                 <div style="font-weight: 700; color: #0f172a; font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25;">
                                     ${cell.subject}
                                 </div>
-                                <div style="font-weight: 800; color: ${teacherTextColor}; font-size: 0.7rem; white-space: nowrap; line-height: 1.2; margin-top: 2px;">
+                                <div style="font-weight: 800; color: ${teacherColor}; font-size: 0.72rem; white-space: nowrap; line-height: 1.2; margin-top: 1px;">
                                     ${isQuanSlot ? '⭐ ' : ''}${shortTeacher}
                                 </div>
                             `;
@@ -637,8 +687,8 @@ export class SmartTKBUI {
                         html += `
                             <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
                                 title="${cell.subject} - ${cell.teacher} (Lớp ${c}) • Bấm để chỉnh sửa / hoán đổi"
-                                style="background: ${cellBg}; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px 4px; text-align: center; cursor: pointer; height: 38px; transition: all 0.15s ease;"
-                                onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='${cellBg}'">
+                                style="background: #ffffff; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px 4px; text-align: center; cursor: pointer; height: 38px; transition: background 0.15s ease;"
+                                onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#ffffff'">
                                 ${cellContent}
                             </td>
                         `;
@@ -646,7 +696,7 @@ export class SmartTKBUI {
                         html += `
                             <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
                                 title="Ô trống (Lớp ${c}) • Bấm để gán môn"
-                                style="background: #fafafa; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px; text-align: center; cursor: pointer; height: 38px;">
+                                style="background: #ffffff; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px; text-align: center; cursor: pointer; height: 38px;">
                                 <span style="color: #cbd5e1; font-size: 0.65rem;">—</span>
                             </td>
                         `;
@@ -676,7 +726,7 @@ export class SmartTKBUI {
                             </h3>
                         </div>
                         <p style="margin: 0.2rem 0 0 0; font-size: 0.8rem; color: #64748b;">
-                            Hiển thị đầy đủ Họ tên Thầy Cô, Phòng học chức năng và công cụ chỉnh sửa chuyên sâu.
+                            Hiển thị đầy đủ Họ tên Thầy Cô, Phòng học chức năng và công cụ chỉnh sửa chuyên sâu theo từng Lớp.
                         </p>
                     </div>
 
@@ -713,7 +763,7 @@ export class SmartTKBUI {
         for (const c of filteredClasses) {
             const isQuanClass = (c === '8A1');
             html += `
-                <div style="border: 1px solid ${isQuanClass ? '#93c5fd' : '#e2e8f0'}; border-radius: 8px; padding: 0.85rem; background: ${isQuanClass ? '#f8faff' : '#fcfcfc'};">
+                <div style="border: 1px solid ${isQuanClass ? '#93c5fd' : '#e2e8f0'}; border-radius: 8px; padding: 0.85rem; background: #ffffff;">
                     <div style="font-weight: 800; color: ${isQuanClass ? '#1d4ed8' : '#0f172a'}; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem;">
                             <span>🎒</span> <span>LỚP ${c}</span>
@@ -724,7 +774,7 @@ export class SmartTKBUI {
                         </button>
                     </div>
                     <div style="overflow-x: auto;">
-                        <table class="tkb-table" style="font-size: 0.74rem; min-width: 650px; margin: 0;">
+                        <table class="tkb-table" style="font-size: 0.74rem; min-width: 650px; margin: 0; background: #ffffff;">
                             <thead>
                                 <tr>
                                     <th style="width: 50px;">Tiết</th>
@@ -735,29 +785,29 @@ export class SmartTKBUI {
             `;
 
             for (let p = 0; p < this.engine.PERIODS.length; p++) {
-                html += `<tr><td class="period-label-col" style="padding: 0.25rem; font-weight: 800;">T${p + 1}</td>`;
+                html += `<tr><td class="period-label-col" style="padding: 0.25rem; font-weight: 800; background: #f8fafc;">T${p + 1}</td>`;
                 for (let d = 0; d < this.engine.DAYS.length; d++) {
                     const cell = this.engine.timetable[c] && this.engine.timetable[c][d] ? this.engine.timetable[c][d][p] : null;
                     if (cell) {
-                        const style = this.getSubjectBadgeStyle(cell.subject);
                         const isQuanSlot = cell.teacher && cell.teacher.includes('Nguyễn Tá Quan');
+                        const teacherColor = this.getTeacherColor(cell.teacher, cell.shortTeacher);
                         const roomBadge = cell.room ? `<span style="font-size: 0.62rem; color: #64748b;">(${cell.room.replace('room_', '')})</span>` : '';
 
                         html += `
-                            <td style="padding: 0.3rem; height: 42px; cursor: pointer; background: ${isQuanSlot ? '#f0fdf4' : style.bg}; border: 1px solid #e2e8f0;"
+                            <td style="padding: 0.3rem; height: 42px; cursor: pointer; background: #ffffff; border: 1px solid #e2e8f0;"
                                 onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
                                 title="${cell.subject} • ${cell.teacher}">
                                 <div style="font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     ${cell.subject} ${roomBadge}
                                 </div>
-                                <div style="font-size: 0.68rem; color: ${isQuanSlot ? '#15803d' : '#475569'}; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <div style="font-size: 0.7rem; color: ${teacherColor}; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     ${isQuanSlot ? '⭐ ' : ''}${cell.teacher}
                                 </div>
                             </td>
                         `;
                     } else {
                         html += `
-                            <td style="padding: 0.3rem; height: 42px; cursor: pointer; background: #fafafa;"
+                            <td style="padding: 0.3rem; height: 42px; cursor: pointer; background: #ffffff;"
                                 onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})">
                                 <span style="color: #cbd5e1; font-size: 0.7rem;">Trống</span>
                             </td>
