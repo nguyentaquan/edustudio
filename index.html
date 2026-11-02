@@ -7,7 +7,8 @@
     <meta name="description" content="Kho bài giảng PPT, Kho trò chơi, Kho đề và Kho video phục vụ cộng đồng giáo viên Việt Nam.">
     <!-- Xóa sạch Cache cũ & Hủy Service Worker ngay lập tức -->
     
-    <link rel="stylesheet" href="css/style.css?v=3.5.4">
+    <link rel="stylesheet" href="css/style.css?v=3.5.5">
+    <link rel="stylesheet" href="css/tkb-styles.css?v=3.5.5">
     <meta name="theme-color" content="#1d4ed8">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1d4ed8">
@@ -97,6 +98,12 @@
                     <span>🏠</span> <span>Trang Chủ</span>
                 </button>
 
+                <!-- 1.5 Xếp TKB Toàn Trường Bằng AI (GDPT 2018) -->
+                <button class="h-nav-btn" data-tab="tkb" style="border-bottom: 2px solid #3b82f6;">
+                    <span>📅</span> <span>Xếp TKB Trường</span>
+                    <span style="font-size: 0.65rem; background: #eff6ff; color: #1d4ed8; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 800; border: 1px solid #bfdbfe;">AI 2018</span>
+                </button>
+
                 <!-- 2. Kho Trò Chơi -->
                 <button class="h-nav-btn" data-tab="games">
                     <span>🎮</span> <span>Kho Trò Chơi</span>
@@ -157,6 +164,12 @@
         <!-- 4.1 THANH DỌC MỎNG DÀNH RIÊNG CHO THIẾT KẾ & BIÊN SOẠN STUDIO (68px) -->
         <aside class="design-sidebar-slim">
             <div class="sidebar-header-label">Thiết kế</div>
+
+            <!-- 0. Xếp TKB Toàn Trường Bằng AI -->
+            <button class="btn-tool-slim" data-tool="tool-tkb" title="Xưởng Xếp Thời Khóa Biểu Toàn Trường Bằng AI">
+                <span class="icon">📅</span>
+                <span class="label">Xếp TKB</span>
+            </button>
 
             <!-- 1. Tạo Trò Chơi -->
             <button class="btn-tool-slim" id="btnSidebarCreateGame" data-tool="tool-game" title="Thiết kế & Tạo trò chơi mới">
@@ -2295,6 +2308,166 @@
                 </div>
             </section>
 
+
+            <!-- --------------------------------------------------------------
+                 TAB TKB: XƯỞNG XẾP THỜI KHÓA BIỂU TOÀN TRƯỜNG THÔNG MINH GDPT 2018
+                 -------------------------------------------------------------- -->
+            <section id="pane-tkb" class="tab-pane-content">
+                <div class="tkb-container">
+                    <!-- HEADER CARD -->
+                    <div class="tkb-header-card">
+                        <div class="tkb-header-left">
+                            <div class="tkb-header-icon">📅</div>
+                            <div class="tkb-header-titles">
+                                <h2>
+                                    <span>XƯỞNG XẾP THỜI KHÓA BIỂU TOÀN TRƯỜNG GDPT 2018</span>
+                                    <span style="font-size: 0.65rem; background: #3b82f6; color: #ffffff; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 800;">AI CSP SOLVER</span>
+                                </h2>
+                                <p>Tự động tối ưu hóa tổ hợp & giải quyết đa chiều: Tránh trùng GV, phân bổ phòng bộ môn, triệt tiêu tiết chết, kết nối trực tiếp Kế hoạch bài dạy 5512.</p>
+                            </div>
+                        </div>
+
+                        <div class="tkb-header-actions">
+                            <button id="btnTKBAutoSolve" class="btn-tkb-action btn-tkb-primary" title="Chạy thuật toán AI xếp lịch tự động toàn trường">
+                                <span>⚡</span> <span>Xếp Lịch Tự Động (AI)</span>
+                            </button>
+                            <button id="btnTKBLoadSample" class="btn-tkb-action btn-tkb-secondary" title="Nạp lại dữ liệu phân công chuyên môn mẫu trường THCS">
+                                <span>📁</span> <span>Dữ Liệu Mẫu THCS</span>
+                            </button>
+                            <button id="btnTKBExportExcel" class="btn-tkb-action btn-tkb-gold" title="Xuất bảng thời khóa biểu ra file Excel CSV">
+                                <span>📥</span> <span>Xuất Excel (.csv)</span>
+                            </button>
+                            <button id="btnTKBPrint" class="btn-tkb-action btn-tkb-secondary" title="In Thời khóa biểu chuẩn A4">
+                                <span>🖨️</span> <span>In Lịch A4</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SUB-NAV 4 TAB NGHIỆP VỤ -->
+                    <div class="tkb-subnav-bar">
+                        <button class="btn-tkb-subnav active" data-subtab="board">
+                            <span>📅</span> <span>Bàn Cờ TKB & AI Điều Hành</span>
+                        </button>
+                        <button class="btn-tkb-subnav" data-subtab="pccm">
+                            <span>📋</span> <span>Phân Công Chuyên Môn (PCCM)</span>
+                        </button>
+                        <button class="btn-tkb-subnav" data-subtab="config">
+                            <span>🏫</span> <span>Khối Lớp & Phòng Bộ Môn</span>
+                        </button>
+                        <button class="btn-tkb-subnav" data-subtab="stats">
+                            <span>📊</span> <span>Thống Kê & Quét Xung Đột</span>
+                        </button>
+                    </div>
+
+                    <!-- TAB 1: BÀN CỜ ĐIỀU HÀNH TKB (ACTIVE) -->
+                    <div id="tkb-pane-board" class="tkb-tab-pane active">
+                        <div class="tkb-board-wrapper">
+                            <!-- THANH ĐIỀU KHIỂN GÓC NHÌN -->
+                            <div class="tkb-board-top-controls">
+                                <div class="tkb-view-selector-group">
+                                    <span style="font-size: 0.8rem; font-weight: 700; color: #64748b;">Góc Nhìn:</span>
+                                    <button class="tkb-view-btn-pill active" data-view="class">🎒 Theo Từng Lớp</button>
+                                    <button class="tkb-view-btn-pill" data-view="teacher">👨‍🏫 Theo Từng Giáo Viên</button>
+                                    <button class="tkb-view-btn-pill" data-view="room">🏢 Theo Phòng Bộ Môn</button>
+                                    <button class="tkb-view-btn-pill" data-view="school">🏫 Bảng Tổng Hợp Toàn Trường</button>
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <select id="tkbClassSelect" class="tkb-select-filter"></select>
+                                    <select id="tkbTeacherSelect" class="tkb-select-filter" style="display: none;"></select>
+                                    <select id="tkbRoomSelect" class="tkb-select-filter" style="display: none;"></select>
+                                </div>
+                            </div>
+
+                            <!-- LƯỚI BẢNG THỜI KHÓA BIỂU -->
+                            <div id="tkbGridTableContainer" class="tkb-grid-table-container">
+                                <!-- Render động qua tkb-ui.js -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: PHÂN CÔNG CHUYÊN MÔN (PCCM) -->
+                    <div id="tkb-pane-pccm" class="tkb-tab-pane">
+                        <div class="tkb-config-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 1.05rem; color: #0f172a;">📋 Bảng Phân Công Chuyên Môn Nhà Trường</h3>
+                                    <p style="margin: 0.2rem 0 0 0; font-size: 0.8rem; color: #64748b;">Ma trận phân công giáo viên giảng dạy theo từng lớp và số tiết/tuần chuẩn GDPT 2018.</p>
+                                </div>
+                            </div>
+
+                            <div style="overflow-x: auto;">
+                                <table class="tkb-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px;">STT</th>
+                                            <th>Giáo Viên Phụ Trách</th>
+                                            <th>Môn Học</th>
+                                            <th>Lớp Học</th>
+                                            <th>Số Tiết/Tuần</th>
+                                            <th>Tiết Kép (2 tiết liền)</th>
+                                            <th>Yêu Cầu Phòng Bộ Môn</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tkbPCCMTableBody">
+                                        <!-- Render động qua tkb-ui.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: KHỐI LỚP & PHÒNG BỘ MÔN -->
+                    <div id="tkb-pane-config" class="tkb-tab-pane">
+                        <div class="tkb-config-grid">
+                            <div class="tkb-box-setting">
+                                <h3><span>🏫</span> Danh Mục Lớp Học</h3>
+                                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                                    <span style="background: #dbeafe; color: #1e40af; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Lớp 6A</span>
+                                    <span style="background: #dbeafe; color: #1e40af; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Lớp 6B</span>
+                                    <span style="background: #dbeafe; color: #1e40af; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Lớp 7A</span>
+                                    <span style="background: #dbeafe; color: #1e40af; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Lớp 7B</span>
+                                    <span style="background: #dbeafe; color: #1e40af; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Lớp 8A</span>
+                                    <span style="background: #dbeafe; color: #1e40af; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Lớp 8B</span>
+                                    <span style="background: #dbeafe; color: #1e40af; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Lớp 9A</span>
+                                    <span style="background: #dbeafe; color: #1e40af; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;">Lớp 9B</span>
+                                </div>
+                                <div style="font-size: 0.78rem; color: #64748b;">Quy mô hiện tại: <strong>8 Lớp</strong> (Học buổi sáng, 5 tiết/ngày).</div>
+                            </div>
+
+                            <div class="tkb-box-setting">
+                                <h3><span>🏢</span> Phòng Học Chức Năng (Bộ Môn)</h3>
+                                <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.82rem; color: #334155; line-height: 1.6;">
+                                    <li>💻 <strong>Phòng Tin Học:</strong> 1 Phòng (Tối đa 1 lớp/tiết)</li>
+                                    <li>🔬 <strong>Phòng Thực Hành KHTN:</strong> 1 Phòng (Tối đa 1 lớp/tiết)</li>
+                                    <li>⚽ <strong>Sân Đa Năng / Thể Chất:</strong> 1 Sân (Tối đa 2 lớp/tiết)</li>
+                                    <li>🎨 <strong>Phòng Nghệ Thuật:</strong> 1 Phòng (Âm nhạc / Mĩ thuật)</li>
+                                </ul>
+                            </div>
+
+                            <div class="tkb-box-setting">
+                                <h3><span>🔒</span> Ràng Buộc Khóa Cố Định</h3>
+                                <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.82rem; color: #334155; line-height: 1.6;">
+                                    <li>🚩 <strong>Chào cờ:</strong> Tiết 1 sáng Thứ Hai (Toàn trường).</li>
+                                    <li>👥 <strong>Sinh hoạt lớp:</strong> Tiết 5 sáng Thứ Bảy (Toàn trường).</li>
+                                    <li>⚖️ <strong>Tiết kép:</strong> Môn Tin học, KHTN, GDTC ưu tiên học 2 tiết liền nhau.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: THỐNG KÊ & QUÉT XUNG ĐỘT -->
+                    <div id="tkb-pane-stats" class="tkb-tab-pane">
+                        <div class="tkb-config-card">
+                            <h3 style="margin: 0 0 1rem 0; font-size: 1.05rem; color: #0f172a;">📊 Trạng Thái Kiểm Soát Xung Đột Sư Phạm</h3>
+                            <div id="tkbConflictStatusBox">
+                                <!-- Render động qua tkb-ui.js -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -3650,6 +3823,7 @@
                     }
 
                     var tabMap = {
+                        'tool-tkb': 'tkb',
                         'tool-ppt': 'ppt-studio',
                         'tool-lesson-plan': 'lesson-plan',
                         'tool-exam': 'exam-studio',
@@ -3701,7 +3875,7 @@
     </script>
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
-    <script type="module" src="js/app.js?v=3.5.4"></script>
+    <script type="module" src="js/app.js?v=3.5.5"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>

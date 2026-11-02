@@ -16,6 +16,7 @@ import { SpeedQuizGame } from './games/speed_quiz.js';
 import { GuessObjectGame } from './games/guess_object.js';
 import { QuestionImporter } from './studio/question_importer.js';
 import { VideoStudioScaffold } from './studio/video_scaffold.js';
+import { SmartTKBUI } from './tkb-ui.js';
 
 class EduStudioApp {
     constructor() {
@@ -1189,6 +1190,7 @@ class EduStudioApp {
         try { this.initAdminAccountModule(); } catch(e) { console.warn(e); }
         try { this.updateSelectedCounter(); } catch(e) { console.warn(e); }
         try { this.initDefaultData(); } catch(e) { console.warn(e); }
+        try { this.initTKBModule(); } catch(e) { console.warn(e); }
 
         // Mặc định ở Trang chủ
         try { this.switchTab('home'); } catch(e) { console.warn(e); }
@@ -5336,6 +5338,17 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     }
 
 
+    initTKBModule() {
+        try {
+            this.tkbUI = new SmartTKBUI(this);
+            this.tkbUI.init();
+            window.smartTKBUI = this.tkbUI;
+            console.log("Xưởng Xếp TKB Thông Minh GDPT 2018 đã sẵn sàng!");
+        } catch(e) {
+            console.warn("Lỗi khởi tạo SmartTKBUI:", e);
+        }
+    }
+
     switchTab(tabId) {
         if (this.currentTab === 'games' && tabId !== 'games') {
             this.speedQuiz.destroy();
@@ -5354,6 +5367,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         document.querySelectorAll('.btn-tool-slim').forEach(btn => {
             const tool = btn.dataset.tool;
             const matches = (tool === tabId) ||
+                (tool === 'tool-tkb' && tabId === 'tkb') ||
                 (tool === 'tool-game' && tabId === 'games') ||
                 (tool === 'tool-ppt' && tabId === 'ppt-studio') ||
                 (tool === 'tool-lesson-plan' && tabId === 'lesson-plan') ||
@@ -5369,7 +5383,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             pane.classList.toggle('active', pane.id === `pane-${tabId}`);
         });
 
-        if (tabId === 'games') {
+        if (tabId === 'tkb') {
+            if (this.tkbUI) this.tkbUI.renderCurrentView();
+        } else if (tabId === 'games') {
             this.switchGame(this.currentGameId);
             try { this.renderSecondaryGamesRepo(); } catch(e) { console.warn(e); }
             try { this.renderPreschoolGamesRepo(); } catch(e) { console.warn(e); }
@@ -6348,7 +6364,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         document.querySelectorAll('.btn-tool-slim').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const tool = e.currentTarget.dataset.tool;
-                if (tool === 'tool-game') {
+                if (tool === 'tool-tkb') {
+                    this.closeModal('gameCreatorModal');
+                    this.switchTab('tkb');
+                } else if (tool === 'tool-game') {
                     // Chuyển không gian nền sang Kho Game trước, sau đó mở modal Tạo Game
                     this.switchTab('games');
                     this.openGameCreatorModal();

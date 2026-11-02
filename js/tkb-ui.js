@@ -1,0 +1,1121 @@
+/**
+ * ==============================================================================
+ * EDUSTUDIO - GIAO DIỆN ĐIỀU HÀNH & KẾT NỐI SƯ PHẠM THỜI KHÓA BIỂU TOÀN TRƯỜNG
+ * (HOÀN TOÀN TƯƠNG TÁC: CHỈNH SỬA TRỰC TIẾP, HOÁN ĐỔI 1 CHẠM, THÊM SỬA XÓA)
+ * ==============================================================================
+ * Tác giả & Chủ quản: Thầy Nguyễn Tá Quan
+ * Bản quyền: Hệ sinh thái EduStudio v3.5.0 GDMN & GDPT
+ * ==============================================================================
+ */
+
+import { SmartTKBEngine } from './tkb-engine.js';
+
+export class SmartTKBUI {
+    constructor(appInstance) {
+        this.app = appInstance;
+        this.engine = new SmartTKBEngine();
+
+        // Gán ngay lập tức vào window để mọi nút bấm HTML luôn tìm thấy
+        window.smartTKBUI = this;
+
+        this.currentSubTab = 'board'; // 'board', 'pccm', 'config', 'stats'
+        this.currentViewMode = 'class'; // 'class', 'teacher', 'room', 'school'
+        this.selectedClass = '8A';
+        this.selectedTeacher = 'Thầy Nguyễn Tá Quan';
+        this.selectedRoom = 'room_tin';
+
+        // Trạng thái hoán đổi 1 chạm (Click-to-Swap)
+        this.swapSource = null; // { classId, day, period }
+        this.editingSlot = null; // { classId, day, period, cell }
+        this.editingPCCMIndex = -1; // -1: thêm mới, >= 0: sửa
+    }
+
+    /**
+     * Khởi tạo và gắn các sự kiện điều khiển
+     */
+    init() {
+        // Tự động xếp lịch lần đầu bằng AI
+        this.engine.solveAutomatic();
+
+        // Gắn sự kiện chuyển subnav tab
+        document.querySelectorAll('.btn-tkb-subnav').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const subtab = e.currentTarget.dataset.subtab;
+                this.switchSubTab(subtab);
+            });
+        });
+
+        // Gắn sự kiện các nút chính trên Header
+        document.getElementById('btnTKBAutoSolve')?.addEventListener('click', () => {
+            this.handleAutoSolve();
+        });
+
+        document.getElementById('btnTKBLoadSample')?.addEventListener('click', () => {
+            this.engine.loadDefaultSampleData();
+            this.engine.solveAutomatic();
+            this.renderCurrentView();
+            this.renderPCCMTable();
+            this.renderStats();
+            this.showToast('✅ Đã nạp lại dữ liệu mẫu chuẩn thực tế THCS & chạy AI xếp lịch thành công!');
+        });
+
+        document.getElementById('btnTKBExportExcel')?.addEventListener('click', () => {
+            this.exportToExcel();
+        });
+
+        document.getElementById('btnTKBPrint')?.addEventListener('click', () => {
+            this.printTimetable();
+        });
+
+        // Gắn sự kiện cho các nút chọn góc nhìn
+        document.querySelectorAll('.tkb-view-btn-pill').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tkb-view-btn-pill').forEach(b => b.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                this.currentViewMode = e.currentTarget.dataset.view;
+                this.cancelSwapMode();
+                this.updateFilterControls();
+                this.renderCurrentView();
+            });
+        });
+
+        // Gắn sự kiện bộ lọc Lớp / Giáo viên / Phòng
+        document.getElementById('tkbClassSelect')?.addEventListener('change', (e) => {
+            this.selectedClass = e.target.value;
+            this.cancelSwapMode();
+            this.renderCurrentView();
+        });
+
+        document.getElementById('tkbTeacherSelect')?.addEventListener('change', (e) => {
+            this.selectedTeacher = e.target.value;
+            this.cancelSwapMode();
+            this.renderCurrentView();
+        });
+
+        document.getElementById('tkbRoomSelect')?.addEventListener('change', (e) => {
+            this.selectedRoom = e.target.value;
+            this.cancelSwapMode();
+            this.renderCurrentView();
+        });
+
+        // Render lần đầu
+        this.updateFilterControls();
+        this.renderCurrentView();
+        this.renderPCCMTable();
+        this.renderConfigTab();
+        this.renderStats();
+    }
+
+    /**
+     * Chuyển đổi giữa 4 Sub-Tabs nghiệp vụ
+     */
+    switchSubTab(subtabId) {
+        this.currentSubTab = subtabId;
+        this.cancelSwapMode();
+
+        document.querySelectorAll('.btn-tkb-subnav').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.subtab === subtabId);
+        });
+
+        document.querySelectorAll('.tkb-tab-pane').forEach(pane => {
+            pane.classList.toggle('active', pane.id === `tkb-pane-${subtabId}`);
+        });
+
+        if (subtabId === 'board') {
+            this.renderCurrentView();
+        } else if (subtabId === 'pccm') {
+            this.renderPCCMTable();
+        } else if (subtabId === 'config') {
+            this.renderConfigTab();
+        } else if (subtabId === 'stats') {
+            this.renderStats();
+        }
+    }
+
+    /**
+     * Cập nhật các menu chọn (Dropdown) theo chế độ xem
+     */
+    updateFilterControls() {
+        const classSelect = document.getElementById('tkbClassSelect');
+        const teacherSelect = document.getElementById('tkbTeacherSelect');
+        const roomSelect = document.getElementById('tkbRoomSelect');
+
+        if (!classSelect || !teacherSelect || !roomSelect) return;
+
+        classSelect.style.display = 'none';
+        teacherSelect.style.display = 'none';
+        roomSelect.style.display = 'none';
+
+        if (this.currentViewMode === 'class') {
+            classSelect.style.display = 'inline-block';
+            classSelect.innerHTML = this.engine.classes.map(c => 
+                `<option value="${c}" ${c === this.selectedClass ? 'selected' : ''}>Lớp ${c}</option>`
+            ).join('');
+        } else if (this.currentViewMode === 'teacher') {
+            teacherSelect.style.display = 'inline-block';
+            const teachers = this.engine.getAllTeachers();
+            teacherSelect.innerHTML = teachers.map(t => 
+                `<option value="${t}" ${t === this.selectedTeacher ? 'selected' : ''}>👨‍🏫 ${t}</option>`
+            ).join('');
+        } else if (this.currentViewMode === 'room') {
+            roomSelect.style.display = 'inline-block';
+            roomSelect.innerHTML = this.engine.specialRooms.map(r => 
+                `<option value="${r.id}" ${r.id === this.selectedRoom ? 'selected' : ''}>${r.icon} ${r.name}</option>`
+            ).join('');
+        }
+    }
+
+    /**
+     * Chạy thuật toán AI xếp lịch tự động & báo cáo thời gian thực
+     */
+    handleAutoSolve() {
+        const btn = document.getElementById('btnTKBAutoSolve');
+        if (btn) btn.innerHTML = `<span>⏳</span> <span>Đang Tối Ưu Hóa...</span>`;
+
+        setTimeout(() => {
+            const result = this.engine.solveAutomatic();
+            if (btn) btn.innerHTML = `<span>⚡</span> <span>Xếp Lịch Tự Động (AI)</span>`;
+
+            if (result.success) {
+                this.showToast(`🎉 AI xếp lịch thành công 100%! Đã phân bổ ${result.assignedCount} tiết trong ${result.executionMs}ms (Không trùng lặp).`);
+            } else {
+                this.showToast(`⚠️ AI đã xếp được ${result.assignedCount}/${result.totalLessons} tiết. Còn ${result.unassignedCount} tiết bị nghẽn ràng buộc.`);
+            }
+
+            this.cancelSwapMode();
+            this.renderCurrentView();
+            this.renderStats();
+        }, 150);
+    }
+
+    /**
+     * Render bảng TKB theo chế độ góc nhìn hiện tại
+     */
+    renderCurrentView() {
+        const container = document.getElementById('tkbGridTableContainer');
+        if (!container) return;
+
+        if (this.currentViewMode === 'class') {
+            this.renderClassView(container);
+        } else if (this.currentViewMode === 'teacher') {
+            this.renderTeacherView(container);
+        } else if (this.currentViewMode === 'room') {
+            this.renderRoomView(container);
+        } else if (this.currentViewMode === 'school') {
+            this.renderSchoolMasterView(container);
+        }
+    }
+
+    /**
+     * GÓC NHÌN 1: THEO TỪNG LỚP HỌC (Ví dụ Lớp 8A)
+     */
+    renderClassView(container) {
+        const classId = this.selectedClass;
+        const isSwapping = !!this.swapSource && this.swapSource.classId === classId;
+
+        let swapBanner = '';
+        if (isSwapping) {
+            const src = this.swapSource;
+            swapBanner = `
+                <div style="background: #fffbeb; border: 2px dashed #f59e0b; border-radius: 8px; padding: 0.6rem 1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="color: #b45309; font-weight: 700; font-size: 0.85rem;">
+                        🔄 ĐANG CHỌN TIẾT: <strong>${this.engine.DAYS[src.day]} - Tiết ${src.period + 1}</strong>. Hãy bấm vào ô đích bất kỳ để hoán đổi!
+                    </div>
+                    <button onclick="window.smartTKBUI.cancelSwapMode()" style="background: #ef4444; color: #fff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.78rem;">
+                        ✖ Hủy Hoán Đổi
+                    </button>
+                </div>
+            `;
+        }
+
+        let html = `
+            ${swapBanner}
+            <div style="margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="font-weight: 800; font-size: 1.05rem; color: #1e293b;">
+                    🎒 Thời Khóa Biểu: <span style="color: #1d4ed8;">LỚP ${classId}</span>
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; background: #f1f5f9; padding: 0.25rem 0.75rem; border-radius: 6px;">
+                    👉 <strong>Bấm vào bất kỳ ô nào</strong> để: <span style="color: #1d4ed8; font-weight: 700;">Chỉnh sửa môn • Đổi giáo viên • Hoán đổi tiết • Mở Giáo án 5512</span>
+                </div>
+            </div>
+            <table class="tkb-table">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">Tiết</th>
+                        ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        for (let p = 0; p < this.engine.PERIODS.length; p++) {
+            html += `<tr>`;
+            html += `<td class="period-label-col">Tiết ${p + 1}</td>`;
+
+            for (let d = 0; d < this.engine.DAYS.length; d++) {
+                const cell = this.engine.timetable[classId][d][p];
+                const isSelectedForSwap = isSwapping && this.swapSource.day === d && this.swapSource.period === p;
+                const swapStyle = isSelectedForSwap ? 'box-shadow: 0 0 0 3px #f59e0b; transform: scale(1.02);' : '';
+
+                if (cell) {
+                    const roomDef = cell.room ? this.engine.specialRooms.find(r => r.id === cell.room) : null;
+                    const isFixedClass = cell.isFixed ? 'slot-fixed' : '';
+                    
+                    html += `
+                        <td onclick="window.smartTKBUI.handleCellClick('${classId}', ${d}, ${p})">
+                            <div class="tkb-slot-card ${isFixedClass}" 
+                                 style="border-left-color: ${cell.color || '#1d4ed8'}; ${swapStyle}"
+                                 title="Bấm để chỉnh sửa môn, đổi giáo viên hoặc mở Giáo án 5512">
+                                <div class="tkb-slot-subject">
+                                    <span>${cell.subject}</span>
+                                    ${cell.isDouble ? '<span class="tkb-badge-double" title="Tiết Kép (2 tiết)">Kép</span>' : ''}
+                                </div>
+                                <div class="tkb-slot-teacher">👨‍🏫 ${cell.teacher}</div>
+                                ${roomDef ? `<div class="tkb-slot-badges"><span class="tkb-badge-room">${roomDef.icon} ${roomDef.name}</span></div>` : ''}
+                            </div>
+                        </td>
+                    `;
+                } else {
+                    html += `
+                        <td onclick="window.smartTKBUI.handleCellClick('${classId}', ${d}, ${p})">
+                            <div class="tkb-slot-card slot-empty" style="${swapStyle}" title="Bấm để thêm tiết dạy vào ô này">
+                                <span>➕ Thêm tiết</span>
+                            </div>
+                        </td>
+                    `;
+                }
+            }
+            html += `</tr>`;
+        }
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    /**
+     * GÓC NHÌN 2: THEO TỪNG GIÁO VIÊN
+     */
+    renderTeacherView(container) {
+        const teacherName = this.selectedTeacher;
+        const grid = this.engine.getTeacherTimetable(teacherName);
+
+        let totalPeriods = 0;
+        for (let d = 0; d < this.engine.DAYS.length; d++) {
+            for (let p = 0; p < this.engine.PERIODS.length; p++) {
+                if (grid[d][p]) totalPeriods++;
+            }
+        }
+
+        let html = `
+            <div style="margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="font-weight: 800; font-size: 1.05rem; color: #1e293b;">
+                    👨‍🏫 Thời Khóa Biểu Giảng Dạy: <span style="color: #1d4ed8;">${teacherName}</span>
+                </div>
+                <div style="background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 700; font-size: 0.8rem; border: 1px solid #bfdbfe;">
+                    Tổng số tiết dạy: <strong>${totalPeriods} tiết/tuần</strong>
+                </div>
+            </div>
+            <table class="tkb-table">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">Tiết</th>
+                        ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        for (let p = 0; p < this.engine.PERIODS.length; p++) {
+            html += `<tr>`;
+            html += `<td class="period-label-col">Tiết ${p + 1}</td>`;
+
+            for (let d = 0; d < this.engine.DAYS.length; d++) {
+                const cell = grid[d][p];
+                if (cell) {
+                    const roomDef = cell.room ? this.engine.specialRooms.find(r => r.id === cell.room) : null;
+                    html += `
+                        <td onclick="window.smartTKBUI.handleCellClick('${cell.classId}', ${d}, ${p})">
+                            <div class="tkb-slot-card" style="border-left-color: ${cell.color || '#1d4ed8'};"
+                                 title="Bấm để xem/chỉnh sửa hoặc mở Giáo án 5512">
+                                <div class="tkb-slot-subject">
+                                    <span>${cell.subject}</span>
+                                    <span style="background: #dbeafe; color: #1e40af; font-size: 0.68rem; padding: 0.1rem 0.35rem; border-radius: 4px; font-weight: 700;">Lớp ${cell.classId}</span>
+                                </div>
+                                <div class="tkb-slot-teacher">🏫 Phòng Lớp ${cell.classId}</div>
+                                ${roomDef ? `<div class="tkb-slot-badges"><span class="tkb-badge-room">${roomDef.icon} ${roomDef.name}</span></div>` : ''}
+                            </div>
+                        </td>
+                    `;
+                } else {
+                    html += `
+                        <td>
+                            <div class="tkb-slot-card slot-empty" style="opacity: 0.4;">
+                                <span>- Nghỉ -</span>
+                            </div>
+                        </td>
+                    `;
+                }
+            }
+            html += `</tr>`;
+        }
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    /**
+     * GÓC NHÌN 3: THEO PHÒNG BỘ MÔN
+     */
+    renderRoomView(container) {
+        const roomId = this.selectedRoom;
+        const roomDef = this.engine.specialRooms.find(r => r.id === roomId);
+        const grid = this.engine.getRoomTimetable(roomId);
+
+        let html = `
+            <div style="margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 800; font-size: 1.05rem; color: #1e293b;">
+                    🏢 Lịch Hoạt Động: <span style="color: #0369a1;">${roomDef.icon} ${roomDef.name}</span>
+                </div>
+                <div style="font-size: 0.78rem; color: #64748b;">
+                    Sức chứa: <strong>${roomDef.capacity} lớp/tiết</strong>
+                </div>
+            </div>
+            <table class="tkb-table">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">Tiết</th>
+                        ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        for (let p = 0; p < this.engine.PERIODS.length; p++) {
+            html += `<tr>`;
+            html += `<td class="period-label-col">Tiết ${p + 1}</td>`;
+
+            for (let d = 0; d < this.engine.DAYS.length; d++) {
+                const classesInRoom = grid[d][p];
+                if (classesInRoom && classesInRoom.length > 0) {
+                    html += `<td>`;
+                    for (const item of classesInRoom) {
+                        html += `
+                            <div class="tkb-slot-card" style="border-left-color: #0369a1; margin-bottom: 0.25rem;"
+                                 onclick="window.smartTKBUI.handleCellClick('${item.classId}', ${d}, ${p})">
+                                <div class="tkb-slot-subject">
+                                    <span>Lớp ${item.classId}</span>
+                                    <span style="font-size: 0.7rem; color: #475569;">${item.subject}</span>
+                                </div>
+                                <div class="tkb-slot-teacher">👨‍🏫 ${item.teacher}</div>
+                            </div>
+                        `;
+                    }
+                    html += `</td>`;
+                } else {
+                    html += `
+                        <td>
+                            <div class="tkb-slot-card slot-empty">
+                                <span>Phòng trống</span>
+                            </div>
+                        </td>
+                    `;
+                }
+            }
+            html += `</tr>`;
+        }
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    /**
+     * GÓC NHÌN 4: TOÀN TRƯỜNG TỔNG HỢP
+     */
+    renderSchoolMasterView(container) {
+        let html = `
+            <div style="margin-bottom: 0.75rem;">
+                <div style="font-weight: 800; font-size: 1.05rem; color: #1e293b;">
+                    🏫 Bảng Tổng Hợp Thời Khóa Biểu Toàn Trường (Tất cả ${this.engine.classes.length} Lớp)
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        `;
+
+        for (const c of this.engine.classes) {
+            html += `
+                <div style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.75rem; background: #f8fafc;">
+                    <div style="font-weight: 700; color: #1d4ed8; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+                        <span>LỚP ${c}</span>
+                        <button onclick="window.smartTKBUI.switchToClassView('${c}')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:4px; padding:0.1rem 0.5rem; font-size:0.75rem; font-weight:700; cursor:pointer;">
+                            🔍 Phóng To & Chỉnh Sửa
+                        </button>
+                    </div>
+                    <table class="tkb-table" style="font-size: 0.72rem; min-width: 600px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Tiết</th>
+                                ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            for (let p = 0; p < this.engine.PERIODS.length; p++) {
+                html += `<tr><td class="period-label-col" style="padding: 0.2rem;">T${p + 1}</td>`;
+                for (let d = 0; d < this.engine.DAYS.length; d++) {
+                    const cell = this.engine.timetable[c][d][p];
+                    if (cell) {
+                        html += `
+                            <td style="padding: 0.2rem; height: 38px; cursor: pointer;" onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})">
+                                <div style="font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${cell.subject}</div>
+                                <div style="font-size: 0.65rem; color: #64748b;">${cell.teacher}</div>
+                            </td>
+                        `;
+                    } else {
+                        html += `<td style="padding: 0.2rem; background: #ffffff; color: #cbd5e1; text-align: center; cursor: pointer;" onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})">+</td>`;
+                    }
+                }
+                html += `</tr>`;
+            }
+
+            html += `</tbody></table></div>`;
+        }
+
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    switchToClassView(classId) {
+        this.selectedClass = classId;
+        this.currentViewMode = 'class';
+        document.querySelectorAll('.tkb-view-btn-pill').forEach(b => {
+            b.classList.toggle('active', b.dataset.view === 'class');
+        });
+        this.updateFilterControls();
+        this.renderCurrentView();
+    }
+
+    /**
+     * XỬ LÝ CLICK VÀO Ô TIẾT HỌC:
+     * - Nếu đang ở chế độ Hoán đổi -> thực hiện hoán đổi ngay lập tức!
+     * - Nếu bình thường -> mở Modal Chỉnh Sửa / Gán Tiết Sư Phạm!
+     */
+    handleCellClick(classId, day, period) {
+        // 1. Nếu đang trong chế độ Hoán đổi 1 chạm
+        if (this.swapSource) {
+            const src = this.swapSource;
+            // Nếu bấm lại chính ô đó -> hủy
+            if (src.classId === classId && src.day === day && src.period === period) {
+                this.cancelSwapMode();
+                return;
+            }
+
+            // Hoán đổi
+            const res = this.engine.swapSlots(classId, src.day, src.period, day, period);
+            if (res.success) {
+                this.showToast(`✅ Đã hoán đổi thành công giữa Tiết ${src.period + 1} (${this.engine.DAYS[src.day]}) và Tiết ${period + 1} (${this.engine.DAYS[day]})!`);
+            } else {
+                alert(`⚠️ Không thể hoán đổi: ${res.reason}`);
+            }
+
+            this.cancelSwapMode();
+            this.renderCurrentView();
+            this.renderStats();
+            return;
+        }
+
+        // 2. Mở Modal Chỉnh Sửa Tiết Học
+        this.openSlotEditModal(classId, day, period);
+    }
+
+    cancelSwapMode() {
+        this.swapSource = null;
+        const container = document.getElementById('tkbGridTableContainer');
+        if (container && this.currentViewMode === 'class') {
+            this.renderClassView(container);
+        }
+    }
+
+    /**
+     * MỞ MODAL CHỈNH SỬA / GÁN TIẾT HỌC
+     */
+    openSlotEditModal(classId, day, period) {
+        const cell = this.engine.timetable[classId][day][period];
+        this.editingSlot = { classId, day, period, cell };
+
+        let modal = document.getElementById('tkbSlotEditModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'tkbSlotEditModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+                backdrop-filter: blur(4px); z-index: 999999; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        const isFixed = cell && cell.isFixed;
+        const currentSub = cell ? cell.subject : '';
+        const currentTeacher = cell ? cell.teacher : '';
+        const currentRoom = cell ? (cell.room || '') : '';
+        const isDouble = cell ? !!cell.isDouble : false;
+
+        const teachers = this.engine.getAllTeachers();
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 14px; width: 100%; max-width: 520px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow: hidden; animation: popIn 0.2s ease;">
+                <!-- HEADER MODAL -->
+                <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 1rem 1.25rem; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <span style="font-size: 1.3rem;">✏️</span>
+                        <div>
+                            <div style="font-weight: 800; font-size: 1rem;">Thiết Lập Tiết ${period + 1} - ${this.engine.DAYS[day]}</div>
+                            <div style="font-size: 0.75rem; color: #94a3b8;">Lớp Học: <strong style="color: #60a5fa;">Lớp ${classId}</strong></div>
+                        </div>
+                    </div>
+                    <button onclick="window.smartTKBUI.closeSlotEditModal()" style="background: transparent; border: none; color: #cbd5e1; font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
+
+                <!-- BODY MODAL -->
+                <div style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+                    ${isFixed ? `
+                        <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">
+                            🔒 Đây là Tiết Cố Định chuẩn quy định BGDĐT (${currentSub}). Bạn vẫn có thể tinh chỉnh nếu trường có kế hoạch riêng.
+                        </div>
+                    ` : ''}
+
+                    <!-- 1. CHỌN MÔN HỌC -->
+                    <div>
+                        <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">Môn Học:</label>
+                        <select id="tkbModalSubject" style="width: 100%; padding: 0.55rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; font-weight: 600;">
+                            <option value="">-- Để Trống (Không có tiết) --</option>
+                            ${this.engine.subjects.map(s => `<option value="${s.name}" ${s.name === currentSub ? 'selected' : ''}>${s.name}</option>`).join('')}
+                            <option value="Chào Cờ" ${currentSub === 'Chào Cờ' ? 'selected' : ''}>Chào Cờ</option>
+                            <option value="Sinh Hoạt Lớp" ${currentSub === 'Sinh Hoạt Lớp' ? 'selected' : ''}>Sinh Hoạt Lớp</option>
+                        </select>
+                    </div>
+
+                    <!-- 2. CHỌN GIÁO VIÊN -->
+                    <div>
+                        <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">Giáo Viên Giảng Dạy:</label>
+                        <input id="tkbModalTeacher" type="text" list="tkbTeacherDataList" value="${currentTeacher}" placeholder="Chọn hoặc nhập tên giáo viên..." style="width: 100%; padding: 0.55rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; box-sizing: border-box;">
+                        <datalist id="tkbTeacherDataList">
+                            <option value="Thầy Nguyễn Tá Quan"></option>
+                            ${teachers.map(t => `<option value="${t}"></option>`).join('')}
+                        </datalist>
+                    </div>
+
+                    <!-- 3. PHÒNG HỌC BỘ MÔN & TIẾT KÉP -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">Phòng Học Bộ Môn:</label>
+                            <select id="tkbModalRoom" style="width: 100%; padding: 0.5rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.82rem;">
+                                <option value="">Phòng Lớp Học Bình Thường</option>
+                                ${this.engine.specialRooms.map(r => `<option value="${r.id}" ${r.id === currentRoom ? 'selected' : ''}>${r.icon} ${r.name}</option>`).join('')}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">Hình thức:</label>
+                            <label style="display: flex; align-items: center; gap: 0.4rem; padding-top: 0.45rem; font-size: 0.82rem; cursor: pointer;">
+                                <input type="checkbox" id="tkbModalDouble" ${isDouble ? 'checked' : ''}>
+                                <span>Tiết Kép (2 tiết liền)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- MẮT XÍCH SƯ PHẠM EDUSTUDIO -->
+                    ${cell && cell.subject ? `
+                        <div style="border-top: 1px dashed #e2e8f0; padding-top: 0.75rem; display: flex; flex-direction: column; gap: 0.35rem;">
+                            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">🔗 MẮT XÍCH SƯ PHẠM EDUSTUDIO:</div>
+                            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                                <button onclick="window.smartTKBUI.jumpToLessonPlan('${cell.subject}', '${classId}')" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                                    📑 Soạn KHBD 5512
+                                </button>
+                                <button onclick="window.smartTKBUI.jumpToGame('${cell.subject}')" style="background: #fdf2f8; color: #be185d; border: 1px solid #fbcfe8; border-radius: 6px; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                                    🎮 Trò Chơi Khởi Động
+                                </button>
+                                <button onclick="window.smartTKBUI.jumpToExam('${cell.subject}', '${classId}')" style="background: #fefce8; color: #a16207; border: 1px solid #fef08a; border-radius: 6px; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                                    📝 Đề Kiểm Tra Chuẩn
+                                </button>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- FOOTER ACTIONS -->
+                <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div>
+                        ${cell ? `
+                            <button onclick="window.smartTKBUI.startSwapFromModal()" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 6px; padding: 0.45rem 0.75rem; font-weight: 700; font-size: 0.78rem; cursor: pointer;">
+                                🔄 Hoán Đổi Sang Tiết Khác
+                            </button>
+                        ` : ''}
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem;">
+                        ${cell ? `
+                            <button onclick="window.smartTKBUI.deleteCurrentSlot()" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; padding: 0.45rem 0.75rem; font-weight: 700; font-size: 0.78rem; cursor: pointer;">
+                                🗑️ Xóa Tiết
+                            </button>
+                        ` : ''}
+                        <button onclick="window.smartTKBUI.saveCurrentSlot()" style="background: #2563eb; color: #ffffff; border: none; border-radius: 6px; padding: 0.45rem 1.1rem; font-weight: 700; font-size: 0.82rem; cursor: pointer; box-shadow: 0 2px 6px rgba(37,99,235,0.3);">
+                            💾 Lưu Tiết Học
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        modal.style.display = 'flex';
+    }
+
+    closeSlotEditModal() {
+        const modal = document.getElementById('tkbSlotEditModal');
+        if (modal) modal.style.display = 'none';
+        this.editingSlot = null;
+    }
+
+    saveCurrentSlot() {
+        if (!this.editingSlot) return;
+        const { classId, day, period } = this.editingSlot;
+
+        const sub = document.getElementById('tkbModalSubject').value.trim();
+        const teacher = document.getElementById('tkbModalTeacher').value.trim();
+        const room = document.getElementById('tkbModalRoom').value.trim();
+        const isDouble = document.getElementById('tkbModalDouble').checked;
+
+        if (!sub) {
+            // Xóa ô
+            this.engine.setSlot(classId, day, period, null);
+            this.showToast('✅ Đã xóa tiết học thành công.');
+        } else {
+            const res = this.engine.setSlot(classId, day, period, {
+                subject: sub,
+                teacher: teacher || 'Chưa phân công',
+                room: room || null,
+                isDouble: isDouble,
+                isFixed: sub === 'Chào Cờ' || sub === 'Sinh Hoạt Lớp'
+            });
+
+            if (!res.success) {
+                alert(`⚠️ Cảnh báo xung đột: ${res.reason}`);
+                return;
+            }
+            this.showToast(`✅ Đã lưu Tiết ${period + 1} (${sub} - ${teacher}) cho Lớp ${classId}!`);
+        }
+
+        this.closeSlotEditModal();
+        this.renderCurrentView();
+        this.renderStats();
+    }
+
+    deleteCurrentSlot() {
+        if (!this.editingSlot) return;
+        const { classId, day, period } = this.editingSlot;
+        this.engine.setSlot(classId, day, period, null);
+        this.showToast('✅ Đã xóa tiết học (Để trống).');
+        this.closeSlotEditModal();
+        this.renderCurrentView();
+        this.renderStats();
+    }
+
+    startSwapFromModal() {
+        if (!this.editingSlot) return;
+        const { classId, day, period } = this.editingSlot;
+        this.swapSource = { classId, day, period };
+        this.closeSlotEditModal();
+
+        // Chuyển sang góc nhìn Lớp đó nếu đang ở góc nhìn khác
+        if (this.currentViewMode !== 'class' || this.selectedClass !== classId) {
+            this.switchToClassView(classId);
+        } else {
+            this.renderCurrentView();
+        }
+
+        this.showToast(`🔄 Đang chọn hoán đổi Tiết ${period + 1} (${this.engine.DAYS[day]}). Hãy bấm vào ô đích bất kỳ!`);
+    }
+
+    /**
+     * TAB 2: PHÂN CÔNG CHUYÊN MÔN (PCCM) - THÊM / SỬA / XÓA
+     */
+    renderPCCMTable() {
+        const tbody = document.getElementById('tkbPCCMTableBody');
+        if (!tbody) return;
+
+        // Thêm nút Thêm mới ở đầu bảng nếu chưa có
+        let tableCard = tbody.closest('.tkb-config-card');
+        if (tableCard && !document.getElementById('btnTKBAddPCCM')) {
+            const headerDiv = tableCard.querySelector('div');
+            if (headerDiv) {
+                const actionWrap = document.createElement('div');
+                actionWrap.style.cssText = 'display: flex; gap: 0.5rem;';
+                actionWrap.innerHTML = `
+                    <button id="btnTKBAddPCCM" onclick="window.smartTKBUI.openPCCMModal(-1)" style="background: #2563eb; color: #fff; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
+                        ➕ Thêm Phân Công Giáo Viên
+                    </button>
+                    <button onclick="window.smartTKBUI.handleAutoSolve()" style="background: #059669; color: #fff; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
+                        ⚡ AI Xếp Lại TKB
+                    </button>
+                `;
+                headerDiv.appendChild(actionWrap);
+            }
+        }
+
+        tbody.innerHTML = this.engine.assignments.map((a, index) => {
+            const roomDef = a.roomReq ? this.engine.specialRooms.find(r => r.id === a.roomReq) : null;
+            return `
+                <tr>
+                    <td style="text-align: center; font-weight: 700; color: #64748b;">${index + 1}</td>
+                    <td style="font-weight: 700; color: #1e293b;">${a.teacher}</td>
+                    <td><span style="font-weight: 600; color: #0f172a;">${a.subject}</span></td>
+                    <td style="text-align: center;"><span style="background: #e0e7ff; color: #3730a3; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Lớp ${a.classId}</span></td>
+                    <td style="text-align: center; font-weight: 700; color: #1d4ed8;">${a.periods} tiết/tuần</td>
+                    <td style="text-align: center;">${a.doublePeriod ? '<span class="tkb-badge-double">Có (Tiết kép)</span>' : '<span style="color: #94a3b8;">Không</span>'}</td>
+                    <td>${roomDef ? `<span class="tkb-badge-room">${roomDef.icon} ${roomDef.name}</span>` : '<span style="color: #94a3b8;">Phòng lớp</span>'}</td>
+                    <td style="text-align: center;">
+                        <button onclick="window.smartTKBUI.openPCCMModal(${index})" style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.72rem; font-weight: 700; cursor: pointer; margin-right: 0.25rem;">✏️ Sửa</button>
+                        <button onclick="window.smartTKBUI.deletePCCMRow(${index})" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.72rem; font-weight: 700; cursor: pointer;">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    openPCCMModal(index) {
+        this.editingPCCMIndex = index;
+        const assign = index >= 0 ? this.engine.assignments[index] : {
+            teacher: 'Thầy Nguyễn Tá Quan',
+            subject: 'HĐTN, HN',
+            classId: '8A',
+            periods: 3,
+            doublePeriod: false,
+            roomReq: null
+        };
+
+        let modal = document.getElementById('tkbPCCMModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'tkbPCCMModal';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+                backdrop-filter: blur(4px); z-index: 999999; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        const teachers = this.engine.getAllTeachers();
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 12px; width: 100%; max-width: 480px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow: hidden;">
+                <div style="background: #1e293b; padding: 1rem; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-weight: 800; font-size: 0.95rem;">${index >= 0 ? '✏️ Chỉnh Sửa Phân Công' : '➕ Thêm Phân Công Giáo Viên Mới'}</div>
+                    <button onclick="document.getElementById('tkbPCCMModal').style.display='none'" style="background: transparent; border: none; color: #fff; font-size: 1.3rem; cursor: pointer;">&times;</button>
+                </div>
+                <div style="padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155;">Họ Tên Giáo Viên:</label>
+                        <input id="pccmTeacher" type="text" list="pccmTeacherList" value="${assign.teacher}" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;">
+                        <datalist id="pccmTeacherList">${teachers.map(t => `<option value="${t}">`).join('')}</datalist>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155;">Môn Học:</label>
+                        <select id="pccmSubject" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                            ${this.engine.subjects.map(s => `<option value="${s.name}" ${s.name === assign.subject ? 'selected' : ''}>${s.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155;">Lớp Học:</label>
+                            <select id="pccmClass" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                ${this.engine.classes.map(c => `<option value="${c}" ${c === assign.classId ? 'selected' : ''}>Lớp ${c}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155;">Số Tiết/Tuần:</label>
+                            <input id="pccmPeriods" type="number" min="1" max="10" value="${assign.periods}" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155;">Phòng Học Bộ Môn:</label>
+                        <select id="pccmRoom" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                            <option value="">Phòng Lớp Học Bình Thường</option>
+                            ${this.engine.specialRooms.map(r => `<option value="${r.id}" ${r.id === assign.roomReq ? 'selected' : ''}>${r.icon} ${r.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; cursor: pointer;">
+                            <input id="pccmDouble" type="checkbox" ${assign.doublePeriod ? 'checked' : ''}>
+                            <span>Ưu tiên xếp tiết kép (2 tiết liền nhau)</span>
+                        </label>
+                    </div>
+                </div>
+                <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.75rem 1.25rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+                    <button onclick="document.getElementById('tkbPCCMModal').style.display='none'" style="background: #e2e8f0; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">Đóng</button>
+                    <button onclick="window.smartTKBUI.savePCCMRow()" style="background: #2563eb; color: #fff; border: none; padding: 0.45rem 1rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">Lưu Phân Công</button>
+                </div>
+            </div>
+        `;
+        modal.style.display = 'flex';
+    }
+
+    savePCCMRow() {
+        const teacher = document.getElementById('pccmTeacher').value.trim();
+        const subject = document.getElementById('pccmSubject').value;
+        const classId = document.getElementById('pccmClass').value;
+        const periods = parseInt(document.getElementById('pccmPeriods').value) || 1;
+        const roomReq = document.getElementById('pccmRoom').value || null;
+        const doublePeriod = document.getElementById('pccmDouble').checked;
+
+        if (!teacher) {
+            alert('Vui lòng nhập tên giáo viên!');
+            return;
+        }
+
+        const assignObj = { teacher, subject, classId, periods, roomReq, doublePeriod };
+
+        if (this.editingPCCMIndex >= 0) {
+            this.engine.updateAssignment(this.editingPCCMIndex, assignObj);
+            this.showToast('✅ Đã cập nhật phân công thành công!');
+        } else {
+            this.engine.addAssignment(assignObj);
+            this.showToast('✅ Đã thêm phân công giáo viên mới thành công!');
+        }
+
+        document.getElementById('tkbPCCMModal').style.display = 'none';
+        this.renderPCCMTable();
+        this.updateFilterControls();
+    }
+
+    deletePCCMRow(index) {
+        if (confirm(`Bạn có chắc chắn muốn xóa phân công của [${this.engine.assignments[index].teacher}] không?`)) {
+            this.engine.deleteAssignment(index);
+            this.showToast('✅ Đã xóa dòng phân công.');
+            this.renderPCCMTable();
+            this.updateFilterControls();
+        }
+    }
+
+    /**
+     * TAB 3: KHỐI LỚP & PHÒNG BỘ MÔN (CHO PHÉP THÊM/XÓA LỚP)
+     */
+    renderConfigTab() {
+        const container = document.getElementById('tkb-pane-config');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="tkb-config-grid">
+                <!-- KHỐI LỚP HỌC -->
+                <div class="tkb-box-setting">
+                    <h3><span>🏫</span> Danh Mục Lớp Học (${this.engine.classes.length} Lớp)</h3>
+                    <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                        ${this.engine.classes.map(c => `
+                            <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <span>Lớp ${c}</span>
+                                <button onclick="window.smartTKBUI.removeClass('${c}')" style="background: transparent; border: none; color: #dc2626; font-size: 0.85rem; cursor: pointer; padding: 0; line-height: 1;" title="Xóa lớp này">&times;</button>
+                            </span>
+                        `).join('')}
+                    </div>
+
+                    <div style="display: flex; gap: 0.4rem; margin-top: 0.75rem;">
+                        <input id="newClassNameInput" type="text" placeholder="Ví dụ: 8C, 9C..." style="padding: 0.4rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; width: 140px;">
+                        <button onclick="window.smartTKBUI.addNewClass()" style="background: #2563eb; color: #fff; border: none; padding: 0.4rem 0.75rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
+                            ➕ Thêm Lớp
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PHÒNG BỘ MÔN -->
+                <div class="tkb-box-setting">
+                    <h3><span>🏢</span> Phòng Học Chức Năng (Bộ Môn)</h3>
+                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.82rem; color: #334155; line-height: 1.6;">
+                        ${this.engine.specialRooms.map(r => `
+                            <li>${r.icon} <strong>${r.name}:</strong> Sức chứa ${r.capacity} lớp/tiết</li>
+                        `).join('')}
+                    </ul>
+                </div>
+
+                <!-- RÀNG BUỘC KHÓA -->
+                <div class="tkb-box-setting">
+                    <h3><span>🔒</span> Ràng Buộc Khóa Cố Định</h3>
+                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.82rem; color: #334155; line-height: 1.6;">
+                        <li>🚩 <strong>Chào cờ:</strong> Tiết 1 sáng Thứ Hai (Toàn trường).</li>
+                        <li>👥 <strong>Sinh hoạt lớp:</strong> Tiết 5 sáng Thứ Bảy (Toàn trường).</li>
+                        <li>⚖️ <strong>Tiết kép:</strong> Môn Tin học, KHTN, GDTC ưu tiên 2 tiết liền.</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+
+    addNewClass() {
+        const input = document.getElementById('newClassNameInput');
+        if (!input) return;
+        const val = input.value.trim().toUpperCase();
+        if (!val) {
+            alert('Vui lòng nhập tên lớp (ví dụ: 8C, 9C)!');
+            return;
+        }
+
+        const success = this.engine.addClass(val);
+        if (success) {
+            this.showToast(`✅ Đã thêm Lớp ${val} vào danh mục toàn trường!`);
+            input.value = '';
+            this.renderConfigTab();
+            this.updateFilterControls();
+            this.renderCurrentView();
+        } else {
+            alert('Lớp này đã tồn tại hoặc không hợp lệ!');
+        }
+    }
+
+    removeClass(className) {
+        if (confirm(`Bạn có chắc muốn xóa [Lớp ${className}] khỏi trường không?`)) {
+            this.engine.removeClass(className);
+            this.showToast(`✅ Đã xóa Lớp ${className}.`);
+            if (this.selectedClass === className) {
+                this.selectedClass = this.engine.classes[0] || '6A';
+            }
+            this.renderConfigTab();
+            this.updateFilterControls();
+            this.renderCurrentView();
+        }
+    }
+
+    /**
+     * Lối tắt Sư phạm: Nhảy sang Xưởng KHBD 5512
+     */
+    jumpToLessonPlan(subjectName, classId) {
+        this.closeSlotEditModal();
+        if (this.app && typeof this.app.switchTab === 'function') {
+            this.app.switchTab('lesson-plan');
+
+            const subjectInput = document.getElementById('lessonPlanSubject');
+            const gradeSelect = document.getElementById('lessonPlanGrade');
+            const gradeNum = classId.charAt(0);
+
+            if (gradeSelect) gradeSelect.value = `Lớp ${gradeNum}`;
+            if (subjectInput) {
+                subjectInput.value = `${subjectName} ${gradeNum} (Chuẩn SGK Kết Nối Tri Thức)`;
+            }
+
+            this.showToast(`🎯 Đã kết nối Tiết dạy [${subjectName} - Lớp ${classId}] sang Xưởng Soạn KHBD 5512!`);
+        }
+    }
+
+    jumpToGame(subjectName) {
+        this.closeSlotEditModal();
+        if (this.app && typeof this.app.switchTab === 'function') {
+            this.app.switchTab('games');
+            this.showToast(`🎮 Đã mở Kho Trò Chơi sẵn sàng cho hoạt động khởi động môn ${subjectName}!`);
+        }
+    }
+
+    jumpToExam(subjectName, classId) {
+        this.closeSlotEditModal();
+        if (this.app && typeof this.app.switchTab === 'function') {
+            this.app.switchTab('exam-studio');
+            this.showToast(`📝 Đã mở Xưởng Đề kiểm tra chuẩn hóa cho ${subjectName} Lớp ${classId}!`);
+        }
+    }
+
+    renderStats() {
+        const conflicts = this.engine.detectConflicts();
+        const conflictBox = document.getElementById('tkbConflictStatusBox');
+        if (conflictBox) {
+            if (conflicts.length === 0) {
+                conflictBox.innerHTML = `
+                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 0.75rem 1rem; color: #065f46; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.25rem;">✅</span>
+                        <div>
+                            <strong>TUYỆT VỜI: 0 XUNG ĐỘT!</strong> 
+                            <div>Thời khóa biểu hoàn toàn sạch, không có giáo viên bị trùng giờ dạy và không bị quá tải phòng bộ môn.</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                conflictBox.innerHTML = `
+                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 0.75rem 1rem; color: #991b1b;">
+                        <strong>PHÁT HIỆN ${conflicts.length} XUNG ĐỘT CẦN XỬ LÝ:</strong>
+                        <ul style="margin: 0.4rem 0 0 1rem; padding: 0; font-size: 0.82rem;">
+                            ${conflicts.map(c => `<li>${c.message}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    exportToExcel() {
+        let csvContent = "\uFEFF";
+        csvContent += `THỜI KHÓA BIỂU TOÀN TRƯỜNG - NĂM HỌC ${this.engine.schoolConfig.academicYear}\n`;
+        csvContent += `Đơn vị: ${this.engine.schoolConfig.schoolName}\n\n`;
+
+        for (const c of this.engine.classes) {
+            csvContent += `--- THỜI KHÓA BIỂU LỚP ${c} ---\n`;
+            csvContent += `Tiết,${this.engine.DAYS.join(',')}\n`;
+
+            for (let p = 0; p < this.engine.PERIODS.length; p++) {
+                let row = [`Tiết ${p + 1}`];
+                for (let d = 0; d < this.engine.DAYS.length; d++) {
+                    const cell = this.engine.timetable[c][d][p];
+                    if (cell) {
+                        row.push(`"${cell.subject} (${cell.teacher})"`);
+                    } else {
+                        row.push(`"-"`);
+                    }
+                }
+                csvContent += row.join(',') + '\n';
+            }
+            csvContent += '\n';
+        }
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `THOI_KHOA_BIEU_${this.engine.schoolConfig.academicYear.replace(/\s+/g, '')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.showToast('📥 Đã xuất file Thời khóa biểu toàn trường thành công!');
+    }
+
+    printTimetable() {
+        window.print();
+    }
+
+    showToast(msg) {
+        let toast = document.getElementById('tkbToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'tkbToast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                background: #0f172a;
+                color: #ffffff;
+                padding: 0.75rem 1.25rem;
+                border-radius: 8px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+                z-index: 999999;
+                transition: opacity 0.3s ease;
+                border-left: 4px solid #3b82f6;
+            `;
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = msg;
+        toast.style.opacity = '1';
+        toast.style.display = 'block';
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => { toast.style.display = 'none'; }, 300);
+        }, 3200);
+    }
+}
