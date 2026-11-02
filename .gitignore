@@ -1,0 +1,30 @@
+# EduStudio Git Ignore Configuration
+# Bảo mật tuyệt đối dữ liệu & Khóa API cá nhân
+gemini_config.json
+*.env
+*.key
+
+# Tệp nhật ký & rác tạm thời
+*.log
+*.tmp
+__pycache__/
+*.pyc
+
+# Dữ liệu nội bộ và cấu hình kiểm thử tạm
+check_*.py
+test_*.py
+inspect_*.py
+capture_*.py
+*.bak
+test_verified.png
+
+# Môi trường ảo Python & Node nếu có
+.venv/
+venv/
+node_modules/
+
+# Tệp hệ điều hành
+Thumbs.db
+.DS_Store
+desktop.ini
+

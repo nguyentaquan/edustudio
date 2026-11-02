@@ -1,0 +1,17 @@
+{
+  "name": "EduStudio - Nền tảng Đa phương tiện Sư phạm",
+  "short_name": "EduStudio",
+  "description": "Kho trò chơi tương tác và xưởng thiết kế video ngắn phục vụ giảng dạy",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+
