@@ -1,17 +1,30 @@
 {
-  "name": "EduStudio - Nền tảng Đa phương tiện Sư phạm",
+  "name": "EduStudio - Cổng Đa Phương Tiện Sư Phạm",
   "short_name": "EduStudio",
-  "description": "Kho trò chơi tương tác và xưởng thiết kế video ngắn phục vụ giảng dạy",
-  "start_url": "index.html",
+  "description": "Nền tảng công nghệ giáo dục đa phương tiện chuẩn GDMN & GDPT 2018 - Thầy Nguyễn Tá Quan",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "orientation": "any",
+  "background_color": "#0b1120",
+  "theme_color": "#1d4ed8",
   "icons": [
     {
       "src": "assets/icon-192.png",
       "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png"
     }
   ]
 }
-

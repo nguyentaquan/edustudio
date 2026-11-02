@@ -6,22 +6,17 @@
     <title>EduStudio - Nền Tảng Đa Phương Tiện Sư Phạm Mở</title>
     <meta name="description" content="Kho bài giảng PPT, Kho trò chơi, Kho đề và Kho video phục vụ cộng đồng giáo viên Việt Nam.">
     <!-- Xóa sạch Cache cũ & Hủy Service Worker ngay lập tức -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                }
-            });
-            if (window.caches) {
-                caches.keys().then(function(names) {
-                    for (let name of names) caches.delete(name);
-                });
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="css/style.css?v=3.5.3">
+    
+    <link rel="stylesheet" href="css/style.css?v=3.5.4">
     <meta name="theme-color" content="#1d4ed8">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1d4ed8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EduStudio">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
 </head>
 <body>
 
@@ -3412,20 +3407,7 @@
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                }
-            });
-            if (window.caches) {
-                caches.keys().then(function(names) {
-                    for (let name of names) caches.delete(name);
-                });
-            }
-        }
-    </script>
+    
 
     <!-- Nạp Ứng Dụng Module Chính (v2.6.0) -->
     
@@ -3719,7 +3701,25 @@
     </script>
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
-    <script type="module" src="js/app.js?v=3.5.3"></script>
+    <script type="module" src="js/app.js?v=3.5.4"></script>
 
+    <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                    console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
+                }).catch(function(err) {
+                    console.warn('Lỗi đăng ký PWA Service Worker:', err);
+                });
+            });
+        }
+
+        // Hỗ trợ hiển thị nút cài đặt App tức thì khi trình duyệt sẵn sàng
+        window.addEventListener('beforeinstallprompt', function(e) {
+            console.log('[PWA] Trình duyệt đã sẵn sàng để cài đặt EduStudio thành App!');
+            window.deferredPrompt = e;
+        });
+    </script>
 </body>
 </html>
