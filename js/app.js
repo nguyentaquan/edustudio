@@ -1346,7 +1346,7 @@ class EduStudioApp {
             "Thầy Nguyễn Tá Quan vừa cập nhật ma trận đề kiểm tra chuẩn hóa HĐTN 8",
             "Cô Hoàng Mai vừa tạo bộ trò chơi 'Đoán Con Vật Mầm Non' tương tác trực quan",
             "Thầy Lê Hải vừa biên soạn đề kiểm tra Giữa kỳ I môn Toán 7 chuẩn 3 dạng TNKQ",
-            "Hệ thống EduStudio v3.5.0 Sư Phạm GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
+            "Hệ thống EduStudio v3.5.0 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
             "Xưởng Video Studio đã hoàn tất kịch bản Audio-Driven Lip-Sync 3D"
         ];
         let idx = 0;
@@ -10264,7 +10264,7 @@ function launchEduStudio() {
         try {
             window.app = new EduStudioApp();
             window.__appLoaded = true;
-            console.log("EduStudio v3.5.0 GDPT Master đã khởi tạo thành công!");
+            console.log("EduStudio v3.5.0 GDMN & GDPT Master đã khởi tạo thành công!");
         } catch (err) {
             console.error("Lỗi khởi tạo EduStudio:", err);
         }
