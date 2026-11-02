@@ -1343,7 +1343,7 @@ class EduStudioApp {
         const tickerEl = document.getElementById('tickerText');
         if (!tickerEl) return;
         const messages = [
-            "Thầy Nguyễn Tá Quan vừa cập nhật ma trận đề kiểm tra chuẩn hóa HĐTN 8",
+            "Hệ thống EduStudio v3.5.0 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
             "Cô Hoàng Mai vừa tạo bộ trò chơi 'Đoán Con Vật Mầm Non' tương tác trực quan",
             "Thầy Lê Hải vừa biên soạn đề kiểm tra Giữa kỳ I môn Toán 7 chuẩn 3 dạng TNKQ",
             "Hệ thống EduStudio v3.5.0 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
