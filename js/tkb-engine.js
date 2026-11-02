@@ -730,9 +730,9 @@ export class SmartTKBEngine {
             }
 
             // Lấy thông tin kiêm nhiệm từ default hoặc custom
-            const defaultDef = (typeof TEACHER_WORKLOAD_ROLES !== 'undefined' && TEACHER_WORKLOAD_ROLES[tName]) ? TEACHER_WORKLOAD_ROLES[tName] : { roles: [], standardQuota: 19 };
+            const defaultDef = (typeof TEACHER_WORKLOAD_ROLES !== 'undefined' && TEACHER_WORKLOAD_ROLES[tName]) ? TEACHER_WORKLOAD_ROLES[tName] : { roles: [], standardQuota: 17 };
             const currentRoles = customRoles[tName] || defaultDef.roles;
-            const standardQuota = defaultDef.standardQuota || 19;
+            const standardQuota = defaultDef.standardQuota || 17;
 
             const reducedTotal = currentRoles.reduce((sum, r) => sum + (r.reduced || 0), 0);
             const teachingTotal = teachStat.academicPeriods + teachStat.hdtnPeriods;
@@ -740,7 +740,7 @@ export class SmartTKBEngine {
             const diff = finalTotal - standardQuota;
 
             let status = 'standard'; // 'standard', 'surplus', 'deficit'
-            let statusText = 'Đạt chuẩn 19 tiết';
+            let statusText = 'Đạt chuẩn 17 tiết';
             let badgeClass = 'badge-standard';
 
             if (diff > 0) {

@@ -1120,7 +1120,7 @@ export class SmartTKBUI {
                             <span>⚖️</span> <span>HỆ QUẢN TRỊ ĐỊNH MỨC & PHÂN CÔNG CHUYÊN MÔN GDPT 2018</span>
                         </h3>
                         <p style="margin: 0.25rem 0 0 0; font-size: 0.82rem; color: #64748b;">
-                            Trường THCS Bán Trú Canh Thuận • Cân bằng định mức 19 tiết/tuần chuẩn Thông tư 28/2009 & TT 15/2020 BGDĐT
+                            Trường THCS Bán Trú Canh Thuận • Cân bằng định mức 17 tiết/tuần chuẩn Thông tư 28/2009 & TT 15/2020 BGDĐT
                         </p>
                     </div>
 
@@ -1142,8 +1142,8 @@ export class SmartTKBUI {
                     <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.85rem; display: flex; align-items: center; gap: 0.75rem;">
                         <div style="font-size: 1.8rem;">🎯</div>
                         <div>
-                            <div style="font-size: 0.75rem; font-weight: 700; color: #166534; text-transform: uppercase;">Định Mức Chuẩn THCS</div>
-                            <div style="font-size: 1.35rem; font-weight: 800; color: #15803d;">19 Tiết / Tuần</div>
+                            <div style="font-size: 0.75rem; font-weight: 700; color: #166534; text-transform: uppercase;">Định Mức Chuẩn Trường Bán Trú</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #15803d;">17 Tiết / Tuần</div>
                             <div style="font-size: 0.7rem; color: #15803d;">Theo TT 28/2009/TT-BGDĐT</div>
                         </div>
                     </div>
@@ -1230,7 +1230,7 @@ export class SmartTKBUI {
                                     
                                     let badgeHtml = '';
                                     if (r.diff === 0) {
-                                        badgeHtml = '<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">✅ Chuẩn 19 tiết</span>';
+                                        badgeHtml = '<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">✅ Chuẩn 17 tiết</span>';
                                     } else if (r.diff > 0) {
                                         badgeHtml = `<span style="background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">🟢 Thừa +${r.diff} tiết</span>`;
                                     } else {
@@ -1268,7 +1268,7 @@ export class SmartTKBUI {
                                             <td style="text-align: center; font-weight: 800; color: #b45309;">
                                                 -${r.reducedTotal} tiết
                                             </td>
-                                            <td style="text-align: center; font-weight: 800; font-size: 0.9rem; color: ${r.finalTotal >= 19 ? '#15803d' : '#b91c1c'};">
+                                            <td style="text-align: center; font-weight: 800; font-size: 0.9rem; color: ${r.finalTotal >= 17 ? '#15803d' : '#b91c1c'};">
                                                 ${r.finalTotal}
                                             </td>
                                             <td style="text-align: center; font-weight: 700; color: #64748b;">
@@ -1711,7 +1711,7 @@ setPCCMFilter(filterName) {
                         <div style="font-size: 0.82rem; color: #1e3a8a; line-height: 1.65;">
                             ${audit.recommendations.map(r => `<p style="margin: 0.3rem 0;">${r}</p>`).join('')}
                             <p style="margin: 0.3rem 0;">
-                                📌 <strong>Thực tế chứng minh:</strong> Giáo viên trường bán trú đảm nhận 4-5 công việc nặng nhọc hỗ trợ học sinh (chăm sóc bán trú, nề nếp, bồi dưỡng, thiết bị phòng máy...). Khi nhà trường khai báo đầy đủ số tiết quy đổi theo <strong>Thông tư 28/2009 & TT 15/2020</strong> lên vnEdu/SMAS, toàn bộ 20 Thầy Cô đều đạt và vượt chuẩn 19 tiết. Từ đó, nhà trường hoàn toàn có cơ sở pháp lý và điều kiện kỹ thuật để sắp xếp TKB khoa học: đưa 100% tiết Sinh Hoạt Lớp (SHL) về sáng Thứ Bảy và gom các tiết thực hành KHTN thành tiết kép!
+                                📌 <strong>Thực tế chứng minh:</strong> Giáo viên trường bán trú đảm nhận 4-5 công việc nặng nhọc hỗ trợ học sinh (chăm sóc bán trú, nề nếp, bồi dưỡng, thiết bị phòng máy...). Khi nhà trường khai báo đầy đủ số tiết quy đổi theo <strong>Thông tư 28/2009 & TT 15/2020</strong> lên vnEdu/SMAS, toàn bộ 20 Thầy Cô đều đạt và vượt chuẩn 17 tiết. Từ đó, nhà trường hoàn toàn có cơ sở pháp lý và điều kiện kỹ thuật để sắp xếp TKB khoa học: đưa 100% tiết Sinh Hoạt Lớp (SHL) về sáng Thứ Bảy và gom các tiết thực hành KHTN thành tiết kép!
                             </p>
                         </div>
                     </div>
