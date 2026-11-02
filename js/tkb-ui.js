@@ -23,7 +23,8 @@ export class SmartTKBUI {
         this.selectedClass = '8A1';
         this.selectedTeacher = 'Thầy Nguyễn Tá Quan';
         this.selectedRoom = 'room_tin';
-        this.pccmFilter = 'all'; // 'all', 'Tổ Tự Nhiên', 'Tổ Xã Hội', 'official'
+        this.pccmFilter = 'all';
+        this.gradeFilter = 'all'; // 'all', '6', '7', '8', '9' // 'all', 'Tổ Tự Nhiên', 'Tổ Xã Hội', 'official'
 
         // Trạng thái hoán đổi 1 chạm (Click-to-Swap)
         this.swapSource = null; // { classId, day, period }
@@ -450,60 +451,314 @@ export class SmartTKBUI {
     /**
      * GÓC NHÌN 4: TOÀN TRƯỜNG TỔNG HỢP
      */
-    renderSchoolMasterView(container) {
-        let html = `
-            <div style="margin-bottom: 0.75rem;">
-                <div style="font-weight: 800; font-size: 1.05rem; color: #1e293b;">
-                    🏫 Bảng Tổng Hợp Thời Khóa Biểu Toàn Trường (Tất cả ${this.engine.classes.length} Lớp)
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        `;
+    /**
+     * Rút gọn tên giáo viên cho Bảng Tổng Thể:
+     * - Trùng tên Tuấn: phân biệt "T. Tuấn" (Nguyễn Thanh Tuấn) và "L. Tuấn" (Lương Văn Tuấn)
+     * - Các giáo viên khác: lấy Tên chính (Quan, Nhàn, Hòa, Lành, Minh, Phúc, Thái, Tài, Ánh, Công, Hiền, Hồ, Nương, Rích, Thư, Thảo, Trung, Tú, Duyên)
+     */
+    getCompactTeacherName(teacherName, shortTeacher = '') {
+        if (shortTeacher) {
+            if (shortTeacher.includes('T.Tuấn') || shortTeacher.includes('T. Tuấn')) return 'T. Tuấn';
+            if (shortTeacher.includes('L.Tuấn') || shortTeacher.includes('L. Tuấn')) return 'L. Tuấn';
+            return shortTeacher;
+        }
+        if (!teacherName) return '';
+        if (teacherName.includes('Thanh Tuấn')) return 'T. Tuấn';
+        if (teacherName.includes('Lương Văn Tuấn')) return 'L. Tuấn';
+        if (teacherName.includes('Tú')) return 'Tú';
+        const clean = teacherName.replace(/Thầy\s+|Cô\s+/g, '').trim();
+        const parts = clean.split(' ');
+        return parts[parts.length - 1];
+    }
 
-        for (const c of this.engine.classes) {
-            html += `
-                <div style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.75rem; background: #f8fafc;">
-                    <div style="font-weight: 700; color: #1d4ed8; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
-                        <span>LỚP ${c}</span>
-                        <button onclick="window.smartTKBUI.switchToClassView('${c}')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:4px; padding:0.1rem 0.5rem; font-size:0.75rem; font-weight:700; cursor:pointer;">
-                            🔍 Phóng To & Chỉnh Sửa
+    /**
+     * Kiểu dáng màu sắc sư phạm theo phân môn
+     */
+    getSubjectBadgeStyle(subject) {
+        if (!subject) return { bg: '#f8fafc', border: '#e2e8f0', color: '#64748b' };
+        if (subject.includes('Toán')) return { bg: '#eff6ff', border: '#bfdbfe', color: '#1d4ed8' };
+        if (subject.includes('Ngữ Văn') || subject.includes('Ngữ văn')) return { bg: '#fef2f2', border: '#fecaca', color: '#b91c1c' };
+        if (subject.includes('Tiếng Anh')) return { bg: '#f0fdf4', border: '#bbf7d0', color: '#15803d' };
+        if (subject.includes('KHTN')) return { bg: '#faf5ff', border: '#e9d5ff', color: '#7e22ce' };
+        if (subject.includes('Lịch Sử') || subject.includes('Địa Lí') || subject.includes('Sử') || subject.includes('Địa')) return { bg: '#fffbeb', border: '#fde68a', color: '#b45309' };
+        if (subject.includes('Tin')) return { bg: '#ecfeff', border: '#a5f3fc', color: '#0e7490' };
+        if (subject.includes('Thể Chất') || subject.includes('GDTC')) return { bg: '#f7fee7', border: '#d9f99d', color: '#4d7c0f' };
+        if (subject.includes('Công Nghệ')) return { bg: '#fff7ed', border: '#fed7aa', color: '#c2410c' };
+        if (subject.includes('GDCD')) return { bg: '#eef2ff', border: '#c7d2fe', color: '#4338ca' };
+        if (subject.includes('Nghệ Thuật') || subject.includes('AN-MT') || subject.includes('Âm Nhạc') || subject.includes('Mĩ Thuật')) return { bg: '#fdf2f8', border: '#fbcfe8', color: '#be185d' };
+        if (subject.includes('Chào Cờ') || subject.includes('Chào cờ')) return { bg: '#fee2e2', border: '#fca5a5', color: '#dc2626' };
+        if (subject.includes('HĐCĐ') || subject.includes('SHDC') || subject.includes('SHL') || subject.includes('HĐTN')) return { bg: '#f0f9ff', border: '#bae6fd', color: '#0369a1' };
+        return { bg: '#f1f5f9', border: '#cbd5e1', color: '#334155' };
+    }
+
+    /**
+     * BẢNG TỔNG HỢP TOÀN TRƯỜNG CHUẨN SƯ PHẠM (THEO CHỈ ĐẠO CỦA THẦY NGUYỄN TÁ QUAN):
+     * 1. BẢNG TỔNG THỂ TOÀN TRƯỜNG (COMPACT MASTER MATRIX) NẰM TRÊN CÙNG
+     *    - Gồm 9 cột cho 9 lớp, thu gọn tên giáo viên: T. Tuấn, L. Tuấn, Quan, Nhàn, Minh...
+     * 2. BẢNG CHI TIẾT THEO TỪNG KHỐI / LỚP NẰM PHÍA DƯỚI
+     */
+    renderSchoolMasterView(container) {
+        const classes = this.engine.classes; // ['6A1', '6A2', '6A3', '7A1', '7A2', '8A1', '8A2', '9A1', '9A2']
+        const currentGrade = this.gradeFilter || 'all';
+
+        let html = `
+            <!-- ================================================================= -->
+            <!-- 1. BẢNG TỔNG THỂ TOÀN TRƯỜNG (COMPACT MASTER MATRIX) TRÊN CÙNG   -->
+            <!-- ================================================================= -->
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.3rem;">🏫</span>
+                            <h2 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: -0.3px;">
+                                Bảng Tổng Thể Thời Khóa Biểu Toàn Trường (9 Lớp)
+                            </h2>
+                            <span style="background: #3b82f6; color: #fff; padding: 0.15rem 0.55rem; border-radius: 20px; font-size: 0.7rem; font-weight: 800;">
+                                BẢN TỔNG QUAN
+                            </span>
+                        </div>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #64748b;">
+                            Trường THCS Bán Trú Canh Thuận • Áp dụng Tuần 9 (02/11/2026) • Tên giáo viên thu gọn chuẩn: <em>Quan, T. Tuấn, L. Tuấn, Nhàn, Minh, Duyên...</em>
+                        </p>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button onclick="window.smartTKBUI.printTimetable()" style="background: #1e293b; color: #fff; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <span>🖨️</span> <span>In Bảng Tổng Thể A4</span>
+                        </button>
+                        <button onclick="window.smartTKBUI.exportToExcel()" style="background: #059669; color: #fff; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <span>📥</span> <span>Xuất Excel (.csv)</span>
                         </button>
                     </div>
-                    <table class="tkb-table" style="font-size: 0.72rem; min-width: 600px;">
+                </div>
+
+                <!-- BÀN CỜ TỔNG THỂ 9 LỚP -->
+                <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px;">
+                    <table class="tkb-table" style="margin: 0; width: 100%; min-width: 980px; border-collapse: collapse; font-size: 0.78rem;">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;">Tiết</th>
-                                ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
+                            <tr style="background: #0f172a; color: #ffffff;">
+                                <th rowspan="2" style="width: 80px; text-align: center; border-right: 1px solid #334155; padding: 6px;">Thứ</th>
+                                <th rowspan="2" style="width: 48px; text-align: center; border-right: 2px solid #64748b; padding: 6px;">Tiết</th>
+                                <th colspan="3" style="text-align: center; background: #1e3a8a; border-right: 2px solid #64748b; padding: 4px; font-weight: 800;">KHỐI 6</th>
+                                <th colspan="2" style="text-align: center; background: #065f46; border-right: 2px solid #64748b; padding: 4px; font-weight: 800;">KHỐI 7</th>
+                                <th colspan="2" style="text-align: center; background: #831843; border-right: 2px solid #64748b; padding: 4px; font-weight: 800;">KHỐI 8 (Lớp Thầy Quan)</th>
+                                <th colspan="2" style="text-align: center; background: #581c87; padding: 4px; font-weight: 800;">KHỐI 9</th>
+                            </tr>
+                            <tr style="background: #1e293b; color: #ffffff;">
+                                ${classes.map(c => {
+                                    const isQuanClass = (c === '8A1');
+                                    return `
+                                        <th style="width: 95px; text-align: center; padding: 6px 4px; font-weight: 800; border-right: ${c === '6A3' || c === '7A2' || c === '8A2' ? '2px solid #94a3b8' : '1px solid #334155'}; background: ${isQuanClass ? '#2563eb' : ''};">
+                                            ${c}${isQuanClass ? ' ⭐' : ''}
+                                        </th>
+                                    `;
+                                }).join('')}
                             </tr>
                         </thead>
                         <tbody>
-            `;
+        `;
 
-            for (let p = 0; p < this.engine.PERIODS.length; p++) {
-                html += `<tr><td class="period-label-col" style="padding: 0.2rem;">T${p + 1}</td>`;
-                for (let d = 0; d < this.engine.DAYS.length; d++) {
-                    const cell = this.engine.timetable[c][d][p];
+        // Render từng ngày (Thứ 2 đến Thứ 7)
+        for (let d = 0; d < this.engine.DAYS.length; d++) {
+            const dayName = this.engine.DAYS[d];
+            const maxPeriods = (d === 5) ? 4 : 5; // Thứ 7 có 4 tiết, các ngày khác 5 tiết
+            const isAlternateDay = (d % 2 === 1);
+
+            for (let p = 0; p < maxPeriods; p++) {
+                html += `
+                    <tr style="${isAlternateDay ? 'background: #fbfcfe;' : 'background: #ffffff;'}">
+                `;
+
+                // Cột Thứ gộp dòng (rowspan)
+                if (p === 0) {
+                    html += `
+                        <td rowspan="${maxPeriods}" style="text-align: center; vertical-align: middle; font-weight: 800; background: ${isAlternateDay ? '#f1f5f9' : '#e2e8f0'}; color: #0f172a; border-right: 1px solid #cbd5e1; border-bottom: 2px solid #94a3b8; font-size: 0.82rem; padding: 4px;">
+                            ${dayName}
+                        </td>
+                    `;
+                }
+
+                // Cột Tiết
+                html += `
+                    <td style="text-align: center; font-weight: 800; background: #f8fafc; color: #475569; border-right: 2px solid #94a3b8; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 4px 2px;">
+                        T${p + 1}
+                    </td>
+                `;
+
+                // 9 Cột Lớp
+                for (let cIdx = 0; cIdx < classes.length; cIdx++) {
+                    const c = classes[cIdx];
+                    const isBorderGroup = (c === '6A3' || c === '7A2' || c === '8A2');
+                    const cell = this.engine.timetable[c] && this.engine.timetable[c][d] ? this.engine.timetable[c][d][p] : null;
+
                     if (cell) {
+                        const shortTeacher = this.getCompactTeacherName(cell.teacher, cell.shortTeacher);
+                        const style = this.getSubjectBadgeStyle(cell.subject);
+                        const isQuanSlot = cell.teacher && cell.teacher.includes('Nguyễn Tá Quan');
+
+                        let cellContent = '';
+                        if (cell.subject === 'Chào Cờ' || cell.subject === 'Chào cờ') {
+                            cellContent = `
+                                <div style="font-weight: 800; color: #dc2626; font-size: 0.74rem;">Chào cờ</div>
+                            `;
+                        } else {
+                            cellContent = `
+                                <div style="font-weight: 700; color: #0f172a; font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    ${cell.subject}
+                                </div>
+                                <div style="font-weight: 800; color: ${isQuanSlot ? '#15803d' : style.color}; font-size: 0.69rem; white-space: nowrap;">
+                                    ${isQuanSlot ? '⭐ ' : ''}${shortTeacher}
+                                </div>
+                            `;
+                        }
+
                         html += `
-                            <td style="padding: 0.2rem; height: 38px; cursor: pointer;" onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})">
-                                <div style="font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${cell.subject}</div>
-                                <div style="font-size: 0.65rem; color: #64748b;">${cell.teacher}</div>
+                            <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
+                                title="${cell.subject} - ${cell.teacher} (Lớp ${c}) • Bấm để chỉnh sửa / hoán đổi"
+                                style="background: ${isQuanSlot ? '#f0fdf4' : style.bg}; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px 4px; text-align: center; cursor: pointer; height: 38px; transition: all 0.15s ease;"
+                                onmouseover="this.style.filter='brightness(0.92)'" onmouseout="this.style.filter='none'">
+                                ${cellContent}
                             </td>
                         `;
                     } else {
-                        html += `<td style="padding: 0.2rem; background: #ffffff; color: #cbd5e1; text-align: center; cursor: pointer;" onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})">+</td>`;
+                        html += `
+                            <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
+                                title="Ô trống (Lớp ${c}) • Bấm để gán môn"
+                                style="background: #fafafa; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px; text-align: center; cursor: pointer; height: 38px;">
+                                <span style="color: #cbd5e1; font-size: 0.65rem;">—</span>
+                            </td>
+                        `;
+                    }
+                }
+
+                html += `</tr>`;
+            }
+        }
+
+        html += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================================================================= -->
+            <!-- 2. BẢNG CHI TIẾT THEO TỪNG KHỐI / LỚP NẰM PHÍA DƯỚI             -->
+            <!-- ================================================================= -->
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.2rem;">📚</span>
+                            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a;">
+                                BẢNG THỜI KHÓA BIỂU CHI TIẾT THEO TỪNG KHỐI & LỚP
+                            </h3>
+                        </div>
+                        <p style="margin: 0.2rem 0 0 0; font-size: 0.8rem; color: #64748b;">
+                            Hiển thị đầy đủ Họ tên Thầy Cô, Phòng học chức năng và công cụ chỉnh sửa chuyên sâu.
+                        </p>
+                    </div>
+
+                    <!-- BỘ LỌC KHỐI LỚP -->
+                    <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; background: #f1f5f9; padding: 0.35rem; border-radius: 8px;">
+                        <button onclick="window.smartTKBUI.filterGradeView('all')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === 'all' ? 'background: #1e293b; color: #fff;' : 'background: #fff; color: #475569;'}">
+                            Toàn Bộ (9 Lớp)
+                        </button>
+                        <button onclick="window.smartTKBUI.filterGradeView('6')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === '6' ? 'background: #1e3a8a; color: #fff;' : 'background: #fff; color: #1e3a8a;'}">
+                            Khối 6 (3 Lớp)
+                        </button>
+                        <button onclick="window.smartTKBUI.filterGradeView('7')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === '7' ? 'background: #065f46; color: #fff;' : 'background: #fff; color: #065f46;'}">
+                            Khối 7 (2 Lớp)
+                        </button>
+                        <button onclick="window.smartTKBUI.filterGradeView('8')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === '8' ? 'background: #831843; color: #fff;' : 'background: #fff; color: #831843;'}">
+                            Khối 8 (2 Lớp)
+                        </button>
+                        <button onclick="window.smartTKBUI.filterGradeView('9')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === '9' ? 'background: #581c87; color: #fff;' : 'background: #fff; color: #581c87;'}">
+                            Khối 9 (2 Lớp)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DANH SÁCH BẢNG TỪNG LỚP CHI TIẾT -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        `;
+
+        // Lọc danh sách lớp theo khối
+        const filteredClasses = classes.filter(c => {
+            if (currentGrade === 'all') return true;
+            return c.startsWith(currentGrade);
+        });
+
+        for (const c of filteredClasses) {
+            const isQuanClass = (c === '8A1');
+            html += `
+                <div style="border: 1px solid ${isQuanClass ? '#93c5fd' : '#e2e8f0'}; border-radius: 8px; padding: 0.85rem; background: ${isQuanClass ? '#f8faff' : '#fcfcfc'};">
+                    <div style="font-weight: 800; color: ${isQuanClass ? '#1d4ed8' : '#0f172a'}; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <span>🎒</span> <span>LỚP ${c}</span>
+                            ${isQuanClass ? '<span style="background: #dbeafe; color: #1e40af; font-size: 0.7rem; padding: 0.1rem 0.45rem; border-radius: 4px;">GVCN: Thầy Nguyễn Tá Quan</span>' : ''}
+                        </span>
+                        <button onclick="window.smartTKBUI.switchToClassView('${c}')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:4px; padding:0.2rem 0.65rem; font-size:0.75rem; font-weight:700; cursor:pointer;">
+                            🔍 Phóng To & Chỉnh Sửa Riêng Lớp ${c}
+                        </button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="tkb-table" style="font-size: 0.74rem; min-width: 650px; margin: 0;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">Tiết</th>
+                                    ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            for (let p = 0; p < this.engine.PERIODS.length; p++) {
+                html += `<tr><td class="period-label-col" style="padding: 0.25rem; font-weight: 800;">T${p + 1}</td>`;
+                for (let d = 0; d < this.engine.DAYS.length; d++) {
+                    const cell = this.engine.timetable[c] && this.engine.timetable[c][d] ? this.engine.timetable[c][d][p] : null;
+                    if (cell) {
+                        const style = this.getSubjectBadgeStyle(cell.subject);
+                        const isQuanSlot = cell.teacher && cell.teacher.includes('Nguyễn Tá Quan');
+                        const roomBadge = cell.room ? `<span style="font-size: 0.62rem; color: #64748b;">(${cell.room.replace('room_', '')})</span>` : '';
+
+                        html += `
+                            <td style="padding: 0.3rem; height: 42px; cursor: pointer; background: ${isQuanSlot ? '#f0fdf4' : style.bg}; border: 1px solid #e2e8f0;"
+                                onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
+                                title="${cell.subject} • ${cell.teacher}">
+                                <div style="font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    ${cell.subject} ${roomBadge}
+                                </div>
+                                <div style="font-size: 0.68rem; color: ${isQuanSlot ? '#15803d' : '#475569'}; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    ${isQuanSlot ? '⭐ ' : ''}${cell.teacher}
+                                </div>
+                            </td>
+                        `;
+                    } else {
+                        html += `
+                            <td style="padding: 0.3rem; height: 42px; cursor: pointer; background: #fafafa;"
+                                onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})">
+                                <span style="color: #cbd5e1; font-size: 0.7rem;">Trống</span>
+                            </td>
+                        `;
                     }
                 }
                 html += `</tr>`;
             }
 
-            html += `</tbody></table></div>`;
+            html += `</tbody></table></div></div>`;
         }
 
-        html += `</div>`;
+        html += `</div></div>`;
         container.innerHTML = html;
     }
 
+    filterGradeView(grade) {
+        this.gradeFilter = grade;
+        const container = document.getElementById('tkbGridTableContainer');
+        if (container && this.currentViewMode === 'school') {
+            this.renderSchoolMasterView(container);
+        }
+    }
     switchToClassView(classId) {
         this.selectedClass = classId;
         this.currentViewMode = 'class';
