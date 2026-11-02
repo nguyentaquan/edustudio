@@ -18,6 +18,50 @@
     <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
     <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+
+    <style id="edustudio-print-css">
+        @media print {
+            /* Ẩn thanh header, sidebar và các tab không liên quan khi in */
+            header, nav, aside, .app-sidebar, .app-header, .tkb-header-card, 
+            .tkb-subnav-bar, .tkb-board-top-controls, .btn-tkb-action, 
+            button, select, #tkbToast, .modal-overlay {
+                display: none !important;
+            }
+
+            body, main, #main-content, .tab-pane-content, .tkb-container, .tkb-board-wrapper {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                box-shadow: none !important;
+            }
+
+            @page {
+                size: A4 landscape;
+                margin: 8mm 6mm;
+            }
+
+            .tkb-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 8pt !important;
+            }
+
+            .tkb-table th, .tkb-table td {
+                border: 1px solid #333333 !important;
+                padding: 3px 2px !important;
+                color: #000000 !important;
+            }
+
+            .print-header-block {
+                display: block !important;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+
 </head>
 <body>
 
@@ -2349,13 +2393,13 @@
                             <span>📅</span> <span>Bàn Cờ TKB & AI Điều Hành</span>
                         </button>
                         <button class="btn-tkb-subnav" data-subtab="pccm">
-                            <span>📋</span> <span>Phân Công Chuyên Môn (PCCM)</span>
+                            <span>⚖️</span> <span>Phân Công & Định Mức (20 Thầy Cô)</span>
                         </button>
                         <button class="btn-tkb-subnav" data-subtab="config">
                             <span>🏫</span> <span>Khối Lớp & Phòng Bộ Môn</span>
                         </button>
                         <button class="btn-tkb-subnav" data-subtab="stats">
-                            <span>📊</span> <span>Thống Kê & Quét Xung Đột</span>
+                            <span>📊</span> <span>Kiểm Toán & Tư Vấn Sư Phạm</span>
                         </button>
                     </div>
 

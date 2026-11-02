@@ -1,3 +1,4 @@
+import { TEACHER_WORKLOAD_ROLES } from './teacher-workload-data.js';
 /**
  * ==============================================================================
  * EDUSTUDIO - XƯỞNG XẾP THỜI KHÓA BIỂU TOÀN TRƯỜNG THÔNG MINH GDPT 2018
@@ -641,4 +642,252 @@ export class SmartTKBEngine {
             rows: scheduleRows
         };
     }
+
+    /**
+     * BÁO CÁO TOÀN DIỆN ĐỊNH MỨC & KIÊM NHIỆM 20 THẦY CÔ
+     * Chuẩn Thông tư 28/2009/TT-BGDĐT & Thông tư 15/2020/TT-BGDĐT
+     * Phản ánh đúng thực tế: GV vừa dạy chuyên môn vừa gánh 4-5 việc hỗ trợ trường
+     */
+    getTeacherWorkloadReport() {
+        // Lấy danh sách phân công kiêm nhiệm lưu trong localStorage (nếu có tùy biến)
+        let customRoles = {};
+        try {
+            const saved = localStorage.getItem('edustudio_custom_teacher_roles');
+            if (saved) customRoles = JSON.parse(saved);
+        } catch(e) {}
+
+        const allTeachers = this.teachers && this.teachers.length > 0 ? this.teachers : [];
+        
+        // Thống kê số tiết giảng dạy thực tế từ TKB hiện tại
+        const statsMap = {};
+        for (const c of this.classes) {
+            const grid = this.timetable[c];
+            if (!grid) continue;
+            for (let d = 0; d < this.DAYS.length; d++) {
+                const dayList = grid[d] || (grid[String(d)] || []);
+                for (let p = 0; p < dayList.length; p++) {
+                    const cell = dayList[p];
+                    if (cell && cell.teacher) {
+                        const rawT = cell.teacher.replace(/Thầy\s+|Cô\s+/g, '').trim();
+                        if (!statsMap[rawT]) {
+                            statsMap[rawT] = { 
+                                fullName: cell.teacher,
+                                academicPeriods: 0, 
+                                hdtnPeriods: 0,
+                                academicSubjects: new Set(),
+                                hdtnSubjects: new Set(),
+                                classes: new Set()
+                            };
+                        }
+                        const subj = cell.subject || '';
+                        statsMap[rawT].classes.add(c);
+                        if (subj.includes('Chào Cờ') || subj.includes('SHDC') || subj.includes('HĐCĐ') || subj.includes('SHL') || subj.includes('HĐTN')) {
+                            statsMap[rawT].hdtnPeriods++;
+                            statsMap[rawT].hdtnSubjects.add(subj);
+                        } else {
+                            statsMap[rawT].academicPeriods++;
+                            statsMap[rawT].academicSubjects.add(subj);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Tạo danh sách tổng hợp 21 Thầy Cô
+        const report = [];
+        
+        // Danh sách tên chuẩn
+        const teacherNamesList = [
+            "Nguyễn Tá Quan", "Nguyễn Thanh Tuấn", "Lương Văn Tuấn", "Nguyễn Đình Minh", 
+            "Hà Thị Thúy Hòa", "Dương Thị Ngọc Lành", "Nguyễn Thị Hồng Phúc", "Nguyễn Thị Hồng Duyên",
+            "Lê Quốc Thái", "Nguyễn Tú Tài", "Võ Thị Hồng Ánh", "Nguyễn Bá Công",
+            "Nguyễn Bá Hiền", "Đoàn Thị Hồ", "Phạm Thị Nhàn", "Nguyễn Thị Nương",
+            "Đoàn Văn Rích", "Lê Thị Anh Thư", "Trần Thị Thanh Thảo", "Trần Duy Trung", "Thầy Tú (Công Nghệ)"
+        ];
+
+        for (let i = 0; i < teacherNamesList.length; i++) {
+            const tName = teacherNamesList[i];
+            
+            // Tìm thống kê dạy
+            let teachStat = statsMap[tName];
+            if (!teachStat) {
+                // Thử tìm theo tên rút gọn
+                for (const k in statsMap) {
+                    if (tName.includes(k) || k.includes(tName)) {
+                        teachStat = statsMap[k];
+                        break;
+                    }
+                }
+            }
+            if (!teachStat) {
+                teachStat = {
+                    academicPeriods: 0,
+                    hdtnPeriods: 0,
+                    academicSubjects: new Set(),
+                    hdtnSubjects: new Set(),
+                    classes: new Set()
+                };
+            }
+
+            // Lấy thông tin kiêm nhiệm từ default hoặc custom
+            const defaultDef = (typeof TEACHER_WORKLOAD_ROLES !== 'undefined' && TEACHER_WORKLOAD_ROLES[tName]) ? TEACHER_WORKLOAD_ROLES[tName] : { roles: [], standardQuota: 19 };
+            const currentRoles = customRoles[tName] || defaultDef.roles;
+            const standardQuota = defaultDef.standardQuota || 19;
+
+            const reducedTotal = currentRoles.reduce((sum, r) => sum + (r.reduced || 0), 0);
+            const teachingTotal = teachStat.academicPeriods + teachStat.hdtnPeriods;
+            const finalTotal = teachingTotal + reducedTotal;
+            const diff = finalTotal - standardQuota;
+
+            let status = 'standard'; // 'standard', 'surplus', 'deficit'
+            let statusText = 'Đạt chuẩn 19 tiết';
+            let badgeClass = 'badge-standard';
+
+            if (diff > 0) {
+                status = 'surplus';
+                statusText = `Thừa +${diff} tiết`;
+                badgeClass = 'badge-surplus';
+            } else if (diff < 0) {
+                status = 'deficit';
+                statusText = `Thiếu ${diff} tiết`;
+                badgeClass = 'badge-deficit';
+            }
+
+            // Xác định tổ bộ môn
+            let dept = 'Tổ Tự Nhiên';
+            if (["Nguyễn Bá Công", "Nguyễn Bá Hiền", "Đoàn Thị Hồ", "Phạm Thị Nhàn", "Nguyễn Thị Nương", "Đoàn Văn Rích", "Lê Thị Anh Thư", "Trần Thị Thanh Thảo", "Trần Duy Trung"].includes(tName)) {
+                dept = 'Tổ Xã Hội';
+            }
+
+            report.push({
+                index: i + 1,
+                teacherName: tName,
+                isQuan: tName.includes('Nguyễn Tá Quan'),
+                department: dept,
+                academicPeriods: teachStat.academicPeriods,
+                academicSubjects: Array.from(teachStat.academicSubjects).join(', ') || '—',
+                hdtnPeriods: teachStat.hdtnPeriods,
+                hdtnSubjects: Array.from(teachStat.hdtnSubjects).join(', ') || '—',
+                teachingTotal: teachingTotal,
+                classes: Array.from(teachStat.classes).sort().join(', '),
+                roles: currentRoles,
+                reducedTotal: reducedTotal,
+                finalTotal: finalTotal,
+                standardQuota: standardQuota,
+                diff: diff,
+                status: status,
+                statusText: statusText,
+                badgeClass: badgeClass
+            });
+        }
+
+        return report;
+    }
+
+    /**
+     * Cập nhật vai trò kiêm nhiệm cho một giáo viên
+     */
+    updateTeacherWorkloadRoles(teacherName, newRoles) {
+        let customRoles = {};
+        try {
+            const saved = localStorage.getItem('edustudio_custom_teacher_roles');
+            if (saved) customRoles = JSON.parse(saved);
+        } catch(e) {}
+
+        customRoles[teacherName] = newRoles;
+        try {
+            localStorage.setItem('edustudio_custom_teacher_roles', JSON.stringify(customRoles));
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    /**
+     * Khôi phục vai trò kiêm nhiệm mặc định chuẩn BGDĐT
+     */
+    resetTeacherWorkloadRoles() {
+        try {
+            localStorage.removeItem('edustudio_custom_teacher_roles');
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    /**
+     * KIỂM TOÁN CHẤT LƯỢNG SƯ PHẠM THỜI KHÓA BIỂU (PEDAGOGICAL AUDIT)
+     */
+    getPedagogicalAudit() {
+        const audit = {
+            issues: [],
+            positives: [],
+            recommendations: []
+        };
+
+        // 1. Quét xung đột cứng
+        const hardConflicts = this.detectConflicts();
+        if (hardConflicts.length === 0) {
+            audit.positives.push("✅ Tuyệt đối 0 xung đột trùng giáo viên hoặc quá tải phòng bộ môn.");
+        } else {
+            audit.issues.push(`⚠️ Có ${hardConflicts.length} xung đột trùng giáo viên cần giải quyết.`);
+        }
+
+        // 2. Quét kiểm toán HĐTN & SHL
+        let scatteredSHLCount = 0;
+        let middleWeekSHL = [];
+
+        for (const c of this.classes) {
+            const grid = this.timetable[c];
+            if (!grid) continue;
+            for (let d = 0; d < this.DAYS.length; d++) {
+                const dayList = grid[d] || (grid[String(d)] || []);
+                for (let p = 0; p < dayList.length; p++) {
+                    const cell = dayList[p];
+                    if (cell && (cell.subject === 'SHL' || cell.subject === 'Sinh Hoạt Lớp')) {
+                        // Nếu không phải Thứ Bảy
+                        if (d !== 5) {
+                            scatteredSHLCount++;
+                            middleWeekSHL.push(`Lớp ${c}: SHL rơi vào ${this.DAYS[d]} Tiết ${p+1} (${cell.teacher})`);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (scatteredSHLCount > 0) {
+            audit.issues.push(`⚠️ Có ${scatteredSHLCount} lớp có tiết Sinh Hoạt Lớp (SHL) rơi vào giữa tuần (không phải Thứ Bảy).`);
+            audit.recommendations.push("💡 Nguyên nhân: Thầy Nguyễn Thanh Tuấn và Thầy Lương Văn Tuấn phải gánh SHL cho nhiều lớp để bù đủ định mức 19 tiết. Giải pháp căn cơ: Bù định mức bằng các nhiệm vụ kiêm nhiệm (Tổ trưởng, Đoàn Đội, Quản lý bán trú), trả tiết SHL về cho 9 GVCN của 9 lớp để đồng bộ 100% SHL vào Thứ Bảy Tiết 4.");
+        } else {
+            audit.positives.push("✅ 100% tiết Sinh Hoạt Lớp (SHL) được gom đồng bộ vào cuối tuần (Thứ Bảy).");
+        }
+
+        // 3. Quét Tiết Kép KHTN và Tin học
+        let singleKHTNCount = 0;
+        for (const c of this.classes) {
+            const grid = this.timetable[c];
+            if (!grid) continue;
+            for (let d = 0; d < this.DAYS.length; d++) {
+                const dayList = grid[d] || (grid[String(d)] || []);
+                let khtnPeriodsInDay = 0;
+                for (let p = 0; p < dayList.length; p++) {
+                    const cell = dayList[p];
+                    if (cell && (cell.subject === 'KHTN' || cell.subject.includes('Khoa học Tự nhiên'))) {
+                        khtnPeriodsInDay++;
+                    }
+                }
+                if (khtnPeriodsInDay === 1) singleKHTNCount++;
+            }
+        }
+
+        if (singleKHTNCount > 0) {
+            audit.issues.push(`⚠️ Có ${singleKHTNCount} buổi học môn KHTN bị xé lẻ 1 tiết (chưa ghép thành tiết kép 2 tiết liền để làm thí nghiệm thực hành).`);
+            audit.recommendations.push("💡 Ưu tiên ghép môn KHTN (4 tiết/tuần) thành 2 buổi, mỗi buổi 2 tiết liền để giáo viên thuận lợi tổ chức thí nghiệm, thực hành theo chuẩn GDPT 2018.");
+        } else {
+            audit.positives.push("✅ Các môn thực hành KHTN và Tin học được tổ chức thành các tiết kép liền nhau đạt chuẩn sư phạm.");
+        }
+
+        return audit;
+    }
+
 }

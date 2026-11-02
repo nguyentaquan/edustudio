@@ -1,7 +1,7 @@
 // EduStudio Service Worker (PWA Engine v3.5.0 GDMN & GDPT)
 // Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
 
-const CACHE_NAME = 'edustudio-pwa-v3.7.0-teacher-text-colors';
+const CACHE_NAME = 'edustudio-pwa-v3.8.0-comprehensive-workload-governance';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

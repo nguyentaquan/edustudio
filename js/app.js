@@ -1192,8 +1192,15 @@ class EduStudioApp {
         try { this.initDefaultData(); } catch(e) { console.warn(e); }
         try { this.initTKBModule(); } catch(e) { console.warn(e); }
 
-        // Mặc định ở Trang chủ
-        try { this.switchTab('home'); } catch(e) { console.warn(e); }
+        // Mặc định ở Trang chủ hoặc mở theo hash URL
+        try {
+            const h = window.location.hash.replace('#', '').trim();
+            if (h) {
+                this.switchTab(h);
+            } else {
+                this.switchTab('home');
+            }
+        } catch(e) { console.warn(e); }
     }
 
     // =========================================================================
