@@ -20,7 +20,7 @@ export class SmartTKBUI {
 
         this.currentSubTab = 'board'; // 'board', 'pccm', 'config', 'stats'
         this.currentViewMode = 'class'; // 'class', 'teacher', 'room', 'school'
-        this.selectedClass = '8A';
+        this.selectedClass = '8A1';
         this.selectedTeacher = 'Thầy Nguyễn Tá Quan';
         this.selectedRoom = 'room_tin';
 
@@ -52,11 +52,12 @@ export class SmartTKBUI {
 
         document.getElementById('btnTKBLoadSample')?.addEventListener('click', () => {
             this.engine.loadDefaultSampleData();
-            this.engine.solveAutomatic();
+            this.updateFilterControls();
             this.renderCurrentView();
             this.renderPCCMTable();
+            this.renderConfigTab();
             this.renderStats();
-            this.showToast('✅ Đã nạp lại dữ liệu mẫu chuẩn thực tế THCS & chạy AI xếp lịch thành công!');
+            this.showToast('✅ Đã nạp Thời khóa biểu chính thức THCS Bán Trú Canh Thuận (Tuần 9)!');
         });
 
         document.getElementById('btnTKBExportExcel')?.addEventListener('click', () => {
@@ -311,8 +312,13 @@ export class SmartTKBUI {
                 <div style="font-weight: 800; font-size: 1.05rem; color: #1e293b;">
                     👨‍🏫 Thời Khóa Biểu Giảng Dạy: <span style="color: #1d4ed8;">${teacherName}</span>
                 </div>
-                <div style="background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 700; font-size: 0.8rem; border: 1px solid #bfdbfe;">
-                    Tổng số tiết dạy: <strong>${totalPeriods} tiết/tuần</strong>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <div style="background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 700; font-size: 0.8rem; border: 1px solid #bfdbfe;">
+                        Tổng số tiết: <strong>${totalPeriods} tiết/tuần</strong>
+                    </div>
+                    <button onclick="window.smartTKBUI.openTeachingScheduleModal('${teacherName}')" style="background: linear-gradient(135deg, #059669, #047857); color: #fff; border: none; padding: 0.35rem 0.85rem; border-radius: 20px; font-weight: 700; font-size: 0.78rem; cursor: pointer; box-shadow: 0 2px 6px rgba(5,150,105,0.3); display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <span>📋</span> <span>Lịch Báo Giảng Tuần (BGDĐT)</span>
+                    </button>
                 </div>
             </div>
             <table class="tkb-table">
@@ -715,6 +721,7 @@ export class SmartTKBUI {
         if (!this.editingSlot) return;
         const { classId, day, period } = this.editingSlot;
         this.engine.setSlot(classId, day, period, null);
+        this.engine.saveState();
         this.showToast('✅ Đã xóa tiết học (Để trống).');
         this.closeSlotEditModal();
         this.renderCurrentView();
@@ -878,6 +885,7 @@ export class SmartTKBUI {
 
         if (this.editingPCCMIndex >= 0) {
             this.engine.updateAssignment(this.editingPCCMIndex, assignObj);
+            this.engine.saveState();
             this.showToast('✅ Đã cập nhật phân công thành công!');
         } else {
             this.engine.addAssignment(assignObj);
@@ -892,6 +900,7 @@ export class SmartTKBUI {
     deletePCCMRow(index) {
         if (confirm(`Bạn có chắc chắn muốn xóa phân công của [${this.engine.assignments[index].teacher}] không?`)) {
             this.engine.deleteAssignment(index);
+            this.engine.saveState();
             this.showToast('✅ Đã xóa dòng phân công.');
             this.renderPCCMTable();
             this.updateFilterControls();
@@ -1117,5 +1126,115 @@ export class SmartTKBUI {
             toast.style.opacity = '0';
             setTimeout(() => { toast.style.display = 'none'; }, 300);
         }, 3200);
+    }
+
+    /**
+     * MỞ CỬA SỔ LỊCH BÁO GIẢNG TUẦN CHUẨN BỘ GIÁO DỤC & ĐÀO TẠO
+     * Độc quyền hệ sinh thái EduStudio của Thầy Nguyễn Tá Quan
+     */
+    openTeachingScheduleModal(teacherName, weekNumber = 9) {
+        const scheduleData = this.engine.generateTeachingSchedule(teacherName, weekNumber);
+
+        let modal = document.getElementById('tkbTeachingScheduleModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'tkbTeachingScheduleModal';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+                backdrop-filter: blur(5px); z-index: 999999; align-items: center; justify-content: center;
+                padding: 1.5rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 14px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; animation: popIn 0.2s ease;">
+                <!-- HEADER -->
+                <div style="background: linear-gradient(135deg, #065f46, #047857); padding: 1.1rem 1.5rem; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 1.5rem;">📋</span>
+                        <div>
+                            <div style="font-weight: 800; font-size: 1.1rem; letter-spacing: -0.01em;">LỊCH BÁO GIẢNG GIẢNG DẠY - TUẦN ${weekNumber}</div>
+                            <div style="font-size: 0.78rem; color: #a7f3d0;">Giáo viên: <strong>${teacherName}</strong> • Năm học: ${scheduleData.academicYear}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <button onclick="window.print()" style="background: #ffffff; color: #047857; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
+                            <span>🖨️</span> <span>In Lịch Báo Giảng</span>
+                        </button>
+                        <button onclick="document.getElementById('tkbTeachingScheduleModal').style.display='none'" style="background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+                    </div>
+                </div>
+
+                <!-- CONTROLS TUẦN -->
+                <div style="background: #f8fafc; padding: 0.65rem 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-weight: 700; color: #334155;">Chọn Tuần Dạy:</span>
+                        <select onchange="window.smartTKBUI.openTeachingScheduleModal('${teacherName}', parseInt(this.value))" style="padding: 0.3rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 700; color: #047857;">
+                            ${Array.from({length: 35}, (_, i) => i + 1).map(w => `<option value="${w}" ${w === weekNumber ? 'selected' : ''}>Tuần ${w}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.78rem;">
+                        💡 Chuẩn hóa theo mẫu BGDĐT: Bấm vào tên bài dạy để mở ngay Kế hoạch bài dạy 5512
+                    </div>
+                </div>
+
+                <!-- BẢNG BÁO GIẢNG -->
+                <div style="padding: 1.25rem 1.5rem; overflow-y: auto; flex: 1;">
+                    <table class="tkb-table" style="font-size: 0.82rem;">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Thứ / Ngày</th>
+                                <th style="width: 50px;">Tiết</th>
+                                <th style="width: 60px;">Lớp</th>
+                                <th style="width: 60px;">Tiết PPCT</th>
+                                <th>Tên Bài Dạy (Theo Chuẩn SGK Kết Nối Tri Thức)</th>
+                                <th style="width: 140px;">ĐDDH / Thiết Bị</th>
+                                <th style="width: 90px;">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${scheduleData.rows.map(row => `
+                                <tr>
+                                    <td style="font-weight: 700; color: #1e293b; text-align: center;">${row.dayName}</td>
+                                    <td style="text-align: center; font-weight: 700; color: #047857;">${row.period}</td>
+                                    <td style="text-align: center;"><span style="background: #e0e7ff; color: #3730a3; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 700;">${row.classId}</span></td>
+                                    <td style="text-align: center; font-weight: 700; color: #b45309;">${row.ppct}</td>
+                                    <td>
+                                        <div style="font-weight: 700; color: #0f172a;">${row.subject}</div>
+                                        <div style="font-size: 0.75rem; color: #475569;">${row.lessonTitle}</div>
+                                    </td>
+                                    <td style="font-size: 0.75rem; color: #64748b;">${row.equipment}</td>
+                                    <td style="text-align: center;">
+                                        <button onclick="document.getElementById('tkbTeachingScheduleModal').style.display='none'; window.smartTKBUI.jumpToLessonPlan('${row.subject}', '${row.classId}')" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                                            📑 KHBD
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- FOOTER -->
+                <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 0.75rem; color: #64748b;">
+                        Hệ thống tự động liên kết: <strong>Thời Khóa Biểu ➔ Lịch Báo Giảng ➔ Kế Hoạch Bài Dạy 5512</strong>
+                    </div>
+                    <button onclick="document.getElementById('tkbTeachingScheduleModal').style.display='none'" style="background: #e2e8f0; border: none; padding: 0.45rem 1rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
+                        Đóng Lại
+                    </button>
+                </div>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+    }
+
+    /**
+     * Tự động lưu trạng thái sau mỗi thao tác sửa đổi
+     */
+    persistChanges() {
+        this.engine.saveState();
     }
 }

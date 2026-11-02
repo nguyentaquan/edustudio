@@ -8,6 +8,8 @@
  * ==============================================================================
  */
 
+import { CANH_THUAN_TKB_DATA } from './canh-thuan-tkb-data.js';
+
 export class SmartTKBEngine {
     constructor() {
         this.DAYS = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
@@ -15,7 +17,7 @@ export class SmartTKBEngine {
         
         // Cấu trúc dữ liệu trường học
         this.schoolConfig = {
-            schoolName: "Trường THCS Thực Nghiệm Sư Phạm",
+            schoolName: "Trường THCS Bán Trú Canh Thuận",
             academicYear: "2026 - 2027",
             semester: "Học kỳ I",
             applyFromDate: "02/11/2026",
@@ -31,7 +33,7 @@ export class SmartTKBEngine {
         ];
 
         // Danh sách lớp học
-        this.classes = ["6A", "6B", "7A", "7B", "8A", "8B", "9A", "9B"];
+        this.classes = ["6A1", "6A2", "6A3", "7A1", "7A2", "8A1", "8A2", "9A1", "9A2"];
 
         // Danh sách môn học chuẩn GDPT 2018 THCS
         this.subjects = [
@@ -55,105 +57,21 @@ export class SmartTKBEngine {
         // Lịch kết quả [classId][dayIndex][periodIndex] = { subject, teacher, room, isFixed }
         this.timetable = {};
 
-        // Khởi tạo dữ liệu mẫu chuẩn thực tế
-        this.loadDefaultSampleData();
+        // Tự động khôi phục dữ liệu đã lưu trong máy, nếu chưa có hoặc không phải Canh Thuận thì nạp chuẩn
+        if (!this.loadState() || !this.timetable['8A1'] || this.classes.length !== 9) {
+            this.loadDefaultSampleData();
+        }
     }
 
     loadDefaultSampleData() {
-        this.assignments = [
-            // Khối 8 & 9 - Thầy Nguyễn Tá Quan phụ trách HĐTN và Tin học
-            { teacher: "Thầy Nguyễn Tá Quan", subject: "HĐTN, HN", classId: "8A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Nguyễn Tá Quan", subject: "HĐTN, HN", classId: "8B", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Nguyễn Tá Quan", subject: "Tin Học", classId: "8A", periods: 2, doublePeriod: true, roomReq: "room_tin" },
-            { teacher: "Thầy Nguyễn Tá Quan", subject: "Tin Học", classId: "8B", periods: 2, doublePeriod: true, roomReq: "room_tin" },
-
-            // Môn Toán
-            { teacher: "Thầy Trần Văn Toán", subject: "Toán", classId: "6A", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Trần Văn Toán", subject: "Toán", classId: "6B", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Lê Thị Đại Số", subject: "Toán", classId: "7A", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Lê Thị Đại Số", subject: "Toán", classId: "7B", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Phạm Hình Học", subject: "Toán", classId: "8A", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Phạm Hình Học", subject: "Toán", classId: "8B", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Hoàng Văn Tích", subject: "Toán", classId: "9A", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Hoàng Văn Tích", subject: "Toán", classId: "9B", periods: 4, doublePeriod: false, roomReq: null },
-
-            // Ngữ Văn
-            { teacher: "Cô Nguyễn Thị Văn", subject: "Ngữ Văn", classId: "6A", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Nguyễn Thị Văn", subject: "Ngữ Văn", classId: "6B", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Bùi Thu Cúc", subject: "Ngữ Văn", classId: "7A", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Bùi Thu Cúc", subject: "Ngữ Văn", classId: "7B", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Phan Mỹ Linh", subject: "Ngữ Văn", classId: "8A", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Phan Mỹ Linh", subject: "Ngữ Văn", classId: "8B", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Đỗ Xuân Văn", subject: "Ngữ Văn", classId: "9A", periods: 4, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Đỗ Xuân Văn", subject: "Ngữ Văn", classId: "9B", periods: 4, doublePeriod: false, roomReq: null },
-
-            // Tiếng Anh
-            { teacher: "Cô Sarah Minh Trang", subject: "Tiếng Anh", classId: "6A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Sarah Minh Trang", subject: "Tiếng Anh", classId: "6B", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Sarah Minh Trang", subject: "Tiếng Anh", classId: "7A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Sarah Minh Trang", subject: "Tiếng Anh", classId: "7B", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Vũ Quốc Anh", subject: "Tiếng Anh", classId: "8A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Vũ Quốc Anh", subject: "Tiếng Anh", classId: "8B", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Vũ Quốc Anh", subject: "Tiếng Anh", classId: "9A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Vũ Quốc Anh", subject: "Tiếng Anh", classId: "9B", periods: 3, doublePeriod: false, roomReq: null },
-
-            // KHTN (Lý - Hóa - Sinh)
-            { teacher: "Thầy Ngô Khoa Học", subject: "KHTN (Lý-Hóa-Sinh)", classId: "6A", periods: 4, doublePeriod: true, roomReq: "room_khtn" },
-            { teacher: "Thầy Ngô Khoa Học", subject: "KHTN (Lý-Hóa-Sinh)", classId: "6B", periods: 4, doublePeriod: true, roomReq: "room_khtn" },
-            { teacher: "Cô Đặng Sinh Học", subject: "KHTN (Lý-Hóa-Sinh)", classId: "7A", periods: 4, doublePeriod: true, roomReq: "room_khtn" },
-            { teacher: "Cô Đặng Sinh Học", subject: "KHTN (Lý-Hóa-Sinh)", classId: "7B", periods: 4, doublePeriod: true, roomReq: "room_khtn" },
-            { teacher: "Cô Đặng Sinh Học", subject: "KHTN (Lý-Hóa-Sinh)", classId: "8A", periods: 4, doublePeriod: true, roomReq: "room_khtn" },
-            { teacher: "Cô Đặng Sinh Học", subject: "KHTN (Lý-Hóa-Sinh)", classId: "8B", periods: 4, doublePeriod: true, roomReq: "room_khtn" },
-            { teacher: "Thầy Ngô Khoa Học", subject: "KHTN (Lý-Hóa-Sinh)", classId: "9A", periods: 4, doublePeriod: true, roomReq: "room_khtn" },
-            { teacher: "Thầy Ngô Khoa Học", subject: "KHTN (Lý-Hóa-Sinh)", classId: "9B", periods: 4, doublePeriod: true, roomReq: "room_khtn" },
-
-            // Lịch Sử & Địa Lí
-            { teacher: "Thầy Sử Địa Nam", subject: "Lịch Sử & Địa Lí", classId: "6A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Sử Địa Nam", subject: "Lịch Sử & Địa Lí", classId: "6B", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Sử Địa Nam", subject: "Lịch Sử & Địa Lí", classId: "7A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Sử Địa Nam", subject: "Lịch Sử & Địa Lí", classId: "7B", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Mai Địa Lý", subject: "Lịch Sử & Địa Lí", classId: "8A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Mai Địa Lý", subject: "Lịch Sử & Địa Lí", classId: "8B", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Mai Địa Lý", subject: "Lịch Sử & Địa Lí", classId: "9A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Mai Địa Lý", subject: "Lịch Sử & Địa Lí", classId: "9B", periods: 3, doublePeriod: false, roomReq: null },
-
-            // Giáo Dục Thể Chất
-            { teacher: "Thầy Thể Thao Huy", subject: "Giáo Dục Thể Chất", classId: "6A", periods: 2, doublePeriod: true, roomReq: "room_gdtc" },
-            { teacher: "Thầy Thể Thao Huy", subject: "Giáo Dục Thể Chất", classId: "6B", periods: 2, doublePeriod: true, roomReq: "room_gdtc" },
-            { teacher: "Thầy Thể Thao Huy", subject: "Giáo Dục Thể Chất", classId: "7A", periods: 2, doublePeriod: true, roomReq: "room_gdtc" },
-            { teacher: "Thầy Thể Thao Huy", subject: "Giáo Dục Thể Chất", classId: "7B", periods: 2, doublePeriod: true, roomReq: "room_gdtc" },
-            { teacher: "Thầy Thể Thao Huy", subject: "Giáo Dục Thể Chất", classId: "8A", periods: 2, doublePeriod: true, roomReq: "room_gdtc" },
-            { teacher: "Thầy Thể Thao Huy", subject: "Giáo Dục Thể Chất", classId: "8B", periods: 2, doublePeriod: true, roomReq: "room_gdtc" },
-            { teacher: "Thầy Thể Thao Huy", subject: "Giáo Dục Thể Chất", classId: "9A", periods: 2, doublePeriod: true, roomReq: "room_gdtc" },
-            { teacher: "Thầy Thể Thao Huy", subject: "Giáo Dục Thể Chất", classId: "9B", periods: 2, doublePeriod: true, roomReq: "room_gdtc" },
-
-            // Tin Học (Khối 6, 7, 9)
-            { teacher: "Cô IT Thu Hà", subject: "Tin Học", classId: "6A", periods: 2, doublePeriod: true, roomReq: "room_tin" },
-            { teacher: "Cô IT Thu Hà", subject: "Tin Học", classId: "6B", periods: 2, doublePeriod: true, roomReq: "room_tin" },
-            { teacher: "Cô IT Thu Hà", subject: "Tin Học", classId: "7A", periods: 2, doublePeriod: true, roomReq: "room_tin" },
-            { teacher: "Cô IT Thu Hà", subject: "Tin Học", classId: "7B", periods: 2, doublePeriod: true, roomReq: "room_tin" },
-            { teacher: "Cô IT Thu Hà", subject: "Tin Học", classId: "9A", periods: 2, doublePeriod: true, roomReq: "room_tin" },
-            { teacher: "Cô IT Thu Hà", subject: "Tin Học", classId: "9B", periods: 2, doublePeriod: true, roomReq: "room_tin" },
-
-            // HĐTN (Khối 6, 7, 9)
-            { teacher: "Cô Đoàn Đội Hằng", subject: "HĐTN, HN", classId: "6A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Đoàn Đội Hằng", subject: "HĐTN, HN", classId: "6B", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Đoàn Đội Hằng", subject: "HĐTN, HN", classId: "7A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Đoàn Đội Hằng", subject: "HĐTN, HN", classId: "7B", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Đoàn Đội Hằng", subject: "HĐTN, HN", classId: "9A", periods: 3, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Đoàn Đội Hằng", subject: "HĐTN, HN", classId: "9B", periods: 3, doublePeriod: false, roomReq: null },
-
-            // Nghệ thuật & Công nghệ & GDCD
-            { teacher: "Cô Họa Sĩ Mỹ Linh", subject: "Mĩ Thuật", classId: "8A", periods: 1, doublePeriod: false, roomReq: "room_amnhac" },
-            { teacher: "Cô Họa Sĩ Mỹ Linh", subject: "Mĩ Thuật", classId: "8B", periods: 1, doublePeriod: false, roomReq: "room_amnhac" },
-            { teacher: "Thầy Nhạc Trưởng Nam", subject: "Âm Nhạc", classId: "8A", periods: 1, doublePeriod: false, roomReq: "room_amnhac" },
-            { teacher: "Thầy Nhạc Trưởng Nam", subject: "Âm Nhạc", classId: "8B", periods: 1, doublePeriod: false, roomReq: "room_amnhac" },
-            { teacher: "Cô Đạo Đức An", subject: "Giáo Dục Công Dân", classId: "8A", periods: 1, doublePeriod: false, roomReq: null },
-            { teacher: "Cô Đạo Đức An", subject: "Giáo Dục Công Dân", classId: "8B", periods: 1, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Kỹ Thuật Bách", subject: "Công Nghệ", classId: "8A", periods: 1, doublePeriod: false, roomReq: null },
-            { teacher: "Thầy Kỹ Thuật Bách", subject: "Công Nghệ", classId: "8B", periods: 1, doublePeriod: false, roomReq: null }
-        ];
-
+        if (typeof CANH_THUAN_TKB_DATA !== 'undefined' && CANH_THUAN_TKB_DATA) {
+            this.schoolConfig = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.schoolConfig));
+            this.classes = [...CANH_THUAN_TKB_DATA.classes];
+            this.assignments = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.assignments));
+            this.timetable = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.timetable));
+            this.saveState();
+            return;
+        }
         this.resetTimetableGrid();
     }
 
@@ -566,5 +484,150 @@ export class SmartTKBEngine {
         }
 
         return conflicts;
+    }
+
+    /**
+     * Tự động lưu toàn bộ dữ liệu TKB vào bộ nhớ trình duyệt (LocalStorage)
+     */
+    saveState() {
+        try {
+            const data = {
+                schoolConfig: this.schoolConfig,
+                specialRooms: this.specialRooms,
+                classes: this.classes,
+                subjects: this.subjects,
+                assignments: this.assignments,
+                timetable: this.timetable,
+                savedAt: new Date().toISOString()
+            };
+            localStorage.setItem('edustudio_tkb_canhthuan_tuan9_v2', JSON.stringify(data));
+            return true;
+        } catch(e) {
+            console.warn("Lỗi lưu dữ liệu TKB:", e);
+            return false;
+        }
+    }
+
+    /**
+     * Tự động khôi phục dữ liệu TKB từ LocalStorage
+     */
+    loadState() {
+        try {
+            const raw = localStorage.getItem('edustudio_tkb_canhthuan_tuan9_v2');
+            if (!raw) return false;
+            const data = JSON.parse(raw);
+            if (data && data.classes && data.timetable && data.assignments) {
+                this.schoolConfig = data.schoolConfig || this.schoolConfig;
+                this.specialRooms = data.specialRooms || this.specialRooms;
+                this.classes = data.classes;
+                this.subjects = data.subjects || this.subjects;
+                this.assignments = data.assignments;
+                this.timetable = data.timetable;
+                return true;
+            }
+        } catch(e) {
+            console.warn("Lỗi đọc dữ liệu TKB:", e);
+        }
+        return false;
+    }
+
+    /**
+     * Xuất toàn bộ CSDL trường học ra chuỗi JSON để sao lưu / nộp cấp trên
+     */
+    exportJSON() {
+        return JSON.stringify({
+            generator: "EduStudio v3.5.5 - Smart Timetable AI",
+            author: "Thầy Nguyễn Tá Quan",
+            exportDate: new Date().toLocaleString('vi-VN'),
+            schoolConfig: this.schoolConfig,
+            specialRooms: this.specialRooms,
+            classes: this.classes,
+            assignments: this.assignments,
+            timetable: this.timetable
+        }, null, 2);
+    }
+
+    /**
+     * Nạp lại CSDL từ file JSON sao lưu
+     */
+    importJSON(jsonString) {
+        try {
+            const data = JSON.parse(jsonString);
+            if (data && data.classes && data.timetable && data.assignments) {
+                this.schoolConfig = data.schoolConfig || this.schoolConfig;
+                this.specialRooms = data.specialRooms || this.specialRooms;
+                this.classes = data.classes;
+                this.assignments = data.assignments;
+                this.timetable = data.timetable;
+                this.saveState();
+                return { success: true };
+            }
+            return { success: false, reason: "Định dạng file sao lưu không hợp lệ!" };
+        } catch(e) {
+            return { success: false, reason: e.message };
+        }
+    }
+
+    /**
+     * TÍNH NĂNG VŨ KHÍ: TỰ ĐỘNG SINH LỊCH BÁO GIẢNG TUẦN CHO GIÁO VIÊN
+     * Tự động tính toán số tiết PPCT và chuẩn hóa tên bài dạy theo tuần
+     */
+    generateTeachingSchedule(teacherName, weekNumber = 9) {
+        const grid = this.getTeacherTimetable(teacherName);
+        let scheduleRows = [];
+        let ppctCounter = {}; // Đếm tiết PPCT cho từng môn/lớp
+
+        // Giả lập tính toán tiết PPCT lũy kế đến tuần hiện tại
+        // Tiết PPCT bắt đầu của tuần = (Tuần - 1) * số_tiết_tuần + 1
+        for (const assign of this.assignments) {
+            if (assign.teacher === teacherName) {
+                const key = `${assign.subject}_${assign.classId}`;
+                ppctCounter[key] = (weekNumber - 1) * assign.periods;
+            }
+        }
+
+        for (let d = 0; d < this.DAYS.length; d++) {
+            for (let p = 0; p < this.PERIODS.length; p++) {
+                const cell = grid[d][p];
+                if (cell) {
+                    const key = `${cell.subject}_${cell.classId}`;
+                    ppctCounter[key] = (ppctCounter[key] || 0) + 1;
+                    const currentPPCT = ppctCounter[key];
+
+                    // Tên bài dạy theo chuẩn SGK Kết Nối Tri Thức
+                    let lessonTitle = `Bài học theo PPCT tiết ${currentPPCT}`;
+                    if (cell.subject === 'HĐTN, HN') {
+                        lessonTitle = `Chủ đề: Khám phá bản thân & Kỹ năng ứng phó (Tiết ${currentPPCT})`;
+                    } else if (cell.subject === 'Tin Học') {
+                        lessonTitle = `Chủ đề D: Đạo đức, pháp luật & văn hóa số (Tiết ${currentPPCT})`;
+                    } else if (cell.subject === 'Toán') {
+                        lessonTitle = `Đại số & Hình học trực quan (Tiết ${currentPPCT})`;
+                    } else if (cell.subject === 'Ngữ Văn') {
+                        lessonTitle = `Đọc hiểu văn bản & Thực hành tiếng Việt (Tiết ${currentPPCT})`;
+                    }
+
+                    const roomDef = cell.room ? this.specialRooms.find(r => r.id === cell.room) : null;
+
+                    scheduleRows.push({
+                        dayName: this.DAYS[d],
+                        period: p + 1,
+                        classId: cell.classId,
+                        subject: cell.subject,
+                        ppct: currentPPCT,
+                        lessonTitle: lessonTitle,
+                        equipment: roomDef ? roomDef.name : 'SGK, Máy chiếu, Phiếu HT',
+                        note: cell.isFixed ? 'Tiết cố định' : ''
+                    });
+                }
+            }
+        }
+
+        return {
+            teacherName: teacherName,
+            weekNumber: weekNumber,
+            academicYear: this.schoolConfig.academicYear,
+            schoolName: this.schoolConfig.schoolName,
+            rows: scheduleRows
+        };
     }
 }

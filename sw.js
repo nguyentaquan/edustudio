@@ -1,13 +1,17 @@
 // EduStudio Service Worker (PWA Engine v3.5.0 GDMN & GDPT)
 // Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
 
-const CACHE_NAME = 'edustudio-pwa-v3.5.4';
+const CACHE_NAME = 'edustudio-pwa-v3.6.0-canhthuan';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/css/style.css',
+  '/css/tkb-styles.css',
   '/js/app.js',
+  '/js/tkb-engine.js',
+  '/js/canh-thuan-tkb-data.js',
+  '/js/tkb-ui.js',
   '/assets/icon-192.png',
   '/assets/icon-512.png',
   '/assets/apple-touch-icon.png',
