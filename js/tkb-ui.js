@@ -24,7 +24,8 @@ export class SmartTKBUI {
         this.selectedTeacher = 'Thầy Nguyễn Tá Quan';
         this.selectedRoom = 'room_tin';
         this.pccmFilter = 'all';
-        this.gradeFilter = 'all'; // 'all', '6', '7', '8', '9' // 'all', 'Tổ Tự Nhiên', 'Tổ Xã Hội', 'official'
+        this.gradeFilter = 'all';
+        this.masterColorMode = 'clean'; // 'clean' (dịu mắt, nền trắng, chữ xanh mực) hoặc 'pastel' (phân màu môn) // 'all', '6', '7', '8', '9' // 'all', 'Tổ Tự Nhiên', 'Tổ Xã Hội', 'official'
 
         // Trạng thái hoán đổi 1 chạm (Click-to-Swap)
         this.swapSource = null; // { classId, day, period }
@@ -522,7 +523,10 @@ export class SmartTKBUI {
                         </p>
                     </div>
 
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <button onclick="window.smartTKBUI.toggleMasterColorMode()" style="background: #f8fafc; color: #1e293b; border: 1px solid #cbd5e1; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;" title="Chuyển đổi giao diện Dịu Mắt (Trắng sạch) hoặc Phân màu">
+                            <span>🎨</span> <span>${this.masterColorMode === 'pastel' ? 'Chế Độ: Phân Màu Môn' : 'Chế Độ: Dịu Mắt (Khuyên Dùng)'}</span>
+                        </button>
                         <button onclick="window.smartTKBUI.printTimetable()" style="background: #1e293b; color: #fff; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
                             <span>🖨️</span> <span>In Bảng Tổng Thể A4</span>
                         </button>
@@ -597,16 +601,34 @@ export class SmartTKBUI {
                         const isQuanSlot = cell.teacher && cell.teacher.includes('Nguyễn Tá Quan');
 
                         let cellContent = '';
+                        const isCleanMode = (this.masterColorMode !== 'pastel');
+
+                        // Màu chữ giáo viên chuẩn sư phạm: dịu mắt, không hoa mắt
+                        // Thầy Quan: xanh lá đậm nổi bật; Giáo viên khác: màu mực xanh học đường thanh lịch (#1d4ed8)
+                        let teacherTextColor = '#1d4ed8';
+                        if (isQuanSlot) {
+                            teacherTextColor = '#15803d'; // Xanh ngọc bích thương hiệu Thầy Quan
+                        } else if (cell.department === 'Tổ Xã Hội') {
+                            teacherTextColor = '#4338ca'; // Chàm dịu cho Tổ Xã Hội
+                        }
+
+                        // Màu nền ô: Chế độ Clean nền trắng sạch, không loang lổ nhiều màu
+                        let cellBg = isCleanMode ? '#ffffff' : style.bg;
+                        if (isQuanSlot) {
+                            cellBg = '#f0fdf4'; // Nền xanh nhạt dịu mắt cho tiết của Thầy Quan
+                        }
+
                         if (cell.subject === 'Chào Cờ' || cell.subject === 'Chào cờ') {
                             cellContent = `
                                 <div style="font-weight: 800; color: #dc2626; font-size: 0.74rem;">Chào cờ</div>
                             `;
+                            cellBg = '#fef2f2';
                         } else {
                             cellContent = `
-                                <div style="font-weight: 700; color: #0f172a; font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <div style="font-weight: 700; color: #0f172a; font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25;">
                                     ${cell.subject}
                                 </div>
-                                <div style="font-weight: 800; color: ${isQuanSlot ? '#15803d' : style.color}; font-size: 0.69rem; white-space: nowrap;">
+                                <div style="font-weight: 800; color: ${teacherTextColor}; font-size: 0.7rem; white-space: nowrap; line-height: 1.2; margin-top: 2px;">
                                     ${isQuanSlot ? '⭐ ' : ''}${shortTeacher}
                                 </div>
                             `;
@@ -615,8 +637,8 @@ export class SmartTKBUI {
                         html += `
                             <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
                                 title="${cell.subject} - ${cell.teacher} (Lớp ${c}) • Bấm để chỉnh sửa / hoán đổi"
-                                style="background: ${isQuanSlot ? '#f0fdf4' : style.bg}; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px 4px; text-align: center; cursor: pointer; height: 38px; transition: all 0.15s ease;"
-                                onmouseover="this.style.filter='brightness(0.92)'" onmouseout="this.style.filter='none'">
+                                style="background: ${cellBg}; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px 4px; text-align: center; cursor: pointer; height: 38px; transition: all 0.15s ease;"
+                                onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='${cellBg}'">
                                 ${cellContent}
                             </td>
                         `;
