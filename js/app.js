@@ -1989,7 +1989,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 category: 'hook',
                 categoryName: 'Video Khởi động (Hook)',
                 author: 'Thầy Nguyễn Tá Quan',
-                desc: 'Cảnh Thầy giáo sơ mi trắng diễn thuyết ngoại cảnh, phụ đề phát sáng không hộp nền, tạo xung đột nhận thức đầu giờ.'
+                desc: 'Cảnh Giảng viên sư phạm diễn thuyết ngoại cảnh, lời dẫn phát sáng nghệ thuật không hộp nền, kiến tạo ngữ cảnh bài học.'
             },
             {
                 id: 'v_repo_2',
@@ -2004,14 +2004,14 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             },
             {
                 id: 'v_repo_3',
-                title: 'Hoạt hình 3D Mầm Non: Thám tử Chó và Thế giới Động vật',
+                title: 'Hoạt hình 3D Mầm Non: Cún Con Thông Thái & Thế Giới Động Vật',
                 subject: 'Mầm Non',
                 duration: '2 phút',
                 ratio: '9:16',
                 category: 'mn3d',
                 categoryName: 'Hoạt hình 3D Mầm Non',
                 author: 'Thầy Nguyễn Tá Quan',
-                desc: 'Chú Chó Thám tử 3D ngồi bàn trò chuyện, hướng dẫn các bé nhận diện tiếng kêu và tập tính các con vật gần gũi.'
+                desc: 'Linh vật Cún Thông Thái 3D trò chuyện thân thiện, hướng dẫn các bé nhận diện tiếng kêu và tập tính các con vật gần gũi.'
             },
             {
                 id: 'v_repo_4',
@@ -2026,14 +2026,14 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             },
             {
                 id: 'v_repo_5',
-                title: 'MV Âm nhạc Nghệ thuật AI: Thương Lắm Người Dưng (Native 9:16)',
+                title: 'Video Âm Nhạc / Nghệ Thuật Sư Phạm: Giai Điệu Quê Hương (Native 9:16)',
                 subject: 'Nghệ thuật & Âm nhạc',
                 duration: '4 phút',
                 ratio: '9:16',
                 category: 'mv',
                 categoryName: 'MV Âm nhạc Nghệ thuật AI',
                 author: 'Thầy Nguyễn Tá Quan',
-                desc: 'Nhân vật Thầy Quan bước đi tự nhiên dọc bờ biển đêm, chữ chạy vàng phát sáng không hộp nền, chuẩn GEMINI.md.'
+                desc: 'Diễn xuất ngoại cảnh bước đi tự nhiên, chữ chạy lời ca phát sáng nghệ thuật không hộp nền, giáo dục thẩm mỹ học đường.'
             },
             {
                 id: 'v_repo_6',
@@ -2287,7 +2287,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 <h4 style="font-size: 1.1rem; color: #ffffff; margin-bottom: 0.4rem;">${v.title}</h4>
                 <p style="font-size: 0.82rem; color: #94a3b8; max-width: 480px; margin: 0 auto 1rem auto;">${v.desc}</p>
                 <div style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem;">
-                    <span>✨</span> <span>Chữ chạy phát sáng không hộp nền chuẩn GEMINI.md</span>
+                    <span>✨</span> <span>Chữ chạy phát sáng không hộp nền chuẩn sư phạm hiện đại</span>
                 </div>
             </div>
         `;
