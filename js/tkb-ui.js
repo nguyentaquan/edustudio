@@ -29,6 +29,23 @@ export class SmartTKBUI {
 
         // Trạng thái hoán đổi 1 chạm (Click-to-Swap)
         this.swapSource = null; // { classId, day, period }
+
+    onSchoolNameChange(val) {
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.schoolName = val;
+        try { localStorage.setItem('edustudio_custom_school_name', val); } catch(e){}
+        const modalInput = document.getElementById('declSchoolName');
+        if (modalInput && modalInput.value !== val) modalInput.value = val;
+    }
+
+    onSchoolYearChange(val) {
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.schoolYear = val;
+        try { localStorage.setItem('edustudio_custom_school_year', val); } catch(e){}
+        const modalInput = document.getElementById('declSchoolYear');
+        if (modalInput && modalInput.value !== val) modalInput.value = val;
+    }
+
         this.editingSlot = null; // { classId, day, period, cell }
         this.editingPCCMIndex = -1; // -1: thêm mới, >= 0: sửa
     }
@@ -39,6 +56,24 @@ export class SmartTKBUI {
     init() {
         // Luôn nạp mặc định Thời khóa biểu chính thức Canh Thuận (Tuần 9)
         this.engine.loadDefaultSampleData();
+
+        // Khôi phục tên trường và năm học tùy chỉnh nếu đã nhập trước đó
+        try {
+            const savedName = localStorage.getItem('edustudio_custom_school_name');
+            if (savedName) {
+                if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+                this.engine.schoolConfig.schoolName = savedName;
+                const inpName = document.getElementById('tkbGlobalSchoolNameInput');
+                if (inpName) inpName.value = savedName;
+            }
+            const savedYear = localStorage.getItem('edustudio_custom_school_year');
+            if (savedYear) {
+                if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+                this.engine.schoolConfig.schoolYear = savedYear;
+                const inpYear = document.getElementById('tkbGlobalSchoolYearInput');
+                if (inpYear) inpYear.value = savedYear;
+            }
+        } catch(e){}
 
         // Gắn sự kiện chuyển subnav tab
         document.querySelectorAll('.btn-tkb-subnav').forEach(btn => {
