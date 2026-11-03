@@ -1,4 +1,4 @@
-TKB tuan 9 ngày 02112026@echo off
+@echo off
 title EduStudio v2.3 Su Pham - He Thong Da Phuong Tien Mo
 echo =========================================================================
 echo               EDUSTUDIO v2.3 SƯ PHẠM - HE THONG TAC GIA

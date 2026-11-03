@@ -3075,7 +3075,7 @@ setPCCMFilter(filterName) {
 
                     // Cập nhật tên trường & cấp học
                     const nameDisp = document.getElementById('tkbGlobalSchoolNameDisplay');
-                    if (nameDisp) nameDisp.innerHTML = 🏫 ;
+                    if (nameDisp) nameDisp.innerHTML = `🏫 ${this.engine.schoolConfig.schoolName}`;
 
                     const tierBadge = document.getElementById('tkbGlobalTierBadge');
                     if (tierBadge) {
@@ -3090,7 +3090,7 @@ setPCCMFilter(filterName) {
                     }
 
                     const yearBadge = document.getElementById('tkbGlobalYearBadge');
-                    if (yearBadge) yearBadge.textContent = NH: ;
+                    if (yearBadge) yearBadge.textContent = `NH: ${this.engine.schoolConfig.academicYear}`;
 
                     // Nếu Hộp thoại Master đang mở, tự động cập nhật lại toàn bộ nội dung hộp thoại
                     const masterModal = document.getElementById('tkbMasterDeclarationModal');
@@ -3098,9 +3098,9 @@ setPCCMFilter(filterName) {
                         this.openMasterDeclarationModal();
                     }
 
-                    this.showToast(🎉 Đã nhập thành công toàn bộ Thời khóa biểu & Phân công từ file Excel []!);
+                    this.showToast(`🎉 Đã nhập thành công toàn bộ Thời khóa biểu & Phân công từ file Excel [${file.name}]!`);
                 } catch(err) {
-                    alert(❌ Lỗi khi đọc file Excel: );
+                    alert(`❌ Lỗi khi đọc file Excel: ${err.message}`);
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -3123,19 +3123,19 @@ setPCCMFilter(filterName) {
                         this.renderStats();
 
                         const nameDisp = document.getElementById('tkbGlobalSchoolNameDisplay');
-                        if (nameDisp) nameDisp.innerHTML = 🏫 ;
+                        if (nameDisp) nameDisp.innerHTML = `🏫 ${this.engine.schoolConfig.schoolName}`;
 
                         const masterModal = document.getElementById('tkbMasterDeclarationModal');
                         if (masterModal && masterModal.style.display !== 'none') {
                             this.openMasterDeclarationModal();
                         }
 
-                        this.showToast(🎉 Đã nhập thành công từ file JSON []!);
+                        this.showToast(`🎉 Đã nhập thành công từ file JSON [${file.name}]!`);
                     } else {
-                        alert(❌ Không thể nạp file: );
+                        alert(`❌ Không thể nạp file: ${res.reason || 'Dữ liệu không hợp lệ!'}`);
                     }
                 } catch(err) {
-                    alert(❌ Lỗi khi đọc file JSON: );
+                    alert(`❌ Lỗi khi đọc file JSON: ${err.message}`);
                 }
             };
             reader.readAsText(file, 'utf-8');
