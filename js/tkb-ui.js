@@ -2995,7 +2995,7 @@ setPCCMFilter(filterName) {
                             const row = ppctAoa[r];
                             if (row && row[2]) {
                                 newSubjects.push({
-                                    id: row[1] || `sub_${r}`,
+                                    id: row[1] || sub_,
                                     name: row[2],
                                     periodsPerWeek: parseInt(row[3]) || 1,
                                     doublePeriod: String(row[4]).toUpperCase() === 'TRUE',
@@ -3006,7 +3006,28 @@ setPCCMFilter(filterName) {
                         if (newSubjects.length > 0) this.engine.subjects = newSubjects;
                     }
 
-                    // 1.3 Đọc Sheet UU_TIEN_SU_PHAM
+                    // 1.3 Đọc Sheet PHAN_CONG_CHUYEN_MON
+                    if (wb.SheetNames.includes('PHAN_CONG_CHUYEN_MON')) {
+                        const pccmAoa = XLSX.utils.sheet_to_json(wb.Sheets['PHAN_CONG_CHUYEN_MON'], { header: 1 });
+                        let newAssignments = [];
+                        for (let r = 1; r < pccmAoa.length; r++) {
+                            const row = pccmAoa[r];
+                            if (row && row[1] && row[3] && row[4]) {
+                                newAssignments.push({
+                                    teacher: row[1],
+                                    department: row[2] || 'Tổ Bộ Môn',
+                                    subject: row[3],
+                                    classId: row[4],
+                                    periodsPerWeek: parseInt(row[5]) || 1,
+                                    role: row[6] || '',
+                                    reducedPeriods: parseInt(row[7]) || 0
+                                });
+                            }
+                        }
+                        if (newAssignments.length > 0) this.engine.assignments = newAssignments;
+                    }
+
+                    // 1.4 Đọc Sheet UU_TIEN_SU_PHAM
                     if (wb.SheetNames.includes('UU_TIEN_SU_PHAM')) {
                         const prioAoa = XLSX.utils.sheet_to_json(wb.Sheets['UU_TIEN_SU_PHAM'], { header: 1 });
                         if (!this.engine.pedagogicalPriorities) this.engine.pedagogicalPriorities = {};
@@ -3020,7 +3041,7 @@ setPCCMFilter(filterName) {
                         }
                     }
 
-                    // 1.4 Đọc Sheet THOI_KHOA_BIEU
+                    // 1.5 Đọc Sheet THOI_KHOA_BIEU
                     if (wb.SheetNames.includes('THOI_KHOA_BIEU')) {
                         const tkbAoa = XLSX.utils.sheet_to_json(wb.Sheets['THOI_KHOA_BIEU'], { header: 1 });
                         const dayMap = { 'Thứ Hai': 0, 'Thứ Ba': 1, 'Thứ Tư': 2, 'Thứ Năm': 3, 'Thứ Sáu': 4, 'Thứ Bảy': 5 };
@@ -3054,17 +3075,22 @@ setPCCMFilter(filterName) {
 
                     // Cập nhật tên trường & cấp học
                     const nameDisp = document.getElementById('tkbGlobalSchoolNameDisplay');
-                    if (nameDisp) nameDisp.innerHTML = `🏫 ${this.engine.schoolConfig.schoolName}`;
+                    if (nameDisp) nameDisp.innerHTML = 🏫 ;
 
-                    const tierSelect = document.getElementById('tkbGlobalTierSelect');
-                    if (tierSelect && this.engine.schoolConfig.educationalTier) {
-                        tierSelect.value = this.engine.schoolConfig.educationalTier;
+                    const tierBadge = document.getElementById('tkbGlobalTierBadge');
+                    if (tierBadge) {
+                        const tierMap = {
+                            'GDMN': 'Mầm Non',
+                            'TIEU_HOC': 'Tiểu Học',
+                            'THCS': 'GDPT 2018',
+                            'THPT': 'THPT Tổ Hợp',
+                            'LIEN_CAP': 'K-12 Liên Cấp'
+                        };
+                        tierBadge.textContent = tierMap[this.engine.schoolConfig.educationalTier] || 'GDPT 2018';
                     }
 
-                    const modelSelect = document.getElementById('tkbGlobalModelSelect');
-                    if (modelSelect && this.engine.schoolConfig.schoolModel) {
-                        modelSelect.value = this.engine.schoolConfig.schoolModel;
-                    }
+                    const yearBadge = document.getElementById('tkbGlobalYearBadge');
+                    if (yearBadge) yearBadge.textContent = NH: ;
 
                     // Nếu Hộp thoại Master đang mở, tự động cập nhật lại toàn bộ nội dung hộp thoại
                     const masterModal = document.getElementById('tkbMasterDeclarationModal');
@@ -3072,9 +3098,9 @@ setPCCMFilter(filterName) {
                         this.openMasterDeclarationModal();
                     }
 
-                    this.showToast(`🎉 Đã nhập thành công toàn bộ Thời khóa biểu & Phân công từ file Excel [${file.name}]!`);
+                    this.showToast(🎉 Đã nhập thành công toàn bộ Thời khóa biểu & Phân công từ file Excel []!);
                 } catch(err) {
-                    alert(`❌ Lỗi khi đọc file Excel: ${err.message}`);
+                    alert(❌ Lỗi khi đọc file Excel: );
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -3095,50 +3121,31 @@ setPCCMFilter(filterName) {
                         this.renderPCCMTable();
                         this.renderConfigTab();
                         this.renderStats();
-                        this.showToast(`🎉 Đã nhập thành công từ file JSON [${file.name}]!`);
+
+                        const nameDisp = document.getElementById('tkbGlobalSchoolNameDisplay');
+                        if (nameDisp) nameDisp.innerHTML = 🏫 ;
+
+                        const masterModal = document.getElementById('tkbMasterDeclarationModal');
+                        if (masterModal && masterModal.style.display !== 'none') {
+                            this.openMasterDeclarationModal();
+                        }
+
+                        this.showToast(🎉 Đã nhập thành công từ file JSON []!);
+                    } else {
+                        alert(❌ Không thể nạp file: );
                     }
                 } catch(err) {
-                    alert(`❌ Lỗi khi đọc file JSON: ${err.message}`);
+                    alert(❌ Lỗi khi đọc file JSON: );
                 }
             };
             reader.readAsText(file, 'utf-8');
         }
     }
 
-
-    openMasterDeclarationModal();
-                    }
-
-                    // Cập nhật hiển thị tên trường & năm học
-                    const nameDisp = document.getElementById('tkbGlobalSchoolNameDisplay');
-                    if (nameDisp) nameDisp.innerHTML = `🏫 ${this.engine.schoolConfig.schoolName}`;
-
-                    const tierSelect = document.getElementById('tkbGlobalTierSelect');
-                    if (tierSelect && this.engine.schoolConfig.educationalTier) {
-                        tierSelect.value = this.engine.schoolConfig.educationalTier;
-                    }
-
-                    const modelSelect = document.getElementById('tkbGlobalModelSelect');
-                    if (modelSelect && this.engine.schoolConfig.schoolModel) {
-                        modelSelect.value = this.engine.schoolConfig.schoolModel;
-                    }
-
-                    this.showToast(`🎉 Đã nhập lại thành công toàn bộ Thời khóa biểu & Phân công chuyên môn từ file [${file.name}]!`);
-                } else {
-                    alert(`❌ Không thể nạp file: ${res.reason || 'Dữ liệu không hợp lệ!'}`);
-                }
-            } catch(err) {
-                alert(`❌ Lỗi khi đọc file JSON: ${err.message}`);
-            }
-        };
-        reader.readAsText(file, 'utf-8');
-    }
-
-
     /**
      * ==============================================================================
      * HỘP THOẠI KHAI BÁO ĐẦY ĐỦ THÔNG TIN TOÀN TRƯỜNG & TRUNG TÂM XUẤT/NHẬP MASTER
-     * (GDMN & GDPT TOÀN CẦU - TÍCH HỢP 4 TAB NGHIỆP VỤ + XUẤT / NHẬP FILE MẪU)
+     * (GDMN & GDPT TOÀN CẦU - 5 TABS + CHI TIẾT PHỤ DSGV & PCCM + ĐỒNG BỘ 2 CHIỀU)
      * ==============================================================================
      */
     openMasterDeclarationModal(activeTab = 'school') {
