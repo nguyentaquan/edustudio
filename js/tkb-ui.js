@@ -2836,6 +2836,12 @@ setPCCMFilter(filterName) {
                     this.renderConfigTab();
                     this.renderStats();
 
+                    // Nếu Hộp thoại Master đang mở, tự động cập nhật lại toàn bộ nội dung hộp thoại
+                    const masterModal = document.getElementById('tkbMasterDeclarationModal');
+                    if (masterModal && masterModal.style.display !== 'none') {
+                        this.openMasterDeclarationModal();
+                    }
+
                     // Cập nhật hiển thị tên trường & năm học
                     const nameDisp = document.getElementById('tkbGlobalSchoolNameDisplay');
                     if (nameDisp) nameDisp.innerHTML = `🏫 ${this.engine.schoolConfig.schoolName}`;
@@ -2859,6 +2865,416 @@ setPCCMFilter(filterName) {
             }
         };
         reader.readAsText(file, 'utf-8');
+    }
+
+
+    /**
+     * ==============================================================================
+     * HỘP THOẠI KHAI BÁO ĐẦY ĐỦ THÔNG TIN TOÀN TRƯỜNG & TRUNG TÂM XUẤT/NHẬP MASTER
+     * (GDMN & GDPT TOÀN CẦU - TÍCH HỢP 4 TAB NGHIỆP VỤ + XUẤT / NHẬP FILE MẪU)
+     * ==============================================================================
+     */
+    openMasterDeclarationModal(activeTab = 'school') {
+        let modal = document.getElementById('tkbMasterDeclarationModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'tkbMasterDeclarationModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8);
+                backdrop-filter: blur(6px); z-index: 999999; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        const sc = this.engine.schoolConfig || {};
+        const prio = this.engine.pedagogicalPriorities || {};
+        const subjects = this.engine.subjects || [];
+        const rooms = this.engine.specialRooms || [];
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 12px; max-width: 860px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.35); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; animation: modalPop 0.2s ease-out;">
+                
+                <!-- 1. HEADER MODAL: TIÊU ĐỀ + CỤM NÚT XUẤT / NHẬP FILE MẪU TRỰC TIẾP -->
+                <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0369a1 100%); color: #ffffff; padding: 0.9rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.65rem;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <span style="font-size: 1.5rem;">🌍</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.3px;">HỘP THOẠI KHAI BÁO ĐẦY ĐỦ THÔNG TIN TKB TOÀN TRƯỜNG</h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #bae6fd;">Hệ thống Lập lịch Sư phạm Toàn năng GDMN &amp; GDPT Toàn Cầu</p>
+                        </div>
+                    </div>
+
+                    <!-- Cụm Nút Xuất / Nhập Mẫu Ngay Tại Header Hộp Thoại -->
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <button type="button" onclick="window.smartTKBUI.exportMasterTKBPackage()" style="background: #059669; color: #ffffff; border: none; padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Xuất toàn bộ thông tin trong hộp thoại thành file JSON mẫu">
+                            <span>📤</span> <span>Xuất Mẫu TKB (.json)</span>
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.triggerMasterPackageImport()" style="background: #d97706; color: #ffffff; border: none; padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Nhập lại từ file JSON mẫu để điền toàn bộ thông tin trong 1 giây">
+                            <span>📥</span> <span>Nhập Lại File Mẫu</span>
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.closeMasterDeclarationModal()" style="background: rgba(255,255,255,0.15); border: none; color: #ffffff; font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 0.15rem 0.5rem; border-radius: 6px;">&times;</button>
+                    </div>
+                </div>
+
+                <!-- 2. THANH SUBNAV 4 TAB BÊN TRONG HỘP THOẠI -->
+                <div style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1; display: flex; padding: 0 1rem; gap: 0.25rem; overflow-x: auto;">
+                    <button class="btn-master-modal-tab active" data-tab="school" onclick="window.smartTKBUI.switchMasterModalTab('school')" style="padding: 0.6rem 0.85rem; font-size: 0.78rem; font-weight: 800; border: none; border-bottom: 3px solid #1d4ed8; background: transparent; color: #1d4ed8; cursor: pointer;">
+                        🏫 1. Thông Tin Trường &amp; Định Mức
+                    </button>
+                    <button class="btn-master-modal-tab" data-tab="curriculum" onclick="window.smartTKBUI.switchMasterModalTab('curriculum')" style="padding: 0.6rem 0.85rem; font-size: 0.78rem; font-weight: 700; border: none; border-bottom: 3px solid transparent; background: transparent; color: #64748b; cursor: pointer;">
+                        📚 2. Khung PPCT Môn Học
+                    </button>
+                    <button class="btn-master-modal-tab" data-tab="priorities" onclick="window.smartTKBUI.switchMasterModalTab('priorities')" style="padding: 0.6rem 0.85rem; font-size: 0.78rem; font-weight: 700; border: none; border-bottom: 3px solid transparent; background: transparent; color: #64748b; cursor: pointer;">
+                        🎯 3. Ưu Tiên Sư Phạm
+                    </button>
+                    <button class="btn-master-modal-tab" data-tab="facilities" onclick="window.smartTKBUI.switchMasterModalTab('facilities')" style="padding: 0.6rem 0.85rem; font-size: 0.78rem; font-weight: 700; border: none; border-bottom: 3px solid transparent; background: transparent; color: #64748b; cursor: pointer;">
+                        🏛️ 4. Khối Lớp &amp; Phòng Bộ Môn
+                    </button>
+                </div>
+
+                <!-- 3. VÙNG NỘI DUNG 4 TABS -->
+                <div style="padding: 1.25rem; overflow-y: auto; flex: 1;">
+                    
+                    <!-- TAB 1: THÔNG TIN TRƯỜNG & ĐỊNH MỨC -->
+                    <div id="master-tab-school" class="master-modal-pane" style="display: block;">
+                        
+                        <!-- Presets 1 chạm -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.85rem; margin-bottom: 1rem;">
+                            <div style="font-size: 0.74rem; font-weight: 800; color: #475569; margin-bottom: 0.35rem; text-transform: uppercase;">
+                                ⚡ Nạp Nhanh Mẫu Chuẩn Quốc Gia (One-Click Presets):
+                            </div>
+                            <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                                <button type="button" onclick="window.smartTKBUI.applySchoolPreset('THCS_BAN_TRU')" style="padding: 0.25rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; border: 1px solid #93c5fd; background: #eff6ff; color: #1d4ed8; cursor: pointer;">
+                                    🏫 THCS Bán Trú Canh Thuận (Chuẩn 17t)
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.applySchoolPreset('TIEU_HOC_2BUOI')" style="padding: 0.25rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer;">
+                                    🎒 Tiểu Học 2 Buổi/Ngày (Chuẩn 23t)
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.applySchoolPreset('MAM_NON')" style="padding: 0.25rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; border: 1px solid #fde68a; background: #fffbeb; color: #b45309; cursor: pointer;">
+                                    👶 GD Mầm Non (Chế độ Sinh hoạt &amp; Chơi)
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.applySchoolPreset('THPT_CHUAN')" style="padding: 0.25rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; border: 1px solid #c7d2fe; background: #e0e7ff; color: #4338ca; cursor: pointer;">
+                                    🎓 THPT Tổ Hợp Môn (Chuẩn 17t)
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+                            <div style="grid-column: 1 / -1;">
+                                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                    🏫 Tên Cơ Sở Giáo Dục / Trường Học:
+                                </label>
+                                <input type="text" id="mcfgSchoolName" value="${sc.schoolName || 'Trường THCS Bán Trú Canh Thuận'}" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.85rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                    🎓 Cấp Học (Educational Tier):
+                                </label>
+                                <select id="mcfgTier" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff;">
+                                    <option value="GDMN" ${sc.educationalTier === 'GDMN' ? 'selected' : ''}>👶 Giáo Dục Mầm Non (Chế độ sinh hoạt &amp; Chơi)</option>
+                                    <option value="TIEU_HOC" ${sc.educationalTier === 'TIEU_HOC' ? 'selected' : ''}>🎒 Giáo Dục Tiểu Học (Cấp 1 • 2 buổi/ngày)</option>
+                                    <option value="THCS" ${sc.educationalTier === 'THCS' || !sc.educationalTier ? 'selected' : ''}>🏫 Giáo Dục THCS (Cấp 2 • GDPT 2018)</option>
+                                    <option value="THPT" ${sc.educationalTier === 'THPT' ? 'selected' : ''}>🎓 Giáo Dục THPT (Cấp 3 • Phân hóa tổ hợp)</option>
+                                    <option value="LIEN_CAP" ${sc.educationalTier === 'LIEN_CAP' ? 'selected' : ''}>🌐 Trường Phổ Thông Liên Cấp K-12</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                    🏠 Mô Hình Quản Trị Trường:
+                                </label>
+                                <select id="mcfgModel" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff;">
+                                    <option value="BAN_TRU" ${sc.schoolModel === 'BAN_TRU' || !sc.schoolModel ? 'selected' : ''}>Bán Trú PTDTBT (Định mức 17 tiết/tuần)</option>
+                                    <option value="CONG_LAP" ${sc.schoolModel === 'CONG_LAP' ? 'selected' : ''}>Công Lập Chuẩn (Định mức 19 tiết/tuần)</option>
+                                    <option value="HAI_BUOI" ${sc.schoolModel === 'HAI_BUOI' ? 'selected' : ''}>Học 2 Buổi/Ngày (Tiểu học / Bán trú)</option>
+                                    <option value="NOI_TRU" ${sc.schoolModel === 'NOI_TRU' ? 'selected' : ''}>Nội Trú Quốc Gia / Quốc Tế</option>
+                                    <option value="TU_THUC" ${sc.schoolModel === 'TU_THUC' ? 'selected' : ''}>Tư Thục / Tự Chủ Chất Lượng Cao</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                    📅 Năm Học (Academic Year):
+                                </label>
+                                <input type="text" id="mcfgAcademicYear" value="${sc.academicYear || '2026 - 2027'}" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                    🎯 Định Mức Tiết Dạy Tiêu Chuẩn (Tiết/Tuần):
+                                </label>
+                                <input type="number" id="mcfgStandardHours" value="${sc.standardPeriodsPerWeek || 17}" min="10" max="35" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                    📊 Kế Hoạch Số Tuần Thực Dạy (Tuần/Năm):
+                                </label>
+                                <input type="number" id="mcfgTotalWeeks" value="${sc.totalWeeks || 35}" min="30" max="40" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                    ⏰ Ca Học &amp; Khung Giờ:
+                                </label>
+                                <input type="text" id="mcfgSession" value="${sc.session || 'Sáng (5 tiết/buổi)'}" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 2: KHUNG PPCT MÔN HỌC -->
+                    <div id="master-tab-curriculum" class="master-modal-pane" style="display: none;">
+                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 0.5rem 0.85rem; margin-bottom: 0.85rem; font-size: 0.75rem; color: #166534; line-height: 1.4;">
+                            💡 <strong>Thay đổi quy định PPCT:</strong> Chỉnh sửa số tiết/tuần của từng môn học khi có văn bản chỉ đạo mới của Bộ/Sở. Hệ thống sẽ tự động cập nhật ngay trên Bàn cờ TKB và ma trận phân công chuyên môn!
+                        </div>
+
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                            <thead>
+                                <tr style="background: #f1f5f9; color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1;">
+                                    <th style="padding: 0.5rem 0.6rem; width: 45px; text-align: center;">STT</th>
+                                    <th style="padding: 0.5rem 0.6rem;">Tên Môn Học (Bộ Môn)</th>
+                                    <th style="padding: 0.5rem 0.6rem; width: 110px; text-align: center;">Số Tiết/Tuần</th>
+                                    <th style="padding: 0.5rem 0.6rem; width: 90px; text-align: center;">Tiết Kép (2t)</th>
+                                    <th style="padding: 0.5rem 0.6rem;">Phòng Bộ Môn Yêu Cầu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblMasterCurriculumBody">
+                                ${subjects.map((sub, idx) => {
+                                    let roomOpts = '<option value="">(Không yêu cầu)</option>';
+                                    rooms.forEach(r => {
+                                        roomOpts += `<option value="${r.id}" ${sub.roomReq === r.id ? 'selected' : ''}>${r.icon} ${r.name}</option>`;
+                                    });
+                                    return `
+                                        <tr data-index="${idx}">
+                                            <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                                            <td style="padding: 0.45rem 0.6rem;">
+                                                <input type="text" class="mcfg-sub-name" value="${sub.name}" style="width: 100%; padding: 0.25rem 0.45rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                            </td>
+                                            <td style="padding: 0.45rem 0.6rem; text-align: center;">
+                                                <input type="number" class="mcfg-sub-periods" value="${sub.periodsPerWeek}" min="1" max="10" style="width: 60px; padding: 0.25rem 0.45rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; color: #1d4ed8;">
+                                            </td>
+                                            <td style="padding: 0.45rem 0.6rem; text-align: center;">
+                                                <input type="checkbox" class="mcfg-sub-double" ${sub.doublePeriod ? 'checked' : ''} style="cursor: pointer;">
+                                            </td>
+                                            <td style="padding: 0.45rem 0.6rem;">
+                                                <select class="mcfg-sub-room" style="width: 100%; padding: 0.25rem 0.45rem; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff;">
+                                                    ${roomOpts}
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- TAB 3: ƯU TIÊN SƯ PHẠM THỰC TẾ -->
+                    <div id="master-tab-priorities" class="master-modal-pane" style="display: none;">
+                        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 0.5rem 0.85rem; margin-bottom: 0.85rem; font-size: 0.75rem; color: #92400e; line-height: 1.4;">
+                            🎯 <strong>Nguyên tắc Sư phạm &amp; Nhân văn:</strong> Lập lịch không đơn thuần là giải toán tổ hợp, mà là bảo vệ sức khỏe và điều kiện làm việc của người Thầy.
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            
+                            <label style="display: flex; align-items: flex-start; gap: 0.6rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; cursor: pointer;">
+                                <input type="checkbox" id="mprioGVCN" ${prio.gvcnOffDays !== false ? 'checked' : ''} style="margin-top: 0.15rem; cursor: pointer;">
+                                <div>
+                                    <strong style="font-size: 0.82rem; color: #0f172a;">🌟 GVCN được ưu tiên nghỉ trọn vẹn 2 buổi / tuần</strong>
+                                    <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #64748b;">Dành riêng thời gian để Thầy Cô Chủ nhiệm đi cơ sở, thăm gia đình học sinh nội trú/bán trú, chấm bài và chuẩn bị sinh hoạt lớp.</p>
+                                </div>
+                            </label>
+
+                            <label style="display: flex; align-items: flex-start; gap: 0.6rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; cursor: pointer;">
+                                <input type="checkbox" id="mprioNoPE45" ${prio.noPEPeriod45 !== false ? 'checked' : ''} style="margin-top: 0.15rem; cursor: pointer;">
+                                <div>
+                                    <strong style="font-size: 0.82rem; color: #0f172a;">🏃 Tuyệt đối không xếp Thể dục (GDTC) vào tiết 4 – 5</strong>
+                                    <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #64748b;">Tránh giờ nắng gắt giữa trưa ảnh hưởng thể lực và sức khỏe của học sinh trên sân vận động.</p>
+                                </div>
+                            </label>
+
+                            <label style="display: flex; align-items: flex-start; gap: 0.6rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; cursor: pointer;">
+                                <input type="checkbox" id="mprioMax4" ${prio.maxPeriodsPerDay !== false ? 'checked' : ''} style="margin-top: 0.15rem; cursor: pointer;">
+                                <div>
+                                    <strong style="font-size: 0.82rem; color: #0f172a;">⏱️ Giới hạn tối đa 4 tiết dạy / ngày / giáo viên</strong>
+                                    <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #64748b;">Triệt tiêu tình trạng quá tải (dạy liên tục 5 tiết/ngày gây kiệt sức giảng dạy).</p>
+                                </div>
+                            </label>
+
+                            <label style="display: flex; align-items: flex-start; gap: 0.6rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; cursor: pointer;">
+                                <input type="checkbox" id="mprioDouble" ${prio.preferDoublePeriods !== false ? 'checked' : ''} style="margin-top: 0.15rem; cursor: pointer;">
+                                <div>
+                                    <strong style="font-size: 0.82rem; color: #0f172a;">🔗 Ưu tiên ghép tiết đôi (2 tiết liền) cho KHTN &amp; Ngữ văn</strong>
+                                    <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #64748b;">Tối ưu hóa các bài học thực hành phòng thí nghiệm và bài viết tập làm văn đạt chuẩn GDPT 2018.</p>
+                                </div>
+                            </label>
+
+                            <label style="display: flex; align-items: flex-start; gap: 0.6rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; cursor: pointer;">
+                                <input type="checkbox" id="mprioStrict" checked style="margin-top: 0.15rem; cursor: pointer;">
+                                <div>
+                                    <strong style="font-size: 0.82rem; color: #0f172a;">🔒 Chống trùng tiết giáo viên 100% &amp; Khóa tiết Chào cờ / SHL</strong>
+                                    <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #64748b;">Thuật toán AI CSP Solver khóa cứng Chào cờ sáng Thứ Hai và Sinh hoạt lớp sáng Thứ Sáu.</p>
+                                </div>
+                            </label>
+
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: KHỐI LỚP & PHÒNG HỌC -->
+                    <div id="master-tab-facilities" class="master-modal-pane" style="display: none;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            
+                            <div>
+                                <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #1e293b;">🏫 Danh Sách Khối Lớp Hiện Tại (${this.engine.classes.length} Lớp):</h4>
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem; display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                                    ${this.engine.classes.map(c => `
+                                        <span style="background: #dbeafe; color: #1e40af; font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                                            Lớp ${c}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #1e293b;">🏛️ Phòng Học Bộ Môn (${rooms.length} Phòng):</h4>
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem; display: flex; flex-direction: column; gap: 0.35rem;">
+                                    ${rooms.map(r => `
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #334155;">
+                                            <span>${r.icon} <strong>${r.name}</strong></span>
+                                            <span style="color: #64748b;">Sức chứa: ${r.capacity} lớp/tiết</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 4. FOOTER MODAL: NÚT LƯU & ÁP DỤNG TOÀN DIỆN -->
+                <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.73rem; color: #64748b;">
+                        <span>💡 Toàn bộ dữ liệu được lưu giữ an toàn trong bộ nhớ máy tính (LocalStorage &amp; JSON)</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="button" onclick="window.smartTKBUI.closeMasterDeclarationModal()" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                            Đóng
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.saveMasterDeclarationModal()" style="padding: 0.45rem 1.15rem; font-size: 0.78rem; font-weight: 800; border-radius: 6px; border: none; background: #1d4ed8; color: #ffffff; cursor: pointer; box-shadow: 0 2px 6px rgba(29, 78, 216, 0.3);">
+                            💾 Lưu &amp; Kích Hoạt Toàn Trường
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        `;
+        modal.style.display = 'flex';
+    }
+
+    switchMasterModalTab(tabId) {
+        document.querySelectorAll('.btn-master-modal-tab').forEach(btn => {
+            const isTarget = btn.dataset.tab === tabId;
+            btn.classList.toggle('active', isTarget);
+            btn.style.borderBottomColor = isTarget ? '#1d4ed8' : 'transparent';
+            btn.style.color = isTarget ? '#1d4ed8' : '#64748b';
+            btn.style.fontWeight = isTarget ? '800' : '700';
+        });
+
+        document.querySelectorAll('.master-modal-pane').forEach(pane => {
+            pane.style.display = pane.id === `master-tab-${tabId}` ? 'block' : 'none';
+        });
+    }
+
+    closeMasterDeclarationModal() {
+        const modal = document.getElementById('tkbMasterDeclarationModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    saveMasterDeclarationModal() {
+        // 1. Lưu thông tin trường
+        const schoolName = document.getElementById('mcfgSchoolName')?.value || 'Trường THCS Bán Trú Canh Thuận';
+        const tier = document.getElementById('mcfgTier')?.value || 'THCS';
+        const model = document.getElementById('mcfgModel')?.value || 'BAN_TRU';
+        const academicYear = document.getElementById('mcfgAcademicYear')?.value || '2026 - 2027';
+        const standardHours = parseInt(document.getElementById('mcfgStandardHours')?.value) || 17;
+        const totalWeeks = parseInt(document.getElementById('mcfgTotalWeeks')?.value) || 35;
+        const session = document.getElementById('mcfgSession')?.value || 'Sáng (5 tiết/buổi)';
+
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.schoolName = schoolName;
+        this.engine.schoolConfig.educationalTier = tier;
+        this.engine.schoolConfig.schoolModel = model;
+        this.engine.schoolConfig.academicYear = academicYear;
+        this.engine.schoolConfig.standardPeriodsPerWeek = standardHours;
+        this.engine.schoolConfig.totalWeeks = totalWeeks;
+        this.engine.schoolConfig.session = session;
+
+        // 2. Lưu PPCT Môn học
+        const subRows = document.querySelectorAll('#tblMasterCurriculumBody tr');
+        if (subRows && subRows.length > 0) {
+            let updatedSubjects = [];
+            subRows.forEach(tr => {
+                const idx = parseInt(tr.dataset.index);
+                const name = tr.querySelector('.mcfg-sub-name')?.value || '';
+                const periods = parseInt(tr.querySelector('.mcfg-sub-periods')?.value) || 1;
+                const isDouble = tr.querySelector('.mcfg-sub-double')?.checked || false;
+                const room = tr.querySelector('.mcfg-sub-room')?.value || null;
+
+                const oldSub = this.engine.subjects[idx] || {};
+                updatedSubjects.push({
+                    ...oldSub,
+                    name: name,
+                    periodsPerWeek: periods,
+                    doublePeriod: isDouble,
+                    roomReq: room || null
+                });
+            });
+            this.engine.subjects = updatedSubjects;
+        }
+
+        // 3. Lưu Ưu tiên Sư phạm
+        if (!this.engine.pedagogicalPriorities) this.engine.pedagogicalPriorities = {};
+        this.engine.pedagogicalPriorities.gvcnOffDays = document.getElementById('mprioGVCN')?.checked || false;
+        this.engine.pedagogicalPriorities.noPEPeriod45 = document.getElementById('mprioNoPE45')?.checked || false;
+        this.engine.pedagogicalPriorities.maxPeriodsPerDay = document.getElementById('mprioMax4')?.checked ? 4 : 5;
+        this.engine.pedagogicalPriorities.preferDoublePeriods = document.getElementById('mprioDouble')?.checked || false;
+
+        // Đồng bộ các checkbox ngoài màn hình chính nếu có
+        const chkGVCN = document.getElementById('chkGVCNRest');
+        if (chkGVCN) chkGVCN.checked = this.engine.pedagogicalPriorities.gvcnOffDays;
+        const chkNoPE = document.getElementById('chkNoPE45');
+        if (chkNoPE) chkNoPE.checked = this.engine.pedagogicalPriorities.noPEPeriod45;
+        const chkMax4 = document.getElementById('chkMax4Periods');
+        if (chkMax4) chkMax4.checked = (this.engine.pedagogicalPriorities.maxPeriodsPerDay === 4);
+        const chkDouble = document.getElementById('chkPreferDouble');
+        if (chkDouble) chkDouble.checked = this.engine.pedagogicalPriorities.preferDoublePeriods;
+
+        // Lưu vào Engine & LocalStorage
+        this.engine.saveState();
+
+        // Cập nhật giao diện bên ngoài
+        const nameDisp = document.getElementById('tkbGlobalSchoolNameDisplay');
+        if (nameDisp) nameDisp.innerHTML = `🏫 ${schoolName}`;
+
+        const tierSelect = document.getElementById('tkbGlobalTierSelect');
+        if (tierSelect) tierSelect.value = tier;
+
+        const modelSelect = document.getElementById('tkbGlobalModelSelect');
+        if (modelSelect) modelSelect.value = model;
+
+        this.updateFilterControls();
+        this.updateSchoolScaleSummary();
+        this.renderCurrentView();
+        this.renderPCCMTable();
+        this.renderConfigTab();
+        this.renderStats();
+
+        this.closeMasterDeclarationModal();
+        this.showToast(`🎉 Đã lưu & kích hoạt toàn diện hồ sơ trường [${schoolName}] cho cả hệ thống!`);
     }
 
 }
