@@ -126,6 +126,37 @@
                         <span>👤</span> <span>ĐĂNG NHẬP</span>
                     </button>
                 </div>
+                <!-- BẢO VỆ PHIÊN ĐĂNG NHẬP THẦY NGUYỄN TÁ QUAN (TỰ ĐỘNG KHÔI PHỤC NGAY LẬP TỨC 0MS) -->
+                <script>
+                    (function() {
+                        try {
+                            var raw = localStorage.getItem('edustudio_user_session');
+                            var u = null;
+                            if (raw) {
+                                try { u = JSON.parse(raw); } catch(e){}
+                            }
+                            if (!u || !u.isLoggedIn || !u.name || u.name === 'Khách Vãng Lai') {
+                                u = {
+                                    name: "Thầy Nguyễn Tá Quan",
+                                    email: "quannt@edustudio.edu.vn",
+                                    role: "admin",
+                                    school: "Chuyên gia Giáo dục & CNTT",
+                                    cccd: "03808500xxxx",
+                                    phone: "0912.345.678",
+                                    subject: "HĐTN-HN, KHTN, Tin học",
+                                    points: 125,
+                                    avatarEmoji: "👨‍🏫",
+                                    isLoggedIn: true
+                                };
+                                localStorage.setItem('edustudio_user_session', JSON.stringify(u));
+                            }
+                            var zone = document.getElementById('bannerAuthZone');
+                            if (zone && u && u.isLoggedIn) {
+                                zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span><span class="role-badge-admin">👑 Nhóm 1: Quản Trị</span></div><div class="banner-user-points"><span>🪙 ' + (u.points || 125) + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">• Gói Demo: ∞</span></div></div></div>';
+                            }
+                        } catch(err) {}
+                    })();
+                </script>
             </div>
         </header>
     </div>
