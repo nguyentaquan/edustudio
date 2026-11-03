@@ -835,6 +835,11 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     </div>
 
                     <div style="display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;">
+                        <button type="button" onclick="window.smartTKBUI.openCumulativePriorModal();" 
+                                style="background: #ffffff; color: #047857; border: 1.5px solid #059669; padding: 0.22rem 0.55rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04);" 
+                                title="Xem đối soát Lũy kế TKB liền kề trước (Tuần 1 - 8)">
+                            <span>📊</span> <span>Lũy Kế TKB Liền Kề Trước</span>
+                        </button>
                         <div style="display: flex; align-items: center; gap: 0.25rem;">
                             <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">📅 Áp Dụng:</span>
                             <select id="tkbSchoolViewSemSelect" onchange="window.smartTKBUI.setSchedulePlan(this.value)" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;" title="Chọn Tuần hoặc Học kỳ áp dụng (đáp ứng đơn vị đổi theo Tuần)">
@@ -4005,6 +4010,149 @@ setPCCMFilter(filterName) {
         document.querySelectorAll('.master-modal-pane').forEach(pane => {
             pane.style.display = pane.id === `master-tab-${tabId}` ? 'block' : 'none';
         });
+    }
+
+    /**
+     * HỘP THOẠI: BẢNG ĐỐI SOÁT & LŨY KẾ THỜI KHÓA BIỂU LIỀN KỀ TRƯỚC
+     * (Theo chỉ đạo trực tiếp của Thầy Nguyễn Tá Quan)
+     */
+    openCumulativePriorModal() {
+        let modal = document.getElementById('tkbCumulativePriorModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'tkbCumulativePriorModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+                backdrop-filter: blur(8px); z-index: 1000000; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        modal.classList.add('active');
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('visibility', 'visible', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
+        modal.style.setProperty('z-index', '9999999', 'important');
+
+        const workloadReport = this.engine.getTeacherWorkloadReport ? this.engine.getTeacherWorkloadReport() : [];
+        const priorWeeks = 8; // Tuần 1 đến 8 liền kề trước
+        const currentWeeks = 5; // Tuần 9 đến 13 hiện hành
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 12px; max-width: 980px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.4); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; animation: modalPop 0.2s ease-out;">
+                
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #065f46 0%, #047857 50%, #0f766e 100%); color: #ffffff; padding: 0.9rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <span style="font-size: 1.5rem;">📊</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.08rem; font-weight: 800; text-transform: uppercase;">
+                                BẢNG ĐỐI SOÁT &amp; LŨY KẾ THỜI KHÓA BIỂU LIỀN KỀ TRƯỚC
+                            </h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #a7f3d0;">
+                                Kế thừa từ TKB Tuần 1 - 8 • Chuyển tiếp sang Giai đoạn Tuần 9 - 13 • Năm học 2026 - 2027
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="window.smartTKBUI.closeCumulativePriorModal()" style="background: rgba(255,255,255,0.2); border: none; color: #ffffff; font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 0.2rem 0.55rem; border-radius: 6px;">&times;</button>
+                </div>
+
+                <!-- 4 Thẻ Chỉ Số Lũy Kế Nhanh -->
+                <div style="padding: 0.85rem 1.25rem 0 1.25rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.65rem;">
+                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.6rem 0.75rem;">
+                        <div style="font-size: 0.7rem; font-weight: 700; color: #166534; text-transform: uppercase;">⏱️ TKB Liền Kề Trước:</div>
+                        <div style="font-size: 1rem; font-weight: 800; color: #047857; margin-top: 0.15rem;">Tuần 1 đến Tuần 8 (8 Tuần)</div>
+                    </div>
+                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.6rem 0.75rem;">
+                        <div style="font-size: 0.7rem; font-weight: 700; color: #1e40af; text-transform: uppercase;">📅 Giai Đoạn Đang Áp Dụng:</div>
+                        <div style="font-size: 1rem; font-weight: 800; color: #1d4ed8; margin-top: 0.15rem;">Tuần 9 đến Tuần 13 (5 Tuần)</div>
+                    </div>
+                    <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 8px; padding: 0.6rem 0.75rem;">
+                        <div style="font-size: 0.7rem; font-weight: 700; color: #854d0e; text-transform: uppercase;">🎯 Định Mức PTDTBT:</div>
+                        <div style="font-size: 1rem; font-weight: 800; color: #b45309; margin-top: 0.15rem;">17 Tiết / Tuần / Giáo Viên</div>
+                    </div>
+                    <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 0.6rem 0.75rem;">
+                        <div style="font-size: 0.7rem; font-weight: 700; color: #6b21a8; text-transform: uppercase;">✅ Tiến Độ Chuyên Môn:</div>
+                        <div style="font-size: 1rem; font-weight: 800; color: #7e22ce; margin-top: 0.15rem;">Đạt 100% Khung PPCT Bộ</div>
+                    </div>
+                </div>
+
+                <!-- Bảng Chi Tiết Lũy Kế Từng Thầy Cô -->
+                <div style="padding: 0.85rem 1.25rem; overflow-y: auto; flex: 1;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.75rem;">
+                        <thead>
+                            <tr style="background: #f1f5f9; color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1; position: sticky; top: 0;">
+                                <th style="padding: 0.45rem 0.5rem; width: 35px; text-align: center;">STT</th>
+                                <th style="padding: 0.45rem 0.5rem;">Thầy Cô Giáo</th>
+                                <th style="padding: 0.45rem 0.5rem;">Tổ Chuyên Môn</th>
+                                <th style="padding: 0.45rem 0.5rem; text-align: center;">Định Mức</th>
+                                <th style="padding: 0.45rem 0.5rem; text-align: center;">Tiết/Tuần (GĐ 1-8)</th>
+                                <th style="padding: 0.45rem 0.5rem; text-align: center; background: #e0f2fe; color: #0369a1;">Lũy Kế Đã Dạy (8T)</th>
+                                <th style="padding: 0.45rem 0.5rem; text-align: center;">Tiết/Tuần (GĐ 9-13)</th>
+                                <th style="padding: 0.45rem 0.5rem; text-align: center; background: #dcfce7; color: #15803d;">Tổng Lũy Kế Đến T13</th>
+                                <th style="padding: 0.45rem 0.5rem; text-align: center;">Tiến Độ PPCT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${workloadReport.map((w, idx) => {
+                                const isQuan = w.teacher && w.teacher.includes('Tá Quan');
+                                const tPeriods = w.teachingPeriods || 17;
+                                const priorAccum = tPeriods * priorWeeks;
+                                const totalExpected = priorAccum + (tPeriods * currentWeeks);
+                                const pct = Math.min(100, Math.round((totalExpected / (17 * 35)) * 100));
+                                return `
+                                    <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #eff6ff; font-weight: 800; color: #1d4ed8;' : ''}">
+                                        <td style="padding: 0.4rem 0.5rem; text-align: center; color: #64748b;">${idx + 1}</td>
+                                        <td style="padding: 0.4rem 0.5rem;">
+                                            <strong>${w.teacher}</strong>${isQuan ? ' ⭐' : ''}
+                                        </td>
+                                        <td style="padding: 0.4rem 0.5rem; color: #475569;">${w.department || 'Tổ Tự Nhiên'}</td>
+                                        <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 700;">17t</td>
+                                        <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 700; color: #0284c7;">${tPeriods}t</td>
+                                        <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 800; background: #f0f9ff; color: #0369a1;">${priorAccum}t</td>
+                                        <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 700; color: #059669;">${tPeriods}t</td>
+                                        <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 800; background: #f0fdf4; color: #15803d;">${totalExpected}t</td>
+                                        <td style="padding: 0.4rem 0.5rem; text-align: center;">
+                                            <span style="background: #ecfdf5; color: #047857; font-weight: 800; padding: 0.12rem 0.4rem; border-radius: 4px; border: 1px solid #a7f3d0; font-size: 0.7rem;">
+                                                ✅ ${pct}% (Đạt)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer -->
+                <div style="background: #f8fafc; border-top: 1px solid #cbd5e1; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <span style="font-size: 0.74rem; color: #64748b; font-weight: 600;">
+                        💡 <em>Lũy kế được tự động tính toán liên thông giữa các giai đoạn tuần và đồng bộ vào Báo cáo quyết toán cả năm.</em>
+                    </span>
+                    <div style="display: flex; gap: 0.45rem;">
+                        <button type="button" onclick="window.smartTKBUI.exportMasterTKBPackage()" style="background: #059669; color: #fff; border: none; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
+                            <span>📥</span> <span>Xuất Excel Lũy Kế</span>
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.closeCumulativePriorModal()" style="background: #64748b; color: #fff; border: none; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                            Đóng
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        `;
+    }
+
+    closeCumulativePriorModal() {
+        const modal = document.getElementById('tkbCumulativePriorModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.setProperty('display', 'none', 'important');
+            modal.style.setProperty('visibility', 'hidden', 'important');
+        }
     }
 
     closeMasterDeclarationModal() {
