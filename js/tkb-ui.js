@@ -19,13 +19,18 @@ export class SmartTKBUI {
         window.smartTKBUI = this;
 
         this.currentSubTab = 'board'; // 'board', 'pccm', 'config', 'stats'
-        this.currentViewMode = 'class'; // 'class', 'teacher', 'room', 'school'
+        this.currentViewMode = localStorage.getItem('edustudio_tkb_view_mode') || 'class'; // 'class', 'teacher', 'room', 'school'
         this.selectedClass = '8A1';
         this.selectedTeacher = 'Thầy Nguyễn Tá Quan';
         this.selectedRoom = 'room_tin';
         this.pccmFilter = 'workload';
         this.gradeFilter = 'all';
-        this.masterColorMode = 'clean'; // 'clean' (dịu mắt, nền trắng, chữ xanh mực) hoặc 'pastel' (phân màu môn) // 'all', '6', '7', '8', '9' // 'all', 'Tổ Tự Nhiên', 'Tổ Xã Hội', 'official'
+        this.masterColorMode = 'clean';
+        // Tùy chỉnh hiển thị Bảng Tổng Thể Toàn Trường (Compact Master Matrix)
+        this.masterDensity = localStorage.getItem('edustudio_master_density') || 'compact'; // 'ultra', 'compact', 'standard'
+        this.masterShowLegend = localStorage.getItem('edustudio_master_show_legend') !== 'false'; // default true
+        this.masterColorStyle = localStorage.getItem('edustudio_master_color_style') || 'color'; // 'color', 'monochrome'
+        this.masterHideTeacher = localStorage.getItem('edustudio_master_hide_teacher') === 'true'; // default false // 'clean' (dịu mắt, nền trắng, chữ xanh mực) hoặc 'pastel' (phân màu môn) // 'all', '6', '7', '8', '9' // 'all', 'Tổ Tự Nhiên', 'Tổ Xã Hội', 'official'
 
         // Trạng thái hoán đổi 1 chạm (Click-to-Swap)
         this.swapSource = null; // { classId, day, period }
@@ -142,15 +147,18 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
 
         // Gắn sự kiện cho các nút chọn góc nhìn
         document.querySelectorAll('.tkb-view-btn-pill').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.view === this.currentViewMode);
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.tkb-view-btn-pill').forEach(b => b.classList.remove('active'));
                 e.currentTarget.classList.add('active');
                 this.currentViewMode = e.currentTarget.dataset.view;
+                try { localStorage.setItem('edustudio_tkb_view_mode', this.currentViewMode); } catch(err){}
                 this.cancelSwapMode();
                 this.updateFilterControls();
                 this.renderCurrentView();
             });
         });
+        this.updateFilterControls();
 
         // Gắn sự kiện bộ lọc Lớp / Giáo viên / Phòng
         document.getElementById('tkbClassSelect')?.addEventListener('change', (e) => {
@@ -280,6 +288,30 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         } else if (this.currentViewMode === 'school') {
             this.renderSchoolMasterView(container);
         }
+    }
+
+    setMasterDensity(density) {
+        this.masterDensity = density;
+        try { localStorage.setItem('edustudio_master_density', density); } catch(e){}
+        this.renderCurrentView();
+    }
+
+    toggleMasterLegend() {
+        this.masterShowLegend = !this.masterShowLegend;
+        try { localStorage.setItem('edustudio_master_show_legend', this.masterShowLegend ? 'true' : 'false'); } catch(e){}
+        this.renderCurrentView();
+    }
+
+    toggleMasterColorStyle() {
+        this.masterColorStyle = (this.masterColorStyle === 'monochrome') ? 'color' : 'monochrome';
+        try { localStorage.setItem('edustudio_master_color_style', this.masterColorStyle); } catch(e){}
+        this.renderCurrentView();
+    }
+
+    toggleMasterTeacherDisplay() {
+        this.masterHideTeacher = !this.masterHideTeacher;
+        try { localStorage.setItem('edustudio_master_hide_teacher', this.masterHideTeacher ? 'true' : 'false'); } catch(e){}
+        this.renderCurrentView();
     }
 
     /**
@@ -697,11 +729,67 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             { name: 'Tú', label: 'Tú', color: '#78350f' }
         ];
 
+        // Mật độ hiển thị bảng (Density Settings): ultra (siêu gọn), compact (vừa vặn - mặc định), standard (thoáng mắt)
+        const density = this.masterDensity || 'compact';
+        let colDayWidth = '54px';
+        let colPeriodWidth = '32px';
+        let colClassWidth = '70px';
+        let tableMaxWidth = '860px';
+        let tableMinWidth = '720px';
+        let cellHeight = '28px';
+        let cellPadding = '2px 2px';
+        let subjectFontSize = '0.72rem';
+        let teacherFontSize = '0.68rem';
+        let headerFontSize = '0.74rem';
+
+        if (density === 'ultra') {
+            colDayWidth = '46px';
+            colPeriodWidth = '28px';
+            colClassWidth = '60px';
+            tableMaxWidth = '760px';
+            tableMinWidth = '640px';
+            cellHeight = '24px';
+            cellPadding = '1px 1px';
+            subjectFontSize = '0.68rem';
+            teacherFontSize = '0.64rem';
+            headerFontSize = '0.70rem';
+        } else if (density === 'standard') {
+            colDayWidth = '66px';
+            colPeriodWidth = '38px';
+            colClassWidth = '86px';
+            tableMaxWidth = '1020px';
+            tableMinWidth = '880px';
+            cellHeight = '34px';
+            cellPadding = '3px 4px';
+            subjectFontSize = '0.76rem';
+            teacherFontSize = '0.72rem';
+            headerFontSize = '0.78rem';
+        }
+
+        // 2. Tiêu đề khối lớp động (Dynamic Grade Headers)
+        let dynamicTopHeadersHtml = '';
+        const gEntries = Object.entries(gradeGroups);
+        if (gEntries.length > 0) {
+            dynamicTopHeadersHtml = gEntries.map(([gKey, gClasses], idx) => {
+                const isLast = (idx === gEntries.length - 1);
+                const bg = gradePalette[gKey] || fallbackColors[idx % fallbackColors.length];
+                const isQuanGrade = gClasses.includes('8A1');
+                const label = isNaN(gKey) ? gKey : `KHỐI ${gKey}${isQuanGrade ? ' ⭐' : ''}`;
+                return `
+                    <th colspan="${gClasses.length}" style="text-align: center; background: ${bg}; border-right: ${isLast ? 'none' : '2px solid #64748b'}; padding: 4px 2px; font-weight: 800; font-size: ${headerFontSize};">
+                        ${label}
+                    </th>
+                `;
+            }).join('');
+        } else {
+            dynamicTopHeadersHtml = `<th colspan="${classes.length}" style="text-align: center; background: #1e3a8a; padding: 4px; font-weight: 800; font-size: ${headerFontSize};">TẤT CẢ CÁC LỚP</th>`;
+        }
+
         let html = `
             <!-- ================================================================= -->
             <!-- 1. BẢNG TỔNG THỂ TOÀN TRƯỜNG (COMPACT MASTER MATRIX) ĐẶT TRÊN CÙNG -->
             <!-- ================================================================= -->
-            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem;">
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem;">
                 
                 <!-- HEADER & ACTION BUTTONS (GỌN GÀNG CÙNG 1 HÀNG) -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem; flex-wrap: wrap; gap: 0.65rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem;">
@@ -734,38 +822,80 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     </div>
                 </div>
 
-                <!-- BẢNG CHÚ GIẢI MÀU SẮC GIÁO VIÊN (TEACHER COLOR LEGEND) -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 0.85rem; margin-bottom: 1rem;">
-                    <div style="font-size: 0.75rem; font-weight: 800; color: #475569; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.3px;">
-                        🎨 Chú Giải Mã Màu Chữ Từng Thầy Cô (21 Giáo Viên):
+                <!-- ================================================================= -->
+                <!-- BỘ ĐIỀU KHIỂN & TÙY CHỈNH NHANH (QUICK CONTROLS TOOLBAR)        -->
+                <!-- ================================================================= -->
+                <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.45rem 0.75rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                    <!-- NHÓM 1: ĐỘ RỘNG & MẬT ĐỘ HIỂN THỊ -->
+                    <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase; display: flex; align-items: center; gap: 0.2rem;">
+                            <span>🎛️</span> <span>Mật Độ:</span>
+                        </span>
+                        <button onclick="window.smartTKBUI.setMasterDensity('ultra')" title="Siêu gọn, tiết kiệm diện tích tối đa" style="padding: 0.22rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; cursor: pointer; transition: all 0.15s; ${density === 'ultra' ? 'background: #0284c7; color: #fff; border: 1px solid #0284c7; box-shadow: 0 1px 3px rgba(2,132,199,0.3);' : 'background: #fff; color: #334155; border: 1px solid #cbd5e1;'}">
+                            🤏 Siêu Gọn
+                        </button>
+                        <button onclick="window.smartTKBUI.setMasterDensity('compact')" title="Vừa vặn chuẩn mực, cân đối và sắc nét" style="padding: 0.22rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; cursor: pointer; transition: all 0.15s; ${density === 'compact' ? 'background: #0284c7; color: #fff; border: 1px solid #0284c7; box-shadow: 0 1px 3px rgba(2,132,199,0.3);' : 'background: #fff; color: #334155; border: 1px solid #cbd5e1;'}">
+                            📐 Vừa Vặn
+                        </button>
+                        <button onclick="window.smartTKBUI.setMasterDensity('standard')" title="Khoảng cách rộng rãi, thoáng mắt" style="padding: 0.22rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; cursor: pointer; transition: all 0.15s; ${density === 'standard' ? 'background: #0284c7; color: #fff; border: 1px solid #0284c7; box-shadow: 0 1px 3px rgba(2,132,199,0.3);' : 'background: #fff; color: #334155; border: 1px solid #cbd5e1;'}">
+                            🔍 Thoáng
+                        </button>
                     </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
-                        ${legendTeachers.map(t => `
-                            <span style="display: inline-flex; align-items: center; gap: 0.3rem; background: #ffffff; border: 1px solid #cbd5e1; padding: 0.15rem 0.5rem; border-radius: 14px; font-size: 0.72rem; font-weight: 800; color: ${t.color}; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
-                                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${t.color};"></span>
-                                ${t.label}
-                            </span>
-                        `).join('')}
+
+                    <!-- NHÓM 2: TÙY CHỈNH NỘI DUNG & THỊ GIÁC -->
+                    <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase; display: flex; align-items: center; gap: 0.2rem;">
+                            <span>👁️</span> <span>Tùy Biến:</span>
+                        </span>
+                        <button onclick="window.smartTKBUI.toggleMasterLegend()" title="Bật/Tắt bảng chú giải 21 mã màu Thầy Cô phía trên để bảng dâng lên cao nhất" style="padding: 0.22rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; cursor: pointer; transition: all 0.15s; background: #fff; color: ${this.masterShowLegend ? '#0f766e' : '#64748b'}; border: 1px solid #cbd5e1;">
+                            ${this.masterShowLegend ? '🎨 Ẩn Bảng Màu' : '🎨 Hiện Bảng Màu'}
+                        </button>
+                        <button onclick="window.smartTKBUI.toggleMasterColorStyle()" title="Chuyển đổi giữa mã màu chữ riêng từng Thầy Cô và chữ đen/xám đồng nhất" style="padding: 0.22rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; cursor: pointer; transition: all 0.15s; background: #fff; color: ${this.masterColorStyle === 'monochrome' ? '#475569' : '#b45309'}; border: 1px solid #cbd5e1;">
+                            ${this.masterColorStyle === 'monochrome' ? '🌈 Bật Màu Thầy Cô' : '⚪ Đơn Sắc'}
+                        </button>
+                        <button onclick="window.smartTKBUI.toggleMasterTeacherDisplay()" title="Ẩn/Hiện tên viết tắt giáo viên trong từng ô" style="padding: 0.22rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; cursor: pointer; transition: all 0.15s; background: #fff; color: ${this.masterHideTeacher ? '#6d28d9' : '#1e3a8a'}; border: 1px solid #cbd5e1;">
+                            ${this.masterHideTeacher ? '👨‍🏫 Xem Cả Tên GV' : '📖 Chỉ Xem Môn'}
+                        </button>
                     </div>
                 </div>
 
-                <!-- BÀN CỜ TỔNG THỂ 9 LỚP - 100% NỀN TRẮNG (KHÔNG FILL MÀU NỀN) -->
-                <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);">
-                    <table class="tkb-table" style="margin: 0; width: 100%; min-width: 980px; border-collapse: collapse; font-size: 0.78rem; background: #ffffff;">
+                <!-- BẢNG CHÚ GIẢI MÀU SẮC GIÁO VIÊN (HIỂN THỊ KHI ĐƯỢC BẬT) -->
+                ${this.masterShowLegend ? `
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 0.75rem; margin-bottom: 0.85rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                            <div style="font-size: 0.73rem; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.3px;">
+                                🎨 Chú Giải Mã Màu Chữ Từng Thầy Cô (${legendTeachers.length} Giáo Viên):
+                            </div>
+                            <button onclick="window.smartTKBUI.toggleMasterLegend()" style="background: none; border: none; font-size: 0.7rem; color: #64748b; cursor: pointer; text-decoration: underline;">
+                                Thu gọn ✖
+                            </button>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center;">
+                            ${legendTeachers.map(t => `
+                                <span style="display: inline-flex; align-items: center; gap: 0.25rem; background: #ffffff; border: 1px solid #cbd5e1; padding: 0.12rem 0.45rem; border-radius: 12px; font-size: 0.70rem; font-weight: 800; color: ${t.color}; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                                    <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: ${t.color};"></span>
+                                    ${t.label}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- BÀN CỜ TỔNG THỂ CĂN GIỮA, THU HẸP GỌN GÀNG, 100% NỀN TRẮNG -->
+                <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); display: flex; justify-content: center; background: #f8fafc; padding: 6px;">
+                    <table class="tkb-table" style="margin: 0 auto; width: 100%; max-width: ${tableMaxWidth}; min-width: ${tableMinWidth}; border-collapse: collapse; font-size: ${subjectFontSize}; background: #ffffff; border: 1px solid #cbd5e1;">
                         <thead>
                             <tr style="background: #0f172a; color: #ffffff;">
-                                <th rowspan="2" style="width: 80px; text-align: center; border-right: 1px solid #334155; padding: 6px;">Thứ</th>
-                                <th rowspan="2" style="width: 48px; text-align: center; border-right: 2px solid #64748b; padding: 6px;">Tiết</th>
-                                <th colspan="3" style="text-align: center; background: #1e3a8a; border-right: 2px solid #64748b; padding: 5px; font-weight: 800;">KHỐI 6</th>
-                                <th colspan="2" style="text-align: center; background: #065f46; border-right: 2px solid #64748b; padding: 5px; font-weight: 800;">KHỐI 7</th>
-                                <th colspan="2" style="text-align: center; background: #831843; border-right: 2px solid #64748b; padding: 5px; font-weight: 800;">KHỐI 8 (Lớp Thầy Quan)</th>
-                                <th colspan="2" style="text-align: center; background: #581c87; padding: 5px; font-weight: 800;">KHỐI 9</th>
+                                <th rowspan="2" style="width: ${colDayWidth}; text-align: center; border-right: 1px solid #334155; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800;">Thứ</th>
+                                <th rowspan="2" style="width: ${colPeriodWidth}; text-align: center; border-right: 2px solid #64748b; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800;">Tiết</th>
+                                ${dynamicTopHeadersHtml}
                             </tr>
                             <tr style="background: #1e293b; color: #ffffff;">
-                                ${classes.map(c => {
+                                ${classes.map((c, cIdx) => {
                                     const isQuanClass = (c === '8A1');
+                                    const isLastOfGrade = (cIdx === classes.length - 1) || (classes[cIdx + 1] && classes[cIdx + 1].match(/^(\d+)/) && c.match(/^(\d+)/) && classes[cIdx + 1].match(/^(\d+)/)[1] !== c.match(/^(\d+)/)[1]);
                                     return `
-                                        <th style="width: 95px; text-align: center; padding: 6px 4px; font-weight: 800; border-right: ${c === '6A3' || c === '7A2' || c === '8A2' ? '2px solid #94a3b8' : '1px solid #334155'}; background: ${isQuanClass ? '#2563eb' : ''};">
+                                        <th style="width: ${colClassWidth}; text-align: center; padding: 4px 2px; font-weight: 800; font-size: ${headerFontSize}; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #334155'}; background: ${isQuanClass ? '#2563eb' : ''};">
                                             ${c}${isQuanClass ? ' ⭐' : ''}
                                         </th>
                                     `;
@@ -786,7 +916,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 // Cột Thứ gộp dòng (rowspan)
                 if (p === 0) {
                     html += `
-                        <td rowspan="${maxPeriods}" style="text-align: center; vertical-align: middle; font-weight: 800; background: #f8fafc; color: #0f172a; border-right: 1px solid #cbd5e1; border-bottom: 2px solid #94a3b8; font-size: 0.82rem; padding: 4px;">
+                        <td rowspan="${maxPeriods}" style="text-align: center; vertical-align: middle; font-weight: 800; background: #f8fafc; color: #0f172a; border-right: 1px solid #cbd5e1; border-bottom: 2px solid #94a3b8; font-size: ${headerFontSize}; padding: 3px 2px;">
                             ${dayName}
                         </td>
                     `;
@@ -794,33 +924,40 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
 
                 // Cột Tiết
                 html += `
-                    <td style="text-align: center; font-weight: 800; background: #f8fafc; color: #475569; border-right: 2px solid #94a3b8; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 4px 2px;">
+                    <td style="text-align: center; font-weight: 800; background: #f8fafc; color: #475569; border-right: 2px solid #94a3b8; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px 1px; font-size: ${headerFontSize};">
                         T${p + 1}
                     </td>
                 `;
 
-                // 9 Cột Lớp: TUYỆT ĐỐI NỀN TRẮNG (NO FILL COLOR), MÀU CHO TÊN GIÁO VIÊN
+                // Các Cột Lớp: TUYỆT ĐỐI NỀN TRẮNG (NO FILL COLOR), THU HẸP GỌN GÀNG
                 for (let cIdx = 0; cIdx < classes.length; cIdx++) {
                     const c = classes[cIdx];
-                    const isBorderGroup = (c === '6A3' || c === '7A2' || c === '8A2');
+                    const isLastOfGrade = (cIdx === classes.length - 1) || (classes[cIdx + 1] && classes[cIdx + 1].match(/^(\d+)/) && c.match(/^(\d+)/) && classes[cIdx + 1].match(/^(\d+)/)[1] !== c.match(/^(\d+)/)[1]);
                     const cell = this.engine.timetable[c] && this.engine.timetable[c][d] ? this.engine.timetable[c][d][p] : null;
 
                     if (cell) {
                         const shortTeacher = this.getCompactTeacherName(cell.teacher, cell.shortTeacher);
-                        const teacherColor = this.getTeacherColor(cell.teacher, cell.shortTeacher);
+                        const rawTeacherColor = this.getTeacherColor(cell.teacher, cell.shortTeacher);
+                        const teacherColor = (this.masterColorStyle === 'monochrome') ? '#334155' : rawTeacherColor;
                         const isQuanSlot = cell.teacher && cell.teacher.includes('Nguyễn Tá Quan');
 
                         let cellContent = '';
                         if (cell.subject === 'Chào Cờ' || cell.subject === 'Chào cờ') {
                             cellContent = `
-                                <div style="font-weight: 800; color: #dc2626; font-size: 0.75rem;">Chào cờ</div>
+                                <div style="font-weight: 800; color: #dc2626; font-size: ${subjectFontSize};">Chào cờ</div>
+                            `;
+                        } else if (this.masterHideTeacher) {
+                            cellContent = `
+                                <div style="font-weight: 700; color: #0f172a; font-size: ${subjectFontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15;">
+                                    ${cell.subject}
+                                </div>
                             `;
                         } else {
                             cellContent = `
-                                <div style="font-weight: 700; color: #0f172a; font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25;">
+                                <div style="font-weight: 700; color: #0f172a; font-size: ${subjectFontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15;">
                                     ${cell.subject}
                                 </div>
-                                <div style="font-weight: 800; color: ${teacherColor}; font-size: 0.72rem; white-space: nowrap; line-height: 1.2; margin-top: 1px;">
+                                <div style="font-weight: 800; color: ${teacherColor}; font-size: ${teacherFontSize}; white-space: nowrap; line-height: 1.1; margin-top: 1px;">
                                     ${isQuanSlot ? '⭐ ' : ''}${shortTeacher}
                                 </div>
                             `;
@@ -829,7 +966,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         html += `
                             <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
                                 title="${cell.subject} - ${cell.teacher} (Lớp ${c}) • Bấm để chỉnh sửa / hoán đổi"
-                                style="background: #ffffff; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px 4px; text-align: center; cursor: pointer; height: 38px; transition: background 0.15s ease;"
+                                style="background: #ffffff; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: ${cellPadding}; text-align: center; cursor: pointer; height: ${cellHeight}; transition: background 0.15s ease;"
                                 onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#ffffff'">
                                 ${cellContent}
                             </td>
@@ -838,7 +975,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         html += `
                             <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
                                 title="Ô trống (Lớp ${c}) • Bấm để gán môn"
-                                style="background: #ffffff; border-right: ${isBorderGroup ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px; text-align: center; cursor: pointer; height: 38px;">
+                                style="background: #ffffff; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: ${cellPadding}; text-align: center; cursor: pointer; height: ${cellHeight};">
                                 <span style="color: #cbd5e1; font-size: 0.65rem;">—</span>
                             </td>
                         `;
@@ -854,9 +991,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     </table>
                 </div>
             </div>
-
-            <!-- ================================================================= -->
-            <!-- 2. BẢNG CHI TIẾT THEO TỪNG KHỐI / LỚP NẰM PHÍA DƯỚI             -->
+\n            <!-- 2. BẢNG CHI TIẾT THEO TỪNG KHỐI / LỚP NẰM PHÍA DƯỚI             -->
             <!-- ================================================================= -->
             <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
@@ -961,6 +1096,30 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         if (container && this.currentViewMode === 'school') {
             this.renderSchoolMasterView(container);
         }
+    }
+
+    setMasterDensity(density) {
+        this.masterDensity = density;
+        try { localStorage.setItem('edustudio_master_density', density); } catch(e){}
+        this.renderCurrentView();
+    }
+
+    toggleMasterLegend() {
+        this.masterShowLegend = !this.masterShowLegend;
+        try { localStorage.setItem('edustudio_master_show_legend', this.masterShowLegend ? 'true' : 'false'); } catch(e){}
+        this.renderCurrentView();
+    }
+
+    toggleMasterColorStyle() {
+        this.masterColorStyle = (this.masterColorStyle === 'monochrome') ? 'color' : 'monochrome';
+        try { localStorage.setItem('edustudio_master_color_style', this.masterColorStyle); } catch(e){}
+        this.renderCurrentView();
+    }
+
+    toggleMasterTeacherDisplay() {
+        this.masterHideTeacher = !this.masterHideTeacher;
+        try { localStorage.setItem('edustudio_master_hide_teacher', this.masterHideTeacher ? 'true' : 'false'); } catch(e){}
+        this.renderCurrentView();
     }
     switchToClassView(classId) {
         this.selectedClass = classId;
