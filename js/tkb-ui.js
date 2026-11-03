@@ -583,6 +583,17 @@ export class SmartTKBUI {
                     </div>
 
                     <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <div style="display: inline-flex; gap: 0.25rem; background: #e2e8f0; padding: 0.2rem; border-radius: 8px; margin-right: 0.4rem;">
+                            <button class="btn-semester-pill" data-sem="HK1" onclick="window.smartTKBUI.setSemester('HK1')" style="padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: none; cursor: pointer; ${this.engine.currentSemester === 'HK1' ? 'background: #c2410c; color: #ffffff;' : 'background: #ffffff; color: #475569;'}">
+                                🍁 HK I (18 Tuần)
+                            </button>
+                            <button class="btn-semester-pill" data-sem="HK2" onclick="window.smartTKBUI.setSemester('HK2')" style="padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: none; cursor: pointer; ${this.engine.currentSemester === 'HK2' ? 'background: #059669; color: #ffffff;' : 'background: #ffffff; color: #475569;'}">
+                                🌸 HK II (17 Tuần)
+                            </button>
+                            <button class="btn-semester-pill" data-sem="YEAR" onclick="window.smartTKBUI.setSemester('YEAR')" style="padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: none; cursor: pointer; background: #ffffff; color: #4338ca;">
+                                📅 Quyết Toán Cả Năm
+                            </button>
+                        </div>
                         <button onclick="window.smartTKBUI.printTimetable()" style="background: #1e293b; color: #fff; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
                             <span>🖨️</span> <span>In Bảng Tổng Thể A4</span>
                         </button>
@@ -1181,6 +1192,9 @@ export class SmartTKBUI {
                     <button onclick="window.smartTKBUI.setPCCMFilter('workload')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 800; border: none; cursor: pointer; ${this.pccmFilter === 'workload' ? 'background: #15803d; color: #fff; box-shadow: 0 2px 6px rgba(21,128,61,0.3);' : 'background: #fff; color: #166534; border: 1px solid #86efac;'}">
                         ⚖️ Ma Trận Định Mức & Kiêm Nhiệm (20 Thầy Cô)
                     </button>
+                    <button onclick="window.smartTKBUI.setPCCMFilter('annual')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 800; border: none; cursor: pointer; ${this.pccmFilter === 'annual' ? 'background: #4338ca; color: #fff; box-shadow: 0 2px 6px rgba(67,56,202,0.3);' : 'background: #fff; color: #3730a3; border: 1px solid #c7d2fe;'}">
+                        📅 Quyết Toán Cả Năm (35 Tuần - 595 Tiết)
+                    </button>
                     <button onclick="window.smartTKBUI.setPCCMFilter('official')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 800; border: none; cursor: pointer; ${this.pccmFilter === 'official' ? 'background: #dc2626; color: #fff; box-shadow: 0 2px 6px rgba(220,38,38,0.3);' : 'background: #fff; color: #b91c1c; border: 1px solid #fca5a5;'}">
                         🏛️ Bảng PCCM Chính Thức BGDĐT (20 Thầy Cô)
                     </button>
@@ -1195,7 +1209,88 @@ export class SmartTKBUI {
                     </button>
                 </div>
 
-                ${this.pccmFilter === 'workload' ? `
+                
+                ${this.pccmFilter === 'annual' ? `
+                    <!-- VIEW: BẢNG QUYẾT TOÁN ĐỊNH MỨC CẢ NĂM (35 TUẦN - 595 TIẾT CHUẨN PTDTBT) -->
+                    <div style="margin-bottom: 0.75rem; background: #eef2ff; border: 1px solid #c7d2fe; padding: 0.75rem 1rem; border-radius: 8px; color: #3730a3; font-size: 0.82rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                        <div>
+                            📌 <strong>Căn cứ Điều 5 & Điều 6 Thông tư 28/2009/TT-BGDĐT:</strong> Định mức tiết dạy của giáo viên trường phổ thông dân tộc bán trú là 17 tiết/tuần. Tổng số tiết định mức trong cả năm học = 17 tiết x 35 tuần = <strong>595 tiết/năm</strong>. Cho phép bù trừ linh hoạt giữa Học kỳ I (18 tuần) và Học kỳ II (17 tuần).
+                        </div>
+                        <button onclick="window.smartTKBUI.exportAnnualSettlementCSV()" style="background: #4338ca; color: #fff; border: none; padding: 0.35rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.78rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;">
+                            <span>📥</span> <span>Xuất CSV Quyết Toán Cả Năm</span>
+                        </button>
+                    </div>
+
+                    <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px;">
+                        <table class="tkb-table" style="margin: 0; width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                            <thead>
+                                <tr style="background: #1e1b4b; color: #ffffff;">
+                                    <th style="width: 45px; text-align: center;">STT</th>
+                                    <th style="width: 200px; text-align: left;">Họ và Tên Giáo Viên</th>
+                                    <th style="width: 110px; text-align: center;">Tổ Chuyên Môn</th>
+                                    <th style="width: 90px; text-align: center;">Dạy HK I/Tuần</th>
+                                    <th style="width: 90px; text-align: center;">Dạy HK II/Tuần</th>
+                                    <th style="width: 110px; text-align: center;">Tổng Tiết Dạy Cả Năm (35t)</th>
+                                    <th style="width: 120px; text-align: center;">Kiêm Nhiệm Cả Năm (TT28)</th>
+                                    <th style="width: 110px; text-align: center;">Tổng Thực Hiện Cả Năm</th>
+                                    <th style="width: 90px; text-align: center;">Định Mức Năm</th>
+                                    <th style="width: 130px; text-align: center;">Trạng Thái Quyết Toán</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(this.engine.getAnnualWorkloadSettlement ? this.engine.getAnnualWorkloadSettlement() : []).map(r => {
+                                    const isNat = (r.department || '').includes('Tự Nhiên');
+                                    const rowBg = r.isQuan ? 'background: #f0fdf4;' : (r.index % 2 === 0 ? 'background: #f8fafc;' : 'background: #ffffff;');
+                                    
+                                    let badgeHtml = '';
+                                    if (r.diffAnnual === 0) {
+                                        badgeHtml = '<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">✅ Chuẩn 595 tiết</span>';
+                                    } else if (r.diffAnnual > 0) {
+                                        badgeHtml = `<span style="background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">🟢 Thừa +${r.diffAnnual} tiết</span>`;
+                                    } else {
+                                        badgeHtml = `<span style="background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">⚠️ Thiếu ${r.diffAnnual} tiết</span>`;
+                                    }
+
+                                    return `
+                                        <tr style="${rowBg}">
+                                            <td style="text-align: center; font-weight: 700; color: #64748b;">${r.index}</td>
+                                            <td style="font-weight: 700; color: ${r.isQuan ? '#15803d' : '#0f172a'}; text-align: left;">
+                                                ${r.isQuan ? '⭐ ' : ''}${r.teacherName}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 700; font-size: 0.72rem; border: 1px solid ${isNat ? '#a7f3d0' : '#fbcfe8'};">
+                                                    ${r.department}
+                                                </span>
+                                            </td>
+                                            <td style="text-align: center; font-weight: 700; color: #c2410c;">
+                                                ${r.teachingHK1} tiết
+                                            </td>
+                                            <td style="text-align: center; font-weight: 700; color: #059669;">
+                                                ${r.teachingHK2} tiết
+                                            </td>
+                                            <td style="text-align: center; font-weight: 800; color: #1e293b;">
+                                                ${r.annualTeaching} tiết
+                                            </td>
+                                            <td style="text-align: center; font-weight: 700; color: #b45309;">
+                                                -${r.annualReduced} tiết
+                                            </td>
+                                            <td style="text-align: center; font-weight: 800; font-size: 0.95rem; color: ${r.annualFinal >= 595 ? '#15803d' : '#b91c1c'};">
+                                                ${r.annualFinal} tiết
+                                            </td>
+                                            <td style="text-align: center; font-weight: 800; color: #64748b;">
+                                                595 tiết
+                                            </td>
+                                            <td style="text-align: center;">
+                                                ${badgeHtml}
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                ` : `
+${this.pccmFilter === 'workload' ? `
                     <!-- VIEW 0: MA TRẬN ĐỊNH MỨC & KIÊM NHIỆM 20 THẦY CÔ (CHUẨN BGDĐT & VNEDU/SMAS) -->
                     <div style="margin-bottom: 0.75rem; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 0.65rem 1rem; border-radius: 8px; color: #065f46; font-size: 0.82rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                         <div>
@@ -2106,6 +2201,75 @@ setPCCMFilter(filterName) {
                 this.showToast('🔄 Đã khôi phục kiêm nhiệm chuẩn BGDĐT!');
             }
         }
+    }
+
+
+    /**
+     * CHUYỂN ĐỔI HỌC KỲ VÀ CẢ NĂM HỌC
+     * @param {'HK1' | 'HK2' | 'YEAR'} sem 
+     */
+    setSemester(sem) {
+        if (sem === 'YEAR') {
+            this.pccmFilter = 'annual';
+            this.switchSubTab('pccm');
+            this.showToast('📅 Đã mở Bảng Quyết Toán Định Mức Cả Năm (35 Tuần - 595 Tiết Chuẩn Bán Trú)!');
+            return;
+        }
+
+        if (this.engine.switchSemester) {
+            this.engine.switchSemester(sem);
+        }
+
+        // Cập nhật trạng thái active của nút chọn học kỳ
+        document.querySelectorAll('.btn-semester-pill').forEach(btn => {
+            if (btn.dataset.sem === sem) {
+                btn.style.background = (sem === 'HK1' ? '#c2410c' : '#059669');
+                btn.style.color = '#ffffff';
+                btn.style.fontWeight = '800';
+            } else {
+                btn.style.background = '#ffffff';
+                btn.style.color = '#475569';
+                btn.style.fontWeight = '700';
+            }
+        });
+
+        this.renderCurrentView();
+        this.renderPCCMTable();
+        this.renderStats();
+
+        if (sem === 'HK2') {
+            this.showToast('🌸 Đã chuyển sang TKB Học Kỳ II (17 tuần: Hoán đổi Địa lí 2t - Lịch sử 1t chuẩn CV 1496/BGDĐT)!');
+        } else {
+            this.showToast('🍁 Đã chuyển sang TKB Học Kỳ I (18 tuần: Lịch sử 2t - Địa lí 1t)!');
+        }
+    }
+
+    /**
+     * XUẤT FILE BÁO CÁO QUYẾT TOÁN CẢ NĂM (35 TUẦN - 595 TIẾT)
+     */
+    exportAnnualSettlementCSV() {
+        const report = this.engine.getAnnualWorkloadSettlement ? this.engine.getAnnualWorkloadSettlement() : [];
+        if (report.length === 0) return;
+
+        let csv = "\uFEFF";
+        csv += "BỘ GIÁO DỤC VÀ ĐÀO TẠO,TRƯỜNG THCS BÁN TRÚ CANH THUẬN\n";
+        csv += `BÁO CÁO QUYẾT TOÁN ĐỊNH MỨC NĂM HỌC ${this.engine.schoolConfig.academicYear} (35 TUẦN)\n`;
+        csv += "Căn cứ: Điều 5 & 6 Thông tư 28/2009/TT-BGDĐT (Định mức trường PTDTBT: 17 tiết/tuần x 35 tuần = 595 tiết/năm)\n\n";
+        csv += "STT,Họ và Tên Giáo Viên,Tổ Chuyên Môn,Tiết Dạy HK I/Tuần,Tiết Dạy HK II/Tuần,Tổng Tiết Dạy 35 Tuần,Tổng Tiết Kiêm Nhiệm 35 Tuần,Tổng Tiết Thực Hiện Cả Năm,Định Mức Chuẩn Cả Năm,Chênh Lệch Cả Năm,Trạng Thái Quyết Toán\n";
+
+        for (const r of report) {
+            csv += `"${r.index}","${r.teacherName}","${r.department}","${r.teachingHK1}","${r.teachingHK2}","${r.annualTeaching}","${r.annualReduced}","${r.annualFinal}","${r.standardAnnual}","${r.diffAnnual > 0 ? '+' + r.diffAnnual : r.diffAnnual}","${r.statusText}"\n`;
+        }
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `QUYET_TOAN_DINH_MUC_CA_NAM_35_TUAN_${this.engine.schoolConfig.academicYear.replace(/\s+/g, '')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.showToast('📥 Đã xuất Báo Cáo Quyết Toán Cả Năm (35 Tuần) chuẩn BGDĐT!');
     }
 
 }

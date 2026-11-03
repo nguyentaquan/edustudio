@@ -890,4 +890,159 @@ export class SmartTKBEngine {
         return audit;
     }
 
+
+    /**
+     * THUẬT TOÁN HOÁN ĐỔI ĐỐI XỨNG HỌC KỲ II (SEMESTER 2 CSP ENGINE)
+     * Giải bài toán PPCT môn ghép theo Công văn 5512 & CV 1496/BGDĐT:
+     * - Học kỳ I (18 tuần): Lịch sử 2t + Địa lí 1t = 3t/tuần
+     * - Học kỳ II (17 tuần): Lịch sử 1t + Địa lí 2t = 3t/tuần
+     * -> Cả năm: Lịch sử 53t + Địa lí 52t = 105 tiết chuẩn GDPT 2018!
+     */
+    generateSemester2Timetable() {
+        if (!this.timetableHK1) {
+            this.timetableHK1 = JSON.parse(JSON.stringify(this.timetable));
+        }
+
+        // Tạo bản sao từ HK1 để kế thừa vị trí tránh trùng giờ
+        const hk2 = JSON.parse(JSON.stringify(this.timetableHK1));
+
+        // Hoán đổi đối xứng phân môn Lịch sử <-> Địa lí trên từng lớp
+        for (const c of this.classes) {
+            const grid = hk2[c];
+            let historySlots = [];
+            let geographySlots = [];
+
+            // Tìm vị trí các tiết Lịch sử và Địa lí trong tuần của lớp
+            for (let d = 0; d < this.DAYS.length; d++) {
+                const dayList = grid[d] || (grid[String(d)] || []);
+                for (let p = 0; p < dayList.length; p++) {
+                    const cell = dayList[p];
+                    if (cell) {
+                        if (cell.subject === 'Lịch Sử' || (cell.subject.includes('Sử') && !cell.subject.includes('Địa'))) {
+                            historySlots.push({ day: d, period: p, cell: cell });
+                        } else if (cell.subject === 'Địa Lí' || (cell.subject.includes('Địa') && !cell.subject.includes('Sử'))) {
+                            geographySlots.push({ day: d, period: p, cell: cell });
+                        }
+                    }
+                }
+            }
+
+            // Ở HK1: Lịch sử có 2 tiết (Thầy Hiền), Địa lí có 1 tiết (Thầy Công)
+            // Sang HK2: Chuyển 1 tiết Lịch sử thành Địa lí (Thầy Công) để HK2 có 2 tiết Địa lí + 1 tiết Lịch sử
+            if (historySlots.length >= 2 && geographySlots.length >= 1) {
+                // Chọn tiết Lịch sử thứ 2 để chuyển thành Địa lí
+                const targetSlot = historySlots[1];
+                const dayKey = targetSlot.day;
+                const pKey = targetSlot.period;
+
+                if (grid[dayKey] && grid[dayKey][pKey]) {
+                    grid[dayKey][pKey] = {
+                        subject: 'Địa Lí',
+                        teacher: 'Thầy Nguyễn Bá Công',
+                        shortTeacher: 'Công',
+                        room: null,
+                        isFixed: false,
+                        color: '#b45309'
+                    };
+                }
+            }
+        }
+
+        this.timetableHK2 = hk2;
+        return this.timetableHK2;
+    }
+
+    /**
+     * CHUYỂN ĐỔI HỌC KỲ HIỆN HÀNH
+     * @param {'HK1' | 'HK2' | 'YEAR'} semester 
+     */
+    switchSemester(semester) {
+        this.currentSemester = semester;
+        if (!this.timetableHK1) {
+            this.timetableHK1 = JSON.parse(JSON.stringify(this.timetable));
+        }
+
+        if (semester === 'HK2') {
+            if (!this.timetableHK2) {
+                this.generateSemester2Timetable();
+            }
+            this.timetable = JSON.parse(JSON.stringify(this.timetableHK2));
+            this.schoolConfig.semester = "Học kỳ II";
+            this.schoolConfig.note = "Áp dụng Học kỳ II (17 tuần: Tuần 19 đến Tuần 35) • Đảo đối xứng Địa lí 2t - Lịch sử 1t";
+        } else {
+            // Mặc định HK1 hoặc Cả năm
+            this.timetable = JSON.parse(JSON.stringify(this.timetableHK1));
+            this.schoolConfig.semester = "Học kỳ I";
+            this.schoolConfig.note = "Áp dụng Học kỳ I (18 tuần: Tuần 1 đến Tuần 18) • Lịch sử 2t - Địa lí 1t";
+        }
+
+        this.saveState();
+        return this.timetable;
+    }
+
+    /**
+     * BÁO CÁO QUYẾT TOÁN ĐỊNH MỨC CẢ NĂM HỌC (35 TUẦN - 595 TIẾT CHUẨN PTDTBT)
+     */
+    getAnnualWorkloadSettlement() {
+        // Đảm bảo có cả dữ liệu HK1 và HK2
+        if (!this.timetableHK1) this.timetableHK1 = JSON.parse(JSON.stringify(this.timetable));
+        if (!this.timetableHK2) this.generateSemester2Timetable();
+
+        // Lưu tạm trạng thái hiện tại
+        const currentActiveTT = this.timetable;
+
+        // Tính HK1
+        this.timetable = this.timetableHK1;
+        const repHK1 = this.getTeacherWorkloadReport();
+
+        // Tính HK2
+        this.timetable = this.timetableHK2;
+        const repHK2 = this.getTeacherWorkloadReport();
+
+        // Khôi phục
+        this.timetable = currentActiveTT;
+
+        // Bảng tổng hợp cả năm cho 21 giáo viên
+        const annualReport = [];
+        const STANDARD_ANNUAL_QUOTA = 17 * 35; // 595 tiết
+
+        for (let i = 0; i < repHK1.length; i++) {
+            const h1 = repHK1[i];
+            const h2 = repHK2.find(x => x.teacherName === h1.teacherName) || h1;
+
+            // Số tiết thực hiện trong năm = (Tổng tuần HK1 * 18) + (Tổng tuần HK2 * 17)
+            const annualTeaching = (h1.teachingTotal * 18) + (h2.teachingTotal * 17);
+            const annualReduced = (h1.reducedTotal * 18) + (h2.reducedTotal * 17);
+            const annualFinal = annualTeaching + annualReduced;
+            const diffAnnual = annualFinal - STANDARD_ANNUAL_QUOTA;
+
+            let statusText = 'Đạt chuẩn 595 tiết/năm';
+            if (diffAnnual > 0) {
+                statusText = `Thừa +${diffAnnual} tiết/năm`;
+            } else if (diffAnnual < 0) {
+                statusText = `Thiếu ${diffAnnual} tiết/năm`;
+            }
+
+            annualReport.push({
+                index: h1.index,
+                teacherName: h1.teacherName,
+                isQuan: h1.isQuan,
+                department: h1.department,
+                weeklyHK1: h1.finalTotal,
+                weeklyHK2: h2.finalTotal,
+                teachingHK1: h1.teachingTotal,
+                teachingHK2: h2.teachingTotal,
+                roles: h1.roles,
+                annualTeaching: annualTeaching,
+                annualReduced: annualReduced,
+                annualFinal: annualFinal,
+                standardAnnual: STANDARD_ANNUAL_QUOTA,
+                diffAnnual: diffAnnual,
+                statusText: statusText
+            });
+        }
+
+        return annualReport;
+    }
+
 }
