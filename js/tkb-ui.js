@@ -624,8 +624,53 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
      * 2. BẢNG CHI TIẾT THEO TỪNG KHỐI / LỚP NẰM PHÍA DƯỚI
      */
     renderSchoolMasterView(container) {
-        const classes = this.engine.classes; // ['6A1', '6A2', '6A3', '7A1', '7A2', '8A1', '8A2', '9A1', '9A2']
-        const currentGrade = this.gradeFilter || 'all';
+        const classes = this.engine.classes || []; // Danh sách lớp lấy động từ Khai Báo / Thông Tin Mở Rộng
+        
+        // 1. Phân nhóm Khối Lớp động từ danh sách lớp thực tế của trường (this.engine.classes)
+        const gradeGroups = {};
+        for (const c of classes) {
+            const numMatch = c.match(/^(\d+)/);
+            const gKey = numMatch ? numMatch[1] : c.charAt(0);
+            if (!gradeGroups[gKey]) {
+                gradeGroups[gKey] = [];
+            }
+            gradeGroups[gKey].push(c);
+        }
+
+        // Tự động kiểm tra nếu gradeFilter không tồn tại trong danh sách khối thì trả về 'all'
+        let activeGrade = this.gradeFilter || 'all';
+        if (activeGrade !== 'all' && !gradeGroups[activeGrade]) {
+            activeGrade = 'all';
+            this.gradeFilter = 'all';
+        }
+
+        // Bảng màu phân biệt từng khối lớp chuẩn sư phạm (tối ưu thị giác, hài hòa)
+        const gradePalette = {
+            '1': '#1e3a8a', '2': '#065f46', '3': '#831843', '4': '#581c87', '5': '#0f766e',
+            '6': '#1e3a8a', '7': '#065f46', '8': '#831843', '9': '#581c87',
+            '10': '#0f766e', '11': '#b45309', '12': '#c2410c'
+        };
+        const fallbackColors = ['#1e3a8a', '#065f46', '#831843', '#581c87', '#0f766e', '#b45309', '#c2410c', '#334155'];
+
+        // Sinh HTML các nút bộ lọc khối lớp tự động theo đúng dữ liệu lớp
+        let gradeFilterButtonsHtml = `
+            <button onclick="window.smartTKBUI.filterGradeView('all')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s ease; ${activeGrade === 'all' ? 'background: #1e293b; color: #ffffff; box-shadow: 0 2px 4px rgba(30,41,59,0.25);' : 'background: #ffffff; color: #475569; border: 1px solid #cbd5e1;'}">
+                Toàn Bộ (${classes.length} Lớp)
+            </button>
+        `;
+
+        let colorIdx = 0;
+        for (const [gKey, gClasses] of Object.entries(gradeGroups)) {
+            const btnColor = gradePalette[gKey] || fallbackColors[colorIdx % fallbackColors.length];
+            colorIdx++;
+            const isActive = (activeGrade === gKey);
+            const btnLabel = isNaN(gKey) ? `${gKey} (${gClasses.length} Lớp)` : `Khối ${gKey} (${gClasses.length} Lớp)`;
+            gradeFilterButtonsHtml += `
+                <button onclick="window.smartTKBUI.filterGradeView('${gKey}')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s ease; ${isActive ? `background: ${btnColor}; color: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.2);` : `background: #ffffff; color: ${btnColor}; border: 1px solid #cbd5e1;`}">
+                    ${btnLabel}
+                </button>
+            `;
+        }
 
         // Danh sách 21 Thầy Cô giáo và mã màu chữ riêng biệt
         const legendTeachers = [
@@ -827,23 +872,9 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         </p>
                     </div>
 
-                    <!-- BỘ LỌC KHỐI LỚP -->
+                    <!-- BỘ LỌC KHỐI LỚP (SINH ĐỘNG 100% TỪ THÔNG TIN MỞ RỘNG / KHAI BÁO TOÀN TRƯỜNG) -->
                     <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; background: #f1f5f9; padding: 0.35rem; border-radius: 8px;">
-                        <button onclick="window.smartTKBUI.filterGradeView('all')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === 'all' ? 'background: #1e293b; color: #fff;' : 'background: #fff; color: #475569;'}">
-                            Toàn Bộ (9 Lớp)
-                        </button>
-                        <button onclick="window.smartTKBUI.filterGradeView('6')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === '6' ? 'background: #1e3a8a; color: #fff;' : 'background: #fff; color: #1e3a8a;'}">
-                            Khối 6 (3 Lớp)
-                        </button>
-                        <button onclick="window.smartTKBUI.filterGradeView('7')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === '7' ? 'background: #065f46; color: #fff;' : 'background: #fff; color: #065f46;'}">
-                            Khối 7 (2 Lớp)
-                        </button>
-                        <button onclick="window.smartTKBUI.filterGradeView('8')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === '8' ? 'background: #831843; color: #fff;' : 'background: #fff; color: #831843;'}">
-                            Khối 8 (2 Lớp)
-                        </button>
-                        <button onclick="window.smartTKBUI.filterGradeView('9')" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; ${currentGrade === '9' ? 'background: #581c87; color: #fff;' : 'background: #fff; color: #581c87;'}">
-                            Khối 9 (2 Lớp)
-                        </button>
+                        ${gradeFilterButtonsHtml}
                     </div>
                 </div>
 
@@ -851,10 +882,13 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
         `;
 
-        // Lọc danh sách lớp theo khối
+        // Lọc danh sách lớp theo khối tương ứng (hỗ trợ cả khối số 6, 7, 8, 9 và khối chữ Mầm, Chồi, Lá...)
         const filteredClasses = classes.filter(c => {
-            if (currentGrade === 'all') return true;
-            return c.startsWith(currentGrade);
+            if (activeGrade === 'all') return true;
+            if (gradeGroups[activeGrade]) {
+                return gradeGroups[activeGrade].includes(c);
+            }
+            return c.startsWith(activeGrade);
         });
 
         for (const c of filteredClasses) {
@@ -3607,13 +3641,20 @@ setPCCMFilter(filterName) {
                             
                             <div>
                                 <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #1e293b;">🏫 Danh Sách Khối Lớp Hiện Tại (${this.engine.classes.length} Lớp):</h4>
-                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem; display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem; display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.65rem;">
                                     ${this.engine.classes.map(c => `
                                         <span style="background: #dbeafe; color: #1e40af; font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">
                                             Lớp ${c}
                                         </span>
                                     `).join('')}
                                 </div>
+                                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                    ✏️ Tùy Chỉnh / Nhập Nhanh Danh Sách Lớp (Phân cách bằng dấu phẩy):
+                                </label>
+                                <input type="text" id="mcfgClassesInput" value="${this.engine.classes.join(', ')}" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.82rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; color: #1e40af; background: #ffffff;" placeholder="Ví dụ: 6A1, 6A2, 6A3, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2">
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.7rem; color: #64748b;">
+                                    💡 Hệ thống tự động phân loại khối lớp và tạo các nút lọc động tương ứng trên Bảng TKB toàn trường.
+                                </p>
                             </div>
 
                             <div>
@@ -3883,6 +3924,22 @@ setPCCMFilter(filterName) {
         this.engine.schoolConfig.standardPeriodsPerWeek = standardHours;
         this.engine.schoolConfig.totalWeeks = totalWeeks;
         this.engine.schoolConfig.session = session;
+
+        // 1.1 Lưu danh sách Khối Lớp nếu có chỉnh sửa từ Khai Báo Mở Rộng
+        const classesInput = document.getElementById('mcfgClassesInput');
+        if (classesInput && classesInput.value.trim()) {
+            const parsedClasses = classesInput.value.split(',')
+                .map(s => s.trim().toUpperCase())
+                .filter(s => s.length > 0);
+            if (parsedClasses.length > 0) {
+                this.engine.classes = parsedClasses;
+                for (const c of parsedClasses) {
+                    if (!this.engine.timetable[c]) {
+                        this.engine.timetable[c] = Array(this.engine.DAYS.length).fill(null).map(() => Array(this.engine.PERIODS.length).fill(null));
+                    }
+                }
+            }
+        }
 
         // 2. Lưu PPCT Môn học
         const subRows = document.querySelectorAll('#tblMasterCurriculumBody tr');
