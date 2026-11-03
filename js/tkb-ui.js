@@ -2295,4 +2295,29 @@ setPCCMFilter(filterName) {
         this.showToast('📥 Đã xuất Báo Cáo Quyết Toán Cả Năm (35 Tuần) chuẩn BGDĐT!');
     }
 
+
+    /**
+     * CHẾ ĐỘ MÀU SẮC BÀN CỜ TKB (CLEAN DỊU MẮT HOẶC PASTEL PHÂN MÀU)
+     */
+    setColorMode(mode) {
+        this.masterColorMode = mode;
+        const btnClean = document.getElementById('btnColorClean');
+        const btnPastel = document.getElementById('btnColorPastel');
+        if (btnClean && btnPastel) {
+            if (mode === 'clean') {
+                btnClean.style.background = '#0f172a';
+                btnClean.style.color = '#ffffff';
+                btnPastel.style.background = '#ffffff';
+                btnPastel.style.color = '#475569';
+            } else {
+                btnPastel.style.background = '#2563eb';
+                btnPastel.style.color = '#ffffff';
+                btnClean.style.background = '#ffffff';
+                btnClean.style.color = '#475569';
+            }
+        }
+        this.renderCurrentView();
+        this.showToast(mode === 'clean' ? '✨ Đã chuyển sang chế độ màu Dịu mắt Clean!' : '🎨 Đã chuyển sang chế độ Thẻ màu Pastel!');
+    }
+
 }
