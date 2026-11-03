@@ -1464,6 +1464,11 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         const totalStandard = workloadReport.filter(r => r.diff === 0).length;
         const totalSurplus = workloadReport.filter(r => r.diff > 0).length;
         const totalReducedPeriods = workloadReport.reduce((sum, r) => sum + r.reducedTotal, 0);
+        const totalAssignedPeriods = allAssignments.reduce((sum, a) => sum + (a.periodsPerWeek || a.periods || 1), 0);
+        const totalClasses = (this.engine.classes || []).length;
+        const totalTeachers = workloadReport.length;
+        const standardQuota = (workloadReport[0] && workloadReport[0].standardQuota) || 17;
+        const departments = [...new Set(workloadReport.map(r => r.department).filter(Boolean))];
 
         let bodyHtml = '';
         if (this.pccmFilter === 'annual') {
@@ -1483,10 +1488,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
                     <div>
                         <h3 style="margin: 0; font-size: 1.15rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
-                            <span>⚖️</span> <span>HỆ QUẢN TRỊ ĐỊNH MỨC & PHÂN CÔNG CHUYÊN MÔN GDPT 2018</span>
+                            <span>⚖️</span> <span>HỆ QUẢN TRỊ ĐỊNH MỨC & PHÂN CÔNG CHUYÊN MÔN TOÀN DIỆN (GDMN & GDPT)</span>
                         </h3>
                         <p style="margin: 0.25rem 0 0 0; font-size: 0.82rem; color: #64748b;">
-                            Trường THCS Bán Trú Canh Thuận • Cân bằng định mức 17 tiết/tuần chuẩn Điều 6 Thông tư 28/2009/TT-BGDĐT
+                            ${this.engine.schoolConfig?.schoolName || 'Cơ Sở Giáo Dục'} • Niên khóa ${this.engine.schoolConfig?.academicYear || '2026 - 2027'} • Cân bằng định mức giảng dạy & nhiệm vụ kiêm nhiệm chuẩn Bộ GD&ĐT
                         </p>
                     </div>
 
@@ -1508,9 +1513,9 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.85rem; display: flex; align-items: center; gap: 0.75rem;">
                         <div style="font-size: 1.8rem;">🎯</div>
                         <div>
-                            <div style="font-size: 0.75rem; font-weight: 700; color: #166534; text-transform: uppercase;">Định Mức Chuẩn Bán Trú</div>
-                            <div style="font-size: 1.35rem; font-weight: 800; color: #15803d;">17 Tiết / Tuần</div>
-                            <div style="font-size: 0.7rem; color: #15803d;">Theo Điều 6 TT 28/2009/TT-BGDĐT</div>
+                            <div style="font-size: 0.75rem; font-weight: 700; color: #166534; text-transform: uppercase;">Định Mức Giảng Dạy Chuẩn</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #15803d;">${standardQuota} Tiết / Tuần</div>
+                            <div style="font-size: 0.7rem; color: #15803d;">Quy chuẩn theo Thông tư BGD&ĐT &amp; Hồ sơ trường</div>
                         </div>
                     </div>
 
@@ -1528,7 +1533,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         <div>
                             <div style="font-size: 0.75rem; font-weight: 700; color: #854d0e; text-transform: uppercase;">Tiết Kiêm Nhiệm Quy Đổi</div>
                             <div style="font-size: 1.35rem; font-weight: 800; color: #a16207;">${totalReducedPeriods} Tiết</div>
-                            <div style="font-size: 0.7rem; color: #a16207;">GVCN, Tổ trưởng, Lab, Bán trú, Đội</div>
+                            <div style="font-size: 0.7rem; color: #a16207;">Chủ nhiệm, Tổ trưởng, Lab, CNTT, Đoàn Đội</div>
                         </div>
                     </div>
 
@@ -1536,32 +1541,35 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         <div style="font-size: 1.8rem;">🏫</div>
                         <div>
                             <div style="font-size: 0.75rem; font-weight: 700; color: #6b21a8; text-transform: uppercase;">Quy Mô Nhà Trường</div>
-                            <div style="font-size: 1.35rem; font-weight: 800; color: #7e22ce;">9 Lớp Bán Trú</div>
-                            <div style="font-size: 0.7rem; color: #7e22ce;">261 Tiết / Tuần toàn trường</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #7e22ce;">${totalClasses} Khối Lớp Học</div>
+                            <div style="font-size: 0.7rem; color: #7e22ce;">${totalAssignedPeriods} Tiết / Tuần toàn trường</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- BỘ CHUYỂN ĐỔI CHẾ ĐỘ XEM (SUB-VIEW PILLS) -->
+                <!-- BỘ CHUYỂN ĐỔI CHẾ ĐỘ XEM (SUB-VIEW PILLS ĐA CẤP GDMN & GDPT) -->
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 0.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
                     <button onclick="window.smartTKBUI.setPCCMFilter('workload')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 800; border: none; cursor: pointer; ${this.pccmFilter === 'workload' ? 'background: #15803d; color: #fff; box-shadow: 0 2px 6px rgba(21,128,61,0.3);' : 'background: #fff; color: #166534; border: 1px solid #86efac;'}">
-                        ⚖️ Ma Trận Định Mức & Kiêm Nhiệm (20 Thầy Cô)
+                        ⚖️ Ma Trận Định Mức &amp; Kiêm Nhiệm (${totalTeachers} Thầy Cô)
                     </button>
                     <button onclick="window.smartTKBUI.setPCCMFilter('annual')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 800; border: none; cursor: pointer; ${this.pccmFilter === 'annual' ? 'background: #4338ca; color: #fff; box-shadow: 0 2px 6px rgba(67,56,202,0.3);' : 'background: #fff; color: #3730a3; border: 1px solid #c7d2fe;'}">
-                        📅 Quyết Toán Cả Năm (35 Tuần - 595 Tiết)
+                        🗓️ Quyết Toán Cả Năm (35 Tuần - ${standardQuota * 35} Tiết/GV)
                     </button>
                     <button onclick="window.smartTKBUI.setPCCMFilter('official')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 800; border: none; cursor: pointer; ${this.pccmFilter === 'official' ? 'background: #dc2626; color: #fff; box-shadow: 0 2px 6px rgba(220,38,38,0.3);' : 'background: #fff; color: #b91c1c; border: 1px solid #fca5a5;'}">
-                        🏛️ Bảng PCCM Chính Thức BGDĐT (20 Thầy Cô)
+                        🏛️ Bảng PCCM Chính Thức (${totalTeachers} Thầy Cô)
                     </button>
                     <button onclick="window.smartTKBUI.setPCCMFilter('all')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; border: none; cursor: pointer; ${this.pccmFilter === 'all' ? 'background: #1e293b; color: #fff;' : 'background: #fff; color: #475569; border: 1px solid #cbd5e1;'}">
                         🌐 Toàn Bộ Phân Công Chi Tiết (${allAssignments.length})
                     </button>
-                    <button onclick="window.smartTKBUI.setPCCMFilter('Tổ Tự Nhiên')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; border: none; cursor: pointer; ${this.pccmFilter === 'Tổ Tự Nhiên' ? 'background: #059669; color: #fff;' : 'background: #fff; color: #047857; border: 1px solid #cbd5e1;'}">
-                        🌿 Tổ Tự Nhiên (${allAssignments.filter(a => a.department === 'Tổ Tự Nhiên').length})
-                    </button>
-                    <button onclick="window.smartTKBUI.setPCCMFilter('Tổ Xã Hội')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; border: none; cursor: pointer; ${this.pccmFilter === 'Tổ Xã Hội' ? 'background: #b45309; color: #fff;' : 'background: #fff; color: #92400e; border: 1px solid #cbd5e1;'}">
-                        📚 Tổ Xã Hội (${allAssignments.filter(a => a.department === 'Tổ Xã Hội').length})
-                    </button>
+                    ${departments.map(dept => {
+                        const count = allAssignments.filter(a => a.department === dept).length;
+                        const isAct = (this.pccmFilter === dept);
+                        return `
+                            <button onclick="window.smartTKBUI.setPCCMFilter('${dept}')" style="padding: 0.4rem 0.95rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; border: none; cursor: pointer; ${isAct ? 'background: #0f766e; color: #fff;' : 'background: #fff; color: #0f766e; border: 1px solid #cbd5e1;'}">
+                                📁 ${dept} (${count})
+                            </button>
+                        `;
+                    }).join('')}
                 </div>
 
                 ${bodyHtml}
@@ -1574,7 +1582,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         let html = `
             <div style="margin-bottom: 0.75rem; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 0.65rem 1rem; border-radius: 8px; color: #065f46; font-size: 0.82rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                 <div>
-                    📌 <strong>Giải pháp đột phá cho Quản lý Giáo dục:</strong> Tính đủ tiết giảng dạy chuyên môn, tiết HĐTN và các nhiệm vụ kiêm nhiệm (Chủ nhiệm, Tổ trưởng, Lab, CNTT, Đoàn Đội). Khai báo chuẩn xác lên vnEdu/SMAS/CSDL ngành theo định mức 17 tiết/tuần trường bán trú.
+                    📌 <strong>Giải pháp đột phá cho Quản lý Giáo dục:</strong> Tự động tính đủ tiết giảng dạy chuyên môn, hoạt động giáo dục và các nhiệm vụ kiêm nhiệm (Chủ nhiệm, Tổ trưởng, Phòng Lab, CNTT, Đoàn Đội). Khai báo chuẩn xác lên vnEdu / SMAS / Cơ sở dữ liệu ngành theo đúng quy chuẩn định mức của từng cấp học (GDMN & GDPT).
                 </div>
                 <button onclick="window.smartTKBUI.resetWorkloadRoles()" style="background: #ffffff; color: #047857; border: 1px solid #059669; padding: 0.25rem 0.65rem; border-radius: 4px; font-weight: 700; font-size: 0.75rem; cursor: pointer;">
                     🔄 Khôi Phục Kiêm Nhiệm Gốc
@@ -1607,7 +1615,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
 
             let badgeHtml = '';
             if (r.diff === 0) {
-                badgeHtml = '<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">✅ Chuẩn 17 tiết</span>';
+                badgeHtml = `<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">✅ Đạt chuẩn (${r.standardQuota}t)</span>`;
             } else if (r.diff > 0) {
                 badgeHtml = `<span style="background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">🟢 Thừa +${r.diff} tiết</span>`;
             } else {
@@ -1758,7 +1766,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         const officialList = this.engine.officialPCCM || [];
         let html = `
             <div style="margin-bottom: 0.75rem; background: #fff1f2; border: 1px solid #fecdd3; padding: 0.6rem 1rem; border-radius: 8px; color: #9f1239; font-size: 0.82rem; font-weight: 600;">
-                📌 Đây là bản Phân công chuyên môn chính thức năm học 2026 - 2027 được phê duyệt của Trường THCS Bán Trú Canh Thuận gồm đúng 20 Thầy Cô giáo chủ chốt.
+                📌 Bản Phân công chuyên môn chính thức được đồng bộ toàn diện từ Cấu hình Khai Báo Trường & Đội ngũ Giáo viên chủ chốt.
             </div>
             <div style="overflow-x: auto;">
                 <table class="tkb-table">
@@ -4308,7 +4316,7 @@ setPCCMFilter(filterName) {
 
                 <!-- Footer -->
                 <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 0.73rem; color: #64748b;">Căn cứ Điều 6 Thông tư 28/2009/TT-BGDĐT: Định mức 17 tiết/tuần trường bán trú.</span>
+                    <span style="font-size: 0.73rem; color: #64748b;">Căn cứ quy định Bộ GD&ĐT: Định mức chuẩn và giảm trừ kiêm nhiệm theo đúng cấp học (GDMN & GDPT).</span>
                     <button type="button" onclick="window.smartTKBUI.closeDSGVDetailModal()" style="padding: 0.4rem 0.85rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
                         Đóng
                     </button>
