@@ -47,7 +47,12 @@ export class SmartTKBUI {
     }
 
     onSchoolYearChange(val) {
-        if (!this.engine.schoolConfig) this.engine.schoolConfig = {}
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.schoolYear = val;
+        try { localStorage.setItem('edustudio_custom_school_year', val); } catch(e){}
+        const modalInput = document.getElementById('declSchoolYear');
+        if (modalInput && modalInput.value !== val) modalInput.value = val;
+    }
 
     onSelectTeacherDirect(tName) {
         this.selectedTeacher = tName;
@@ -63,12 +68,6 @@ export class SmartTKBUI {
         try {
             localStorage.setItem('edustudio_custom_teacher_periods', JSON.stringify(this.customTeacherPeriods));
         } catch(e){}
-    }
-;
-        this.engine.schoolConfig.schoolYear = val;
-        try { localStorage.setItem('edustudio_custom_school_year', val); } catch(e){}
-        const modalInput = document.getElementById('declSchoolYear');
-        if (modalInput && modalInput.value !== val) modalInput.value = val;
     }
 
     init() {
