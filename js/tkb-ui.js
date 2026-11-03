@@ -404,30 +404,59 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
      * GÓC NHÌN 2: THEO TỪNG GIÁO VIÊN
      */
     renderTeacherView(container) {
+        // 1. Lấy danh sách toàn bộ Thầy Cô (từ getAllTeachers() hoặc teachers)
+        let teacherNames = [];
+        if (this.engine.getAllTeachers) {
+            teacherNames = this.engine.getAllTeachers();
+        }
+        if (!teacherNames || teacherNames.length === 0) {
+            const rawTeachers = this.engine.teachers || [];
+            teacherNames = rawTeachers.map(t => {
+                if (typeof t === 'string') return t;
+                return t.displayName || t.fullName || t.name || '';
+            }).filter(Boolean);
+        }
+
+        // Ưu tiên Thầy Quan lên đầu danh sách
+        teacherNames.sort((a, b) => {
+            if (a.includes('Tá Quan')) return -1;
+            if (b.includes('Tá Quan')) return 1;
+            return a.localeCompare(b, 'vi');
+        });
+
+        // Tự động sửa lỗi nếu selectedTeacher bị undefined
+        if (!this.selectedTeacher || this.selectedTeacher === 'undefined' || !teacherNames.includes(this.selectedTeacher)) {
+            this.selectedTeacher = teacherNames[0] || 'Thầy Nguyễn Tá Quan';
+        }
+
         const teacherName = this.selectedTeacher;
         const grid = this.engine.getTeacherTimetable(teacherName);
 
         let totalPeriods = 0;
         for (let d = 0; d < this.engine.DAYS.length; d++) {
             for (let p = 0; p < this.engine.PERIODS.length; p++) {
-                if (grid[d][p]) totalPeriods++;
+                if (grid[d] && grid[d][p]) totalPeriods++;
             }
         }
 
         // Danh sách Thầy Cô để tạo List chọn trực tiếp
-        const allTeachers = this.engine.teachers || [];
         let teacherOptions = '';
-        allTeachers.forEach(t => {
-            const isSel = (t.name === teacherName) ? 'selected' : '';
-            teacherOptions += `<option value="${t.name}" ${isSel}>👨‍🏫 ${t.name}</option>`;
+        teacherNames.forEach(tName => {
+            const isSel = (tName === teacherName) ? 'selected' : '';
+            const isQuan = tName.includes('Tá Quan');
+            teacherOptions += `<option value="${tName}" ${isSel}>${isQuan ? '⭐ ' : '👨‍🏫 '}${tName}</option>`;
         });
 
         // Tổ chuyên môn tự động nhảy theo PCCM
-        const teacherObj = allTeachers.find(t => t.name === teacherName);
+        const allTeachers = this.engine.teachers || [];
+        const teacherObj = allTeachers.find(t => {
+            if (typeof t === 'string') return t === teacherName;
+            return t.displayName === teacherName || t.fullName === teacherName || t.shortName === teacherName || t.name === teacherName;
+        });
         const teacherAssign = (this.engine.assignments || []).find(a => a.teacher === teacherName);
         let deptName = teacherObj?.department || teacherAssign?.department;
         if (!deptName) {
-            deptName = (teacherName.includes('Quan') || teacherName.includes('Minh') || teacherName.includes('Nhàn') || teacherName.includes('Hòa') || teacherName.includes('Tài')) ? 'Tổ Khoa Học Tự Nhiên' : 'Tổ Khoa Học Xã Hội';
+            deptName = (teacherName.includes('Quan') || teacherName.includes('Minh') || teacherName.includes('Nhàn') || teacherName.includes('Hòa') || teacherName.includes('Tài') || teacherName.includes('Lành') || teacherName.includes('Duyên')) ? 'Tổ Khoa Học Tự Nhiên' : 'Tổ Khoa Học Xã Hội';
         }
         const isNatural = deptName.includes('Tự Nhiên');
 
@@ -3843,12 +3872,14 @@ setPCCMFilter(filterName) {
                                         </thead>
                                         <tbody>
                                             ${teachers.map((t, idx) => {
-                                                const isQuan = t.name && t.name.includes('Tá Quan');
+                                                const tName = typeof t === 'string' ? t : (t.displayName || t.fullName || t.name || '');
+                                                const isQuan = tName.includes('Tá Quan');
+                                                const subName = t.subjects ? (Array.isArray(t.subjects) ? t.subjects.join(', ') : t.subjects) : (t.subject || 'Toán');
                                                 return `
                                                     <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #eff6ff; font-weight: 800; color: #1d4ed8;' : ''}">
                                                         <td style="padding: 0.3rem 0.4rem; text-align: center; color: #64748b;">${idx + 1}</td>
-                                                        <td style="padding: 0.3rem 0.4rem;">${t.name}${isQuan ? ' ⭐' : ''}</td>
-                                                        <td style="padding: 0.3rem 0.4rem;">${t.subject || 'Toán'}</td>
+                                                        <td style="padding: 0.3rem 0.4rem;">${tName}${isQuan ? ' ⭐' : ''}</td>
+                                                        <td style="padding: 0.3rem 0.4rem;">${subName}</td>
                                                         <td style="padding: 0.3rem 0.4rem; text-align: center;">
                                                             ${t.homeroom ? `<span style="background: #dbeafe; color: #1e40af; padding: 0.1rem 0.35rem; border-radius: 3px; font-weight: 700; font-size: 0.68rem;">Lớp ${t.homeroom}</span>` : '<span style="color: #94a3b8;">-</span>'}
                                                         </td>
@@ -4109,7 +4140,7 @@ setPCCMFilter(filterName) {
         }
 
         const assignments = this.engine.assignments || [];
-        const teachers = this.engine.getAllTeachers ? this.engine.getAllTeachers() : (this.engine.teachers ? this.engine.teachers.map(t => t.name) : []);
+        const teachers = this.engine.getAllTeachers ? this.engine.getAllTeachers() : (this.engine.teachers ? this.engine.teachers.map(t => (typeof t === "string" ? t : (t.displayName || t.fullName || t.name || ""))) : []);
         const subjects = this.engine.subjects || [];
         const classes = this.engine.classes || [];
 
