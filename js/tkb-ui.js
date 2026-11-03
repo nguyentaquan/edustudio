@@ -1043,18 +1043,21 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
 
                         html += `
                             <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
-                                title="${cell.subject} - ${cell.teacher} (Lớp ${c}) • Bấm để chỉnh sửa / hoán đổi"
-                                style="background: #ffffff; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: ${cellPadding}; text-align: center; vertical-align: middle; cursor: pointer; height: ${cellHeight}; line-height: 1.05; transition: background 0.15s ease;"
-                                onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#ffffff'">
+                                title="✏️ Bấm để sửa môn / đổi GV / hoán đổi tiết này (Lớp ${c} • ${cell.subject} - ${cell.teacher})"
+                                style="background: #ffffff; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: ${cellPadding}; text-align: center; vertical-align: middle; cursor: pointer; height: ${cellHeight}; line-height: 1.05; transition: all 0.12s ease;"
+                                onmouseover="this.style.background='#eff6ff'; this.style.boxShadow='inset 0 0 0 2px #2563eb'; this.style.position='relative'; this.style.zIndex='5';"
+                                onmouseout="this.style.background='#ffffff'; this.style.boxShadow='none'; this.style.zIndex='1';">
                                 ${cellContent}
                             </td>
                         `;
                     } else {
                         html += `
                             <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
-                                title="Ô trống (Lớp ${c}) • Bấm để gán môn"
-                                style="background: #ffffff; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: ${cellPadding}; text-align: center; cursor: pointer; height: ${cellHeight};">
-                                <span style="color: #cbd5e1; font-size: 0.65rem;">—</span>
+                                title="➕ Ô trống (Lớp ${c}) • Bấm để gán môn học & Thầy Cô"
+                                style="background: #ffffff; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: ${cellPadding}; text-align: center; cursor: pointer; height: ${cellHeight}; transition: all 0.12s ease;"
+                                onmouseover="this.style.background='#f0fdf4'; this.style.boxShadow='inset 0 0 0 2px #16a34a'; this.style.position='relative'; this.style.zIndex='5';"
+                                onmouseout="this.style.background='#ffffff'; this.style.boxShadow='none'; this.style.zIndex='1';">
+                                <span style="color: #cbd5e1; font-size: 0.65rem;">➕</span>
                             </td>
                         `;
                     }
@@ -1241,6 +1244,86 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         // 2. Mở Modal Chỉnh Sửa Tiết Học
         this.openSlotEditModal(classId, day, period);
     }
+
+    /**
+     * HỘP THOẠI HƯỚNG DẪN BIÊN TẬP / SỬA TKB TRỰC TIẾP
+     */
+    showEditGuideModal() {
+        let guideModal = document.getElementById('tkbEditGuideModal');
+        if (!guideModal) {
+            guideModal = document.createElement('div');
+            guideModal.id = 'tkbEditGuideModal';
+            guideModal.className = 'modal-overlay';
+            guideModal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+                backdrop-filter: blur(4px); z-index: 999999; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(guideModal);
+        }
+        guideModal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 14px; width: 100%; max-width: 580px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25); overflow: hidden; animation: popIn 0.2s ease;">
+                <!-- HEADER -->
+                <div style="background: linear-gradient(135deg, #1e3a8a, #0f172a); padding: 1rem 1.25rem; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <span style="font-size: 1.3rem;">💡</span>
+                        <div>
+                            <div style="font-weight: 800; font-size: 1.05rem;">CÁCH CHỈNH SỬA & BIÊN TẬP THỜI KHÓA BIỂU</div>
+                            <div style="font-size: 0.75rem; color: #93c5fd;">Tương tác trực quan 1 chạm trên toàn bộ Bàn cờ TKB</div>
+                        </div>
+                    </div>
+                    <button onclick="document.getElementById('tkbEditGuideModal').style.display='none'" style="background: transparent; border: none; color: #cbd5e1; font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
+
+                <!-- BODY -->
+                <div style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; font-size: 0.88rem; color: #334155;">
+                    <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 0.75rem 1rem; border-radius: 6px;">
+                        <strong style="color: #1e40af; font-size: 0.95rem;">👉 Cơ Chế Sửa 1 Chạm Cực Kỳ Đơn Giản:</strong>
+                        <p style="margin: 0.35rem 0 0 0; line-height: 1.5;">Toàn bộ các ô trên bàn cờ Thời khóa biểu (cả ô đã có tiết lẫn ô trống) đều là <strong>ô tương tác sống (Live Interactive Cell)</strong>. Thầy Cô chỉ cần <strong>nhấp chuột trực tiếp vào bất kỳ ô nào</strong> để chỉnh sửa!</p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; gap: 0.75rem; align-items: flex-start; background: #f8fafc; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <span style="background: #dbeafe; color: #1e40af; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem;">1</span>
+                            <div>
+                                <div style="font-weight: 700; color: #0f172a;">Sửa Môn Học hoặc Đổi Thầy Cô Giảng Dạy:</div>
+                                <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.15rem;">Nhấp vào ô cần sửa &rarr; Chọn Môn học mới hoặc chọn/nhập tên Giáo viên mới &rarr; Bấm <strong>"Lưu Tiết Học"</strong>. Bảng sẽ cập nhật ngay lập tức.</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 0.75rem; align-items: flex-start; background: #f8fafc; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <span style="background: #fef3c7; color: #b45309; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem;">2</span>
+                            <div>
+                                <div style="font-weight: 700; color: #0f172a;">Hoán Đổi 2 Tiết Cho Nhau (Click-to-Swap):</div>
+                                <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.15rem;">Nhấp vào ô tiết thứ nhất &rarr; Bấm nút <strong>"🔄 Hoán Đổi Sang Tiết Khác"</strong> &rarr; Nhấp chuột tiếp vào ô tiết thứ hai. Hai tiết sẽ tự động đổi chỗ trơn tru.</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 0.75rem; align-items: flex-start; background: #f8fafc; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <span style="background: #fee2e2; color: #b91c1c; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem;">3</span>
+                            <div>
+                                <div style="font-weight: 700; color: #0f172a;">Gán Tiết Mới Vào Ô Trống hoặc Xóa Tiết:</div>
+                                <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.15rem;">Bấm vào ô trống có dấu <strong>➕</strong> để phân công tiết mới; hoặc bấm vào tiết đang có rồi chọn <strong>"🗑️ Xóa Tiết"</strong> để trả lại ô trống.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 0.6rem 0.85rem; border-radius: 6px; font-size: 0.8rem; color: #92400e; display: flex; align-items: center; gap: 0.4rem;">
+                        <span>🛡️</span> <em>Hệ thống có thuật toán AI tự động kiểm tra xung đột giáo viên và phòng học ngay khi Thầy Cô lưu, đảm bảo không bao giờ bị trùng lịch.</em>
+                    </div>
+                </div>
+
+                <!-- FOOTER -->
+                <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.75rem 1.25rem; display: flex; justify-content: flex-end;">
+                    <button onclick="document.getElementById('tkbEditGuideModal').style.display='none'" style="background: #2563eb; color: #ffffff; border: none; border-radius: 6px; padding: 0.5rem 1.3rem; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(37,99,235,0.3);">
+                        Đã Rõ & Thao Tác Ngay
+                    </button>
+                </div>
+            </div>
+        `;
+        guideModal.style.display = 'flex';
+    }
+
 
     cancelSwapMode() {
         this.swapSource = null;
