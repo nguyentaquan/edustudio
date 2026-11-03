@@ -30,7 +30,15 @@ export class SmartTKBUI {
         // Trạng thái hoán đổi 1 chạm (Click-to-Swap)
         this.swapSource = null; // { classId, day, period }
 
-    onSchoolNameChange(val) {
+
+        this.editingSlot = null; // { classId, day, period, cell }
+        this.editingPCCMIndex = -1; // -1: thêm mới, >= 0: sửa
+    }
+
+    /**
+     * Khởi tạo và gắn các sự kiện điều khiển
+     */
+        onSchoolNameChange(val) {
         if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
         this.engine.schoolConfig.schoolName = val;
         try { localStorage.setItem('edustudio_custom_school_name', val); } catch(e){}
@@ -46,13 +54,6 @@ export class SmartTKBUI {
         if (modalInput && modalInput.value !== val) modalInput.value = val;
     }
 
-        this.editingSlot = null; // { classId, day, period, cell }
-        this.editingPCCMIndex = -1; // -1: thêm mới, >= 0: sửa
-    }
-
-    /**
-     * Khởi tạo và gắn các sự kiện điều khiển
-     */
     init() {
         // Luôn nạp mặc định Thời khóa biểu chính thức Canh Thuận (Tuần 9)
         this.engine.loadDefaultSampleData();
