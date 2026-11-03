@@ -346,10 +346,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     👉 <strong>Bấm vào bất kỳ ô nào</strong> để: <span style="color: #1d4ed8; font-weight: 700;">Chỉnh sửa môn • Đổi giáo viên • Hoán đổi tiết • Mở Giáo án 5512</span>
                 </div>
             </div>
-            <table class="tkb-table">
+            <table class="tkb-table" style="max-width: 820px; width: 100%; table-layout: fixed; margin: 0 auto;">
                 <thead>
                     <tr>
-                        <th style="width: 70px;">Tiết</th>
+                        <th style="width: 50px;">Tiết</th>
                         ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
                     </tr>
                 </thead>
@@ -490,10 +490,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     </button>
                 </div>
             </div>
-            <table class="tkb-table">
+            <table class="tkb-table" style="max-width: 820px; width: 100%; table-layout: fixed; margin: 0 auto;">
                 <thead>
                     <tr>
-                        <th style="width: 70px;">Tiết</th>
+                        <th style="width: 50px;">Tiết</th>
                         ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
                     </tr>
                 </thead>
@@ -555,10 +555,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     Sức chứa: <strong>${roomDef.capacity} lớp/tiết</strong>
                 </div>
             </div>
-            <table class="tkb-table">
+            <table class="tkb-table" style="max-width: 820px; width: 100%; table-layout: fixed; margin: 0 auto;">
                 <thead>
                     <tr>
-                        <th style="width: 70px;">Tiết</th>
+                        <th style="width: 50px;">Tiết</th>
                         ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
                     </tr>
                 </thead>
@@ -1121,42 +1121,47 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         </button>
                     </div>
                     <div style="overflow-x: auto;">
-                        <table class="tkb-table" style="font-size: 0.74rem; min-width: 650px; margin: 0; background: #ffffff;">
+                        <table class="tkb-table" style="font-size: 0.72rem; width: 100%; max-width: 780px; margin: 0; table-layout: fixed; background: #ffffff; border-collapse: collapse; border: 1px solid #cbd5e1;">
                             <thead>
-                                <tr>
-                                    <th style="width: 50px;">Tiết</th>
-                                    ${this.engine.DAYS.map(day => `<th>${day}</th>`).join('')}
+                                <tr style="background: #f1f5f9;">
+                                    <th style="width: 38px; padding: 0.28rem 0.2rem; font-size: 0.72rem; text-align: center; border: 1px solid #cbd5e1;">Tiết</th>
+                                    ${this.engine.DAYS.map(day => `<th style="padding: 0.28rem 0.25rem; font-size: 0.72rem; text-align: center; border: 1px solid #cbd5e1;">${day}</th>`).join('')}
                                 </tr>
                             </thead>
                             <tbody>
             `;
 
             for (let p = 0; p < this.engine.PERIODS.length; p++) {
-                html += `<tr><td class="period-label-col" style="padding: 0.25rem; font-weight: 800; background: #f8fafc;">T${p + 1}</td>`;
+                html += `<tr><td class="period-label-col" style="padding: 0.18rem 0.15rem; font-weight: 800; font-size: 0.72rem; background: #f8fafc; text-align: center; border: 1px solid #cbd5e1; width: 38px;">T${p + 1}</td>`;
                 for (let d = 0; d < this.engine.DAYS.length; d++) {
                     const cell = this.engine.timetable[c] && this.engine.timetable[c][d] ? this.engine.timetable[c][d][p] : null;
                     if (cell) {
                         const isQuanSlot = cell.teacher && cell.teacher.includes('Nguyễn Tá Quan');
                         const teacherColor = this.getTeacherColor(cell.teacher, cell.shortTeacher);
-                        const roomBadge = cell.room ? `<span style="font-size: 0.62rem; color: #64748b;">(${cell.room.replace('room_', '')})</span>` : '';
+                        const roomBadge = cell.room ? `<span style="font-size: 0.6rem; color: #64748b;">(${cell.room.replace('room_', '')})</span>` : '';
 
                         html += `
-                            <td style="padding: 0.3rem; height: 42px; cursor: pointer; background: #ffffff; border: 1px solid #e2e8f0;"
+                            <td style="padding: 0.18rem 0.35rem; height: 32px; cursor: pointer; background: #ffffff; border: 1px solid #e2e8f0; vertical-align: middle; transition: all 0.12s ease;"
                                 onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
-                                title="${cell.subject} • ${cell.teacher}">
-                                <div style="font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                title="✏️ Bấm để sửa môn / đổi GV / hoán đổi (Lớp ${c} • ${cell.subject} - ${cell.teacher})"
+                                onmouseover="this.style.background='#eff6ff'; this.style.boxShadow='inset 0 0 0 1.5px #2563eb';"
+                                onmouseout="this.style.background='#ffffff'; this.style.boxShadow='none';">
+                                <div style="font-weight: 800; color: #0f172a; font-size: 0.73rem; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     ${cell.subject} ${roomBadge}
                                 </div>
-                                <div style="font-size: 0.7rem; color: ${teacherColor}; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <div style="font-size: 0.67rem; color: ${teacherColor}; font-weight: 700; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     ${isQuanSlot ? '⭐ ' : ''}${cell.teacher}
                                 </div>
                             </td>
                         `;
                     } else {
                         html += `
-                            <td style="padding: 0.3rem; height: 42px; cursor: pointer; background: #ffffff;"
-                                onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})">
-                                <span style="color: #cbd5e1; font-size: 0.7rem;">Trống</span>
+                            <td style="padding: 0.18rem 0.35rem; height: 32px; cursor: pointer; background: #ffffff; border: 1px solid #e2e8f0; text-align: center; vertical-align: middle; transition: all 0.12s ease;"
+                                onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
+                                title="➕ Ô trống (Lớp ${c}) • Bấm để gán môn"
+                                onmouseover="this.style.background='#f0fdf4'; this.style.boxShadow='inset 0 0 0 1.5px #16a34a';"
+                                onmouseout="this.style.background='#ffffff'; this.style.boxShadow='none';">
+                                <span style="color: #cbd5e1; font-size: 0.68rem;">—</span>
                             </td>
                         `;
                     }
