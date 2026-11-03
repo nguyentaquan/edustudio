@@ -758,40 +758,34 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             { name: 'Tú', label: 'Tú', color: '#78350f' }
         ];
 
-        // Mật độ hiển thị bảng (Density Settings): ultra (siêu gọn), compact (vừa vặn - mặc định), standard (thoáng mắt)
+        // Mật độ hiển thị bảng: MỞ RỘNG 100% CHIỀU NGANG, ÉP GỌN CHIỀU DỌC (Theo chỉ đạo của Thầy Quan)
         const density = this.masterDensity || 'compact';
-        let colDayWidth = '54px';
-        let colPeriodWidth = '32px';
-        let colClassWidth = '70px';
-        let tableMaxWidth = '860px';
-        let tableMinWidth = '720px';
-        let cellHeight = '28px';
-        let cellPadding = '2px 2px';
-        let subjectFontSize = '0.72rem';
-        let teacherFontSize = '0.68rem';
-        let headerFontSize = '0.74rem';
+        let colDayWidth = '50px';
+        let colPeriodWidth = '30px';
+        let colClassWidth = `calc((100% - 80px) / ${classes.length})`;
+        let cellHeight = '22px';
+        let cellPadding = '1px 2px';
+        let subjectFontSize = '0.74rem';
+        let teacherFontSize = '0.70rem';
+        let headerFontSize = '0.75rem';
 
         if (density === 'ultra') {
             colDayWidth = '46px';
             colPeriodWidth = '28px';
-            colClassWidth = '60px';
-            tableMaxWidth = '760px';
-            tableMinWidth = '640px';
-            cellHeight = '24px';
-            cellPadding = '1px 1px';
-            subjectFontSize = '0.68rem';
-            teacherFontSize = '0.64rem';
+            colClassWidth = `calc((100% - 74px) / ${classes.length})`;
+            cellHeight = '19px';
+            cellPadding = '0px 1px';
+            subjectFontSize = '0.70rem';
+            teacherFontSize = '0.66rem';
             headerFontSize = '0.70rem';
         } else if (density === 'standard') {
-            colDayWidth = '66px';
-            colPeriodWidth = '38px';
-            colClassWidth = '86px';
-            tableMaxWidth = '1020px';
-            tableMinWidth = '880px';
-            cellHeight = '34px';
-            cellPadding = '3px 4px';
-            subjectFontSize = '0.76rem';
-            teacherFontSize = '0.72rem';
+            colDayWidth = '54px';
+            colPeriodWidth = '34px';
+            colClassWidth = `calc((100% - 88px) / ${classes.length})`;
+            cellHeight = '26px';
+            cellPadding = '2px 3px';
+            subjectFontSize = '0.78rem';
+            teacherFontSize = '0.73rem';
             headerFontSize = '0.78rem';
         }
 
@@ -921,9 +915,9 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     </div>
                 ` : ''}
 
-                <!-- BÀN CỜ TỔNG THỂ CĂN GIỮA, THU HẸP GỌN GÀNG, 100% NỀN TRẮNG -->
-                <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); display: flex; justify-content: center; background: #f8fafc; padding: 6px;">
-                    <table class="tkb-table" style="margin: 0 auto; width: 100%; max-width: ${tableMaxWidth}; min-width: ${tableMinWidth}; border-collapse: collapse; font-size: ${subjectFontSize}; background: #ffffff; border: 1px solid #cbd5e1;">
+                <!-- BÀN CỜ TỔNG THỂ TRÀN 100% CHIỀU NGANG, ÉP GỌN CHIỀU DỌC ĐẸP MẮT -->
+                <div style="overflow-x: auto; width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); background: #ffffff;">
+                    <table class="tkb-table tkb-master-table" style="width: 100%; min-width: 860px; table-layout: fixed; margin: 0; border-collapse: collapse; font-size: ${subjectFontSize}; background: #ffffff; border: 1px solid #cbd5e1;">
                         <thead>
                             <tr style="background: #0f172a; color: #ffffff;">
                                 <th rowspan="2" style="width: ${colDayWidth}; text-align: center; border-right: 1px solid #334155; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800;">Thứ</th>
@@ -984,20 +978,20 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         let cellContent = '';
                         if (cell.subject === 'Chào Cờ' || cell.subject === 'Chào cờ') {
                             cellContent = `
-                                <div style="font-weight: 800; color: #dc2626; font-size: ${subjectFontSize};">Chào cờ</div>
+                                <div style="font-weight: 800; color: #dc2626; font-size: ${subjectFontSize}; line-height: 1.05;">Chào cờ</div>
                             `;
                         } else if (this.masterHideTeacher) {
                             cellContent = `
-                                <div style="font-weight: 700; color: #0f172a; font-size: ${subjectFontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15;">
+                                <div style="font-weight: 700; color: #0f172a; font-size: ${subjectFontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.05;">
                                     ${cell.subject}
                                 </div>
                             `;
                         } else {
                             cellContent = `
-                                <div style="font-weight: 700; color: #0f172a; font-size: ${subjectFontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15;">
+                                <div style="font-weight: 700; color: #0f172a; font-size: ${subjectFontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.05;">
                                     ${cell.subject}
                                 </div>
-                                <div style="font-weight: 800; color: ${teacherColor}; font-size: ${teacherFontSize}; white-space: nowrap; line-height: 1.1; margin-top: 1px;">
+                                <div style="font-weight: 800; color: ${teacherColor}; font-size: ${teacherFontSize}; white-space: nowrap; line-height: 1.05; margin-top: 0px;">
                                     ${isQuanSlot ? '⭐ ' : ''}${shortTeacher}
                                 </div>
                             `;
@@ -1006,7 +1000,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         html += `
                             <td onclick="window.smartTKBUI.handleCellClick('${c}', ${d}, ${p})"
                                 title="${cell.subject} - ${cell.teacher} (Lớp ${c}) • Bấm để chỉnh sửa / hoán đổi"
-                                style="background: #ffffff; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: ${cellPadding}; text-align: center; cursor: pointer; height: ${cellHeight}; transition: background 0.15s ease;"
+                                style="background: #ffffff; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: ${cellPadding}; text-align: center; vertical-align: middle; cursor: pointer; height: ${cellHeight}; line-height: 1.05; transition: background 0.15s ease;"
                                 onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#ffffff'">
                                 ${cellContent}
                             </td>

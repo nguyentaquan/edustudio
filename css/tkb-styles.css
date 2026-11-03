@@ -477,3 +477,17 @@
     }
 }
 
+
+/* NÂNG CẤP BÀN CỜ TỔNG THỂ TOÀN TRƯỜNG: TRÀN 100% CHIỀU NGANG & ÉP GỌN CHIỀU DỌC */
+.tkb-master-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+.tkb-master-table td {
+    height: auto !important;
+    min-height: unset !important;
+    vertical-align: middle !important;
+}
+.tkb-master-table th {
+    vertical-align: middle !important;
+}
