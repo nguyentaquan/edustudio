@@ -3290,6 +3290,13 @@ setPCCMFilter(filterName) {
         const assignments = this.engine.assignments || [];
         const currentSem = this.engine.currentSemester || (sc.semester === 'Học kỳ II' ? 'HK2' : (sc.semester === 'Cả năm' ? 'YEAR' : 'HK1'));
 
+        modal.classList.add('active');
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('visibility', 'visible', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
+        modal.style.setProperty('z-index', '9999999', 'important');
+
         modal.innerHTML = `
             <div style="background: #ffffff; border-radius: 12px; max-width: 940px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.35); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 92vh; animation: modalPop 0.2s ease-out;">
                 
@@ -3710,7 +3717,11 @@ setPCCMFilter(filterName) {
 
     closeMasterDeclarationModal() {
         const modal = document.getElementById('tkbMasterDeclarationModal');
-        if (modal) modal.style.display = 'none';
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.setProperty('display', 'none', 'important');
+            modal.style.setProperty('visibility', 'hidden', 'important');
+        }
     }
 
     /**
@@ -3840,6 +3851,13 @@ setPCCMFilter(filterName) {
         const teachers = this.engine.getAllTeachers ? this.engine.getAllTeachers() : (this.engine.teachers ? this.engine.teachers.map(t => t.name) : []);
         const subjects = this.engine.subjects || [];
         const classes = this.engine.classes || [];
+
+        modal.classList.add('active');
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('visibility', 'visible', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
+        modal.style.setProperty('z-index', '9999999', 'important');
 
         modal.innerHTML = `
             <div style="background: #ffffff; border-radius: 12px; max-width: 980px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.4); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; animation: modalPop 0.2s ease-out;">
@@ -4108,7 +4126,11 @@ setPCCMFilter(filterName) {
 
     closePCCMDetailModal() {
         const modal = document.getElementById('tkbPCCMDetailModal');
-        if (modal) modal.style.display = 'none';
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.setProperty('display', 'none', 'important');
+            modal.style.setProperty('visibility', 'hidden', 'important');
+        }
     }
 
     saveMasterDeclarationModal() {

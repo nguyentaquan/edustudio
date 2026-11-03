@@ -4048,3 +4048,16 @@ body.modal-open {
         gap: 0.3rem !important;
     }
 }
+
+/* ĐẶC QUYỀN HIỂN THỊ 100% CHO CÁC HỘP THOẠI NHẬP LIỆU TKB (CHỐNG BỊ ẨN BỞI NOT ACTIVE) */
+#tkbMasterDeclarationModal.active,
+#tkbPCCMDetailModal.active,
+#tkbPCCMModal.active,
+#tkbSlotEditModal.active,
+#tkbDSGVDetailModal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 9999999 !important;
+}

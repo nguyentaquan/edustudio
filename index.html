@@ -7,7 +7,7 @@
     <meta name="description" content="Kho bài giảng PPT, Kho trò chơi, Kho đề và Kho video phục vụ cộng đồng giáo viên Việt Nam.">
     <!-- Xóa sạch Cache cũ & Hủy Service Worker ngay lập tức -->
     
-    <link rel="stylesheet" href="css/style.css?v=3.5.11">
+    <link rel="stylesheet" href="css/style.css?v=3.5.12">
     <link rel="stylesheet" href="css/tkb-styles.css?v=3.10.1">
     <meta name="theme-color" content="#1d4ed8">
     <link rel="manifest" href="manifest.json">
@@ -2437,11 +2437,54 @@
                             <!-- ========================================================================= -->
                             <div class="tkb-compact-studio-panel" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0.5rem 0.85rem; margin-bottom: 0.75rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
                                 
+                                <script>
+window.openKhaiBaoToanDienDirect = function() {
+    try {
+        if (window.smartTKBUI && typeof window.smartTKBUI.openMasterDeclarationModal === 'function') {
+            window.smartTKBUI.openMasterDeclarationModal('school');
+        } else if (window.app && window.app.tkbUI && typeof window.app.tkbUI.openMasterDeclarationModal === 'function') {
+            window.app.tkbUI.openMasterDeclarationModal('school');
+        } else {
+            console.warn('SmartTKBUI đang nạp, mở sau 250ms...');
+            setTimeout(function() {
+                if (window.smartTKBUI) window.smartTKBUI.openMasterDeclarationModal('school');
+            }, 250);
+        }
+    } catch(err) {
+        console.error('Lỗi mở Khai Báo Toàn Diện:', err);
+    }
+};
+
+window.openPCCMMonDirect = function() {
+    try {
+        if (window.smartTKBUI && typeof window.smartTKBUI.openPCCMDetailModal === 'function') {
+            window.smartTKBUI.openPCCMDetailModal();
+        } else if (window.app && window.app.tkbUI && typeof window.app.tkbUI.openPCCMDetailModal === 'function') {
+            window.app.tkbUI.openPCCMDetailModal();
+        } else {
+            console.warn('SmartTKBUI đang nạp, mở sau 250ms...');
+            setTimeout(function() {
+                if (window.smartTKBUI) window.smartTKBUI.openPCCMDetailModal();
+            }, 250);
+        }
+    } catch(err) {
+        console.error('Lỗi mở PCCM Môn:', err);
+    }
+};
+</script>
                                 <!-- HÀNG 1: CÔNG CỤ CẤU HÌNH MASTER • HỌC KỲ • THÔNG TIN TRƯỜNG (TỰ NHẬP TAY) -->
                                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.45rem; margin-bottom: 0.45rem;">
                                     
-                                    <!-- Nhóm 1: Bộ Nút Xuất / Nhập Excel TKB (Đã vô hiệu hóa hoàn toàn 2 nút Khai Báo & PCCM theo lệnh Thầy) -->
+                                    <!-- Nhóm 1: Bộ 4 Nút Quản Trị & Xuất/Nhập Nhanh (ĐÃ MỞ KHÓA HIỆU LỰC 100% ĐỂ NHẬP LIỆU) -->
                                     <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+                                        <!-- Nút Mở Hộp Thoại Master Khai Báo Toàn Diện (Nhập Liệu Trường, Lớp, Môn Học) -->
+                                        <button id="btnOpenMasterDeclarationModal" type="button" onclick="window.openKhaiBaoToanDienDirect();" style="background: #0f172a; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 2px 5px rgba(0,0,0,0.25);" title="Bấm để mở hộp thoại nhập thông tin trường, môn học, lớp học">
+                                            <span>📋</span> <span>Khai Báo Toàn Diện</span>
+                                        </button>
+                                        <!-- Nút Mở Chi Tiết Phân Công Chuyên Môn (PCCM) (Nhập & Sửa Giáo Viên, Môn, Số Tiết) -->
+                                        <button id="btnOpenPCCMModal" type="button" onclick="window.openPCCMMonDirect();" style="background: #0284c7; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 2px 5px rgba(2,132,199,0.3);" title="Bấm để mở hộp thoại nhập &amp; phân công chuyên môn giáo viên">
+                                            <span>⚖️</span> <span>PCCM Môn</span>
+                                        </button>
                                         <!-- Nút Xuất Excel Mẫu Đa Sheet -->
                                         <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.exportMasterTKBPackage(); else if(window.app && window.app.tkbUI) window.app.tkbUI.exportMasterTKBPackage();" style="background: #059669; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" title="Xuất toàn bộ thông tin thành file Excel (.xlsx / .xls) đa Sheet chuẩn">
                                             <span>📥</span> <span>Xuất Excel (.xls)</span>
@@ -4051,7 +4094,7 @@
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=3.10.12"></script>
+    <script type="module" src="js/app.js?v=3.10.14"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
