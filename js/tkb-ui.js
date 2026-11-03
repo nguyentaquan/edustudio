@@ -2320,4 +2320,293 @@ setPCCMFilter(filterName) {
         this.showToast(mode === 'clean' ? '✨ Đã chuyển sang chế độ màu Dịu mắt Clean!' : '🎨 Đã chuyển sang chế độ Thẻ màu Pastel!');
     }
 
+
+    /**
+     * ==============================================================================
+     * BỘ PHÂN HỆ KHAI BÁO THAM SỐ TỔNG THỂ TOÀN TRƯỜNG CHO GDMN & GDPT TOÀN CẦU
+     * ==============================================================================
+     */
+    changeEducationalTier(tier) {
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.educationalTier = tier;
+
+        const tierNames = {
+            'GDMN': '👶 Giáo Dục Mầm Non (Chế độ sinh hoạt & Chơi)',
+            'TIEU_HOC': '🎒 Giáo Dục Tiểu Học (Cấp 1 • 2 buổi/ngày • 23t/tuần)',
+            'THCS': '🏫 Giáo Dục THCS (Cấp 2 • GDPT 2018 • 17-19t/tuần)',
+            'THPT': '🎓 Giáo Dục THPT (Cấp 3 • Phân hóa tổ hợp môn • 17t/tuần)',
+            'LIEN_CAP': '🌐 Trường Phổ Thông Liên Cấp K-12 Quốc Tế'
+        };
+
+        const tierName = tierNames[tier] || tier;
+        this.updateSchoolScaleSummary();
+        this.showToast(`✨ Đã chuyển cấu hình tổng thể sang: ${tierName}!`);
+    }
+
+    changeSchoolModel(model) {
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.schoolModel = model;
+
+        const modelNames = {
+            'BAN_TRU': 'Bán Trú PTDTBT (Định mức chuẩn 17 tiết/tuần)',
+            'CONG_LAP': 'Công Lập Chuẩn (Định mức chuẩn 19 tiết/tuần)',
+            'HAI_BUOI': 'Học 2 Buổi/Ngày (Bán trú Cấp 1 & Cấp 2)',
+            'NOI_TRU': 'Nội Trú Quốc Gia / Quốc Tế',
+            'TU_THUC': 'Tư Thục / Tự Chủ Chất Lượng Cao'
+        };
+
+        const modelName = modelNames[model] || model;
+        this.updateSchoolScaleSummary();
+        this.showToast(`🏠 Đã thiết lập mô hình trường: ${modelName}!`);
+    }
+
+    updateSchoolScaleSummary() {
+        const lbl = document.getElementById('lblSchoolScaleSummary');
+        if (!lbl) return;
+
+        const tier = this.engine.schoolConfig.educationalTier || 'THCS';
+        const model = this.engine.schoolConfig.schoolModel || 'BAN_TRU';
+        const numClasses = this.engine.classes.length;
+        const numTeachers = this.engine.getAllTeachers ? this.engine.getAllTeachers().length : 20;
+        const numRooms = this.engine.specialRooms ? this.engine.specialRooms.length : 4;
+        const standardHours = model === 'BAN_TRU' ? 17 : (tier === 'TIEU_HOC' ? 23 : 19);
+
+        lbl.innerHTML = `${numClasses} Lớp • ${numTeachers} GV • ${numRooms} Lab/Phòng • 35 Tuần (Chuẩn ${standardHours}t/tuần)`;
+    }
+
+    /**
+     * MỞ MODAL KHAI BÁO THAM SỐ TỔNG THỂ TOÀN TRƯỜNG (GDMN & GDPT TOÀN CẦU)
+     */
+    openGlobalSchoolConfigModal() {
+        let modal = document.getElementById('tkbGlobalConfigModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'tkbGlobalConfigModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+                backdrop-filter: blur(5px); z-index: 999999; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        const sc = this.engine.schoolConfig || {};
+        const schoolName = sc.schoolName || 'Trường THCS Bán Trú Canh Thuận';
+        const academicYear = sc.academicYear || '2026 - 2027';
+        const tier = sc.educationalTier || 'THCS';
+        const model = sc.schoolModel || 'BAN_TRU';
+        const standardHours = sc.standardPeriodsPerWeek || (model === 'BAN_TRU' ? 17 : 19);
+        const totalWeeks = sc.totalWeeks || 35;
+        const session = sc.session || 'Sáng (5 tiết/buổi)';
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 12px; max-width: 680px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid #cbd5e1; overflow: hidden; animation: modalPop 0.2s ease-out;">
+                
+                <!-- HEADER MODAL -->
+                <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #ffffff; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.4rem;">🌍</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; letter-spacing: 0.3px;">KHAI BÁO THAM SỐ TỔNG THỂ TOÀN TRƯỜNG</h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.75rem; color: #93c5fd;">Hệ sinh thái Giáo dục Liên hoàn GDMN &amp; GDPT Toàn Cầu</p>
+                        </div>
+                    </div>
+                    <button onclick="window.smartTKBUI.closeGlobalSchoolConfigModal()" style="background: transparent; border: none; color: #cbd5e1; font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
+
+                <!-- BODY MODAL -->
+                <div style="padding: 1.25rem; max-height: 75vh; overflow-y: auto;">
+                    
+                    <!-- NẠP NHANH MẪU CHUẨN CÁC CẤP HỌC -->
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem;">
+                        <div style="font-size: 0.76rem; font-weight: 800; color: #475569; margin-bottom: 0.4rem; text-transform: uppercase;">
+                            ⚡ Nạp Mẫu Định Dạng Chuẩn Các Cấp Học (One-Click Presets):
+                        </div>
+                        <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                            <button type="button" onclick="window.smartTKBUI.applySchoolPreset('THCS_BAN_TRU')" style="padding: 0.3rem 0.6rem; font-size: 0.72rem; font-weight: 700; border-radius: 6px; border: 1px solid #93c5fd; background: #eff6ff; color: #1d4ed8; cursor: pointer;">
+                                🏫 Mẫu THCS Bán Trú Canh Thuận (Chuẩn 17t)
+                            </button>
+                            <button type="button" onclick="window.smartTKBUI.applySchoolPreset('TIEU_HOC_2BUOI')" style="padding: 0.3rem 0.6rem; font-size: 0.72rem; font-weight: 700; border-radius: 6px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer;">
+                                🎒 Mẫu Tiểu Học 2 Buổi/Ngày (Chuẩn 23t)
+                            </button>
+                            <button type="button" onclick="window.smartTKBUI.applySchoolPreset('MAM_NON')" style="padding: 0.3rem 0.6rem; font-size: 0.72rem; font-weight: 700; border-radius: 6px; border: 1px solid #fde68a; background: #fffbeb; color: #b45309; cursor: pointer;">
+                                👶 Mẫu Mầm Non (Chế độ Sinh hoạt &amp; Chơi)
+                            </button>
+                            <button type="button" onclick="window.smartTKBUI.applySchoolPreset('THPT_CHUAN')" style="padding: 0.3rem 0.6rem; font-size: 0.72rem; font-weight: 700; border-radius: 6px; border: 1px solid #c7d2fe; background: #e0e7ff; color: #4338ca; cursor: pointer;">
+                                🎓 Mẫu THPT Tổ Hợp (Chuẩn 17t)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LƯỚI KHAI BÁO CÁC TRƯỜNG DỮ LIỆU -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+                        
+                        <div style="grid-column: 1 / -1;">
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                🏫 Tên Cơ Sở Giáo Dục / Trường Học:
+                            </label>
+                            <input type="text" id="cfgSchoolName" value="${schoolName}" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.85rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                🎓 Cấp Học (Educational Tier):
+                            </label>
+                            <select id="cfgTier" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff;">
+                                <option value="GDMN" ${tier === 'GDMN' ? 'selected' : ''}>👶 Giáo Dục Mầm Non (Chế độ sinh hoạt &amp; Chơi)</option>
+                                <option value="TIEU_HOC" ${tier === 'TIEU_HOC' ? 'selected' : ''}>🎒 Giáo Dục Tiểu Học (Cấp 1 • 2 buổi/ngày)</option>
+                                <option value="THCS" ${tier === 'THCS' ? 'selected' : ''}>🏫 Giáo Dục THCS (Cấp 2 • GDPT 2018)</option>
+                                <option value="THPT" ${tier === 'THPT' ? 'selected' : ''}>🎓 Giáo Dục THPT (Cấp 3 • Phân hóa tổ hợp)</option>
+                                <option value="LIEN_CAP" ${tier === 'LIEN_CAP' ? 'selected' : ''}>🌐 Trường Phổ Thông Liên Cấp K-12</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                🏠 Mô Hình Trường &amp; Chế Độ:
+                            </label>
+                            <select id="cfgModel" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff;">
+                                <option value="BAN_TRU" ${model === 'BAN_TRU' ? 'selected' : ''}>Bán Trú PTDTBT (Định mức 17 tiết/tuần)</option>
+                                <option value="CONG_LAP" ${model === 'CONG_LAP' ? 'selected' : ''}>Công Lập Chuẩn (Định mức 19 tiết/tuần)</option>
+                                <option value="HAI_BUOI" ${model === 'HAI_BUOI' ? 'selected' : ''}>Học 2 Buổi/Ngày (Tiểu học / Bán trú)</option>
+                                <option value="NOI_TRU" ${model === 'NOI_TRU' ? 'selected' : ''}>Nội Trú Quốc Gia / Quốc Tế</option>
+                                <option value="TU_THUC" ${model === 'TU_THUC' ? 'selected' : ''}>Tư Thục / Tự Chủ Chất Lượng Cao</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                📅 Năm Học (Academic Year):
+                            </label>
+                            <input type="text" id="cfgAcademicYear" value="${academicYear}" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                🎯 Định Mức Tiết Dạy Chuẩn (Tiết/Tuần):
+                            </label>
+                            <input type="number" id="cfgStandardHours" value="${standardHours}" min="10" max="35" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                📊 Kế Hoạch Số Tuần Thực Dạy Cả Năm:
+                            </label>
+                            <input type="number" id="cfgTotalWeeks" value="${totalWeeks}" min="30" max="40" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
+                                ⏰ Khung Giờ &amp; Ca Học:
+                            </label>
+                            <input type="text" id="cfgSession" value="${session}" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- FOOTER MODAL -->
+                <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 0.72rem; color: #64748b;">
+                        Áp dụng Thông tư 28/2009 &amp; 15/2017/TT-BGDĐT
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="button" onclick="window.smartTKBUI.closeGlobalSchoolConfigModal()" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                            Đóng
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.saveGlobalSchoolConfig()" style="padding: 0.45rem 1rem; font-size: 0.78rem; font-weight: 800; border-radius: 6px; border: none; background: #1d4ed8; color: #ffffff; cursor: pointer; box-shadow: 0 2px 6px rgba(29, 78, 216, 0.3);">
+                            💾 Lưu &amp; Áp Dụng Toàn Trường
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        `;
+        modal.style.display = 'flex';
+    }
+
+    closeGlobalSchoolConfigModal() {
+        const modal = document.getElementById('tkbGlobalConfigModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    applySchoolPreset(presetType) {
+        const nameInput = document.getElementById('cfgSchoolName');
+        const tierSelect = document.getElementById('cfgTier');
+        const modelSelect = document.getElementById('cfgModel');
+        const standardInput = document.getElementById('cfgStandardHours');
+        const sessionInput = document.getElementById('cfgSession');
+
+        if (presetType === 'THCS_BAN_TRU') {
+            if (nameInput) nameInput.value = 'Trường THCS Bán Trú Canh Thuận';
+            if (tierSelect) tierSelect.value = 'THCS';
+            if (modelSelect) modelSelect.value = 'BAN_TRU';
+            if (standardInput) standardInput.value = '17';
+            if (sessionInput) sessionInput.value = 'Sáng (5 tiết/buổi)';
+            this.showToast('🏫 Đã nạp mẫu chuẩn THCS Bán Trú Canh Thuận (17 tiết/tuần)!');
+        } else if (presetType === 'TIEU_HOC_2BUOI') {
+            if (nameInput) nameInput.value = 'Trường Tiểu Học Chuẩn Quốc Gia';
+            if (tierSelect) tierSelect.value = 'TIEU_HOC';
+            if (modelSelect) modelSelect.value = 'HAI_BUOI';
+            if (standardInput) standardInput.value = '23';
+            if (sessionInput) sessionInput.value = 'Sáng 4 tiết • Chiều 3 tiết (2 buổi/ngày)';
+            this.showToast('🎒 Đã nạp mẫu chuẩn Tiểu Học (2 buổi/ngày • 23 tiết/tuần)!');
+        } else if (presetType === 'MAM_NON') {
+            if (nameInput) nameInput.value = 'Trường Mầm Non Họa Mi';
+            if (tierSelect) tierSelect.value = 'GDMN';
+            if (modelSelect) modelSelect.value = 'HAI_BUOI';
+            if (standardInput) standardInput.value = '30';
+            if (sessionInput) sessionInput.value = 'Cả ngày (Chế độ sinh hoạt & Chơi theo lứa tuổi)';
+            this.showToast('👶 Đã nạp mẫu chuẩn GD Mầm Non (Chế độ sinh hoạt & Chơi)!');
+        } else if (presetType === 'THPT_CHUAN') {
+            if (nameInput) nameInput.value = 'Trường THPT Chuyên / Chuẩn Quốc Gia';
+            if (tierSelect) tierSelect.value = 'THPT';
+            if (modelSelect) modelSelect.value = 'CONG_LAP';
+            if (standardInput) standardInput.value = '17';
+            if (sessionInput) sessionInput.value = 'Sáng (5 tiết/buổi)';
+            this.showToast('🎓 Đã nạp mẫu chuẩn THPT Tổ Hợp Môn (17 tiết/tuần)!');
+        }
+    }
+
+    saveGlobalSchoolConfig() {
+        const schoolName = document.getElementById('cfgSchoolName')?.value || 'Trường THCS Bán Trú Canh Thuận';
+        const tier = document.getElementById('cfgTier')?.value || 'THCS';
+        const model = document.getElementById('cfgModel')?.value || 'BAN_TRU';
+        const academicYear = document.getElementById('cfgAcademicYear')?.value || '2026 - 2027';
+        const standardHours = parseInt(document.getElementById('cfgStandardHours')?.value) || 17;
+        const totalWeeks = parseInt(document.getElementById('cfgTotalWeeks')?.value) || 35;
+        const session = document.getElementById('cfgSession')?.value || 'Sáng (5 tiết/buổi)';
+
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.schoolName = schoolName;
+        this.engine.schoolConfig.educationalTier = tier;
+        this.engine.schoolConfig.schoolModel = model;
+        this.engine.schoolConfig.academicYear = academicYear;
+        this.engine.schoolConfig.standardPeriodsPerWeek = standardHours;
+        this.engine.schoolConfig.totalWeeks = totalWeeks;
+        this.engine.schoolConfig.session = session;
+
+        // Lưu vào engine
+        this.engine.saveState();
+
+        // Cập nhật giao diện bên ngoài
+        const displayElem = document.getElementById('tkbGlobalSchoolNameDisplay');
+        if (displayElem) displayElem.innerHTML = `🏫 ${schoolName}`;
+
+        const tierElem = document.getElementById('tkbGlobalTierSelect');
+        if (tierElem) tierElem.value = tier;
+
+        const modelElem = document.getElementById('tkbGlobalModelSelect');
+        if (modelElem) modelElem.value = model;
+
+        this.updateSchoolScaleSummary();
+        this.closeGlobalSchoolConfigModal();
+        this.renderCurrentView();
+        this.renderStats();
+
+        this.showToast(`🎉 Đã lưu & áp dụng toàn diện hồ sơ trường: [${schoolName}] cho cả hệ thống!`);
+    }
+
 }
