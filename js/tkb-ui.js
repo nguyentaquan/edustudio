@@ -2080,12 +2080,15 @@ setPCCMFilter(filterName) {
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
                     <div>
                         <h3 style="margin: 0; font-size: 1.15rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
-                            <span>📊</span> <span>TRUNG TÂM KIỂM TOÁN SƯ PHẠM & CỐ VẤN QUẢN TRỊ GDPT 2018</span>
+                            <span>📊</span> <span>TRUNG TÂM ĐỐI SOÁT & TƯ VẤN SƯ PHẠM GDPT 2018</span>
                         </h3>
                         <p style="margin: 0.25rem 0 0 0; font-size: 0.82rem; color: #64748b;">
                             Hệ thống AI tự động rà soát đa chiều: Xung đột giáo viên, phân bổ tiết kép, vị trí HĐTN/SHL và cân bằng định mức lao động nhà trường.
                         </p>
                     </div>
+                    <button type="button" onclick="window.smartTKBUI.openCumulativePriorModal()" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; padding: 0.45rem 0.9rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 2px 4px rgba(2,132,199,0.25); transition: all 0.2s ease;">
+                        <span>📊</span> <span>Xem Bảng Đối Soát & Lũy Kế TKB Liền Kề</span>
+                    </button>
                 </div>
 
                 <!-- 1. KHỐI TRẠNG THÁI XUNG ĐỘT CỨNG -->
@@ -2113,7 +2116,7 @@ setPCCMFilter(filterName) {
                 <!-- 2. BẢO CÁO KIỂM TOÁN CHUYÊN SÂU SƯ PHẠM GDPT 2018 -->
                 <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                     <h4 style="margin: 0 0 0.75rem 0; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 0.4rem;">
-                        <span>🔍</span> <span>Báo Cáo Kiểm Toán Sư Phạm & Điểm Nghẽn Cơ Sở</span>
+                        <span>🔍</span> <span>Báo Cáo Đối Soát Sư Phạm & Điểm Nghẽn Cơ Sở</span>
                     </h4>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
