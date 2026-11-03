@@ -3818,6 +3818,10 @@ setPCCMFilter(filterName) {
      * HỘP THOẠI CHI TIẾT PHỤ: MA TRẬN PHÂN CÔNG CHUYÊN MÔN (PCCM)
      * Thể hiện trọn bộ 45 phân công môn/lớp theo từng Tổ chuyên môn
      */
+    /**
+     * HỘP THOẠI QUẢN TRỊ & NHẬP LIỆU PHÂN CÔNG CHUYÊN MÔN (PCCM) TOÀN TRƯỜNG
+     * TÍCH HỢP FORM NHẬP / SỬA / XÓA PHÂN CÔNG TRỰC TIẾP CHUẨN SƯ PHẠM GDPT 2018
+     */
     openPCCMDetailModal() {
         let modal = document.getElementById('tkbPCCMDetailModal');
         if (!modal) {
@@ -3833,63 +3837,143 @@ setPCCMFilter(filterName) {
         }
 
         const assignments = this.engine.assignments || [];
+        const teachers = this.engine.getAllTeachers ? this.engine.getAllTeachers() : (this.engine.teachers ? this.engine.teachers.map(t => t.name) : []);
+        const subjects = this.engine.subjects || [];
+        const classes = this.engine.classes || [];
 
         modal.innerHTML = `
-            <div style="background: #ffffff; border-radius: 12px; max-width: 920px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.4); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 88vh; animation: modalPop 0.2s ease-out;">
+            <div style="background: #ffffff; border-radius: 12px; max-width: 980px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.4); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; animation: modalPop 0.2s ease-out;">
                 
-                <!-- Header -->
-                <div style="background: linear-gradient(135deg, #065f46, #059669); color: #ffffff; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <!-- 1. Header Hộp Thoại PCCM -->
+                <div style="background: linear-gradient(135deg, #0f172a 0%, #0369a1 50%, #059669 100%); color: #ffffff; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 1.4rem;">📋</span>
+                        <span style="font-size: 1.4rem;">⚖️</span>
                         <div>
-                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800;">CHI TIẾT PHỤ: MA TRẬN PHÂN CÔNG CHUYÊN MÔN TOÀN TRƯỜNG</h3>
-                            <p style="margin: 0.15rem 0 0 0; font-size: 0.73rem; color: #a7f3d0;">Chi tiết trọn bộ ${assignments.length} nhiệm vụ giảng dạy theo Chương trình GDPT 2018</p>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800;">NHẬP &amp; QUẢN TRỊ PHÂN CÔNG CHUYÊN MÔN (PCCM) TOÀN TRƯỜNG</h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.73rem; color: #a7f3d0;">
+                                Nhập phân công trực tiếp • Thêm / Sửa / Xóa nhiệm vụ giảng dạy (${assignments.length} phân công hiện tại)
+                            </p>
                         </div>
                     </div>
-                    <button type="button" onclick="window.smartTKBUI.closePCCMDetailModal()" style="background: rgba(255,255,255,0.15); border: none; color: #ffffff; font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 0.15rem 0.5rem; border-radius: 6px;">&times;</button>
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                        <button type="button" onclick="window.smartTKBUI.exportPCCMExcel()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 0.3rem 0.65rem; border-radius: 5px; font-size: 0.74rem; font-weight: 700; cursor: pointer;">
+                            📤 Xuất Excel
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.closePCCMDetailModal()" style="background: rgba(255,255,255,0.15); border: none; color: #ffffff; font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 0.15rem 0.5rem; border-radius: 6px;">&times;</button>
+                    </div>
                 </div>
 
-                <!-- Bảng Phân Công Đầy Đủ -->
+                <!-- 2. Vùng Nhập Liệu Trực Tiếp & Danh Sách Phân Công -->
                 <div style="padding: 1rem; overflow-y: auto; flex: 1;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
-                        <thead>
-                            <tr style="background: #f1f5f9; color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1; position: sticky; top: 0;">
-                                <th style="padding: 0.5rem 0.6rem; width: 40px; text-align: center;">STT</th>
-                                <th style="padding: 0.5rem 0.6rem;">Họ và Tên Giáo Viên</th>
-                                <th style="padding: 0.5rem 0.6rem;">Tổ Chuyên Môn</th>
-                                <th style="padding: 0.5rem 0.6rem;">Môn Học Phụ Trách</th>
-                                <th style="padding: 0.5rem 0.6rem; text-align: center;">Khối Lớp</th>
-                                <th style="padding: 0.5rem 0.6rem; text-align: center;">Số Tiết/Tuần</th>
-                                <th style="padding: 0.5rem 0.6rem;">Nhiệm Vụ Kiêm Nhiệm</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${assignments.map((a, idx) => {
-                                const isQuan = a.teacher && a.teacher.includes('Tá Quan');
-                                return `
-                                    <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #eff6ff; font-weight: 800; color: #1d4ed8;' : ''}">
-                                        <td style="padding: 0.45rem 0.6rem; text-align: center; color: #64748b;">${idx + 1}</td>
-                                        <td style="padding: 0.45rem 0.6rem;">
-                                            <strong>${a.teacher}</strong>${isQuan ? ' ⭐' : ''}
-                                        </td>
-                                        <td style="padding: 0.45rem 0.6rem; color: #475569;">${a.department || 'Tổ Bộ Môn'}</td>
-                                        <td style="padding: 0.45rem 0.6rem;">${a.subject}</td>
-                                        <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #1e40af;">${a.classId}</td>
-                                        <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #059669;">${a.periodsPerWeek} tiết</td>
-                                        <td style="padding: 0.45rem 0.6rem; color: #64748b;">${a.role || '-'}</td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
+                    
+                    <!-- KHUNG FORM NHẬP / SỬA PHÂN CÔNG TRỰC TIẾP -->
+                    <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong id="pccmFormTitle" style="font-size: 0.85rem; color: #166534; display: flex; align-items: center; gap: 0.35rem;">
+                                <span>➕</span> <span>NHẬP PHÂN CÔNG MÔN HỌC - GIÁO VIÊN MỚI:</span>
+                            </strong>
+                            <span id="pccmEditingBadge" style="display: none; background: #fef08a; color: #854d0e; padding: 0.15rem 0.55rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">
+                                ✏️ Đang Chỉnh Sửa Phân Công
+                            </span>
+                        </div>
+                        <input type="hidden" id="pccmEditIndex" value="-1">
+
+                        <div style="display: grid; grid-template-columns: 2fr 1.6fr 1.2fr 1.1fr auto; gap: 0.55rem; align-items: end;">
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
+                                    👨‍🏫 Họ Tên Thầy Cô:
+                                </label>
+                                <input id="pccmInputTeacher" list="pccmTeacherDatalist" placeholder="Gõ hoặc chọn Giáo viên..." style="width: 100%; padding: 0.42rem 0.6rem; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; background: #ffffff;">
+                                <datalist id="pccmTeacherDatalist">
+                                    ${teachers.map(t => `<option value="${t}">`).join('')}
+                                </datalist>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
+                                    📚 Môn Học:
+                                </label>
+                                <select id="pccmInputSubject" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #0f172a;">
+                                    ${subjects.map(s => `<option value="${s.name}">${s.name} (${s.periodsPerWeek}t/tuần)</option>`).join('')}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
+                                    🎒 Lớp Học:
+                                </label>
+                                <select id="pccmInputClass" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #0f172a;">
+                                    ${classes.map(c => `<option value="${c}">Lớp ${c}</option>`).join('')}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
+                                    ⏱️ Số Tiết/Tuần:
+                                </label>
+                                <input type="number" id="pccmInputPeriods" value="3" min="1" max="15" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; color: #1d4ed8; background: #ffffff;">
+                            </div>
+
+                            <div style="display: flex; gap: 0.35rem;">
+                                <button type="button" id="pccmBtnSubmit" onclick="window.smartTKBUI.savePCCMFromDetailModal()" style="background: #059669; color: #ffffff; border: none; padding: 0.42rem 0.95rem; border-radius: 6px; font-weight: 800; font-size: 0.78rem; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(5,150,105,0.25);">
+                                    ➕ Thêm Phân Công
+                                </button>
+                                <button type="button" id="pccmBtnCancelEdit" onclick="window.smartTKBUI.resetPCCMFormInModal()" style="display: none; background: #64748b; color: #ffffff; border: none; padding: 0.42rem 0.65rem; border-radius: 6px; font-weight: 700; font-size: 0.78rem; cursor: pointer;">
+                                    Hủy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BẢNG DANH SÁCH TẤT CẢ PHÂN CÔNG (CÓ NÚT SỬA VÀ XÓA TỪNG DÒNG) -->
+                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
+                            <thead>
+                                <tr style="background: #f8fafc; color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1; position: sticky; top: 0;">
+                                    <th style="padding: 0.45rem 0.6rem; width: 35px; text-align: center;">STT</th>
+                                    <th style="padding: 0.45rem 0.6rem;">Họ và Tên Giáo Viên</th>
+                                    <th style="padding: 0.45rem 0.6rem;">Môn Học</th>
+                                    <th style="padding: 0.45rem 0.6rem; text-align: center;">Lớp</th>
+                                    <th style="padding: 0.45rem 0.6rem; text-align: center;">Số Tiết/Tuần</th>
+                                    <th style="padding: 0.45rem 0.6rem; text-align: center; width: 120px;">Thao Tác Trực Tiếp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${assignments.map((a, idx) => {
+                                    const isQuan = a.teacher && a.teacher.includes('Tá Quan');
+                                    const pVal = a.periodsPerWeek || a.periods || 1;
+                                    return `
+                                        <tr style="border-bottom: 1px solid #f1f5f9; ${isQuan ? 'background: #eff6ff; font-weight: 800; color: #1d4ed8;' : ''}">
+                                            <td style="padding: 0.4rem 0.6rem; text-align: center; color: #64748b;">${idx + 1}</td>
+                                            <td style="padding: 0.4rem 0.6rem;">
+                                                <strong>${a.teacher}</strong>${isQuan ? ' ⭐' : ''}
+                                            </td>
+                                            <td style="padding: 0.4rem 0.6rem; color: #334155;">${a.subject}</td>
+                                            <td style="padding: 0.4rem 0.6rem; text-align: center; font-weight: 800; color: #1e40af;">${a.classId}</td>
+                                            <td style="padding: 0.4rem 0.6rem; text-align: center; font-weight: 800; color: #059669;">${pVal} tiết</td>
+                                            <td style="padding: 0.4rem 0.6rem; text-align: center; white-space: nowrap;">
+                                                <button type="button" onclick="window.smartTKBUI.editPCCMInModal(${idx})" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800; cursor: pointer; margin-right: 0.3rem;">
+                                                    ✏️ Sửa
+                                                </button>
+                                                <button type="button" onclick="window.smartTKBUI.deletePCCMInModal(${idx})" style="background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800; cursor: pointer;">
+                                                    🗑️ Xóa
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
 
-                <!-- Footer -->
+                <!-- 3. Footer Hộp Thoại -->
                 <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-                    <button type="button" onclick="window.smartTKBUI.closePCCMDetailModal(); window.smartTKBUI.closeMasterDeclarationModal(); window.smartTKBUI.switchSubTab('pccm');" style="background: #1d4ed8; color: #ffffff; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 800; cursor: pointer;">
-                        🌐 Mở Bảng PCCM Toàn Màn Hình
-                    </button>
-                    <button type="button" onclick="window.smartTKBUI.closePCCMDetailModal()" style="padding: 0.4rem 0.85rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                    <div style="font-size: 0.73rem; color: #64748b;">
+                        💡 Mọi thay đổi phân công được tự động lưu vào bộ nhớ máy và đồng bộ với Bàn Cờ Thời Khóa Biểu.
+                    </div>
+                    <button type="button" onclick="window.smartTKBUI.closePCCMDetailModal()" style="padding: 0.4rem 1rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
                         Đóng
                     </button>
                 </div>
@@ -3897,6 +3981,129 @@ setPCCMFilter(filterName) {
             </div>
         `;
         modal.style.display = 'flex';
+    }
+
+    savePCCMFromDetailModal() {
+        const teacherInput = document.getElementById('pccmInputTeacher');
+        const subjectSelect = document.getElementById('pccmInputSubject');
+        const classSelect = document.getElementById('pccmInputClass');
+        const periodsInput = document.getElementById('pccmInputPeriods');
+        const editIdxInput = document.getElementById('pccmEditIndex');
+
+        const teacher = teacherInput ? teacherInput.value.trim() : '';
+        const subject = subjectSelect ? subjectSelect.value : '';
+        const classId = classSelect ? classSelect.value : '';
+        const periods = periodsInput ? parseInt(periodsInput.value) || 1 : 1;
+        const editIdx = editIdxInput ? parseInt(editIdxInput.value) : -1;
+
+        if (!teacher) {
+            alert('Vui lòng nhập họ và tên Giáo viên!');
+            if (teacherInput) teacherInput.focus();
+            return;
+        }
+
+        const assignObj = {
+            teacher: teacher,
+            subject: subject,
+            classId: classId,
+            periodsPerWeek: periods,
+            periods: periods,
+            doublePeriod: false
+        };
+
+        if (editIdx >= 0 && this.engine.assignments[editIdx]) {
+            this.engine.assignments[editIdx] = {
+                ...this.engine.assignments[editIdx],
+                ...assignObj
+            };
+            this.showToast(`✅ Đã cập nhật phân công cho ${teacher} (${subject} - Lớp ${classId})!`);
+        } else {
+            this.engine.assignments.push(assignObj);
+            this.showToast(`✅ Đã thêm mới phân công: ${teacher} dạy ${subject} - Lớp ${classId} (${periods}t/tuần)!`);
+        }
+
+        // Lưu Engine State & Cập Nhật Giao Diện
+        this.engine.saveState();
+        this.openPCCMDetailModal(); // Render lại bảng trong modal
+        this.updateFilterControls();
+        this.renderCurrentView();
+        this.renderPCCMTable();
+    }
+
+    editPCCMInModal(idx) {
+        const assign = this.engine.assignments[idx];
+        if (!assign) return;
+
+        const teacherInput = document.getElementById('pccmInputTeacher');
+        const subjectSelect = document.getElementById('pccmInputSubject');
+        const classSelect = document.getElementById('pccmInputClass');
+        const periodsInput = document.getElementById('pccmInputPeriods');
+        const editIdxInput = document.getElementById('pccmEditIndex');
+        const formTitle = document.getElementById('pccmFormTitle');
+        const editingBadge = document.getElementById('pccmEditingBadge');
+        const btnSubmit = document.getElementById('pccmBtnSubmit');
+        const btnCancel = document.getElementById('pccmBtnCancelEdit');
+
+        if (teacherInput) teacherInput.value = assign.teacher || '';
+        if (subjectSelect) subjectSelect.value = assign.subject || '';
+        if (classSelect) classSelect.value = assign.classId || '';
+        if (periodsInput) periodsInput.value = assign.periodsPerWeek || assign.periods || 1;
+        if (editIdxInput) editIdxInput.value = idx;
+
+        if (formTitle) formTitle.innerHTML = `<span>✏️</span> <span>CHỈNH SỬA PHÂN CÔNG (DÒNG #${idx + 1}):</span>`;
+        if (editingBadge) editingBadge.style.display = 'inline-block';
+        if (btnSubmit) {
+            btnSubmit.innerHTML = '💾 Cập Nhật Phân Công';
+            btnSubmit.style.background = '#1d4ed8';
+        }
+        if (btnCancel) btnCancel.style.display = 'inline-block';
+
+        if (teacherInput) {
+            teacherInput.focus();
+            teacherInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    deletePCCMInModal(idx) {
+        const assign = this.engine.assignments[idx];
+        if (!assign) return;
+
+        if (confirm(`Thầy có chắc chắn muốn xóa phân công: ${assign.teacher} dạy môn ${assign.subject} tại Lớp ${assign.classId} không?`)) {
+            this.engine.assignments.splice(idx, 1);
+            this.engine.saveState();
+            this.showToast(`🗑️ Đã xóa phân công môn ${assign.subject} của ${assign.teacher}!`);
+            this.openPCCMDetailModal();
+            this.updateFilterControls();
+            this.renderCurrentView();
+            this.renderPCCMTable();
+        }
+    }
+
+    resetPCCMFormInModal() {
+        const teacherInput = document.getElementById('pccmInputTeacher');
+        const editIdxInput = document.getElementById('pccmEditIndex');
+        const formTitle = document.getElementById('pccmFormTitle');
+        const editingBadge = document.getElementById('pccmEditingBadge');
+        const btnSubmit = document.getElementById('pccmBtnSubmit');
+        const btnCancel = document.getElementById('pccmBtnCancelEdit');
+
+        if (teacherInput) teacherInput.value = '';
+        if (editIdxInput) editIdxInput.value = -1;
+        if (formTitle) formTitle.innerHTML = `<span>➕</span> <span>NHẬP PHÂN CÔNG MÔN HỌC - GIÁO VIÊN MỚI:</span>`;
+        if (editingBadge) editingBadge.style.display = 'none';
+        if (btnSubmit) {
+            btnSubmit.innerHTML = '➕ Thêm Phân Công';
+            btnSubmit.style.background = '#059669';
+        }
+        if (btnCancel) btnCancel.style.display = 'none';
+    }
+
+    exportPCCMExcel() {
+        if (window.smartTKBUI && typeof window.smartTKBUI.exportAnnualSettlementCSV === 'function') {
+            window.smartTKBUI.exportAnnualSettlementCSV();
+        } else {
+            this.showToast('📥 Đang chuẩn bị xuất file danh sách phân công chuyên môn...');
+        }
     }
 
     closePCCMDetailModal() {
