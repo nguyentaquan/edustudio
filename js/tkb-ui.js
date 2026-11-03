@@ -4098,8 +4098,9 @@ setPCCMFilter(filterName) {
                         </thead>
                         <tbody>
                             ${workloadReport.map((w, idx) => {
-                                const isQuan = w.teacher && w.teacher.includes('Tá Quan');
-                                const tPeriods = w.teachingPeriods || 17;
+                                const tName = w.teacherName || w.teacher || w.fullName || 'Giáo viên';
+                                const isQuan = tName.includes('Tá Quan') || !!w.isQuan;
+                                const tPeriods = w.teachingTotal ?? w.teachingPeriods ?? 17;
                                 const priorAccum = tPeriods * priorWeeks;
                                 const totalExpected = priorAccum + (tPeriods * currentWeeks);
                                 const pct = Math.min(100, Math.round((totalExpected / (17 * 35)) * 100));
@@ -4107,10 +4108,10 @@ setPCCMFilter(filterName) {
                                     <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #eff6ff; font-weight: 800; color: #1d4ed8;' : ''}">
                                         <td style="padding: 0.4rem 0.5rem; text-align: center; color: #64748b;">${idx + 1}</td>
                                         <td style="padding: 0.4rem 0.5rem;">
-                                            <strong>${w.teacher}</strong>${isQuan ? ' ⭐' : ''}
+                                            <strong>${tName}</strong>${isQuan ? ' ⭐' : ''}
                                         </td>
                                         <td style="padding: 0.4rem 0.5rem; color: #475569;">${w.department || 'Tổ Tự Nhiên'}</td>
-                                        <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 700;">17t</td>
+                                        <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 700;">${w.standardQuota || 17}t</td>
                                         <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 700; color: #0284c7;">${tPeriods}t</td>
                                         <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 800; background: #f0f9ff; color: #0369a1;">${priorAccum}t</td>
                                         <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 700; color: #059669;">${tPeriods}t</td>
@@ -4219,22 +4220,30 @@ setPCCMFilter(filterName) {
                         </thead>
                         <tbody>
                             ${workloadReport.map((w, idx) => {
-                                const isQuan = w.teacher && w.teacher.includes('Tá Quan');
+                                const tName = w.teacherName || w.teacher || w.fullName || 'Giáo viên';
+                                const isQuan = tName.includes('Tá Quan') || !!w.isQuan;
+                                const tSub = w.academicSubjects || (Array.isArray(w.subjects) ? w.subjects.join(', ') : 'Bộ môn');
+                                const tTeach = w.teachingTotal ?? w.teachingPeriods ?? 0;
+                                const tReduced = w.reducedTotal ?? w.reducedPeriods ?? 0;
+                                const tFinal = w.finalTotal ?? w.totalCalculatedPeriods ?? 0;
+                                const tQuota = w.standardQuota ?? w.requiredStandard ?? 17;
+                                const homeroomRole = (w.roles || []).find(r => r.name && r.name.toLowerCase().includes('chủ nhiệm'));
+                                const homeroomTxt = homeroomRole ? (w.classes ? `Lớp ${w.classes.split(',')[0]}` : 'CN') : (w.homeroom ? `Lớp ${w.homeroom}` : null);
                                 return `
                                     <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #eff6ff; font-weight: 800; color: #1d4ed8;' : ''}">
                                         <td style="padding: 0.45rem 0.6rem; text-align: center; color: #64748b;">${idx + 1}</td>
                                         <td style="padding: 0.45rem 0.6rem;">
-                                            <strong>${w.teacher}</strong>${isQuan ? ' ⭐' : ''}
+                                            <strong>${tName}</strong>${isQuan ? ' ⭐' : ''}
                                         </td>
                                         <td style="padding: 0.45rem 0.6rem; color: #475569;">${w.department || 'Tổ Bộ Môn'}</td>
-                                        <td style="padding: 0.45rem 0.6rem;">${w.subjects.join(', ')}</td>
+                                        <td style="padding: 0.45rem 0.6rem;">${tSub}</td>
                                         <td style="padding: 0.45rem 0.6rem; text-align: center;">
-                                            ${w.homeroom ? `<span style="background: #dbeafe; color: #1e40af; font-weight: 800; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.72rem;">Lớp ${w.homeroom}</span>` : '<span style="color: #94a3b8;">-</span>'}
+                                            ${homeroomTxt ? `<span style="background: #dbeafe; color: #1e40af; font-weight: 800; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.72rem;">${homeroomTxt}</span>` : '<span style="color: #94a3b8;">-</span>'}
                                         </td>
-                                        <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #0284c7;">${w.teachingPeriods}t</td>
-                                        <td style="padding: 0.45rem 0.6rem; text-align: center; color: #d97706; font-weight: 700;">-${w.reducedPeriods}t</td>
-                                        <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #15803d;">${w.totalCalculatedPeriods}t</td>
-                                        <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #475569;">${w.requiredStandard}t</td>
+                                        <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #0284c7;">${tTeach}t</td>
+                                        <td style="padding: 0.45rem 0.6rem; text-align: center; color: #d97706; font-weight: 700;">-${tReduced}t</td>
+                                        <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #15803d;">${tFinal}t</td>
+                                        <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #475569;">${tQuota}t</td>
                                         <td style="padding: 0.45rem 0.6rem; text-align: center;">
                                             <span style="background: #f0fdf4; color: #166534; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid #bbf7d0; font-size: 0.7rem;">
                                                 ✓ Chuẩn 100%
