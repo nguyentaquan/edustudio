@@ -58,6 +58,15 @@ export class SmartTKBEngine {
         // Lịch kết quả [classId][dayIndex][periodIndex] = { subject, teacher, room, isFixed }
         this.timetable = {};
 
+        // Ràng buộc Ưu tiên Sư phạm Đẳng cấp (GDMN & GDPT)
+        this.pedagogicalPriorities = {
+            gvcnOffDays: 2, // GVCN được nghỉ 2 buổi/tuần
+            noPEPeriod45: true, // Không xếp Thể dục tiết 4-5 nắng gắt
+            maxPeriodsPerDay: 4, // Tối đa 4 tiết/ngày/GV tránh quá tải
+            preferDoublePeriods: true, // Ưu tiên tiết đôi cho KHTN / Văn
+            avoidFirstPeriodForYoungKids: true // Tránh tiết 1 sáng cho GV con nhỏ
+        };
+
         // Tự động khôi phục dữ liệu đã lưu trong máy, nếu chưa có hoặc không phải Canh Thuận thì nạp chuẩn
         if (!this.loadState() || !this.timetable['8A1'] || this.classes.length !== 9) {
             this.loadDefaultSampleData();
@@ -528,6 +537,19 @@ export class SmartTKBEngine {
             const data = JSON.parse(raw);
             if (data && data.classes && data.timetable && data.assignments) {
                 this.schoolConfig = data.schoolConfig || this.schoolConfig;
+                if (data.pedagogicalPriorities) this.pedagogicalPriorities = data.pedagogicalPriorities;
+                if (data.subjects && data.subjects.length > 0) this.subjects = data.subjects;
+                this.specialRooms = data.specialRooms || this.specialRooms;
+                this.classes = data.classes;
+                if (data.teachers && data.teachers.length > 0) this.teachers = data.teachers;
+                if (data.officialPCCM && data.officialPCCM.length > 0) this.officialPCCM = data.officialPCCM;
+                this.assignments = data.assignments;
+                this.timetable = data.timetable;
+                if (data.timetableHK1) this.timetableHK1 = data.timetableHK1;
+                if (data.timetableHK2) this.timetableHK2 = data.timetableHK2;
+                this.saveState();
+                return { success: true };
+                this.schoolConfig = data.schoolConfig || this.schoolConfig;
                 this.specialRooms = data.specialRooms || this.specialRooms;
                 this.classes = data.classes;
                 this.teachers = (data.teachers && data.teachers.length > 0) ? data.teachers : (CANH_THUAN_TKB_DATA.teachers || []);
@@ -548,14 +570,21 @@ export class SmartTKBEngine {
      */
     exportJSON() {
         return JSON.stringify({
-            generator: "EduStudio v3.5.5 - Smart Timetable AI",
+            generator: "EduStudio v3.5.5 - Smart Timetable AI Master Package",
             author: "Thầy Nguyễn Tá Quan",
+            version: "GDMN-GDPT-2026-v3.9.8",
             exportDate: new Date().toLocaleString('vi-VN'),
             schoolConfig: this.schoolConfig,
+            pedagogicalPriorities: this.pedagogicalPriorities,
+            subjects: this.subjects,
             specialRooms: this.specialRooms,
             classes: this.classes,
+            teachers: this.teachers || [],
+            officialPCCM: this.officialPCCM || [],
             assignments: this.assignments,
-            timetable: this.timetable
+            timetable: this.timetable,
+            timetableHK1: this.timetableHK1 || this.timetable,
+            timetableHK2: this.timetableHK2 || null
         }, null, 2);
     }
 
@@ -566,6 +595,19 @@ export class SmartTKBEngine {
         try {
             const data = JSON.parse(jsonString);
             if (data && data.classes && data.timetable && data.assignments) {
+                this.schoolConfig = data.schoolConfig || this.schoolConfig;
+                if (data.pedagogicalPriorities) this.pedagogicalPriorities = data.pedagogicalPriorities;
+                if (data.subjects && data.subjects.length > 0) this.subjects = data.subjects;
+                this.specialRooms = data.specialRooms || this.specialRooms;
+                this.classes = data.classes;
+                if (data.teachers && data.teachers.length > 0) this.teachers = data.teachers;
+                if (data.officialPCCM && data.officialPCCM.length > 0) this.officialPCCM = data.officialPCCM;
+                this.assignments = data.assignments;
+                this.timetable = data.timetable;
+                if (data.timetableHK1) this.timetableHK1 = data.timetableHK1;
+                if (data.timetableHK2) this.timetableHK2 = data.timetableHK2;
+                this.saveState();
+                return { success: true };
                 this.schoolConfig = data.schoolConfig || this.schoolConfig;
                 this.specialRooms = data.specialRooms || this.specialRooms;
                 this.classes = data.classes;

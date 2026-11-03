@@ -2609,4 +2609,256 @@ setPCCMFilter(filterName) {
         this.showToast(`🎉 Đã lưu & áp dụng toàn diện hồ sơ trường: [${schoolName}] cho cả hệ thống!`);
     }
 
+
+    /**
+     * ==============================================================================
+     * BỘ PHÂN HỆ ĐIỀU CHỈNH PPCT MÔN HỌC • ƯU TIÊN SƯ PHẠM • XUẤT/NHẬP TKB MASTER
+     * ==============================================================================
+     */
+
+    /**
+     * BẬT / TẮT CÁC RÀNG BUỘC ƯU TIÊN SƯ PHẠM THỰC TẾ
+     */
+    togglePriority(key, isEnabled) {
+        if (!this.engine.pedagogicalPriorities) this.engine.pedagogicalPriorities = {};
+        this.engine.pedagogicalPriorities[key] = isEnabled;
+        this.engine.saveState();
+
+        const labels = {
+            'gvcnOffDays': 'GVCN được ưu tiên nghỉ 2 buổi/tuần',
+            'noPEPeriod45': 'Không xếp Thể dục vào tiết 4-5 trưa nắng',
+            'maxPeriodsPerDay': 'Giới hạn tối đa 4 tiết dạy/ngày/GV',
+            'preferDoublePeriods': 'Ưu tiên xếp tiết đôi cho môn KHTN & Ngữ văn'
+        };
+
+        const lbl = labels[key] || key;
+        this.showToast(`${isEnabled ? '✅ Đã kích hoạt' : '⏸️ Đã tắt'} ưu tiên: ${lbl}!`);
+    }
+
+    /**
+     * MỞ MODAL ĐIỀU CHỈNH KHUNG PHÂN PHỐI CHƯƠNG TRÌNH (PPCT) MÔN HỌC
+     * Phục vụ cập nhật nhanh khi có thay đổi quy định/văn bản mới của Bộ/Sở
+     */
+    openCurriculumConfigModal() {
+        let modal = document.getElementById('tkbCurriculumModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'tkbCurriculumModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+                backdrop-filter: blur(5px); z-index: 999999; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        const subjects = this.engine.subjects || [];
+        const rooms = this.engine.specialRooms || [];
+
+        let rowsHtml = '';
+        subjects.forEach((sub, idx) => {
+            let roomOptions = '<option value="">(Không yêu cầu)</option>';
+            rooms.forEach(r => {
+                roomOptions += `<option value="${r.id}" ${sub.roomReq === r.id ? 'selected' : ''}>${r.icon} ${r.name}</option>`;
+            });
+
+            rowsHtml += `
+                <tr data-index="${idx}">
+                    <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                    <td style="padding: 0.45rem 0.6rem;">
+                        <input type="text" class="cfg-sub-name" value="${sub.name}" style="width: 100%; padding: 0.25rem 0.45rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    </td>
+                    <td style="padding: 0.45rem 0.6rem; text-align: center;">
+                        <input type="number" class="cfg-sub-periods" value="${sub.periodsPerWeek}" min="1" max="10" style="width: 60px; padding: 0.25rem 0.45rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; color: #1d4ed8;">
+                    </td>
+                    <td style="padding: 0.45rem 0.6rem; text-align: center;">
+                        <input type="checkbox" class="cfg-sub-double" ${sub.doublePeriod ? 'checked' : ''} style="cursor: pointer;">
+                    </td>
+                    <td style="padding: 0.45rem 0.6rem;">
+                        <select class="cfg-sub-room" style="width: 100%; padding: 0.25rem 0.45rem; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff;">
+                            ${roomOptions}
+                        </select>
+                    </td>
+                </tr>
+            `;
+        });
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 12px; max-width: 760px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid #cbd5e1; overflow: hidden; animation: modalPop 0.2s ease-out;">
+                
+                <!-- HEADER MODAL -->
+                <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; padding: 0.9rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.4rem;">📚</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; letter-spacing: 0.3px;">ĐIỀU CHỈNH KHUNG PHÂN PHỐI CHƯƠNG TRÌNH (PPCT) MÔN HỌC</h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #e0f2fe;">Cập nhật nhanh số tiết/tuần khi có thay đổi quy định GDPT 2018 &amp; GDMN</p>
+                        </div>
+                    </div>
+                    <button onclick="window.smartTKBUI.closeCurriculumConfigModal()" style="background: transparent; border: none; color: #ffffff; font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
+
+                <!-- BODY MODAL -->
+                <div style="padding: 1.25rem; max-height: 70vh; overflow-y: auto;">
+                    
+                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 0.5rem 0.85rem; margin-bottom: 0.85rem; font-size: 0.75rem; color: #166534; line-height: 1.4;">
+                        💡 <strong>Lưu ý nghiệp vụ:</strong> Khi Bộ GD&amp;ĐT hoặc Sở ban hành văn bản điều chỉnh số tiết (ví dụ: Công văn 1496/BGDĐT hoán đổi Lịch sử - Địa lí, tách HĐTN...), Thầy Cô chỉ cần chỉnh số tiết/tuần tại bảng này rồi bấm <strong>Lưu &amp; Cập Nhật</strong>, toàn bộ hệ thống sẽ tự động đồng bộ!
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                        <thead>
+                            <tr style="background: #f1f5f9; color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1;">
+                                <th style="padding: 0.5rem 0.6rem; width: 45px; text-align: center;">STT</th>
+                                <th style="padding: 0.5rem 0.6rem;">Tên Môn Học (Bộ Môn)</th>
+                                <th style="padding: 0.5rem 0.6rem; width: 110px; text-align: center;">Số Tiết/Tuần</th>
+                                <th style="padding: 0.5rem 0.6rem; width: 90px; text-align: center;">Tiết Kép (2t)</th>
+                                <th style="padding: 0.5rem 0.6rem;">Phòng Bộ Môn Yêu Cầu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblCurriculumBody">
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <!-- FOOTER MODAL -->
+                <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 0.72rem; color: #64748b;">
+                        Tổng số: ${subjects.length} môn học trong chương trình
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="button" onclick="window.smartTKBUI.closeCurriculumConfigModal()" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                            Đóng
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.saveCurriculumConfig()" style="padding: 0.45rem 1rem; font-size: 0.78rem; font-weight: 800; border-radius: 6px; border: none; background: #0284c7; color: #ffffff; cursor: pointer; box-shadow: 0 2px 6px rgba(2,132,199,0.3);">
+                            💾 Lưu &amp; Cập Nhật PPCT
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        `;
+        modal.style.display = 'flex';
+    }
+
+    closeCurriculumConfigModal() {
+        const modal = document.getElementById('tkbCurriculumModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    saveCurriculumConfig() {
+        const rows = document.querySelectorAll('#tblCurriculumBody tr');
+        if (!rows || rows.length === 0) return;
+
+        let updatedSubjects = [];
+        rows.forEach(tr => {
+            const idx = parseInt(tr.dataset.index);
+            const name = tr.querySelector('.cfg-sub-name')?.value || '';
+            const periods = parseInt(tr.querySelector('.cfg-sub-periods')?.value) || 1;
+            const isDouble = tr.querySelector('.cfg-sub-double')?.checked || false;
+            const room = tr.querySelector('.cfg-sub-room')?.value || null;
+
+            const oldSub = this.engine.subjects[idx] || {};
+            updatedSubjects.push({
+                ...oldSub,
+                name: name,
+                periodsPerWeek: periods,
+                doublePeriod: isDouble,
+                roomReq: room || null
+            });
+        });
+
+        this.engine.subjects = updatedSubjects;
+        this.engine.saveState();
+
+        this.closeCurriculumConfigModal();
+        this.renderPCCMTable();
+        this.renderConfigTab();
+        this.renderStats();
+
+        this.showToast('🎉 Đã cập nhật thành công Khung Phân Phối Chương Trình (PPCT) môn học!');
+    }
+
+    /**
+     * XUẤT TOÀN BỘ GÓI THÔNG TIN TKB MASTER (.JSON)
+     * Đầy đủ 100%: Cấu hình trường, PPCT, Giáo viên, Lớp, Ràng buộc ưu tiên & TKB
+     */
+    exportMasterTKBPackage() {
+        const jsonStr = this.engine.exportJSON();
+        const schoolName = (this.engine.schoolConfig.schoolName || 'EDUSTUDIO_TKB').replace(/\s+/g, '_');
+        const year = (this.engine.schoolConfig.academicYear || '2026-2027').replace(/\s+/g, '');
+        const filename = `${schoolName}_GOI_TKB_MASTER_${year}.json`;
+
+        const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        this.showToast(`📤 Đã xuất gói dữ liệu TKB Master [${filename}] an toàn thành công!`);
+    }
+
+    /**
+     * KÍCH HOẠT NHẬP LẠI GÓI TKB MASTER
+     */
+    triggerMasterPackageImport() {
+        const fileInput = document.getElementById('tkbMasterPackageInput');
+        if (fileInput) {
+            fileInput.value = '';
+            fileInput.click();
+        }
+    }
+
+    /**
+     * XỬ LÝ NHẬP LẠI GÓI TKB MASTER TỪ FILE JSON ĐƯỢC CHỌN
+     */
+    handleMasterPackageFile(event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const content = e.target.result;
+                const res = this.engine.importJSON(content);
+
+                if (res && res.success) {
+                    // Cập nhật toàn bộ các phân hệ giao diện
+                    this.updateFilterControls();
+                    this.updateSchoolScaleSummary();
+                    this.renderCurrentView();
+                    this.renderPCCMTable();
+                    this.renderConfigTab();
+                    this.renderStats();
+
+                    // Cập nhật hiển thị tên trường & năm học
+                    const nameDisp = document.getElementById('tkbGlobalSchoolNameDisplay');
+                    if (nameDisp) nameDisp.innerHTML = `🏫 ${this.engine.schoolConfig.schoolName}`;
+
+                    const tierSelect = document.getElementById('tkbGlobalTierSelect');
+                    if (tierSelect && this.engine.schoolConfig.educationalTier) {
+                        tierSelect.value = this.engine.schoolConfig.educationalTier;
+                    }
+
+                    const modelSelect = document.getElementById('tkbGlobalModelSelect');
+                    if (modelSelect && this.engine.schoolConfig.schoolModel) {
+                        modelSelect.value = this.engine.schoolConfig.schoolModel;
+                    }
+
+                    this.showToast(`🎉 Đã nhập lại thành công toàn bộ Thời khóa biểu & Phân công chuyên môn từ file [${file.name}]!`);
+                } else {
+                    alert(`❌ Không thể nạp file: ${res.reason || 'Dữ liệu không hợp lệ!'}`);
+                }
+            } catch(err) {
+                alert(`❌ Lỗi khi đọc file JSON: ${err.message}`);
+            }
+        };
+        reader.readAsText(file, 'utf-8');
+    }
+
 }
