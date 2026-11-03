@@ -611,6 +611,23 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
      * - Trùng tên Tuấn: phân biệt "T. Tuấn" (Nguyễn Thanh Tuấn) và "L. Tuấn" (Lương Văn Tuấn)
      * - Các giáo viên khác: lấy Tên chính (Quan, Nhàn, Hòa, Lành, Minh, Phúc, Thái, Tài, Ánh, Công, Hiền, Hồ, Nương, Rích, Thư, Thảo, Trung, Tú, Duyên)
      */
+    /**
+     * Lấy thông tin GVCN động cho lớp thông qua Engine
+     */
+    getHomeroomTeacherForClass(className) {
+        if (this.engine && typeof this.engine.getHomeroomTeacher === 'function') {
+            const res = this.engine.getHomeroomTeacher(className);
+            if (res) {
+                return {
+                    fullName: res.fullName,
+                    shortName: this.getCompactTeacherName(res.fullName),
+                    isQuan: res.isQuan
+                };
+            }
+        }
+        return null;
+    }
+
     getCompactTeacherName(teacherName, shortTeacher = '') {
         if (shortTeacher) {
             if (shortTeacher.includes('T.Tuấn') || shortTeacher.includes('T. Tuấn')) return 'T. Tuấn';
@@ -926,14 +943,17 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                             </tr>
                             <tr style="background: #f8fafc;">
                                 ${classes.map((c, cIdx) => {
-                                    const isQuanClass = (c === '8A1');
+                                    const gvcn = this.getHomeroomTeacherForClass(c);
+                                    const isQuanClass = (gvcn && gvcn.isQuan) || (c === '8A1');
                                     const isLastOfGrade = (cIdx === classes.length - 1) || (classes[cIdx + 1] && classes[cIdx + 1].match(/^(\d+)/) && c.match(/^(\d+)/) && classes[cIdx + 1].match(/^(\d+)/)[1] !== c.match(/^(\d+)/)[1]);
                                     const classStyle = isQuanClass
                                         ? 'background: #1d4ed8 !important; color: #ffffff !important; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.3);'
                                         : 'background: #ffffff !important; color: #0f172a !important; font-weight: 800;';
+                                    const gvcnLabel = gvcn ? ` (${gvcn.isQuan ? '⭐ ' : ''}${gvcn.shortName})` : '';
                                     return `
-                                        <th style="width: ${colClassWidth}; text-align: center; padding: 4px 2px; font-size: ${headerFontSize}; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #cbd5e1'}; border-bottom: 2px solid #94a3b8; ${classStyle}">
-                                            ${c}${isQuanClass ? ' ⭐' : ''}
+                                        <th style="width: ${colClassWidth}; text-align: center; padding: 4px 2px; font-size: ${headerFontSize}; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #cbd5e1'}; border-bottom: 2px solid #94a3b8; ${classStyle}"
+                                            title="Lớp ${c}${gvcn ? ` • GVCN: ${gvcn.fullName}` : ''}">
+                                            <span>${c}</span><span style="font-size: 0.68rem; font-weight: 700; opacity: 0.95;">${gvcnLabel}</span>
                                         </th>
                                     `;
                                 }).join('')}

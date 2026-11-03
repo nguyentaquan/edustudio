@@ -827,6 +827,62 @@ export class SmartTKBEngine {
     }
 
     /**
+     * Tự động xác định Giáo viên chủ nhiệm (GVCN) cho bất kỳ lớp nào theo thuật toán động:
+     * 1. Tra cứu phân công kiêm nhiệm (TEACHER_WORKLOAD_ROLES / customRoles) có mã GVCN hoặc chữ Chủ nhiệm trùng tên lớp.
+     * 2. Quét từ thời khóa biểu: Giáo viên phụ trách tiết Sinh hoạt lớp (SHL) của lớp đó.
+     * 3. Tra cứu cấu hình trường học schoolConfig.homeroomTeachers.
+     */
+    getHomeroomTeacher(className) {
+        if (!className) return null;
+        const norm = className.trim().toUpperCase();
+
+        // 1. Quét từ danh sách vai trò kiêm nhiệm (Báo cáo định mức)
+        const report = this.getTeacherWorkloadReport ? this.getTeacherWorkloadReport() : [];
+        for (const r of report) {
+            if (r.roles && Array.isArray(r.roles)) {
+                for (const role of r.roles) {
+                    const rName = (role.name || '').toUpperCase();
+                    const rCode = (role.code || '').toUpperCase();
+                    if ((rCode === 'GVCN' || rName.includes('CHỦ NHIỆM') || rName.includes('GVCN')) && rName.includes(norm)) {
+                        return {
+                            fullName: r.teacherName,
+                            isQuan: r.isQuan || r.teacherName.includes('Tá Quan')
+                        };
+                    }
+                }
+            }
+        }
+
+        // 2. Quét từ thời khóa biểu thực tế: Tiết SHL (Sinh hoạt lớp)
+        if (this.timetable && this.timetable[className]) {
+            const grid = this.timetable[className];
+            for (let d = 0; d < grid.length; d++) {
+                if (!grid[d]) continue;
+                for (let p = 0; p < grid[d].length; p++) {
+                    const cell = grid[d][p];
+                    if (cell && (cell.subject === 'SHL' || cell.subject === 'Sinh hoạt lớp' || cell.subject === 'Sinh Hoạt Lớp') && cell.teacher && cell.teacher !== 'GVCN') {
+                        return {
+                            fullName: cell.teacher,
+                            isQuan: cell.teacher.includes('Tá Quan')
+                        };
+                    }
+                }
+            }
+        }
+
+        // 3. Quét từ cấu hình trường học
+        if (this.schoolConfig?.homeroomTeachers?.[className]) {
+            const tName = this.schoolConfig.homeroomTeachers[className];
+            return {
+                fullName: tName,
+                isQuan: tName.includes('Tá Quan')
+            };
+        }
+
+        return null;
+    }
+
+    /**
      * Cập nhật vai trò kiêm nhiệm cho một giáo viên
      */
     updateTeacherWorkloadRoles(teacherName, newRoles) {
