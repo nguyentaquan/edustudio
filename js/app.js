@@ -16,7 +16,7 @@ import { SpeedQuizGame } from './games/speed_quiz.js';
 import { GuessObjectGame } from './games/guess_object.js';
 import { QuestionImporter } from './studio/question_importer.js';
 import { VideoStudioScaffold } from './studio/video_scaffold.js';
-import { SmartTKBUI } from './tkb-ui.js?v=3.10.15';
+import { SmartTKBUI } from './tkb-ui.js?v=3.10.16';
 
 class EduStudioApp {
     constructor() {

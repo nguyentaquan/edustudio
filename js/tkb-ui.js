@@ -801,16 +801,22 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                             </h2>
                         </div>
                         <p style="margin: 0.15rem 0 0 0; font-size: 0.78rem; color: #64748b;">
-                            Trường THCS Bán Trú Canh Thuận • Áp dụng Tuần 9 đến Tuần 13
+                            ${(this.engine.schoolConfig && this.engine.schoolConfig.schoolName) || 'Trường THCS Bán Trú Canh Thuận'} • Áp dụng ${(this.engine.schoolConfig && this.engine.schoolConfig.applyWeekRange) || 'Tuần 9 đến Tuần 13'}
                         </p>
                     </div>
 
                     <div style="display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 0.25rem;">
-                            <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">📅 Học Kỳ:</span>
-                            <select id="tkbSchoolViewSemSelect" onchange="window.smartTKBUI.setSemester(this.value)" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;">
-                                <option value="HK1" ${this.engine.currentSemester === 'HK1' ? 'selected' : ''}>🍂 Học kỳ I</option>
-                                <option value="HK2" ${this.engine.currentSemester === 'HK2' ? 'selected' : ''}>🌱 Học kỳ II</option>
+                            <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">📅 Áp Dụng:</span>
+                            <select id="tkbSchoolViewSemSelect" onchange="window.smartTKBUI.setSchedulePlan(this.value)" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;" title="Chọn Tuần hoặc Học kỳ áp dụng (đáp ứng đơn vị đổi theo Tuần)">
+                                <option value="WEEK_9_13" ${(this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_9_13') || (!this.engine.schoolConfig?.schedulePlanType && this.engine.currentSemester === 'HK1') ? 'selected' : ''}>📅 Tuần 9 - 13</option>
+                                <option value="WEEK_1_9" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_1_9' ? 'selected' : ''}>📅 Tuần 1 - 9</option>
+                                <option value="WEEK_10_18" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_10_18' ? 'selected' : ''}>📅 Tuần 10 - 18</option>
+                                <option value="HK1" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'HK1' ? 'selected' : ''}>🍂 Học kỳ I (18T)</option>
+                                <option value="WEEK_19_27" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_19_27' ? 'selected' : ''}>📅 Tuần 19 - 27</option>
+                                <option value="WEEK_28_35" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_28_35' ? 'selected' : ''}>📅 Tuần 28 - 35</option>
+                                <option value="HK2" ${(this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'HK2') || this.engine.currentSemester === 'HK2' ? 'selected' : ''}>🌱 Học kỳ II (17T)</option>
+                                <option value="YEAR" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'YEAR' ? 'selected' : ''}>🗓️ Cả năm (35T)</option>
                             </select>
                         </div>
                         <button onclick="window.smartTKBUI.printTimetable()" style="background: #1e293b; color: #fff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
@@ -2510,6 +2516,90 @@ setPCCMFilter(filterName) {
      * CHUYỂN ĐỔI HỌC KỲ VÀ CẢ NĂM HỌC
      * @param {'HK1' | 'HK2' | 'YEAR'} sem 
      */
+    /**
+     * TỰ ĐỘNG THAY ĐỔI THEO TUẦN KHI CHỌN PRESET TRONG MODAL
+     */
+    onPlanTypeChange(val) {
+        const input = document.getElementById('mcfgApplyWeekRange');
+        if (!input) return;
+        if (val === 'WEEK_9_13') input.value = 'Tuần 9 đến Tuần 13';
+        else if (val === 'WEEK_1_9') input.value = 'Tuần 1 đến Tuần 9';
+        else if (val === 'WEEK_10_18') input.value = 'Tuần 10 đến Tuần 18';
+        else if (val === 'WEEK_19_27') input.value = 'Tuần 19 đến Tuần 27';
+        else if (val === 'WEEK_28_35') input.value = 'Tuần 28 đến Tuần 35';
+        else if (val === 'HK1') input.value = 'Học kỳ I (Tuần 1 - 18)';
+        else if (val === 'HK2') input.value = 'Học kỳ II (Tuần 19 - 35)';
+        else if (val === 'YEAR') input.value = 'Cả năm học (Tuần 1 - 35)';
+        else if (val === 'WEEK_CUSTOM') {
+            input.focus();
+            input.select();
+        }
+    }
+
+    /**
+     * THIẾT LẬP KẾ HOẠCH ÁP DỤNG THEO TUẦN HOẶC THEO HỌC KỲ
+     * (Đáp ứng các đơn vị trường học thay đổi TKB theo Tuần / Giai đoạn)
+     */
+    setSchedulePlan(plan) {
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.schedulePlanType = plan;
+
+        let weekLabel = 'Tuần 9 đến Tuần 13';
+        let sem = 'HK1';
+
+        if (plan === 'WEEK_9_13') {
+            weekLabel = 'Tuần 9 đến Tuần 13';
+            sem = 'HK1';
+        } else if (plan === 'WEEK_1_9') {
+            weekLabel = 'Tuần 1 đến Tuần 9';
+            sem = 'HK1';
+        } else if (plan === 'WEEK_10_18') {
+            weekLabel = 'Tuần 10 đến Tuần 18';
+            sem = 'HK1';
+        } else if (plan === 'WEEK_19_27') {
+            weekLabel = 'Tuần 19 đến Tuần 27';
+            sem = 'HK2';
+        } else if (plan === 'WEEK_28_35') {
+            weekLabel = 'Tuần 28 đến Tuần 35';
+            sem = 'HK2';
+        } else if (plan === 'HK1') {
+            weekLabel = 'Học kỳ I (Tuần 1 - 18)';
+            sem = 'HK1';
+        } else if (plan === 'HK2') {
+            weekLabel = 'Học kỳ II (Tuần 19 - 35)';
+            sem = 'HK2';
+        } else if (plan === 'YEAR') {
+            weekLabel = 'Cả năm học (Tuần 1 - 35)';
+            sem = 'YEAR';
+        }
+
+        this.engine.schoolConfig.applyWeekRange = weekLabel;
+        this.engine.schoolConfig.semester = (sem === 'HK2' ? 'Học kỳ II' : (sem === 'YEAR' ? 'Cả năm' : 'Học kỳ I'));
+
+        // Đồng bộ các thẻ select trên giao diện
+        const selMain = document.getElementById('tkbSemesterSelect');
+        if (selMain) selMain.value = plan;
+        const selSchool = document.getElementById('tkbSchoolViewSemSelect');
+        if (selSchool) selSchool.value = plan;
+
+        // Chuyển học kỳ tương ứng trong engine nếu cần
+        if (sem === 'YEAR') {
+            this.pccmFilter = 'annual';
+            this.switchSubTab('pccm');
+            this.showToast('📅 Đã mở Bảng Quyết Toán Định Mức Cả Năm (35 Tuần)!');
+        } else {
+            if (this.engine.switchSemester) {
+                this.engine.switchSemester(sem);
+            }
+            this.showToast(`📅 Đã cập nhật áp dụng: ${weekLabel}!`);
+        }
+
+        this.engine.saveState();
+        this.renderCurrentView();
+        this.renderPCCMTable();
+        this.renderStats();
+    }
+
     setSemester(sem) {
         // Cập nhật cốt bên trong Engine
         this.engine.currentSemester = sem;
@@ -3568,15 +3658,27 @@ setPCCMFilter(filterName) {
                                 <input type="text" id="mcfgAcademicYear" value="${sc.academicYear || '2026 - 2027'}" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
                             </div>
 
-                            <!-- TRƯỜNG HỌC KỲ (LIÊN THÔNG 2 CHIỀU VỚI THANH BÊN NGOÀI) -->
+                            <!-- TRƯỜNG KẾ HOẠCH ÁP DỤNG (THEO TUẦN / HỌC KỲ - LINH HOẠT CHO TỪNG ĐƠN VỊ) -->
                             <div>
                                 <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
-                                    🍂 Kế Hoạch Học Kỳ (Semester):
+                                    📅 Kế Hoạch Áp Dụng (Theo Tuần / Học Kỳ):
                                 </label>
-                                <select id="mcfgSemester" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff;">
-                                    <option value="HK1" ${currentSem === 'HK1' ? 'selected' : ''}>🍂 Học Kỳ I (18 tuần • Lịch sử 2t - Địa lí 1t)</option>
-                                    <option value="HK2" ${currentSem === 'HK2' ? 'selected' : ''}>🌱 Học Kỳ II (17 tuần • Địa lí 2t - Lịch sử 1t)</option>
-                                                                    </select>
+                                <select id="mcfgSchedulePlanType" onchange="window.smartTKBUI.onPlanTypeChange(this.value)" style="width: 100%; padding: 0.42rem 0.65rem; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; margin-bottom: 0.35rem;" title="Chọn Tuần hoặc Học kỳ áp dụng">
+                                    <option value="WEEK_9_13" ${(sc.schedulePlanType === 'WEEK_9_13') || (!sc.schedulePlanType && currentSem === 'HK1') ? 'selected' : ''}>📅 Tuần 9 đến Tuần 13 (Giai đoạn hiện hành)</option>
+                                    <option value="WEEK_1_9" ${sc.schedulePlanType === 'WEEK_1_9' ? 'selected' : ''}>📅 Tuần 1 đến Tuần 9 (Giai đoạn đầu HK1)</option>
+                                    <option value="WEEK_10_18" ${sc.schedulePlanType === 'WEEK_10_18' ? 'selected' : ''}>📅 Tuần 10 đến Tuần 18 (Giai đoạn cuối HK1)</option>
+                                    <option value="WEEK_19_27" ${sc.schedulePlanType === 'WEEK_19_27' ? 'selected' : ''}>📅 Tuần 19 đến Tuần 27 (Giai đoạn đầu HK2)</option>
+                                    <option value="WEEK_28_35" ${sc.schedulePlanType === 'WEEK_28_35' ? 'selected' : ''}>📅 Tuần 28 đến Tuần 35 (Giai đoạn cuối HK2)</option>
+                                    <option value="HK1" ${sc.schedulePlanType === 'HK1' ? 'selected' : ''}>🍂 Trọn Học Kỳ I (18 tuần • Lịch sử 2t - Địa lí 1t)</option>
+                                    <option value="HK2" ${(sc.schedulePlanType === 'HK2') || currentSem === 'HK2' ? 'selected' : ''}>🌱 Trọn Học Kỳ II (17 tuần • Địa lí 2t - Lịch sử 1t)</option>
+                                    <option value="YEAR" ${sc.schedulePlanType === 'YEAR' ? 'selected' : ''}>🗓️ Cả Năm Học (35 tuần)</option>
+                                    <option value="WEEK_CUSTOM" ${sc.schedulePlanType === 'WEEK_CUSTOM' ? 'selected' : ''}>✏️ Tùy chỉnh khoảng Tuần theo đơn vị...</option>
+                                </select>
+                                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                    <span style="font-size: 0.72rem; font-weight: 800; color: #64748b; white-space: nowrap;">Tuần áp dụng:</span>
+                                    <input type="text" id="mcfgApplyWeekRange" value="${sc.applyWeekRange || 'Tuần 9 đến Tuần 13'}" placeholder="Ví dụ: Tuần 9 đến Tuần 13..." style="flex: 1; padding: 0.35rem 0.55rem; font-size: 0.78rem; font-weight: 800; border: 1px solid #94a3b8; border-radius: 5px; color: #0f172a; background: #f8fafc;" title="Đơn vị có thể nhập tuần tự do tại đây (ví dụ: Tuần 9 đến Tuần 13, Tuần 1 đến Tuần 4...)">
+                                </div>
+                                <input type="hidden" id="mcfgSemester" value="${currentSem}">
                             </div>
 
                             <div>
@@ -4298,7 +4400,8 @@ setPCCMFilter(filterName) {
         const tier = document.getElementById('mcfgTier')?.value || 'THCS';
         const model = document.getElementById('mcfgModel')?.value || 'BAN_TRU';
         const academicYear = document.getElementById('mcfgAcademicYear')?.value || '2026 - 2027';
-        const chosenSemester = document.getElementById('mcfgSemester')?.value || 'HK1';
+        const chosenPlan = document.getElementById('mcfgSchedulePlanType')?.value || 'WEEK_9_13';
+        const applyWeekRange = document.getElementById('mcfgApplyWeekRange')?.value || 'Tuần 9 đến Tuần 13';
         const standardHours = parseInt(document.getElementById('mcfgStandardHours')?.value) || 17;
         const totalWeeks = parseInt(document.getElementById('mcfgTotalWeeks')?.value) || 35;
         const session = document.getElementById('mcfgSession')?.value || 'Sáng (5 tiết/buổi)';
@@ -4308,6 +4411,22 @@ setPCCMFilter(filterName) {
         this.engine.schoolConfig.educationalTier = tier;
         this.engine.schoolConfig.schoolModel = model;
         this.engine.schoolConfig.academicYear = academicYear;
+        this.engine.schoolConfig.schedulePlanType = chosenPlan;
+        this.engine.schoolConfig.applyWeekRange = applyWeekRange;
+
+        let chosenSemester = 'HK1';
+        if (chosenPlan === 'HK2' || chosenPlan === 'WEEK_19_27' || chosenPlan === 'WEEK_28_35') {
+            chosenSemester = 'HK2';
+        } else if (chosenPlan === 'YEAR') {
+            chosenSemester = 'YEAR';
+        } else if (applyWeekRange.includes('HK2') || applyWeekRange.includes('Học kỳ II')) {
+            chosenSemester = 'HK2';
+        } else {
+            const nums = applyWeekRange.match(/\d+/g);
+            if (nums && parseInt(nums[0]) >= 19) {
+                chosenSemester = 'HK2';
+            }
+        }
         this.engine.schoolConfig.semester = (chosenSemester === 'HK2' ? 'Học kỳ II' : (chosenSemester === 'YEAR' ? 'Cả năm' : 'Học kỳ I'));
         this.engine.schoolConfig.standardPeriodsPerWeek = standardHours;
         this.engine.schoolConfig.totalWeeks = totalWeeks;
@@ -4369,10 +4488,8 @@ setPCCMFilter(filterName) {
         const chkDouble = document.getElementById('chkPreferDouble');
         if (chkDouble) chkDouble.checked = this.engine.pedagogicalPriorities.preferDoublePeriods;
 
-        // Đồng bộ Học kỳ nếu người dùng thay đổi trong modal
-        if (chosenSemester !== this.engine.currentSemester) {
-            this.setSemester(chosenSemester);
-        }
+        // Đồng bộ Kế hoạch Tuần / Học kỳ nếu người dùng thay đổi trong modal
+        this.setSchedulePlan(chosenPlan);
 
         // Lưu vào Engine & LocalStorage
         this.engine.saveState();

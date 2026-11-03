@@ -2497,12 +2497,18 @@ window.openPCCMMonDirect = function() {
 
                                     <div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
 
-                                    <!-- Nhóm 2: Kế Hoạch Học Kỳ (Hộp thoại list chọn gọn gàng) -->
+                                    <!-- Nhóm 2: Kế Hoạch Áp Dụng (Theo Tuần / Học Kỳ) -->
                                     <div style="display: flex; align-items: center; gap: 0.3rem;">
-                                        <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">📅 Học Kỳ:</span>
-                                        <select id="tkbSemesterSelect" onchange="if(window.smartTKBUI) window.smartTKBUI.setSemester(this.value);" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;">
-                                            <option value="HK1" selected>🍂 Học kỳ I</option>
-                                            <option value="HK2">🌱 Học kỳ II</option>
+                                        <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">📅 Áp Dụng:</span>
+                                        <select id="tkbSemesterSelect" onchange="if(window.smartTKBUI) window.smartTKBUI.setSchedulePlan(this.value);" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;" title="Chọn Tuần hoặc Học kỳ áp dụng (đáp ứng đơn vị đổi theo Tuần)">
+                                            <option value="WEEK_9_13" selected>📅 Tuần 9 - 13</option>
+                                            <option value="WEEK_1_9">📅 Tuần 1 - 9</option>
+                                            <option value="WEEK_10_18">📅 Tuần 10 - 18</option>
+                                            <option value="HK1">🍂 Học kỳ I (18T)</option>
+                                            <option value="WEEK_19_27">📅 Tuần 19 - 27</option>
+                                            <option value="WEEK_28_35">📅 Tuần 28 - 35</option>
+                                            <option value="HK2">🌱 Học kỳ II (17T)</option>
+                                            <option value="YEAR">🗓️ Cả năm (35T)</option>
                                         </select>
                                     </div>
 
@@ -4094,7 +4100,7 @@ window.openPCCMMonDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=3.10.15"></script>
+    <script type="module" src="js/app.js?v=3.10.16"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
