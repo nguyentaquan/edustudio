@@ -37,8 +37,8 @@ export class SmartTKBUI {
      * Khởi tạo và gắn các sự kiện điều khiển
      */
     init() {
-        // Tự động xếp lịch lần đầu bằng AI
-        this.engine.solveAutomatic();
+        // Luôn nạp mặc định Thời khóa biểu chính thức Canh Thuận (Tuần 9)
+        this.engine.loadDefaultSampleData();
 
         // Gắn sự kiện chuyển subnav tab
         document.querySelectorAll('.btn-tkb-subnav').forEach(btn => {

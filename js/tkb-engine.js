@@ -510,7 +510,7 @@ export class SmartTKBEngine {
                 timetable: this.timetable,
                 savedAt: new Date().toISOString()
             };
-            localStorage.setItem('edustudio_tkb_canhthuan_tuan9_v2', JSON.stringify(data));
+            localStorage.setItem('edustudio_tkb_canhthuan_official_v39', JSON.stringify(data));
             return true;
         } catch(e) {
             console.warn("Lỗi lưu dữ liệu TKB:", e);
@@ -523,7 +523,7 @@ export class SmartTKBEngine {
      */
     loadState() {
         try {
-            const raw = localStorage.getItem('edustudio_tkb_canhthuan_tuan9_v2');
+            const raw = localStorage.getItem('edustudio_tkb_canhthuan_official_v39');
             if (!raw) return false;
             const data = JSON.parse(raw);
             if (data && data.classes && data.timetable && data.assignments) {
