@@ -3921,13 +3921,17 @@ setPCCMFilter(filterName) {
                                                 const tName = typeof t === 'string' ? t : (t.displayName || t.fullName || t.name || '');
                                                 const isQuan = tName.includes('Tá Quan');
                                                 const subName = t.subjects ? (Array.isArray(t.subjects) ? t.subjects.join(', ') : t.subjects) : (t.subject || 'Toán');
+                                                let homeroomClass = t.homeroom;
+                                                if (!homeroomClass && this.engine.schoolConfig?.homeroomTeachers) {
+                                                    homeroomClass = Object.keys(this.engine.schoolConfig.homeroomTeachers).find(c => this.engine.schoolConfig.homeroomTeachers[c] === (t.fullName || tName));
+                                                }
                                                 return `
                                                     <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #eff6ff; font-weight: 800; color: #1d4ed8;' : ''}">
                                                         <td style="padding: 0.3rem 0.4rem; text-align: center; color: #64748b;">${idx + 1}</td>
                                                         <td style="padding: 0.3rem 0.4rem;">${tName}${isQuan ? ' ⭐' : ''}</td>
                                                         <td style="padding: 0.3rem 0.4rem;">${subName}</td>
                                                         <td style="padding: 0.3rem 0.4rem; text-align: center;">
-                                                            ${t.homeroom ? `<span style="background: #dbeafe; color: #1e40af; padding: 0.1rem 0.35rem; border-radius: 3px; font-weight: 700; font-size: 0.68rem;">Lớp ${t.homeroom}</span>` : '<span style="color: #94a3b8;">-</span>'}
+                                                            ${homeroomClass ? `<span style="background: #dbeafe; color: #1e40af; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 800; font-size: 0.7rem;">Lớp ${homeroomClass}</span>` : '<span style="color: #94a3b8;">-</span>'}
                                                         </td>
                                                     </tr>
                                                 `;
@@ -3985,13 +3989,18 @@ setPCCMFilter(filterName) {
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             
                             <div>
-                                <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #1e293b;">🏫 Danh Sách Khối Lớp Hiện Tại (${this.engine.classes.length} Lớp):</h4>
-                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem; display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.65rem;">
-                                    ${this.engine.classes.map(c => `
-                                        <span style="background: #dbeafe; color: #1e40af; font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">
-                                            Lớp ${c}
-                                        </span>
-                                    `).join('')}
+                                <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #1e293b;">🏫 Danh Sách Khối Lớp &amp; GVCN Phân Công (${this.engine.classes.length} Lớp):</h4>
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem; display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.65rem;">
+                                    ${this.engine.classes.map(c => {
+                                        const gvcn = this.getHomeroomTeacherForClass(c);
+                                        const isQuan = gvcn && gvcn.isQuan;
+                                        return `
+                                            <span style="background: ${isQuan ? '#eff6ff' : '#ffffff'}; color: ${isQuan ? '#1e40af' : '#1e293b'}; border: 1px solid ${isQuan ? '#93c5fd' : '#cbd5e1'}; font-weight: 800; font-size: 0.75rem; padding: 0.25rem 0.55rem; border-radius: 5px; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                                <span>Lớp ${c}</span>
+                                                ${gvcn ? `<span style="background: ${isQuan ? '#dbeafe' : '#f1f5f9'}; color: ${isQuan ? '#1d4ed8' : '#047857'}; font-weight: 700; font-size: 0.68rem; padding: 0.05rem 0.3rem; border-radius: 3px;">(${isQuan ? '⭐ ' : ''}${gvcn.shortName})</span>` : ''}
+                                            </span>
+                                        `;
+                                    }).join('')}
                                 </div>
                                 <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
                                     ✏️ Tùy Chỉnh / Nhập Nhanh Danh Sách Lớp (Phân cách bằng dấu phẩy):
