@@ -519,7 +519,7 @@ export class SmartTKBEngine {
                 timetable: this.timetable,
                 savedAt: new Date().toISOString()
             };
-            localStorage.setItem('edustudio_tkb_canhthuan_official_v39', JSON.stringify(data));
+            localStorage.setItem('edustudio_tkb_canhthuan_official_v31028', JSON.stringify(data));
             return true;
         } catch(e) {
             console.warn("Lỗi lưu dữ liệu TKB:", e);
@@ -532,11 +532,14 @@ export class SmartTKBEngine {
      */
     loadState() {
         try {
-            const raw = localStorage.getItem('edustudio_tkb_canhthuan_official_v39');
+            const raw = localStorage.getItem('edustudio_tkb_canhthuan_official_v31028');
             if (!raw) return false;
             const data = JSON.parse(raw);
             if (data && data.classes && data.timetable && data.assignments) {
                 this.schoolConfig = data.schoolConfig || this.schoolConfig;
+                if (CANH_THUAN_TKB_DATA?.schoolConfig?.homeroomTeachers) {
+                    this.schoolConfig.homeroomTeachers = Object.assign({}, CANH_THUAN_TKB_DATA.schoolConfig.homeroomTeachers, this.schoolConfig.homeroomTeachers || {});
+                }
                 if (data.pedagogicalPriorities) this.pedagogicalPriorities = data.pedagogicalPriorities;
                 if (data.subjects && data.subjects.length > 0) this.subjects = data.subjects;
                 this.specialRooms = data.specialRooms || this.specialRooms;

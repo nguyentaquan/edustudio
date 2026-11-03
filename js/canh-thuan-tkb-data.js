@@ -10,15 +10,15 @@ export const CANH_THUAN_TKB_DATA = {
   "schoolConfig": {
     "homeroomTeachers": {
       "6A1": "Dương Thị Ngọc Lành",
-      "6A2": "Đoàn Thị Hồ",
+      "6A2": "Hà Thị Thúy Hòa",
       "6A3": "Phạm Thị Nhàn",
-      "7A1": "Nguyễn Bá Hiền",
-      "7A2": "Trần Thị Thanh Thảo",
+      "7A1": "Trần Thị Thanh Thảo",
+      "7A2": "Nguyễn Thị Hồng Phúc",
       "8A1": "Nguyễn Tá Quan",
-      "8A2": "Nguyễn Thị Hồng Phúc",
-      "9A1": "Nguyễn Bá Công",
-      "9A2": "Nguyễn Thị Hồng Duyên"
-    },
+      "8A2": "Nguyễn Bá Hiền",
+      "9A1": "Nguyễn Thị Hồng Duyên",
+      "9A2": "Đoàn Thị Hồ"
+},
     "schoolName": "Trường THCS Bán Trú Canh Thuận",
     "academicYear": "2026 - 2027",
     "semester": "Học kỳ I",
@@ -40,7 +40,7 @@ export const CANH_THUAN_TKB_DATA = {
   "teachers": [
     {
       "fullName": "Nguyễn Thị Hồng Duyên",
-      "homeroom": "9A2",
+      "homeroom": "9A1",
       "displayName": "Cô Nguyễn Thị Hồng Duyên",
       "shortName": "Cô Duyên",
       "gender": "F",
@@ -53,6 +53,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "fullName": "Hà Thị Thúy Hòa",
+      "homeroom": "6A2",
       "displayName": "Cô Hà Thị Thúy Hòa",
       "shortName": "Cô Hòa",
       "gender": "F",
@@ -86,7 +87,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "fullName": "Nguyễn Thị Hồng Phúc",
-      "homeroom": "8A2",
+      "homeroom": "7A2",
       "displayName": "Cô Nguyễn Thị Hồng Phúc",
       "shortName": "Cô Phúc",
       "gender": "F",
@@ -162,7 +163,6 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "fullName": "Nguyễn Bá Công",
-      "homeroom": "9A1",
       "displayName": "Thầy Nguyễn Bá Công",
       "shortName": "Thầy Công",
       "gender": "M",
@@ -173,7 +173,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "fullName": "Nguyễn Bá Hiền",
-      "homeroom": "7A1",
+      "homeroom": "8A2",
       "displayName": "Thầy Nguyễn Bá Hiền",
       "shortName": "Thầy Hiền",
       "gender": "M",
@@ -185,7 +185,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "fullName": "Đoàn Thị Hồ",
-      "homeroom": "6A2",
+      "homeroom": "9A2",
       "displayName": "Cô Đoàn Thị Hồ",
       "shortName": "Cô Hồ",
       "gender": "F",
@@ -242,7 +242,7 @@ export const CANH_THUAN_TKB_DATA = {
     },
     {
       "fullName": "Trần Thị Thanh Thảo",
-      "homeroom": "7A2",
+      "homeroom": "7A1",
       "displayName": "Cô Trần Thị Thanh Thảo",
       "shortName": "Cô Thảo",
       "gender": "F",
