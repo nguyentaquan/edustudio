@@ -2503,21 +2503,7 @@ window.openPCCMMonDirect = function() {
                                             <span>📊</span> <span>Lũy Kế TKB Liền Kề Trước</span>
                                         </button>
                                     </div>
-
-                                    <div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
-
-                                    <!-- Mục Lũy Kế TKB Liền Kề Trước (Theo chỉ đạo của Thầy Nguyễn Tá Quan) -->
-                                    <div style="display: flex; align-items: center; gap: 0.3rem;">
-                                        <button id="btnPriorTKBCumulative" type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openCumulativePriorModal();" 
-                                                style="background: #ffffff; color: #047857; border: 1.5px solid #059669; padding: 0.22rem 0.6rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); transition: all 0.15s ease;"
-                                                onmouseover="this.style.background='#f0fdf4'; this.style.borderColor='#047857';"
-                                                onmouseout="this.style.background='#ffffff'; this.style.borderColor='#059669';"
-                                                title="Nhấp để xem bảng đối soát và quản lý Lũy kế TKB liền kề trước đó (Tuần 1 - 8)">
-                                            <span>📊</span> <span>Lũy Kế TKB Liền Kề Trước</span>
-                                        </button>
-                                    </div>
-
-                                    <div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
+<div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
 
                                     <!-- Nhóm 2: Kế Hoạch Áp Dụng (Theo Tuần / Học Kỳ) -->
                                     <div style="display: flex; align-items: center; gap: 0.3rem;">
@@ -2541,7 +2527,7 @@ window.openPCCMMonDirect = function() {
                                         <span style="font-size: 0.95rem;">🏫</span>
                                         <input type="text" id="tkbGlobalSchoolNameInput" value="THCS Bán Trú Canh Thuận" 
                                                style="padding: 0.2rem 0.5rem; font-size: 0.75rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #0f172a; background: #ffffff; min-width: 185px; outline: none;" 
-                                               placeholder="Tên trường..." 
+                                               placeholder="Trường Mầm Non / Phổ Thông..." 
                                                oninput="if(window.smartTKBUI) window.smartTKBUI.onSchoolNameChange(this.value);"
                                                title="Nhấp để nhập tên trường trực tiếp (tự lưu)">
                                         
@@ -4122,7 +4108,7 @@ window.openPCCMMonDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=3.10.28"></script>
+    <script type="module" src="js/app.js?v=3.10.29"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>

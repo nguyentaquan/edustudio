@@ -775,6 +775,14 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             { name: 'Tú', label: 'Tú', color: '#78350f' }
         ];
 
+        // 2. Lọc danh sách lớp hiển thị trên Bàn cờ tổng thể theo Bộ lọc Khối chuẩn xác 100% (GDMN & GDPT)
+        const displayClasses = (activeGrade === 'all')
+            ? classes
+            : classes.filter(c => {
+                if (gradeGroups[activeGrade]) return gradeGroups[activeGrade].includes(c);
+                return c.startsWith(activeGrade);
+            });
+
         // Mật độ hiển thị bảng: MỞ RỘNG 100% CHIỀU NGANG, ÉP GỌN CHIỀU DỌC (Theo chỉ đạo của Thầy Quan)
         const density = this.masterDensity || 'compact';
         let colDayWidth = '50px';
@@ -789,7 +797,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         if (density === 'ultra') {
             colDayWidth = '46px';
             colPeriodWidth = '28px';
-            colClassWidth = `calc((100% - 74px) / ${classes.length})`;
+            colClassWidth = displayClasses.length > 0 ? `calc((100% - 74px) / ${displayClasses.length})` : '74px';
             cellHeight = '18px';
             cellPadding = '0px 1px';
             subjectFontSize = '0.70rem';
@@ -798,21 +806,13 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         } else if (density === 'standard') {
             colDayWidth = '54px';
             colPeriodWidth = '34px';
-            colClassWidth = `calc((100% - 88px) / ${classes.length})`;
+            colClassWidth = displayClasses.length > 0 ? `calc((100% - 88px) / ${displayClasses.length})` : '88px';
             cellHeight = '24px';
             cellPadding = '2px 3px';
             subjectFontSize = '0.78rem';
             teacherFontSize = '0.74rem';
             headerFontSize = '0.78rem';
         }
-
-        // 2. Lọc danh sách lớp hiển thị trên Bàn cờ tổng thể theo Bộ lọc Khối chuẩn xác 100%
-        const displayClasses = (activeGrade === 'all')
-            ? classes
-            : classes.filter(c => {
-                if (gradeGroups[activeGrade]) return gradeGroups[activeGrade].includes(c);
-                return c.startsWith(activeGrade);
-            });
 
         // Tiêu đề khối lớp động (Dynamic Grade Headers)
         let dynamicTopHeadersHtml = '';
@@ -4400,7 +4400,7 @@ setPCCMFilter(filterName) {
                         </div>
                         <input type="hidden" id="pccmEditIndex" value="-1">
 
-                        <div style="display: grid; grid-template-columns: 1.8fr 1.1fr 0.9fr 1.8fr auto; gap: 0.55rem; align-items: end;">
+                        <div style="display: grid; grid-template-columns: 1.8fr 1.1fr 1.8fr 0.9fr auto; gap: 0.55rem; align-items: end;">
                             <!-- 1. Họ Tên Thầy Cô -->
                             <div>
                                 <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
@@ -4422,18 +4422,10 @@ setPCCMFilter(filterName) {
                                 </select>
                             </div>
 
-                            <!-- 3. Số Tiết/Tuần (ĐỨNG LIỀN KỀ TRƯỚC MÔN HỌC THEO CHỈ ĐẠO CỦA THẦY QUAN) -->
-                            <div>
-                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #0369a1; margin-bottom: 0.2rem;">
-                                    ⏱️ Số Tiết/Tuần:
-                                </label>
-                                <input type="number" id="pccmInputPeriods" value="3" min="1" max="30" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1.5px solid #0284c7; border-radius: 6px; color: #0369a1; background: #f0f9ff;">
-                            </div>
-
-                            <!-- 4. Môn Học (CHỈ LIST TÊN MÔN, KHÔNG KÈM SỐ TIẾT, HỖ TRỢ ĐA CẤP GDMN & GDPT QUỐC TẾ) -->
+                            <!-- 3. Môn Học (CHỈ LIST TÊN MÔN, HỖ TRỢ ĐA CẤP GDMN & GDPT QUỐC TẾ) -->
                             <div>
                                 <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
-                                    📚 Môn Học (MN &amp; GDPT):
+                                    📚 Môn Học (GDMN &amp; GDPT):
                                 </label>
                                 <select id="pccmInputSubject" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #0f172a;">
                                     <optgroup label="📋 Môn Phân Công Hiện Hành (${currentSubjects.length})">
@@ -4490,6 +4482,14 @@ setPCCMFilter(filterName) {
                                 </select>
                             </div>
 
+                            <!-- 4. Số Tiết/Tuần -->
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #0369a1; margin-bottom: 0.2rem;">
+                                    ⏱️ Số Tiết/Tuần:
+                                </label>
+                                <input type="number" id="pccmInputPeriods" value="3" min="1" max="30" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1.5px solid #0284c7; border-radius: 6px; color: #0369a1; background: #f0f9ff;">
+                            </div>
+
                             <!-- 5. Nút Thao Tác -->
                             <div style="display: flex; gap: 0.35rem;">
                                 <button type="button" id="pccmBtnSubmit" onclick="window.smartTKBUI.savePCCMFromDetailModal()" style="background: #059669; color: #ffffff; border: none; padding: 0.42rem 0.95rem; border-radius: 6px; font-weight: 800; font-size: 0.78rem; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(5,150,105,0.25);">
@@ -4532,8 +4532,8 @@ setPCCMFilter(filterName) {
                                 <tr style="background: #f8fafc; color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1; position: sticky; top: 0;">
                                     <th style="padding: 0.45rem 0.6rem; width: 35px; text-align: center;">STT</th>
                                     <th style="padding: 0.45rem 0.6rem;">Họ và Tên Giáo Viên</th>
+                                    <th style="padding: 0.45rem 0.6rem; text-align: center;">Lớp Học</th>
                                     <th style="padding: 0.45rem 0.6rem;">Môn Học</th>
-                                    <th style="padding: 0.45rem 0.6rem; text-align: center;">Lớp</th>
                                     <th style="padding: 0.45rem 0.6rem; text-align: center;">Số Tiết/Tuần</th>
                                     <th style="padding: 0.45rem 0.6rem; text-align: center; width: 120px;">Thao Tác Trực Tiếp</th>
                                 </tr>
@@ -4548,8 +4548,8 @@ setPCCMFilter(filterName) {
                                             <td style="padding: 0.4rem 0.6rem;">
                                                 <strong>${a.teacher}</strong>${isQuan ? ' ⭐' : ''}
                                             </td>
-                                            <td style="padding: 0.4rem 0.6rem; color: #334155;">${a.subject}</td>
                                             <td style="padding: 0.4rem 0.6rem; text-align: center; font-weight: 800; color: #1e40af;">${a.classId}</td>
+                                            <td style="padding: 0.4rem 0.6rem; color: #334155;">${a.subject}</td>
                                             <td style="padding: 0.4rem 0.6rem; text-align: center; font-weight: 800; color: #059669;">${pVal} tiết</td>
                                             <td style="padding: 0.4rem 0.6rem; text-align: center; white-space: nowrap;">
                                                 <button type="button" onclick="window.smartTKBUI.editPCCMInModal(${idx})" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800; cursor: pointer; margin-right: 0.3rem;">
