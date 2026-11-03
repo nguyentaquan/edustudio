@@ -678,7 +678,6 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                             <select id="tkbSchoolViewSemSelect" onchange="window.smartTKBUI.setSemester(this.value)" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;">
                                 <option value="HK1" ${this.engine.currentSemester === 'HK1' ? 'selected' : ''}>🍂 Học kỳ I</option>
                                 <option value="HK2" ${this.engine.currentSemester === 'HK2' ? 'selected' : ''}>🌱 Học kỳ II</option>
-                                <option value="YEAR" ${this.engine.currentSemester === 'YEAR' ? 'selected' : ''}>📊 Cả năm</option>
                             </select>
                         </div>
                         <button onclick="window.smartTKBUI.printTimetable()" style="background: #1e293b; color: #fff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
@@ -3377,8 +3376,7 @@ setPCCMFilter(filterName) {
                                 <select id="mcfgSemester" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff;">
                                     <option value="HK1" ${currentSem === 'HK1' ? 'selected' : ''}>🍂 Học Kỳ I (18 tuần • Lịch sử 2t - Địa lí 1t)</option>
                                     <option value="HK2" ${currentSem === 'HK2' ? 'selected' : ''}>🌱 Học Kỳ II (17 tuần • Địa lí 2t - Lịch sử 1t)</option>
-                                    <option value="YEAR" ${currentSem === 'YEAR' ? 'selected' : ''}>📊 Cả Năm (35 tuần • Quyết toán 595t)</option>
-                                </select>
+                                                                    </select>
                             </div>
 
                             <div>
