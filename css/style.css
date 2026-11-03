@@ -4061,3 +4061,24 @@ body.modal-open {
     pointer-events: auto !important;
     z-index: 9999999 !important;
 }
+
+.btn-search-user {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    font-size: 0.95rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 0.25rem;
+}
+
+.btn-search-user:hover {
+    background: rgba(255, 255, 255, 0.45);
+    transform: scale(1.08);
+}

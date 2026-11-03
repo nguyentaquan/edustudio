@@ -1,7 +1,7 @@
 /**
  * EduStudio - Ứng Dụng Điều Phối Chính (Main Application Controller)
  * Phiên bản 2.3 Sư Phạm - Nâng cấp chuyên sâu theo định hướng của Thầy Nguyễn Tá Quan:
- * 1. Tách rời tính năng Kho Đề, Kho Video trên thanh ngang (Xem & Tải về) với xưởng thiết kế trên thanh dọc (Tạo & Thẩm định đề, Biên tập Media Studio).
+ * 1. Tách rời tính năng Kho Đề, Kho Video trên thanh ngang (Xem & Tải về) với xưởng thiết kế trên thanh dọc (Tạo & Đối soát đề, Biên tập Media Studio).
  * 2. Cửa sổ Tạo trò chơi: Năng lực tự động cập nhật theo cấp học (MN gồm 5 năng lực MN; PT gồm 4 năng lực PT).
  * 3. Mục Thêm câu hỏi có Ảnh: Bổ sung đầy đủ tất cả năng lực MN, năng lực PT và 5 năng lực MN.
  * 4. Tích hợp thư viện Kho Đề và Kho Video phong phú, chuẩn mực.
@@ -16,11 +16,11 @@ import { SpeedQuizGame } from './games/speed_quiz.js';
 import { GuessObjectGame } from './games/guess_object.js';
 import { QuestionImporter } from './studio/question_importer.js';
 import { VideoStudioScaffold } from './studio/video_scaffold.js';
-import { SmartTKBUI } from './tkb-ui.js?v=3.10.33';
+import { SmartTKBUI } from './tkb-ui.js?v=3.10.34';
 
 class EduStudioApp {
         syncVersionLabels() {
-        const label = 'v3.10.33 GDMN & GDPT';
+        const label = 'v3.10.34 GDMN & GDPT';
         document.querySelectorAll('.badge-version-gold, [data-version-badge]').forEach(el => {
             el.textContent = label;
         });
@@ -91,7 +91,7 @@ class EduStudioApp {
         this.activeSlideIndex = 0;
         this.presentingSlideIndex = 0;
 
-        // Dữ liệu thư mục DỮ LIỆU THÔ 5TB (Staging Area & AI Thẩm định)
+        // Dữ liệu thư mục DỮ LIỆU THÔ 5TB (Staging Area & AI Đối soát)
         this.rawStagingFiles = this.initRawStagingData();
 
         // Dữ liệu Quản Trị Quản Lý Tài Khoản (Quản lý TK) & Kinh Tế Vi Mô & Cấu Hình AI
@@ -1360,10 +1360,10 @@ class EduStudioApp {
         const tickerEl = document.getElementById('tickerText');
         if (!tickerEl) return;
         const messages = [
-            "Hệ thống EduStudio v3.10.33 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
+            "Hệ thống EduStudio v3.10.34 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
             "Cô Hoàng Mai vừa tạo bộ trò chơi 'Đoán Con Vật Mầm Non' tương tác trực quan",
             "Thầy Lê Hải vừa biên soạn đề kiểm tra Giữa kỳ I môn Toán 7 chuẩn 3 dạng TNKQ",
-            "Hệ thống EduStudio v3.10.33 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
+            "Hệ thống EduStudio v3.10.34 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
             "Xưởng Video Studio đã hoàn tất kịch bản Audio-Driven Lip-Sync 3D"
         ];
         let idx = 0;
@@ -1468,6 +1468,168 @@ ${roleNames[newRole] || newRole}
 Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác!`);
     }
 
+    /**
+     * PHÂN HỆ QUẢN TRỊ ADMIN: NHẬT KÝ NGƯỜI DÙNG & HOẠT ĐỘNG HỆ THỐNG
+     */
+    getUserLogs() {
+        const stored = localStorage.getItem('edustudio_user_activity_logs');
+        if (stored) {
+            try { return JSON.parse(stored); } catch(e){}
+        }
+
+        // Dữ liệu mẫu khởi tạo phong phú chuẩn sư phạm
+        const defaultLogs = [
+            { id: "LOG-1001", time: "2026-11-04 00:32:10", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Kích hoạt chế độ Hoán đổi tiết 1 chạm (Click-to-Swap)", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
+            { id: "LOG-1002", time: "2026-11-04 00:28:45", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tinh chỉnh đệm lề và ép gọn kích thước ô bàn cờ TKB chuẩn 32px", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
+            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.34 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
+            { id: "LOG-1004", time: "2026-11-03 23:45:00", user: "Cô Hà Thị Thúy Hòa", role: "Nhóm 4: Giáo Viên", action: "Xem thời khóa biểu Lớp 6A2 môn Tin Học", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
+            { id: "LOG-1005", time: "2026-11-03 23:15:20", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tạo Đề Kiểm Tra Giữa Kỳ I HĐTN 8 chuẩn ma trận & đặc tả BGDĐT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" },
+            { id: "LOG-1006", time: "2026-11-03 22:50:11", user: "Cô Dương Thị Ngọc Lành", role: "Nhóm 4: Giáo Viên", action: "Đăng nhập xác thực tài khoản Google SSO", module: "Xác Thực", type: "auth", status: "Thành công" },
+            { id: "LOG-1007", time: "2026-11-03 22:10:04", user: "Thầy Nguyễn Bá Hiền", role: "Nhóm 4: Giáo Viên", action: "Soạn Kế hoạch bài dạy KHBD 5512 Lịch sử 7", module: "Soạn KHBD", type: "lesson", status: "Thành công" },
+            { id: "LOG-1008", time: "2026-11-03 21:30:18", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Xuất file Mẫu TKB Master chuẩn Excel 5 Sheets (.xlsx)", module: "Thời Khóa Biểu", type: "export", status: "Thành công" },
+            { id: "LOG-1009", time: "2026-11-03 20:45:33", user: "Cô Phạm Thị Nhàn", role: "Nhóm 4: Giáo Viên", action: "Khai thác bài giảng điện tử PPT 16:9 môn Ngữ Văn 6", module: "Kho Bài Giảng", type: "lesson", status: "Thành công" },
+            { id: "LOG-1010", time: "2026-11-03 19:12:40", user: "Thầy Lê Quốc Thái", role: "Nhóm 4: Giáo Viên", action: "Tra cứu lịch giảng dạy và phòng bộ môn GDTC", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
+            { id: "LOG-1011", time: "2026-11-03 18:05:15", user: "Thầy Lương Văn Tuấn", role: "Nhóm 4: Giáo Viên", action: "Đăng nhập hệ thống EduStudio và xem phân công chuyên môn", module: "Xác Thực", type: "auth", status: "Thành công" },
+            { id: "LOG-1012", time: "2026-11-03 17:30:00", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đối soát tự động ma trận đề kiểm tra KHTN 8 với PPCT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" }
+        ];
+
+        localStorage.setItem('edustudio_user_activity_logs', JSON.stringify(defaultLogs));
+        return defaultLogs;
+    }
+
+    logUserActivity(action, module = 'Hệ Thống', type = 'general', details = '') {
+        const logs = this.getUserLogs();
+        const userName = (this.currentUser && this.currentUser.name) || 'Thầy Nguyễn Tá Quan';
+        const role = (this.currentUser && this.currentUser.role === 'admin') ? 'Nhóm 1: Quản Trị' : 'Nhóm 4: Giáo Viên';
+
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
+        const newLog = {
+            id: `LOG-${Date.now().toString().slice(-4)}`,
+            time: timeStr,
+            user: userName,
+            role: role,
+            action: action + (details ? ` (${details})` : ''),
+            module: module,
+            type: type,
+            status: "Thành công"
+        };
+
+        logs.unshift(newLog);
+        if (logs.length > 200) logs.pop(); // giữ 200 log gần nhất
+        localStorage.setItem('edustudio_user_activity_logs', JSON.stringify(logs));
+
+        // Nếu đang ở màn hình log, cập nhật luôn
+        if (document.getElementById('admin-subpane-user-logs')?.classList.contains('active')) {
+            this.renderUserLogs();
+        }
+    }
+
+    renderUserLogs(filteredLogs = null) {
+        const tbody = document.getElementById('adminUserLogsTableBody');
+        if (!tbody) return;
+
+        const logs = filteredLogs || this.getUserLogs();
+
+        // Update KPIs
+        const total = logs.length;
+        const logins = logs.filter(l => l.type === 'auth').length;
+        const tkb = logs.filter(l => l.type === 'tkb').length;
+        const exams = logs.filter(l => l.type === 'exam' || l.type === 'lesson').length;
+
+        const elTotal = document.getElementById('kpiLogTotal');
+        const elLogins = document.getElementById('kpiLogLogins');
+        const elTKB = document.getElementById('kpiLogTKB');
+        const elExams = document.getElementById('kpiLogExams');
+        const elCount = document.getElementById('adminLogCountLabel');
+
+        if (elTotal) elTotal.textContent = total.toLocaleString();
+        if (elLogins) elLogins.textContent = logins.toLocaleString();
+        if (elTKB) elTKB.textContent = tkb.toLocaleString();
+        if (elExams) elExams.textContent = exams.toLocaleString();
+        if (elCount) elCount.textContent = `Hiển thị ${logs.length} nhật ký hoạt động`;
+
+        if (logs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #94a3b8;">Chưa có nhật ký hoạt động nào khớp với bộ lọc.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = logs.map((log, idx) => {
+            const isQuan = log.user.includes('Tá Quan');
+            const roleBadge = log.role.includes('Quản Trị') 
+                ? '<span style="background: #eff6ff; color: #1d4ed8; padding: 0.12rem 0.4rem; border-radius: 4px; font-weight: 700; font-size: 0.68rem;">Quản Trị</span>'
+                : '<span style="background: #f1f5f9; color: #475569; padding: 0.12rem 0.4rem; border-radius: 4px; font-weight: 600; font-size: 0.68rem;">Giáo Viên</span>';
+            
+            const moduleBadge = `<span style="background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700; font-size: 0.68rem;">${log.module}</span>`;
+
+            return `
+                <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #f8fafc;' : ''}">
+                    <td style="padding: 0.45rem; text-align: center; color: #94a3b8; font-weight: 700;">${idx + 1}</td>
+                    <td style="padding: 0.45rem; font-family: monospace; font-size: 0.72rem; color: #64748b;">${log.time}</td>
+                    <td style="padding: 0.45rem; font-weight: 700; color: ${isQuan ? '#1d4ed8' : '#0f172a'};">
+                        ${isQuan ? '⭐ ' : ''}${log.user}
+                    </td>
+                    <td style="padding: 0.45rem; text-align: center;">${roleBadge}</td>
+                    <td style="padding: 0.45rem; color: #334155;">${log.action}</td>
+                    <td style="padding: 0.45rem; text-align: center;">${moduleBadge}</td>
+                    <td style="padding: 0.45rem; text-align: center;">
+                        <span style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 0.68rem; padding: 0.12rem 0.45rem; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.2rem;">
+                            <span>✓</span> Thành công
+                        </span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    filterUserLogs() {
+        const inp = document.getElementById('adminLogSearchInput');
+        const sel = document.getElementById('adminLogTypeFilter');
+        const q = inp ? inp.value.trim().toLowerCase() : '';
+        const t = sel ? sel.value : 'all';
+
+        const allLogs = this.getUserLogs();
+        const filtered = allLogs.filter(log => {
+            const matchQ = !q || log.user.toLowerCase().includes(q) || log.action.toLowerCase().includes(q) || log.module.toLowerCase().includes(q);
+            const matchT = (t === 'all') || (log.type === t);
+            return matchQ && matchT;
+        });
+
+        this.renderUserLogs(filtered);
+    }
+
+    exportUserLogsCSV() {
+        const logs = this.getUserLogs();
+        if (logs.length === 0) {
+            alert('Không có nhật ký nào để xuất!');
+            return;
+        }
+
+        let csv = '﻿STT,Thời Gian,Họ và Tên,Vai Trò,Hành Động Chi Tiết,Phân Hệ,Trạng Thái
+';
+        logs.forEach((l, idx) => {
+            csv += `"${idx + 1}","${l.time}","${l.user}","${l.role}","${l.action.replace(/"/g, '""')}","${l.module}","${l.status}"
+`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `EDUSTUDIO_NHAT_KY_NGUOI_DUNG_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ Đã xuất File Nhật Ký Hoạt Động Người Dùng (.CSV) chuẩn UTF-8 thành công!');
+    }
+
+    clearUserLogs() {
+        if (!confirm('Thầy có chắc chắn muốn xóa toàn bộ lịch sử nhật ký hoạt động người dùng không?')) return;
+        localStorage.setItem('edustudio_user_activity_logs', JSON.stringify([]));
+        this.renderUserLogs();
+        alert('✅ Đã xóa trắng lịch sử nhật ký hoạt động.');
+    }
+
     renderBannerAuthZone() {
         const authZone = document.getElementById('bannerAuthZone');
         if (!authZone) return;
@@ -1503,6 +1665,11 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                     <!-- NÚT BÁNH RĂNG TÀI KHOẢN -->
                     <button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt & Tài khoản EduStudio">
                         ⚙️
+                    </button>
+
+                    <!-- NÚT TÌM KIẾM TRÊN WEB (ICON KÍNH LÚP THEO YÊU CẦU CỦA THẦY QUAN) -->
+                    <button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web & Hệ thống EduStudio">
+                        🔍
                     </button>
 
                     <!-- MENU ĐỔ XUỐNG SÁT BÊN CẠNH (GIAO DIỆN CHUẨN GMAIL / GOOGLE ACCOUNT) -->
@@ -2098,8 +2265,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         filtered.forEach(exam => {
             html += `
                 <div class="exam-card-item card-verified-container">
-                    <div class="badge-audit-verified-corner" title="Đã thẩm định chuẩn Ma trận & Đặc tả">
-                        🛡️ Đã thẩm định bởi kiemdinh@edustudio.edu.vn
+                    <div class="badge-audit-verified-corner" title="Đã đối soát chuẩn Ma trận & Đặc tả">
+                        🛡️ Đã đối soát bởi kiemdinh@edustudio.edu.vn
                     </div>
                     <div>
                         <div class="exam-card-title">${exam.title}</div>
@@ -2107,7 +2274,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             <span class="badge-tag-tiny" style="background:#e0f2fe; color:#0369a1;">${exam.subject}</span>
                             <span class="badge-tag-tiny" style="background:#f1f5f9; color:#475569;">${exam.grade}</span>
                             <span class="badge-tag-tiny" style="background:#fef3c7; color:#b45309;">⏱️ ${exam.duration}</span>
-                            <span class="badge-tag-tiny" style="background:#dcfce7; color:#15803d;">✓ Đã thẩm định</span>
+                            <span class="badge-tag-tiny" style="background:#dcfce7; color:#15803d;">✓ Đã đối soát</span>
                         </div>
                         <div class="exam-card-desc">${exam.desc}</div>
                     </div>
@@ -2238,7 +2405,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             html += `
                 <div class="video-card-item card-verified-container">
                     <div class="badge-audit-verified-corner" title="Chuẩn Video Studio 1080p">
-                        🛡️ Đã thẩm định bởi kiemdinh@edustudio.edu.vn
+                        🛡️ Đã đối soát bởi kiemdinh@edustudio.edu.vn
                     </div>
                     <div class="video-thumb-container btn-play-video-card" data-id="${video.id}">
                         <span style="font-size: 2.5rem;">▶</span>
@@ -2487,8 +2654,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         container.innerHTML = this.pptRepo.map(item => `
             <div class="ppt-card card-verified-container">
-                <div class="badge-audit-verified-corner" title="Đã thẩm định chuẩn Sư phạm bởi Ban Biên Tập EduStudio">
-                    🛡️ Đã thẩm định bởi kiemdinh@edustudio.edu.vn
+                <div class="badge-audit-verified-corner" title="Đã đối soát chuẩn Sư phạm bởi Ban Biên Tập EduStudio">
+                    🛡️ Đã đối soát bởi kiemdinh@edustudio.edu.vn
                 </div>
                 <div class="ppt-thumbnail-mock" style="background: ${item.gradient || 'linear-gradient(135deg, #1d4ed8, #2563eb)'};">
                     <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">${item.badge || '📊'}</span>
@@ -3335,7 +3502,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         this.rawStagingFiles.forEach(file => {
             let statusBadge = '';
             if (file.status === 'pending') {
-                statusBadge = `<span class="badge-audit badge-audit-pending">⏳ Chờ AI Thẩm Định</span>`;
+                statusBadge = `<span class="badge-audit badge-audit-pending">⏳ Chờ AI Đối Soát</span>`;
             } else if (file.status === 'approved') {
                 statusBadge = `<span class="badge-audit badge-audit-approved">✅ Đạt Chuẩn (${file.auditScore}/100)</span>`;
             } else if (file.status === 'dispatched') {
@@ -3381,7 +3548,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                         <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
                             ${file.status === 'pending' ? `
                                 <button class="btn-mini-action btn-audit-single" data-id="${file.id}" style="background:#2563eb; color:#ffffff; border:none; font-size:0.75rem;">
-                                    <span>🤖</span> <span>AI Thẩm Định</span>
+                                    <span>🤖</span> <span>AI Đối Soát</span>
                                 </button>
                             ` : ''}
 
@@ -3442,7 +3609,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
     }
 
-    // AI Thẩm định 1 tài liệu
+    // AI Đối soát 1 tài liệu
     runAIAudit(fileId) {
         const file = this.rawStagingFiles.find(f => f.id === fileId);
         if (!file) return;
@@ -3471,7 +3638,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         alert(`🤖 [AI THẨM ĐỊNH HOÀN TẤT]\nHồ sơ: ${file.id} - ${file.title}\nĐiểm chuẩn hóa: ${randomScore}/100\nKết luận: ĐẠT CHUẨN SƯ PHẠM! Thầy có thể mở Báo Cáo hoặc Duyệt vào kho ngay.`);
     }
 
-    // AI Thẩm định toàn bộ các file pending
+    // AI Đối soát toàn bộ các file pending
     runAllAIAudits() {
         const pendings = this.rawStagingFiles.filter(f => f.status === 'pending');
         if (pendings.length === 0) {
@@ -3613,7 +3780,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     openAuditReportModal(fileId) {
         const file = this.rawStagingFiles.find(f => f.id === fileId);
         if (!file || !file.auditReport) {
-            alert("Hồ sơ này chưa có báo cáo thẩm định của AI!");
+            alert("Hồ sơ này chưa có báo cáo đối soát của AI!");
             return;
         }
 
@@ -3719,7 +3886,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         sound.playFanfare();
     }
 
-    // Xuất nhật ký thẩm định ra CSV
+    // Xuất nhật ký đối soát ra CSV
     exportAuditLogCSV() {
         sound.playClick();
         let csv = '\uFEFFMã Hồ Sơ,Tên Tài Liệu,Kho Tiếp Nhận,Khối Lớp,Môn Học,Tác Giả,Đơn Vị,Liên Hệ,Ngày Gửi,Trạng Thái,Điểm AI,Hạn Lưu Trữ\n';
@@ -3869,7 +4036,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         document.getElementById('formUploadResource')?.reset();
 
         sound.playFanfare();
-        alert(`🎉 [TẢI LÊN THÀNH CÔNG!]\nTài nguyên "${title}" đã được lưu tạm vào thư mục "01_DU_LIEU_THO" trên Google Drive 5TB.\n- Mã hồ sơ: ${newId}\n- Trách nhiệm tác giả: ${authorName} (Định danh: ${contact})\n- Điểm cống hiến: +5 điểm (Tổng: ${this.currentUser.points} điểm)\n- Trạng thái: Đang chờ AI Thẩm Định tự động thay Admin (Tài liệu sai chuẩn sẽ tự xóa sau 10 ngày).`);
+        alert(`🎉 [TẢI LÊN THÀNH CÔNG!]\nTài nguyên "${title}" đã được lưu tạm vào thư mục "01_DU_LIEU_THO" trên Google Drive 5TB.\n- Mã hồ sơ: ${newId}\n- Trách nhiệm tác giả: ${authorName} (Định danh: ${contact})\n- Điểm cống hiến: +5 điểm (Tổng: ${this.currentUser.points} điểm)\n- Trạng thái: Đang chờ AI Đối Soát tự động thay Admin (Tài liệu sai chuẩn sẽ tự xóa sau 10 ngày).`);
     }
 
     // =========================================================================
@@ -7229,10 +7396,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
 
         document.getElementById('btnTabExamAudit')?.addEventListener('click', () => {
-            // PHÂN QUYỀN: Chỉ Nhóm 1 (Admin) và Nhóm 2 (VIP PRO) mới có quyền Thẩm định đề
+            // PHÂN QUYỀN: Chỉ Nhóm 1 (Admin) và Nhóm 2 (VIP PRO) mới có quyền Đối soát đề
             if (!this.isVIPPro()) {
                 sound.playWrong();
-                alert("💎 [YÊU CẦU THÀNH VIÊN VIP PRO]\n\nChức năng 'Kiểm Tra & Thẩm Định Đề (AI Đối Chiếu PPCT & Ma Trận BGD)' là đặc quyền chuyên sâu dành riêng cho Nhóm 2: THÀNH VIÊN VIP PRO (hoặc Quản Trị Viên)!\n\nThành viên VIP và Thành viên thường có thể sử dụng chức năng Tạo Đề Kiểm Tra Mới thông thường.");
+                alert("💎 [YÊU CẦU THÀNH VIÊN VIP PRO]\n\nChức năng 'Kiểm Tra & Đối Soát Đề (AI Đối Chiếu PPCT & Ma Trận BGD)' là đặc quyền chuyên sâu dành riêng cho Nhóm 2: THÀNH VIÊN VIP PRO (hoặc Quản Trị Viên)!\n\nThành viên VIP và Thành viên thường có thể sử dụng chức năng Tạo Đề Kiểm Tra Mới thông thường.");
                 this.openModal('membershipUpgradeModal');
                 return;
             }
@@ -7455,7 +7622,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                     </tr>
                 </table>
                 <div class="title">BỘ CÂU HỎI ĐƯỢC TRÍCH XUẤT TỪ KHO ĐỀ EDUSTUDIO</div>
-                <div class="sub-title">(Tổng cộng: ${filtered.length} câu hỏi đã qua thẩm định ma trận năng lực)</div>`;
+                <div class="sub-title">(Tổng cộng: ${filtered.length} câu hỏi đã qua đối soát ma trận năng lực)</div>`;
 
                 filtered.forEach((q, idx) => {
                     docContent += `<div class="q-stem">Câu ${idx + 1} (${q.competencyText || 'Nhận biết'}): ${q.stem || 'Nội dung câu hỏi...'}</div>`;
@@ -7862,7 +8029,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
             sound.playFanfare();
             closeMembershipModal();
-            alert(`🎉 CHÚC MỪNG THẦY NGUYỄN TÁ QUAN ĐÃ KÍCH HOẠT THÀNH CÔNG GÓI VIP PRO TRẢI NGHIỆM!\n\n• Nhà giáo: ${name}\n• Đơn vị: ${school}\n• Quyền lợi mở khóa:\n  - Khai thác AI Ngoài Kho Đề không giới hạn\n  - AI Thẩm định đối chiếu PPCT tự động\n  - Lưu trữ 5TB Đám mây EduStudio\n\nToàn bộ tính năng cao cấp đã sẵn sàng phục vụ Thầy!`);
+            alert(`🎉 CHÚC MỪNG THẦY NGUYỄN TÁ QUAN ĐÃ KÍCH HOẠT THÀNH CÔNG GÓI VIP PRO TRẢI NGHIỆM!\n\n• Nhà giáo: ${name}\n• Đơn vị: ${school}\n• Quyền lợi mở khóa:\n  - Khai thác AI Ngoài Kho Đề không giới hạn\n  - AI Đối soát đối chiếu PPCT tự động\n  - Lưu trữ 5TB Đám mây EduStudio\n\nToàn bộ tính năng cao cấp đã sẵn sàng phục vụ Thầy!`);
 
             // Nếu đang mở form tạo đề thì cập nhật lại trạng thái
             updateSourceWarning('external');
@@ -8433,7 +8600,7 @@ D. Nói xấu sau lưng bạn với những người khác
             { id: "TX9081", userName: "Thầy Lê Văn Hùng", type: "Trừ lượt Demo", title: "Bộ Đề KT KHTN 8 (10 dạng)", amount: "-1 lượt Demo", time: "25 phút trước" },
             { id: "TX9080", userName: "Cô Nguyễn Thị Lan", type: "Thưởng Cống Hiến", title: "Đóng góp 12 Trò chơi Mầm Non", amount: "+100 🪙", time: "1 giờ trước" },
             { id: "TX9079", userName: "Cô Đỗ Hải Yến", type: "Tải KHBD Word", title: "Kế hoạch tuần Mầm Non Bé và Bác Hồ", amount: "-500 VNĐ", time: "2 giờ trước" },
-            { id: "TX9078", userName: "Thầy Vũ Quốc Tuấn", type: "Thưởng Cống Hiến", title: "Thẩm định Đề Tin học 8", amount: "+50 🪙", time: "3 giờ trước" }
+            { id: "TX9078", userName: "Thầy Vũ Quốc Tuấn", type: "Thưởng Cống Hiến", title: "Đối soát Đề Tin học 8", amount: "+50 🪙", time: "3 giờ trước" }
         ];
         try {
             localStorage.setItem('edustudio_micro_transactions', JSON.stringify(defaultTx));
@@ -10294,7 +10461,7 @@ function launchEduStudio() {
         try {
             window.app = new EduStudioApp();
             window.__appLoaded = true;
-            console.log("EduStudio v3.10.33 GDMN & GDPT Master đã khởi tạo thành công!");
+            console.log("EduStudio v3.10.34 GDMN & GDPT Master đã khởi tạo thành công!");
         } catch (err) {
             console.error("Lỗi khởi tạo EduStudio:", err);
         }

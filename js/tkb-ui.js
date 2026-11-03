@@ -776,12 +776,22 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         ];
 
         // 2. Lọc danh sách lớp hiển thị trên Bàn cờ tổng thể theo Bộ lọc Khối chuẩn xác 100% (GDMN & GDPT)
-        const displayClasses = (activeGrade === 'all')
+        let rawDisplayClasses = (activeGrade === 'all')
             ? classes
             : classes.filter(c => {
                 if (gradeGroups[activeGrade]) return gradeGroups[activeGrade].includes(c);
                 return c.startsWith(activeGrade);
             });
+
+        // Xử lý Ẩn/Hiện phân vùng Trái/Phải (Dành cho trường nhiều lớp)
+        let displayClasses = rawDisplayClasses;
+        if (this.masterPartition === 'left') {
+            const half = Math.ceil(rawDisplayClasses.length / 2);
+            displayClasses = rawDisplayClasses.slice(0, half);
+        } else if (this.masterPartition === 'right') {
+            const half = Math.ceil(rawDisplayClasses.length / 2);
+            displayClasses = rawDisplayClasses.slice(half);
+        }
 
         // Mật độ hiển thị bảng: MỞ RỘNG 100% CHIỀU NGANG, ÉP GỌN CHIỀU DỌC (Theo chỉ đạo của Thầy Quan)
         const density = this.masterDensity || 'compact';
@@ -931,6 +941,28 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                             ${this.masterHideTeacher ? '👨‍🏫 Xem Cả Tên GV' : '📖 Chỉ Xem Môn'}
                         </button>
                     </div>
+
+                    <!-- NHÓM 3: ĐIỀU HƯỚNG ẨN / HIỆN TRÁI / PHẢI CHO TRƯỜNG NHIỀU LỚP -->
+                    <div style="display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase; display: flex; align-items: center; gap: 0.2rem;">
+                            <span>↔️</span> <span>Lớp Trái / Phải:</span>
+                        </span>
+                        <button onclick="window.smartTKBUI.scrollMasterGrid('left')" title="Ẩn/Hiện cuộn sang các lớp bên Trái" style="padding: 0.22rem 0.55rem; font-size: 0.72rem; font-weight: 800; border-radius: 5px; cursor: pointer; transition: all 0.15s; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; display: flex; align-items: center; gap: 0.2rem;">
+                            <span>◀</span> <span>Ẩn/Hiện Trái</span>
+                        </button>
+                        <button onclick="window.smartTKBUI.showLeftHalfClasses()" title="Chỉ hiện các lớp phía bên Trái" style="padding: 0.22rem 0.5rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; cursor: pointer; transition: all 0.15s; background: ${this.masterPartition === 'left' ? '#1d4ed8' : '#ffffff'}; color: ${this.masterPartition === 'left' ? '#ffffff' : '#475569'}; border: 1px solid ${this.masterPartition === 'left' ? '#1d4ed8' : '#cbd5e1'}; font-weight: ${this.masterPartition === 'left' ? '800' : '600'};">
+                            Nửa Trái
+                        </button>
+                        <button onclick="window.smartTKBUI.showRightHalfClasses()" title="Chỉ hiện các lớp phía bên Phải" style="padding: 0.22rem 0.5rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; cursor: pointer; transition: all 0.15s; background: ${this.masterPartition === 'right' ? '#1d4ed8' : '#ffffff'}; color: ${this.masterPartition === 'right' ? '#ffffff' : '#475569'}; border: 1px solid ${this.masterPartition === 'right' ? '#1d4ed8' : '#cbd5e1'}; font-weight: ${this.masterPartition === 'right' ? '800' : '600'};">
+                            Nửa Phải
+                        </button>
+                        <button onclick="window.smartTKBUI.showAllClassesMaster()" title="Hiển thị toàn bộ tất cả các lớp" style="padding: 0.22rem 0.5rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; cursor: pointer; transition: all 0.15s; background: ${!this.masterPartition || this.masterPartition === 'all' ? '#1e293b' : '#ffffff'}; color: ${!this.masterPartition || this.masterPartition === 'all' ? '#ffffff' : '#475569'}; border: 1px solid #cbd5e1;">
+                            Tất Cả
+                        </button>
+                        <button onclick="window.smartTKBUI.scrollMasterGrid('right')" title="Ẩn/Hiện cuộn sang các lớp bên Phải" style="padding: 0.22rem 0.55rem; font-size: 0.72rem; font-weight: 800; border-radius: 5px; cursor: pointer; transition: all 0.15s; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; display: flex; align-items: center; gap: 0.2rem;">
+                            <span>Ẩn/Hiện Phải</span> <span>▶</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- BẢNG CHÚ GIẢI MÀU SẮC GIÁO VIÊN (HIỂN THỊ KHI ĐƯỢC BẬT) -->
@@ -956,12 +988,12 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 ` : ''}
 
                 <!-- BÀN CỜ TỔNG THỂ TRÀN 100% CHIỀU NGANG, ÉP GỌN CHIỀU DỌC ĐẸP MẮT -->
-                <div style="overflow-x: auto; width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); background: #ffffff;">
+                <div id="tkbMasterGridScrollContainer" style="overflow-x: auto; width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); background: #ffffff; scroll-behavior: smooth;">
                     <table class="tkb-table tkb-master-table" style="width: 100%; min-width: 860px; table-layout: fixed; margin: 0; border-collapse: collapse; font-size: ${subjectFontSize}; background: #ffffff; border: 1px solid #cbd5e1;">
                         <thead>
                             <tr style="background: #0f172a; color: #ffffff;">
-                                <th rowspan="2" style="width: ${colDayWidth}; text-align: center; border-right: 1px solid #334155; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800; background: #0f172a !important; color: #ffffff !important;">Thứ</th>
-                                <th rowspan="2" style="width: ${colPeriodWidth}; text-align: center; border-right: 2px solid #64748b; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800; background: #0f172a !important; color: #ffffff !important;">Tiết</th>
+                                <th rowspan="2" style="position: sticky; left: 0; z-index: 20; width: ${colDayWidth}; text-align: center; border-right: 1px solid #334155; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800; background: #0f172a !important; color: #ffffff !important;">Thứ</th>
+                                <th rowspan="2" style="position: sticky; left: ${colDayWidth}; z-index: 20; width: ${colPeriodWidth}; text-align: center; border-right: 2px solid #64748b; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800; background: #0f172a !important; color: #ffffff !important;">Tiết</th>
                                 ${dynamicTopHeadersHtml}
                             </tr>
                             <tr style="background: #f8fafc;">
@@ -996,7 +1028,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 // Cột Thứ gộp dòng (rowspan)
                 if (p === 0) {
                     html += `
-                        <td rowspan="${maxPeriods}" style="text-align: center; vertical-align: middle; font-weight: 800; background: #f8fafc; color: #0f172a; border-right: 1px solid #cbd5e1; border-bottom: 2px solid #94a3b8; font-size: ${headerFontSize}; padding: 3px 2px;">
+                        <td rowspan="${maxPeriods}" style="position: sticky; left: 0; z-index: 10; text-align: center; vertical-align: middle; font-weight: 800; background: #f8fafc !important; color: #0f172a; border-right: 1px solid #cbd5e1; border-bottom: 2px solid #94a3b8; font-size: ${headerFontSize}; padding: 3px 2px;">
                             ${dayName}
                         </td>
                     `;
@@ -1004,7 +1036,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
 
                 // Cột Tiết
                 html += `
-                    <td style="text-align: center; font-weight: 800; background: #f8fafc; color: #475569; border-right: 2px solid #94a3b8; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px 1px; font-size: ${headerFontSize};">
+                    <td style="position: sticky; left: ${colDayWidth}; z-index: 10; text-align: center; font-weight: 800; background: #f8fafc !important; color: #475569; border-right: 2px solid #94a3b8; border-bottom: ${p === maxPeriods - 1 ? '2px solid #94a3b8' : '1px solid #e2e8f0'}; padding: 3px 1px; font-size: ${headerFontSize};">
                         T${p + 1}
                     </td>
                 `;
@@ -1176,7 +1208,47 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         container.innerHTML = html;
     }
 
-    filterGradeView(grade) {
+/**
+     * ĐIỀU HƯỚNG ẨN / HIỆN VÀ CUỘN TRÁI / PHẢI TRONG TKB CHO TRƯỜNG NHIỀU LỚP
+     */
+    scrollMasterGrid(direction) {
+        const container = document.getElementById('tkbMasterGridScrollContainer');
+        if (!container) return;
+        const distance = 350;
+        if (direction === 'left') {
+            container.scrollBy({ left: -distance, behavior: 'smooth' });
+        } else {
+            container.scrollBy({ left: distance, behavior: 'smooth' });
+        }
+    }
+
+    showLeftHalfClasses() {
+        this.masterPartition = (this.masterPartition === 'left') ? 'all' : 'left';
+        this.renderCurrentView();
+        if (this.masterPartition === 'left') {
+            this.showToast('👈 Đang ẩn các lớp bên phải, chỉ hiển thị các lớp phía bên Trái');
+        } else {
+            this.showToast('👁️ Đã hiển thị lại toàn bộ các lớp');
+        }
+    }
+
+    showRightHalfClasses() {
+        this.masterPartition = (this.masterPartition === 'right') ? 'all' : 'right';
+        this.renderCurrentView();
+        if (this.masterPartition === 'right') {
+            this.showToast('👉 Đang ẩn các lớp bên trái, chỉ hiển thị các lớp phía bên Phải');
+        } else {
+            this.showToast('👁️ Đã hiển thị lại toàn bộ các lớp');
+        }
+    }
+
+    showAllClassesMaster() {
+        this.masterPartition = 'all';
+        this.renderCurrentView();
+        this.showToast('👁️ Đã hiển thị toàn bộ tất cả các lớp');
+    }
+
+        filterGradeView(grade) {
         this.gradeFilter = grade;
         const container = document.getElementById('tkbGridTableContainer');
         if (container && this.currentViewMode === 'school') {

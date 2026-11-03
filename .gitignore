@@ -9,8 +9,19 @@ gemini_config.json
 *.tmp
 __pycache__/
 *.pyc
+*.png
+!assets/**/*.png
+!icons/**/*.png
+patch_*.py
+add_*.py
+apply_*.py
+bump_*.py
+update_*.py
+take_*.py
+get_*.py
 
 # Dữ liệu nội bộ và cấu hình kiểm thử tạm
+js/*.py
 check_*.py
 test_*.py
 inspect_*.py

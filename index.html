@@ -101,7 +101,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.33 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.34 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -152,7 +152,7 @@
                             }
                             var zone = document.getElementById('bannerAuthZone');
                             if (zone && u && u.isLoggedIn) {
-                                zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span><span class="role-badge-admin">👑 Nhóm 1: Quản Trị</span></div><div class="banner-user-points"><span>🪙 ' + (u.points || 125) + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">• Gói Demo: ∞</span></div></div></div>';
+                                zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span><span class="role-badge-admin">👑 Nhóm 1: Quản Trị</span></div><div class="banner-user-points"><span>🪙 ' + (u.points || 125) + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">• Gói Demo: ∞</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button><button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web">🔍</button></div>';
                             }
                         } catch(err) {}
                     })();
@@ -260,10 +260,10 @@
                 <span class="label">Soạn KHBD</span>
             </button>
 
-            <!-- 3. Tạo & Thẩm Định Đề Kiểm Tra -->
-            <button class="btn-tool-slim" data-tool="tool-exam" title="Tạo đề chuẩn GDPT & Thẩm định đối chiếu PPCT">
+            <!-- 3. Tạo & Đối Soát Đề Kiểm Tra -->
+            <button class="btn-tool-slim" data-tool="tool-exam" title="Tạo đề chuẩn GDPT & Đối soát ma trận, đối chiếu PPCT">
                 <span class="icon">📝</span>
-                <span class="label">Tạo & Thẩm Đề</span>
+                <span class="label">Tạo & Đối Soát Đề</span>
             </button>
 
             <!-- 4. Tạo Video & Media Studio Sư Phạm -->
@@ -958,7 +958,7 @@
                                 <span>📤</span> <span>Tải Lên Đề Kiểm Tra</span>
                             </button>
                             <button id="btnJumpToExamStudio" class="btn-create-game-prominent" style="background: linear-gradient(135deg, #1d4ed8, #2563eb);">
-                                <span>➕</span> <span>Xưởng Tạo & Thẩm Đề</span>
+                                <span>➕</span> <span>Xưởng Tạo & Đối Soát Đề</span>
                             </button>
                             <button id="btnOpenIOModal" class="btn-mini-action" style="background:#eff6ff; color:#1d4ed8;">
                                 <span>🔄</span> <span>Nhập / Xuất Câu Hỏi</span>
@@ -1112,7 +1112,7 @@
                                 <span>📝</span> <span>1. Tạo Đề Kiểm Tra Mới (Chuẩn GDPT 2018)</span>
                             </button>
                             <button id="btnTabExamAudit" class="btn-exam-mode">
-                                <span>🔍</span> <span>2. Kiểm Tra & Thẩm Định Đề (AI Đối Chiếu PPCT)</span>
+                                <span>🔍</span> <span>2. Kiểm Tra & Đối Soát Đề (AI Đối Chiếu PPCT)</span>
                             </button>
                         </div>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -1346,7 +1346,7 @@
 
                                 <div class="form-group-clean">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
-                                        <label style="font-weight: 700; color: #1e293b;">1. Đề Kiểm Tra Cần Thẩm Định:</label>
+                                        <label style="font-weight: 700; color: #1e293b;">1. Đề Kiểm Tra Cần Đối Soát:</label>
                                         <button id="btnLoadExamToAudit" class="btn-mini-action" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">
                                             <span>📥</span> <span>Nhập Đề</span>
                                         </button>
@@ -1372,14 +1372,14 @@
                             <!-- CỘT PHẢI: BÁO CÁO THẨM ĐỊNH SƯ PHẠM CHUYÊN SÂU -->
                             <div class="card-white">
                                 <div class="card-white-header">
-                                    <h3><span>📊</span> Kết Quả Thẩm Định & Đối Chiếu Sư Phạm</h3>
+                                    <h3><span>📊</span> Kết Quả Đối Soát & Đối Chiếu Sư Phạm</h3>
                                     <span id="auditBadgeStatus" class="badge-tag-tiny" style="background:#e0f2fe; color:#0369a1;">Chờ kiểm tra</span>
                                 </div>
 
                                 <div id="auditReportOutput" class="audit-report-zone">
                                     <div style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
                                         <span style="font-size: 2.2rem; display: block; margin-bottom: 0.5rem;">⚖️</span>
-                                        <p style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Hệ thống AI Thẩm Định Sư Phạm sẵn sàng</p>
+                                        <p style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Hệ thống AI Đối Soát Sư Phạm sẵn sàng</p>
                                         <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.2rem;">
                                             Bấm <em>"Bắt đầu kiểm tra & đối chiếu sư phạm"</em> để AI tự động quét đối chiếu đề với PPCT, rà soát lỗi trùng lặp và tính chuẩn xác của ma trận điểm 10.
                                         </p>
@@ -1948,7 +1948,7 @@
                             </div>
                             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                                 <span class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">
-                                    Phiên bản: v3.10.33 GDMN & GDPT
+                                    Phiên bản: v3.10.34 GDMN & GDPT
                                 </span>
                             </div>
                         </div>
@@ -1959,13 +1959,16 @@
                                 <span>👥</span> <span>Quản Trị Quản Lý Tài Khoản (Quản lý TK)</span>
                             </button>
                             <button class="admin-subnav-btn" data-subpane="storage">
-                                <span>📁</span> <span>Kho Dữ Liệu 5TB & Trạm AI Thẩm Định</span>
+                                <span>📁</span> <span>Kho Dữ Liệu 5TB & Trạm AI Đối Soát</span>
                             </button>
                             <button class="admin-subnav-btn" data-subpane="ai-config">
                                 <span>⚡</span> <span>Cấu Hình Trí Tuệ AI Gemini & Cloud GPU</span>
                             </button>
                             <button class="admin-subnav-btn" data-subpane="pricing">
                                 <span>💳</span> <span>Quản Lý Gói Dịch Vụ & Kinh Tế Vi Mô (500đ / 10k)</span>
+                            </button>
+                            <button class="admin-subnav-btn" data-subpane="user-logs">
+                                <span>📜</span> <span>Nhật Ký Người Dùng & Hoạt Động</span>
                             </button>
                         </div>
                     </div>
@@ -2088,11 +2091,11 @@
                     <div class="card-white-header">
                         <div>
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <h3><span>📁</span> Bảng Quản Trị Kho 5TB & Trạm AI Thẩm Định</h3>
+                                <h3><span>📁</span> Bảng Quản Trị Kho 5TB & Trạm AI Đối Soát</h3>
                                 <span class="badge-tag-tiny" style="background:#059669; color:#ffffff;">Admin Only</span>
                             </div>
                             <p style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">
-                                Hệ sinh thái lưu trữ Google Drive 5TB (G:\My Drive\EduStudio_Data) tích hợp AI Thẩm định tự động & Phân bổ tài nguyên sư phạm.
+                                Hệ sinh thái lưu trữ Google Drive 5TB (G:\My Drive\EduStudio_Data) tích hợp AI Đối soát tự động & Phân bổ tài nguyên sư phạm.
                             </p>
                         </div>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -2132,11 +2135,11 @@
                                 <h4 style="color:#b45309;"><span>📥</span> 01_DU_LIEU_THO</h4>
                                 <span class="badge-tag-tiny" id="adminBadgeRawCount" style="background:#f59e0b; color:#ffffff;">5 File chờ duyệt</span>
                             </div>
-                            <p style="color:#78350f;">Vùng lưu tạm file thành viên đóng góp. <strong>AI tự động thẩm định & phân loại; file sai chuẩn tự hủy sau 10 ngày.</strong></p>
+                            <p style="color:#78350f;">Vùng lưu tạm file thành viên đóng góp. <strong>AI tự động đối soát & phân loại; file sai chuẩn tự hủy sau 10 ngày.</strong></p>
                         </div>
                         <div class="storage-folder-card">
                             <h4><span>📊</span> 02_KHO_PPT</h4>
-                            <p>Bài giảng 16:9 tương tác đã thẩm định (145.2 GB). Sẵn sàng đồng bộ cho giáo viên toàn quốc.</p>
+                            <p>Bài giảng 16:9 tương tác đã đối soát (145.2 GB). Sẵn sàng đồng bộ cho giáo viên toàn quốc.</p>
                         </div>
                         <div class="storage-folder-card">
                             <h4><span>🎮</span> 03_KHO_TRO_CHOI</h4>
@@ -2158,7 +2161,7 @@
                     <div class="card-white-header">
                         <div>
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <h3><span>🤖</span> Trạm AI Thẩm Định Sư Phạm & Quản Trị "DỮ LIỆU THÔ"</h3>
+                                <h3><span>🤖</span> Trạm AI Đối Soát Sư Phạm & Quản Trị "DỮ LIỆU THÔ"</h3>
                                 <span class="badge-tag-tiny" style="background:#3b82f6; color:#ffffff;">Gemini Edu-Audit AI</span>
                             </div>
                             <p style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">
@@ -2169,7 +2172,7 @@
                         <!-- THANH CÔNG CỤ NÚT LỆNH TIỆN ÍCH DÀNH CHO ADMIN -->
                         <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                             <button id="btnAdminRunAllAudit" class="btn-mini-action" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; border: none; font-weight: 700;">
-                                <span>🤖</span> <span>Kích Hoạt AI Thẩm Định Toàn Bộ</span>
+                                <span>🤖</span> <span>Kích Hoạt AI Đối Soát Toàn Bộ</span>
                             </button>
                             <button id="btnAdminAutoDispatch" class="btn-mini-action" style="background: #059669; color: #ffffff; border-color: #059669; font-weight: 700;">
                                 <span>⚡</span> <span>Duyệt & Phân Loại File Đạt Chuẩn</span>
@@ -2178,7 +2181,7 @@
                                 <span>🗑️</span> <span>Dọn Dẹp File Quá Hạn (>10 Ngày)</span>
                             </button>
                             <button id="btnAdminExportAuditLog" class="btn-mini-action" style="background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;">
-                                <span>📊</span> <span>Xuất Nhật Ký Thẩm Định (CSV)</span>
+                                <span>📊</span> <span>Xuất Nhật Ký Đối Soát (CSV)</span>
                             </button>
                             <button id="btnAdminRefreshStaging" class="btn-mini-action" style="background: #f8fafc; color: #475569;">
                                 <span>🔄</span> <span>Làm Mới</span>
@@ -2190,7 +2193,7 @@
                     <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.65rem 0.85rem; margin-bottom: 1rem; font-size: 0.75rem; color: #475569; display: flex; align-items: center; gap: 0.6rem;">
                         <span style="font-size: 1.1rem;">🛡️</span>
                         <div style="line-height: 1.4;">
-                            <strong>Quy chế lưu trữ an toàn 5TB:</strong> Mọi tài nguyên tải lên từ thành viên được lưu tạm trong thư mục <code>01_DU_LIEU_THO</code>. Khi AI Thẩm định phê duyệt (Điểm &ge; 80), tài liệu sẽ tự động chuyển vào 1 trong 4 kho chính thức và xuất hiện công khai trên Web. Các file không đạt chuẩn hoặc vi phạm bản quyền sẽ <strong>tự động xóa vĩnh viễn sau 10 ngày</strong> để tối ưu dung lượng cho Thầy.
+                            <strong>Quy chế lưu trữ an toàn 5TB:</strong> Mọi tài nguyên tải lên từ thành viên được lưu tạm trong thư mục <code>01_DU_LIEU_THO</code>. Khi AI Đối soát phê duyệt (Điểm &ge; 80), tài liệu sẽ tự động chuyển vào 1 trong 4 kho chính thức và xuất hiện công khai trên Web. Các file không đạt chuẩn hoặc vi phạm bản quyền sẽ <strong>tự động xóa vĩnh viễn sau 10 ngày</strong> để tối ưu dung lượng cho Thầy.
                         </div>
                     </div>
 
@@ -2203,7 +2206,7 @@
                                     <th>Tên Tài Liệu & Kho Dự Kiến</th>
                                     <th>Tác Giả & Trách Nhiệm</th>
                                     <th>Ngày Gửi & Hạn Lưu</th>
-                                    <th>Kết Quả AI Thẩm Định</th>
+                                    <th>Kết Quả AI Đối Soát</th>
                                     <th>Thao Tác Admin</th>
                                 </tr>
                             </thead>
@@ -2238,7 +2241,7 @@
                                         <input type="password" id="adminSystemGeminiKey" class="input-clean" value="AIzaSyEduStudioMasterKeySecret999" placeholder="Nhập API Key Gemini..." style="font-family: monospace;">
                                         <button type="button" id="btnToggleSystemKeyVisibility" class="btn-mini-action" style="background:#f1f5f9;">👁️</button>
                                     </div>
-                                    <span style="font-size: 0.7rem; color: #94a3b8;">Dùng cho thẩm định tài liệu Staging và hỗ trợ giáo viên mới chưa có key riêng.</span>
+                                    <span style="font-size: 0.7rem; color: #94a3b8;">Dùng cho đối soát tài liệu Staging và hỗ trợ giáo viên mới chưa có key riêng.</span>
                                 </div>
 
                                 <div class="form-group-clean">
@@ -2375,6 +2378,111 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- ==============================================================
+                         SUB-PANE 5: NHẬT KÝ NGƯỜI DÙNG & HOẠT ĐỘNG HỆ THỐNG (USER ACTIVITY LOGS)
+                         ============================================================== -->
+                    <div id="admin-subpane-user-logs" class="admin-subpane">
+                        <div class="card-white" style="margin-bottom: 1.25rem;">
+                            <div class="card-white-header">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <h3><span>📜</span> Bảng Nhật Ký Hoạt Động Người Dùng Toàn Hệ Thống</h3>
+                                        <span class="badge-tag-tiny" style="background:#059669; color:#ffffff;">Audit Trail Real-time</span>
+                                    </div>
+                                    <p style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">
+                                        Theo dõi toàn bộ lịch sử đăng nhập, xếp TKB, biên tập môn học, tạo đề kiểm tra, soạn KHBD và khai thác tài nguyên sư phạm.
+                                    </p>
+                                </div>
+                                <div style="display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;">
+                                    <button type="button" onclick="window.app && window.app.exportUserLogsCSV ? window.app.exportUserLogsCSV() : null" class="btn-mini-action" style="background:#059669; color:#ffffff; border:none; font-weight:700;">
+                                        <span>📥</span> <span>Xuất File CSV</span>
+                                    </button>
+                                    <button type="button" onclick="window.app && window.app.clearUserLogs ? window.app.clearUserLogs() : null" class="btn-mini-action" style="background:#fee2e2; color:#b91c1c; border:1px solid #fecaca; font-weight:700;">
+                                        <span>🗑️</span> <span>Xóa Lịch Sử</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 4 Thẻ KPI Hoạt Động -->
+                            <div class="admin-kpi-grid" style="margin-bottom: 1rem;">
+                                <div class="admin-kpi-card">
+                                    <div class="admin-kpi-icon" style="background: #eff6ff; color: #2563eb;">⚡</div>
+                                    <div class="admin-kpi-content">
+                                        <div class="admin-kpi-label">Tổng Lượt Hoạt Động</div>
+                                        <div class="admin-kpi-val" id="kpiLogTotal">1,428</div>
+                                        <div class="admin-kpi-desc">Ghi nhận từ hệ thống</div>
+                                    </div>
+                                </div>
+                                <div class="admin-kpi-card">
+                                    <div class="admin-kpi-icon" style="background: #f0fdf4; color: #16a34a;">🔑</div>
+                                    <div class="admin-kpi-content">
+                                        <div class="admin-kpi-label">Phiên Đăng Nhập SSO</div>
+                                        <div class="admin-kpi-val" id="kpiLogLogins">312</div>
+                                        <div class="admin-kpi-desc">100% Xác thực bảo mật</div>
+                                    </div>
+                                </div>
+                                <div class="admin-kpi-card">
+                                    <div class="admin-kpi-icon" style="background: #fefce8; color: #ca8a04;">📅</div>
+                                    <div class="admin-kpi-content">
+                                        <div class="admin-kpi-label">Thao Tác TKB & GDPT</div>
+                                        <div class="admin-kpi-val" id="kpiLogTKB">648</div>
+                                        <div class="admin-kpi-desc">Xếp AI, hoán đổi tiết, PCCM</div>
+                                    </div>
+                                </div>
+                                <div class="admin-kpi-card">
+                                    <div class="admin-kpi-icon" style="background: #faf5ff; color: #7c3aed;">📝</div>
+                                    <div class="admin-kpi-content">
+                                        <div class="admin-kpi-label">Tạo Đề & Soạn Bài</div>
+                                        <div class="admin-kpi-val" id="kpiLogExams">468</div>
+                                        <div class="admin-kpi-desc">KHBD 5512, Đề ma trận</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BỘ LỌC TÌM KIẾM NHẬT KÝ -->
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 0.85rem; margin-bottom: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                                    <input type="text" id="adminLogSearchInput" placeholder="Tìm theo tên Thầy Cô, hành động, module..." 
+                                           style="padding: 0.3rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.78rem; width: 260px;"
+                                           oninput="window.app && window.app.filterUserLogs && window.app.filterUserLogs()">
+                                    <select id="adminLogTypeFilter" style="padding: 0.3rem 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.78rem;"
+                                            onchange="window.app && window.app.filterUserLogs && window.app.filterUserLogs()">
+                                        <option value="all">Tất Cả Thao Tác</option>
+                                        <option value="tkb">Thời Khóa Biểu & PCCM</option>
+                                        <option value="auth">Đăng Nhập / Phiên Làm Việc</option>
+                                        <option value="exam">Tạo Đề & Đối Soát</option>
+                                        <option value="lesson">Soạn KHBD 5512</option>
+                                        <option value="export">Xuất Excel / Word</option>
+                                    </select>
+                                </div>
+                                <span style="font-size: 0.74rem; color: #64748b;" id="adminLogCountLabel">
+                                    Hiển thị toàn bộ nhật ký
+                                </span>
+                            </div>
+
+                            <!-- BẢNG NHẬT KÝ -->
+                            <div style="overflow-x: auto;">
+                                <table class="admin-data-table" style="font-size: 0.76rem; width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background: #f1f5f9; color: #475569;">
+                                            <th style="padding: 0.45rem; text-align: center; width: 40px;">STT</th>
+                                            <th style="padding: 0.45rem; text-align: left; width: 135px;">Thời Gian</th>
+                                            <th style="padding: 0.45rem; text-align: left; width: 175px;">Họ & Tên Người Dùng</th>
+                                            <th style="padding: 0.45rem; text-align: center; width: 95px;">Vai Trò</th>
+                                            <th style="padding: 0.45rem; text-align: left;">Thao Tác / Hoạt Động Chi Tiết</th>
+                                            <th style="padding: 0.45rem; text-align: center; width: 130px;">Phân Hệ</th>
+                                            <th style="padding: 0.45rem; text-align: center; width: 85px;">Trạng Thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminUserLogsTableBody">
+                                        <!-- Render động qua app.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
 
                 </div>
             </section>
@@ -3190,7 +3298,7 @@ window.openPCCMMonDirect = function() {
                             <span class="source-badge badge-offline">🟢 100% Nội bộ / Offline</span>
                         </div>
                         <p class="source-card-desc">
-                            Lấy 100% câu hỏi từ ngân hàng đề kiểm tra nội bộ đã được thẩm định chuẩn hóa của EduStudio. Hoạt động siêu tốc ngay cả khi không có kết nối Internet. Không phát sinh chi phí và không phụ thuộc dịch vụ ngoài.
+                            Lấy 100% câu hỏi từ ngân hàng đề kiểm tra nội bộ đã được đối soát chuẩn hóa của EduStudio. Hoạt động siêu tốc ngay cả khi không có kết nối Internet. Không phát sinh chi phí và không phụ thuộc dịch vụ ngoài.
                         </p>
                         <div class="source-card-extra">
                             <span style="color: #059669; font-weight: 700;">✓ Kho Đề sẵn sàng:</span> <span id="sourceInternalBankCount">Đang có câu hỏi phù hợp trong kho</span>
@@ -3296,7 +3404,7 @@ window.openPCCMMonDirect = function() {
                         <li><span>✓</span> <span>Chạy mượt mà PWA Offline không cần Internet</span></li>
                         <li><span>✓</span> <span>Xuất đề chuẩn .DOCX cơ bản</span></li>
                         <li style="color: #94a3b8;"><span>✗</span> <span>Không có quyền khai thác AI Ngoài Kho Đề</span></li>
-                        <li style="color: #94a3b8;"><span>✗</span> <span>Không tự động thẩm định đối chiếu PPCT</span></li>
+                        <li style="color: #94a3b8;"><span>✗</span> <span>Không tự động đối soát đối chiếu PPCT</span></li>
                     </ul>
                 </div>
 
@@ -3306,7 +3414,7 @@ window.openPCCMMonDirect = function() {
                     <div style="font-size: 1.1rem; font-weight: 800; color: #1d4ed8; margin-bottom: 0.5rem;">Trải Nghiệm Cốt Cán</div>
                     <ul class="plan-features-list">
                         <li><span style="color: #10b981; font-weight: 700;">✓</span> <strong>Mở khóa AI Ngoài Kho Đề không giới hạn</strong></li>
-                        <li><span style="color: #10b981; font-weight: 700;">✓</span> <strong>Trợ lý AI Thẩm định đối chiếu PPCT tự động</strong></li>
+                        <li><span style="color: #10b981; font-weight: 700;">✓</span> <strong>Trợ lý AI Đối soát đối chiếu PPCT tự động</strong></li>
                         <li><span style="color: #10b981; font-weight: 700;">✓</span> <strong>Xuất trọn gói Ma trận, Bản đặc tả, Đề, Đáp án .DOCX</strong></li>
                         <li><span style="color: #10b981; font-weight: 700;">✓</span> <strong>Lưu trữ 5TB riêng biệt trên Đám mây EduStudio</strong></li>
                         <li><span style="color: #10b981; font-weight: 700;">✓</span> <strong>Hỗ trợ kỹ thuật 1-1 từ Thầy Nguyễn Tá Quan</strong></li>
@@ -3660,7 +3768,7 @@ window.openPCCMMonDirect = function() {
                     <span style="font-size: 1.5rem;">📤</span>
                     <div>
                         <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">Đóng Góp Tài Nguyên Sư Phạm Vào Kho Dùng Chung</h3>
-                        <p style="font-size: 0.75rem; color: #64748b;">Lưu tạm vào thư mục <code>01_DU_LIEU_THO</code> trên Google Drive 5TB • AI tự động thẩm định thay Admin</p>
+                        <p style="font-size: 0.75rem; color: #64748b;">Lưu tạm vào thư mục <code>01_DU_LIEU_THO</code> trên Google Drive 5TB • AI tự động đối soát thay Admin</p>
                     </div>
                 </div>
                 <button id="btnCloseUploadModal" onclick="window.closeModal('uploadResourceModal')" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8;">✕</button>
@@ -3670,7 +3778,7 @@ window.openPCCMMonDirect = function() {
             <div style="background: #fef2f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.75rem; color: #991b1b; line-height: 1.45;">
                 <strong>⚠️ QUY CHẾ BẢO VỆ DUNG LƯỢNG 5TB & BẢN QUYỀN SƯ PHẠM:</strong><br>
                 - Để tránh tải file rác gây đầy bộ nhớ 5TB, Thầy/Cô vui lòng khai báo chính xác <strong>thông tin trách nhiệm cá nhân</strong>.<br>
-                - Toàn bộ file tải lên sẽ được <strong>AI tự động thẩm định chuyên sâu</strong> (Cấu trúc, Nội dung, Hình thức, tính chuẩn mực Sư phạm). Tài liệu đạt chuẩn sẽ tự động đưa vào kho chính thức.<br>
+                - Toàn bộ file tải lên sẽ được <strong>AI tự động đối soát chuyên sâu</strong> (Cấu trúc, Nội dung, Hình thức, tính chuẩn mực Sư phạm). Tài liệu đạt chuẩn sẽ tự động đưa vào kho chính thức.<br>
                 - <strong>Tài liệu không đạt chuẩn hoặc vi phạm bản quyền sẽ tự động xóa sau 10 ngày.</strong>
             </div>
 
@@ -3768,7 +3876,7 @@ window.openPCCMMonDirect = function() {
                 <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
                     <button type="button" id="btnCancelUploadModal" onclick="window.closeModal('uploadResourceModal')" class="btn-mini-action">Hủy Bỏ</button>
                     <button type="submit" id="btnSubmitResourceUpload" class="btn-mini-action" style="background: #1d4ed8; color: #ffffff; border-color: #1d4ed8; font-weight: 700; padding: 0.5rem 1.25rem;">
-                        <span>📤</span> <span>Gửi Vào Thư Mục DỮ LIỆU THÔ (Chờ AI Thẩm Định)</span>
+                        <span>📤</span> <span>Gửi Vào Thư Mục DỮ LIỆU THÔ (Chờ AI Đối Soát)</span>
                     </button>
                 </div>
             </form>
@@ -3785,8 +3893,8 @@ window.openPCCMMonDirect = function() {
                 <div style="display: flex; align-items: center; gap: 0.6rem;">
                     <span style="font-size: 1.5rem;">🤖</span>
                     <div>
-                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">Báo Cáo Thẩm Định Tự Động Chất Lượng Sư Phạm</h3>
-                        <p style="font-size: 0.75rem; color: #64748b;">Hệ thống AI Thẩm định độc lập thay Admin • Đạt chuẩn Bộ quy tắc vàng GEMINI.md</p>
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">Báo Cáo Đối Soát Tự Động Chất Lượng Sư Phạm</h3>
+                        <p style="font-size: 0.75rem; color: #64748b;">Hệ thống AI Đối soát độc lập thay Admin • Đạt chuẩn Bộ quy tắc vàng GEMINI.md</p>
                     </div>
                 </div>
                 <button id="btnCloseAuditReportModal" onclick="window.closeModal('aiAuditReportModal')" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8;">✕</button>
@@ -3816,7 +3924,7 @@ window.openPCCMMonDirect = function() {
         <span class="footer-dot-sep">•</span>
         <span>Định hướng & Bản quyền chuyên môn: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
         <span class="footer-dot-sep">•</span>
-        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.33 GDMN & GDPT</span>
+        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.34 GDMN & GDPT</span>
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->
@@ -4116,7 +4224,7 @@ window.openPCCMMonDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=3.10.33"></script>
+    <script type="module" src="js/app.js?v=3.10.34"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>

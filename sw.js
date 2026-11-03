@@ -1,7 +1,7 @@
-// EduStudio Service Worker (PWA Engine v3.10.33 GDMN & GDPT)
+// EduStudio Service Worker (PWA Engine v3.10.34 GDMN & GDPT)
 // Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
 
-const CACHE_NAME = "edustudio-pwa-v3.10.33";
+const CACHE_NAME = "edustudio-pwa-v3.10.34";
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
