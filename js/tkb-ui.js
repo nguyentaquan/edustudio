@@ -4,7 +4,7 @@
  * (HOÀN TOÀN TƯƠNG TÁC: CHỈNH SỬA TRỰC TIẾP, HOÁN ĐỔI 1 CHẠM, THÊM SỬA XÓA)
  * ==============================================================================
  * Tác giả & Chủ quản: Thầy Nguyễn Tá Quan
- * Bản quyền: Hệ sinh thái EduStudio v3.5.0 GDMN & GDPT
+ * Bản quyền: Hệ sinh thái EduStudio v3.10.32 GDMN & GDPT
  * ==============================================================================
  */
 

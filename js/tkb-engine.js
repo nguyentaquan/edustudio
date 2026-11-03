@@ -5,7 +5,7 @@ import { TEACHER_WORKLOAD_ROLES } from './teacher-workload-data.js';
  * THUẬT TOÁN AI CSP & ENGINE QUẢN LÝ DỮ LIỆU ĐA CHIỀU (LIVE EDITABLE)
  * ==============================================================================
  * Tác giả & Chủ quản: Thầy Nguyễn Tá Quan
- * Bản quyền: Hệ sinh thái EduStudio v3.5.0 GDMN & GDPT
+ * Bản quyền: Hệ sinh thái EduStudio v3.10.32 GDMN & GDPT
  * ==============================================================================
  */
 

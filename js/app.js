@@ -19,8 +19,16 @@ import { VideoStudioScaffold } from './studio/video_scaffold.js';
 import { SmartTKBUI } from './tkb-ui.js?v=3.10.32';
 
 class EduStudioApp {
+        syncVersionLabels() {
+        const label = 'v3.10.32 GDMN & GDPT';
+        document.querySelectorAll('.badge-version-gold, [data-version-badge]').forEach(el => {
+            el.textContent = label;
+        });
+    }
+
     constructor() {
-        this.currentTab = 'home';
+        this.syncVersionLabels();
+                this.currentTab = 'home';
         window.openModal = (id) => this.openModal(id);
         window.closeModal = (id) => this.closeModal(id);
         window.openGameCreatorModal = () => this.openGameCreatorModal();
@@ -1352,10 +1360,10 @@ class EduStudioApp {
         const tickerEl = document.getElementById('tickerText');
         if (!tickerEl) return;
         const messages = [
-            "Hệ thống EduStudio v3.5.0 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
+            "Hệ thống EduStudio v3.10.32 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
             "Cô Hoàng Mai vừa tạo bộ trò chơi 'Đoán Con Vật Mầm Non' tương tác trực quan",
             "Thầy Lê Hải vừa biên soạn đề kiểm tra Giữa kỳ I môn Toán 7 chuẩn 3 dạng TNKQ",
-            "Hệ thống EduStudio v3.5.0 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
+            "Hệ thống EduStudio v3.10.32 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
             "Xưởng Video Studio đã hoàn tất kịch bản Audio-Driven Lip-Sync 3D"
         ];
         let idx = 0;
@@ -10286,7 +10294,7 @@ function launchEduStudio() {
         try {
             window.app = new EduStudioApp();
             window.__appLoaded = true;
-            console.log("EduStudio v3.5.0 GDMN & GDPT Master đã khởi tạo thành công!");
+            console.log("EduStudio v3.10.32 GDMN & GDPT Master đã khởi tạo thành công!");
         } catch (err) {
             console.error("Lỗi khởi tạo EduStudio:", err);
         }
