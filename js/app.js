@@ -16,7 +16,7 @@ import { SpeedQuizGame } from './games/speed_quiz.js';
 import { GuessObjectGame } from './games/guess_object.js';
 import { QuestionImporter } from './studio/question_importer.js';
 import { VideoStudioScaffold } from './studio/video_scaffold.js';
-import { SmartTKBUI } from './tkb-ui.js?v=3.10.19';
+import { SmartTKBUI } from './tkb-ui.js?v=3.10.20';
 
 class EduStudioApp {
     constructor() {
@@ -1614,12 +1614,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     }
 
     checkAdminStorageVisibility() {
-        const tab5tb = document.getElementById('hNavTab5TB');
         const btnSidebarConfig = document.getElementById('btnSidebarAdminConfig');
         const isAdmin = this.isAdmin();
-        if (tab5tb) {
-            tab5tb.style.display = isAdmin ? 'inline-flex' : 'none';
-        }
         if (btnSidebarConfig) {
             btnSidebarConfig.style.display = isAdmin ? 'flex' : 'none';
         }
