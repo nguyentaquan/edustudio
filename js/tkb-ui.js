@@ -47,7 +47,24 @@ export class SmartTKBUI {
     }
 
     onSchoolYearChange(val) {
-        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {}
+
+    onSelectTeacherDirect(tName) {
+        this.selectedTeacher = tName;
+        const sel = document.getElementById('tkbTeacherSelect');
+        if (sel) sel.value = tName;
+        const container = document.getElementById('tkbGridTableContainer');
+        if (container) this.renderTeacherView(container);
+    }
+
+    setCustomTeacherPeriod(teacherName, val) {
+        if (!this.customTeacherPeriods) this.customTeacherPeriods = {};
+        this.customTeacherPeriods[teacherName] = val;
+        try {
+            localStorage.setItem('edustudio_custom_teacher_periods', JSON.stringify(this.customTeacherPeriods));
+        } catch(e){}
+    }
+;
         this.engine.schoolConfig.schoolYear = val;
         try { localStorage.setItem('edustudio_custom_school_year', val); } catch(e){}
         const modalInput = document.getElementById('declSchoolYear');
@@ -67,11 +84,18 @@ export class SmartTKBUI {
                 const inpName = document.getElementById('tkbGlobalSchoolNameInput');
                 if (inpName) inpName.value = savedName;
             }
-            const savedYear = localStorage.getItem('edustudio_custom_school_year');
+            
+            const savedPeriods = localStorage.getItem('edustudio_custom_teacher_periods');
+            if (savedPeriods) {
+                try { this.customTeacherPeriods = JSON.parse(savedPeriods); } catch(e){}
+            }
+const savedYear = localStorage.getItem('edustudio_custom_school_year');
             if (savedYear) {
                 if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
                 this.engine.schoolConfig.schoolYear = savedYear;
                 const inpYear = document.getElementById('tkbGlobalSchoolYearInput');
+                const selYear = document.getElementById('tkbGlobalSchoolYearSelect');
+                if (selYear) selYear.value = savedYear;
                 if (inpYear) inpYear.value = savedYear;
             }
         } catch(e){}
@@ -82,6 +106,16 @@ export class SmartTKBUI {
                 const subtab = e.currentTarget.dataset.subtab;
                 this.switchSubTab(subtab);
             });
+        });
+
+        // Gắn sự kiện 2 nút Khai Báo và PCCM để bảo đảm 100% luôn hoạt động
+        document.getElementById('btnOpenMasterDeclarationModal')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.openMasterDeclarationModal();
+        });
+        document.getElementById('btnOpenPCCMModal')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.openPCCMDetailModal();
         });
 
         // Gắn sự kiện các nút chính trên Header
@@ -349,23 +383,47 @@ export class SmartTKBUI {
             }
         }
 
-        const teacherAssign = this.engine.assignments.find(a => a.teacher === teacherName);
-        const deptName = teacherAssign?.department || 'Tổ Chuyên Môn';
+        // Danh sách Thầy Cô để tạo List chọn trực tiếp
+        const allTeachers = this.engine.teachers || [];
+        let teacherOptions = '';
+        allTeachers.forEach(t => {
+            const isSel = (t.name === teacherName) ? 'selected' : '';
+            teacherOptions += `<option value="${t.name}" ${isSel}>👨‍🏫 ${t.name}</option>`;
+        });
+
+        // Tổ chuyên môn tự động nhảy theo PCCM
+        const teacherObj = allTeachers.find(t => t.name === teacherName);
+        const teacherAssign = (this.engine.assignments || []).find(a => a.teacher === teacherName);
+        let deptName = teacherObj?.department || teacherAssign?.department;
+        if (!deptName) {
+            deptName = (teacherName.includes('Quan') || teacherName.includes('Minh') || teacherName.includes('Nhàn') || teacherName.includes('Hòa') || teacherName.includes('Tài')) ? 'Tổ Khoa Học Tự Nhiên' : 'Tổ Khoa Học Xã Hội';
+        }
         const isNatural = deptName.includes('Tự Nhiên');
 
+        // Số tiết tùy chỉnh cho phép tự nhập
+        const customPeriod = this.customTeacherPeriods?.[teacherName] ?? totalPeriods;
+
         let html = `
-            <div style="margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-                    <div style="font-weight: 800; font-size: 1.05rem; color: #1e293b;">
-                        👨‍🏫 Thời Khóa Biểu Giảng Dạy: <span style="color: #1d4ed8;">${teacherName}</span>
+            <div style="margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.65rem; background: #ffffff; padding: 0.65rem 0.95rem; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                <!-- Trái: List Chọn Giáo Viên & Tổ Chuyên Môn Tự Nhảy Theo PCCM -->
+                <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <span style="font-size: 0.82rem; font-weight: 800; color: #1e293b;">👨‍🏫 Thời Khóa Biểu Giáo Viên:</span>
+                        <select id="teacherViewDirectSelect" onchange="window.smartTKBUI.onSelectTeacherDirect(this.value)" style="padding: 0.22rem 0.55rem; font-size: 0.8rem; font-weight: 800; border: 1px solid #94a3b8; border-radius: 6px; color: #1d4ed8; background: #f8fafc; cursor: pointer; outline: none;">
+                            ${teacherOptions}
+                        </select>
                     </div>
-                    <span style="background: ${isNatural ? '#ecfdf5' : '#fdf2f8'}; color: ${isNatural ? '#065f46' : '#9d174d'}; padding: 0.2rem 0.65rem; border-radius: 20px; font-weight: 800; font-size: 0.75rem; border: 1px solid ${isNatural ? '#a7f3d0' : '#fbcfe8'};">
-                        🏢 ${deptName}
+                    <span style="background: ${isNatural ? '#ecfdf5' : '#fdf2f8'}; color: ${isNatural ? '#065f46' : '#9d174d'}; padding: 0.2rem 0.65rem; border-radius: 20px; font-weight: 800; font-size: 0.75rem; border: 1px solid ${isNatural ? '#a7f3d0' : '#fbcfe8'}; display: inline-flex; align-items: center; gap: 0.25rem;">
+                        🏢 <span>Tổ:</span> <strong>${deptName}</strong>
                     </span>
                 </div>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <div style="background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 700; font-size: 0.8rem; border: 1px solid #bfdbfe;">
-                        Tổng số tiết: <strong>${totalPeriods} tiết/tuần</strong>
+
+                <!-- Phải: Tổng Số Tiết / Tuần Tự Nhập & Kế Hoạch Giảng Dạy -->
+                <div style="display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;">
+                    <div style="background: #eff6ff; color: #1d4ed8; padding: 0.22rem 0.65rem; border-radius: 20px; font-weight: 700; font-size: 0.78rem; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 0.3rem;">
+                        <span>Tổng số tiết / Tuần:</span>
+                        <input type="number" value="${customPeriod}" min="0" max="40" style="width: 50px; padding: 0.1rem 0.25rem; border: 1px solid #93c5fd; border-radius: 4px; font-weight: 800; text-align: center; color: #1d4ed8; background: #ffffff; outline: none;" oninput="window.smartTKBUI.setCustomTeacherPeriod('${teacherName}', this.value)" title="Nhấp để tự nhập tổng số tiết/tuần">
+                        <span>tiết</span>
                     </div>
                     <button onclick="window.smartTKBUI.openTeachingScheduleModal('${teacherName}')" style="background: linear-gradient(135deg, #059669, #047857); color: #fff; border: none; padding: 0.35rem 0.85rem; border-radius: 20px; font-weight: 700; font-size: 0.78rem; cursor: pointer; box-shadow: 0 2px 6px rgba(5,150,105,0.3); display: inline-flex; align-items: center; gap: 0.35rem;">
                         <span>📋</span> <span>Lịch Báo Giảng Tuần (BGDĐT)</span>
@@ -601,40 +659,34 @@ export class SmartTKBUI {
             <!-- ================================================================= -->
             <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem;">
                 
-                <!-- HEADER & ACTION BUTTONS -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.75rem;">
+                <!-- HEADER & ACTION BUTTONS (GỌN GÀNG CÙNG 1 HÀNG) -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem; flex-wrap: wrap; gap: 0.65rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem;">
                     <div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-size: 1.3rem;">🏫</span>
-                            <h2 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a; text-transform: uppercase;">
-                                Bảng Tổng Thể Thời Khóa Biểu Toàn Trường (9 Lớp)
+                        <div style="display: flex; align-items: center; gap: 0.45rem;">
+                            <span style="font-size: 1.25rem;">🏫</span>
+                            <h2 style="margin: 0; font-size: 1.12rem; font-weight: 800; color: #0f172a; text-transform: uppercase;">
+                                Bảng Tổng Thể Thời Khóa Biểu Toàn Trường
                             </h2>
-                            <span style="background: #10b981; color: #fff; padding: 0.15rem 0.55rem; border-radius: 20px; font-size: 0.7rem; font-weight: 800;">
-                                KHÔNG DÙNG FILL COLOR • MỖI GV 1 MÀU CHỮ
-                            </span>
                         </div>
-                        <p style="margin: 0.25rem 0 0 0; font-size: 0.82rem; color: #64748b;">
-                            Trường THCS Bán Trú Canh Thuận • Áp dụng Tuần 9 đến Tuần 13 • Nền trắng tinh khiết, mỗi Thầy Cô một sắc màu chữ riêng biệt.
+                        <p style="margin: 0.15rem 0 0 0; font-size: 0.78rem; color: #64748b;">
+                            Trường THCS Bán Trú Canh Thuận • Áp dụng Tuần 9 đến Tuần 13
                         </p>
                     </div>
 
-                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                        <div style="display: inline-flex; gap: 0.25rem; background: #e2e8f0; padding: 0.2rem; border-radius: 8px; margin-right: 0.4rem;">
-                            <button class="btn-semester-pill" data-sem="HK1" onclick="window.smartTKBUI.setSemester('HK1')" style="padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: none; cursor: pointer; ${this.engine.currentSemester === 'HK1' ? 'background: #c2410c; color: #ffffff;' : 'background: #ffffff; color: #475569;'}">
-                                🍁 HK I (18 Tuần)
-                            </button>
-                            <button class="btn-semester-pill" data-sem="HK2" onclick="window.smartTKBUI.setSemester('HK2')" style="padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: none; cursor: pointer; ${this.engine.currentSemester === 'HK2' ? 'background: #059669; color: #ffffff;' : 'background: #ffffff; color: #475569;'}">
-                                🌸 HK II (17 Tuần)
-                            </button>
-                            <button class="btn-semester-pill" data-sem="YEAR" onclick="window.smartTKBUI.setSemester('YEAR')" style="padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: none; cursor: pointer; background: #ffffff; color: #4338ca;">
-                                📅 Quyết Toán Cả Năm
-                            </button>
+                    <div style="display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">📅 Học Kỳ:</span>
+                            <select id="tkbSchoolViewSemSelect" onchange="window.smartTKBUI.setSemester(this.value)" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;">
+                                <option value="HK1" ${this.engine.currentSemester === 'HK1' ? 'selected' : ''}>🍂 Học kỳ I</option>
+                                <option value="HK2" ${this.engine.currentSemester === 'HK2' ? 'selected' : ''}>🌱 Học kỳ II</option>
+                                <option value="YEAR" ${this.engine.currentSemester === 'YEAR' ? 'selected' : ''}>📊 Cả năm</option>
+                            </select>
                         </div>
-                        <button onclick="window.smartTKBUI.printTimetable()" style="background: #1e293b; color: #fff; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
-                            <span>🖨️</span> <span>In Bảng Tổng Thể A4</span>
+                        <button onclick="window.smartTKBUI.printTimetable()" style="background: #1e293b; color: #fff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
+                            <span>🖨️</span> <span>In A4</span>
                         </button>
-                        <button onclick="window.smartTKBUI.exportToExcel()" style="background: #059669; color: #fff; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
-                            <span>📥</span> <span>Xuất Excel (.csv)</span>
+                        <button onclick="window.smartTKBUI.exportMasterTKBPackage()" style="background: #059669; color: #fff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
+                            <span>📥</span> <span>Xuất Excel</span>
                         </button>
                     </div>
                 </div>

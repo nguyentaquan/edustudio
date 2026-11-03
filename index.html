@@ -7,7 +7,7 @@
     <meta name="description" content="Kho bài giảng PPT, Kho trò chơi, Kho đề và Kho video phục vụ cộng đồng giáo viên Việt Nam.">
     <!-- Xóa sạch Cache cũ & Hủy Service Worker ngay lập tức -->
     
-    <link rel="stylesheet" href="css/style.css?v=3.5.7">
+    <link rel="stylesheet" href="css/style.css?v=3.5.8">
     <link rel="stylesheet" href="css/tkb-styles.css?v=3.10.1">
     <meta name="theme-color" content="#1d4ed8">
     <link rel="manifest" href="manifest.json">
@@ -2462,20 +2462,14 @@
 
                                     <div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
 
-                                    <!-- Nhóm 2: Kế Hoạch Học Kỳ (Bỏ 595t ở nút Cả Năm) -->
-                                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <!-- Nhóm 2: Kế Hoạch Học Kỳ (Hộp thoại list chọn gọn gàng) -->
+                                    <div style="display: flex; align-items: center; gap: 0.3rem;">
                                         <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">📅 Học Kỳ:</span>
-                                        <div style="display: flex; gap: 0.2rem;">
-                                            <button id="btnSemHK1" class="btn-semester-pill active" data-sem="HK1" onclick="window.smartTKBUI.setSemester('HK1')" style="padding: 0.22rem 0.45rem; border-radius: 5px; font-size: 0.73rem; font-weight: 800; border: none; cursor: pointer; background: #c2410c; color: #ffffff;">
-                                                🍂 HK I (18t)
-                                            </button>
-                                            <button id="btnSemHK2" class="btn-semester-pill" data-sem="HK2" onclick="window.smartTKBUI.setSemester('HK2')" style="padding: 0.22rem 0.45rem; border-radius: 5px; font-size: 0.73rem; font-weight: 800; border: 1px solid #cbd5e1; cursor: pointer; background: #ffffff; color: #475569;">
-                                                🌱 HK II (17t)
-                                            </button>
-                                            <button id="btnSemYear" class="btn-semester-pill" data-sem="YEAR" onclick="window.smartTKBUI.setSemester('YEAR')" style="padding: 0.22rem 0.45rem; border-radius: 5px; font-size: 0.73rem; font-weight: 800; border: 1px solid #c7d2fe; cursor: pointer; background: #ffffff; color: #4338ca;" title="Xem kế hoạch cả năm 35 tuần">
-                                                📊 Cả Năm
-                                            </button>
-                                        </div>
+                                        <select id="tkbSemesterSelect" onchange="if(window.smartTKBUI) window.smartTKBUI.setSemester(this.value);" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;">
+                                            <option value="HK1" selected>🍂 Học kỳ I</option>
+                                            <option value="HK2">🌱 Học kỳ II</option>
+                                            <option value="YEAR">📊 Cả năm</option>
+                                        </select>
                                     </div>
 
                                     <div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
@@ -2490,11 +2484,13 @@
                                                title="Nhấp để nhập tên trường trực tiếp (tự lưu)">
                                         
                                         <span style="font-size: 0.72rem; font-weight: 800; color: #475569; margin-left: 0.15rem;">NH:</span>
-                                        <input type="text" id="tkbGlobalSchoolYearInput" value="2026 - 2027" 
-                                               style="padding: 0.2rem 0.45rem; font-size: 0.72rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; width: 92px; text-align: center; color: #1e293b; background: #ffffff; outline: none;" 
-                                               placeholder="2026 - 2027" 
-                                               oninput="if(window.smartTKBUI) window.smartTKBUI.onSchoolYearChange(this.value);"
-                                               title="Năm học (tự nhập)">
+                                        <select id="tkbGlobalSchoolYearSelect" onchange="if(window.smartTKBUI) window.smartTKBUI.onSchoolYearChange(this.value);" style="padding: 0.22rem 0.45rem; font-size: 0.73rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;" title="Chọn năm học">
+                                            <option value="2024 - 2025">2024 - 2025</option>
+                                            <option value="2025 - 2026">2025 - 2026</option>
+                                            <option value="2026 - 2027" selected>2026 - 2027</option>
+                                            <option value="2027 - 2028">2027 - 2028</option>
+                                            <option value="2028 - 2029">2028 - 2029</option>
+                                        </select>
                                     </div>
 
                                 </div>
@@ -2526,11 +2522,7 @@
                                             <select id="tkbRoomSelect" class="tkb-select-filter" style="display: none; padding: 0.2rem 0.45rem; font-size: 0.75rem; border-radius: 5px; font-weight: 700; color: #1e293b; background: #f8fafc; border: 1px solid #94a3b8;"></select>
                                         </div>
 
-                                        <div style="display: flex; align-items: center; gap: 0.2rem; margin-left: 0.25rem;">
-                                            <span style="font-size: 0.7rem; font-weight: 700; color: #64748b;">Màu:</span>
-                                            <button id="btnColorClean" class="btn-color-mode active" onclick="window.smartTKBUI.setColorMode('clean')" style="padding: 0.16rem 0.35rem; font-size: 0.65rem; border-radius: 4px; border: 1px solid #cbd5e1; background: #0f172a; color: #ffffff; cursor: pointer; font-weight: 700;">Dịu Mắt</button>
-                                            <button id="btnColorPastel" class="btn-color-mode" onclick="window.smartTKBUI.setColorMode('pastel')" style="padding: 0.16rem 0.35rem; font-size: 0.65rem; border-radius: 4px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer; font-weight: 700;">Pastel</button>
-                                        </div>
+                                        
                                     </div>
 
                                     <!-- Cụm Nút Thao Tác & Điều Hành TKB Trực Tiếp (ĐÃ LOẠI BỎ NÚT QUYẾT TOÁN 35T) -->
@@ -2544,8 +2536,8 @@
                                         <button id="btnTKBPrint" class="btn-tkb-action btn-tkb-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.74rem; border-radius: 6px;" title="In Thời khóa biểu chuẩn A4">
                                             <span>🖨️</span> <span>In A4</span>
                                         </button>
-                                        <button id="btnTKBExportExcel" class="btn-tkb-action btn-tkb-gold" style="padding: 0.25rem 0.5rem; font-size: 0.74rem; border-radius: 6px;" title="Xuất file CSV / Excel">
-                                            <span>📥</span> <span>Xuất CSV</span>
+                                        <button id="btnTKBExportExcel" class="btn-tkb-action btn-tkb-gold" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px;" title="Xuất toàn bộ Thời khóa biểu ra file Excel (.xlsx / .xls)">
+                                            <span>📥</span> <span>Xuất Excel</span>
                                         </button>
                                     </div>
 
@@ -4068,7 +4060,7 @@
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=3.10.6"></script>
+    <script type="module" src="js/app.js?v=3.10.7"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
