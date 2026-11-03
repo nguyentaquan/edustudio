@@ -8,7 +8,7 @@
     <!-- Xóa sạch Cache cũ & Hủy Service Worker ngay lập tức -->
     
     <link rel="stylesheet" href="css/style.css?v=3.5.5">
-    <link rel="stylesheet" href="css/tkb-styles.css?v=3.9.9">
+    <link rel="stylesheet" href="css/tkb-styles.css?v=3.10.0">
     <meta name="theme-color" content="#1d4ed8">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1d4ed8">
@@ -2401,7 +2401,7 @@
                         <div class="tkb-board-wrapper">
                             
                             <!-- Input ẩn phục vụ Nhập Lại Gói TKB Master JSON -->
-                            <input type="file" id="tkbMasterPackageInput" accept=".json" style="display: none;" onchange="window.smartTKBUI.handleMasterPackageFile(event)">
+                            <input type="file" id="tkbMasterPackageInput" accept=".xlsx,.xls,.json" style="display: none;" onchange="window.smartTKBUI.handleMasterPackageFile(event)">
 
                             <!-- ========================================================================= -->
                             <!-- KHUNG ĐIỀU HÀNH XẾP TKB TỔNG THỂ GDMN & GDPT (TÍCH HỢP PPCT, ƯU TIÊN & XUẤT NHẬP) -->
@@ -2464,13 +2464,13 @@
                                         </button>
 
                                         <!-- 3. Nút Xuất Mẫu TKB Master -->
-                                        <button onclick="window.smartTKBUI.exportMasterTKBPackage()" style="background: #059669; color: #ffffff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(5,150,105,0.25);" title="Xuất toàn bộ thông tin TKB, PPCT, Giáo viên, Ràng buộc thành file sao lưu JSON chuẩn">
-                                            <span>📤</span> <span>Xuất Mẫu TKB</span>
+                                        <button onclick="window.smartTKBUI.exportMasterTKBPackage()" style="background: #059669; color: #ffffff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(5,150,105,0.25);" title="Xuất toàn bộ thông tin TKB, PPCT, Giáo viên, Ràng buộc thành file Excel (.xlsx / .xls) chuẩn">
+                                            <span>📤</span> <span>Xuất Mẫu Excel (.xls)</span>
                                         </button>
 
                                         <!-- 4. Nút Nhập Lại TKB Master (Nhanh 1 chạm) -->
-                                        <button onclick="window.smartTKBUI.triggerMasterPackageImport()" style="background: #d97706; color: #ffffff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(217,119,6,0.25);" title="Nhập lại toàn bộ thông tin TKB từ file sao lưu JSON khi có thay đổi mới">
-                                            <span>📥</span> <span>Nhập Lại TKB</span>
+                                        <button onclick="window.smartTKBUI.triggerMasterPackageImport()" style="background: #d97706; color: #ffffff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(217,119,6,0.25);" title="Nhập lại toàn bộ thông tin TKB từ file Excel (.xlsx / .xls) khi có thay đổi mới">
+                                            <span>📥</span> <span>Nhập Lại Excel (.xls)</span>
                                         </button>
 
                                     </div>
@@ -4114,7 +4114,8 @@
     </script>
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
-    <script type="module" src="js/app.js?v=3.9.9"></script>
+    <script src="js/xlsx.full.min.js"></script>
+    <script type="module" src="js/app.js?v=3.10.0"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>

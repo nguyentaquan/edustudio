@@ -1,7 +1,7 @@
 // EduStudio Service Worker (PWA Engine v3.5.0 GDMN & GDPT)
 // Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
 
-const CACHE_NAME = 'edustudio-pwa-v3.9.9-master-declaration-modal';
+const CACHE_NAME = 'edustudio-pwa-v3.10.0-excel-xls-master';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -12,6 +12,7 @@ const ASSETS_TO_CACHE = [
   '/js/tkb-engine.js',
   '/js/canh-thuan-tkb-data.js',
   '/js/tkb-ui.js',
+  '/js/xlsx.full.min.js',
   '/assets/icon-192.png',
   '/assets/icon-512.png',
   '/assets/apple-touch-icon.png',

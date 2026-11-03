@@ -2785,26 +2785,134 @@ setPCCMFilter(filterName) {
      * XUẤT TOÀN BỘ GÓI THÔNG TIN TKB MASTER (.JSON)
      * Đầy đủ 100%: Cấu hình trường, PPCT, Giáo viên, Lớp, Ràng buộc ưu tiên & TKB
      */
+    
+    /**
+     * XUẤT TOÀN BỘ GÓI DỮ LIỆU TKB MASTER DƯỚI ĐỊNH DẠNG FILE EXCEL (.XLSX / .XLS)
+     * Đầy đủ 5 Sheets: THONG_TIN_TRUONG, KHUNG_PPCT_MON_HOC, PHAN_CONG_CHUYEN_MON, UU_TIEN_SU_PHAM, THOI_KHOA_BIEU
+     * Mọi giáo viên đều có thể mở, xem và chỉnh sửa dễ dàng trên Microsoft Excel!
+     */
     exportMasterTKBPackage() {
-        const jsonStr = this.engine.exportJSON();
-        const schoolName = (this.engine.schoolConfig.schoolName || 'EDUSTUDIO_TKB').replace(/\s+/g, '_');
-        const year = (this.engine.schoolConfig.academicYear || '2026-2027').replace(/\s+/g, '');
-        const filename = `${schoolName}_GOI_TKB_MASTER_${year}.json`;
+        if (typeof XLSX === 'undefined') {
+            this.showToast('⚠️ Thư viện Excel đang nạp, vui lòng thử lại sau giây lát!');
+            return;
+        }
 
-        const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const sc = this.engine.schoolConfig || {};
+        const prio = this.engine.pedagogicalPriorities || {};
+        const subjects = this.engine.subjects || [];
+        const rooms = this.engine.specialRooms || [];
+        const assignments = this.engine.assignments || [];
+        const timetable = this.engine.timetable || {};
 
-        this.showToast(`📤 Đã xuất gói dữ liệu TKB Master [${filename}] an toàn thành công!`);
+        const wb = XLSX.utils.book_new();
+
+        // 1. SHEET: THONG_TIN_TRUONG
+        const schoolRows = [
+            ["MÃ THAM SỐ", "GIÁ TRỊ KHAI BÁO", "HƯỚNG DẪN & Ý NGHĨA SƯ PHẠM"],
+            ["TenTruong", sc.schoolName || "Trường THCS Bán Trú Canh Thuận", "Tên chính thức của cơ sở giáo dục"],
+            ["CapHoc", sc.educationalTier || "THCS", "Cấp học: GDMN / TIEU_HOC / THCS / THPT / LIEN_CAP"],
+            ["MoHinh", sc.schoolModel || "BAN_TRU", "Mô hình: BAN_TRU / CONG_LAP / HAI_BUOI / NOI_TRU / TU_THUC"],
+            ["NamHoc", sc.academicYear || "2026 - 2027", "Năm học áp dụng thời khóa biểu"],
+            ["HocKy", sc.semester || "Học kỳ I", "Học kỳ áp dụng"],
+            ["DinhMucChuan", sc.standardPeriodsPerWeek || 17, "Định mức tiết chuẩn/tuần theo Thông tư 28/2009 & 15/2017"],
+            ["SoTuanKeHoach", sc.totalWeeks || 35, "Kế hoạch số tuần thực dạy cả năm"],
+            ["CaHoc", sc.session || "Sáng (5 tiết/buổi)", "Khung giờ và ca học giảng dạy"],
+            ["NgayXuat", new Date().toLocaleString('vi-VN'), "Thời điểm xuất bản hồ sơ Excel"]
+        ];
+        const wsSchool = XLSX.utils.aoa_to_sheet(schoolRows);
+        XLSX.utils.book_append_sheet(wb, wsSchool, "THONG_TIN_TRUONG");
+
+        // 2. SHEET: KHUNG_PPCT_MON_HOC
+        const ppctRows = [
+            ["STT", "MÃ MÔN", "TÊN MÔN HỌC (BỘ MÔN)", "SỐ TIẾT/TUẦN", "TIẾT KÉP (2 TIẾT LIỀN)", "MÃ PHÒNG BỘ MÔN YÊU CẦU", "GHI CHÚ QUY ĐỊNH BGDĐT"]
+        ];
+        subjects.forEach((s, idx) => {
+            ppctRows.push([
+                idx + 1,
+                s.id,
+                s.name,
+                s.periodsPerWeek,
+                s.doublePeriod ? "TRUE" : "FALSE",
+                s.roomReq || "",
+                "Chuẩn GDPT 2018 / GDMN"
+            ]);
+        });
+        const wsPPCT = XLSX.utils.aoa_to_sheet(ppctRows);
+        XLSX.utils.book_append_sheet(wb, wsPPCT, "KHUNG_PPCT_MON_HOC");
+
+        // 3. SHEET: PHAN_CONG_CHUYEN_MON
+        const pccmRows = [
+            ["STT", "HỌ VÀ TÊN GIÁO VIÊN", "TỔ CHUYÊN MÔN", "MÔN PHỤ TRÁCH", "LỚP GIẢNG DẠY", "SỐ TIẾT/TUẦN", "NHIỆM VỤ KIÊM NHIỆM", "TIẾT GIẢM", "ĐỊNH MỨC NGHĨA VỤ"]
+        ];
+        let pccmIdx = 1;
+        assignments.forEach(a => {
+            const standard = (sc.schoolModel === 'BAN_TRU' ? 17 : 19);
+            pccmRows.push([
+                pccmIdx++,
+                a.teacher,
+                a.department || "Tổ Bộ Môn",
+                a.subject,
+                a.classId,
+                a.periodsPerWeek,
+                a.role || "",
+                a.reducedPeriods || 0,
+                standard
+            ]);
+        });
+        const wsPCCM = XLSX.utils.aoa_to_sheet(pccmRows);
+        XLSX.utils.book_append_sheet(wb, wsPCCM, "PHAN_CONG_CHUYEN_MON");
+
+        // 4. SHEET: UU_TIEN_SU_PHAM
+        const prioRows = [
+            ["MÃ QUY TẮC ƯU TIÊN", "TRẠNG THÁI (TRUE/FALSE)", "DIỄN GIẢI QUY CHUẨN SƯ PHẠM & NHÂN VĂN"],
+            ["GVCN_Nghi_2_Buoi_Tuan", prio.gvcnOffDays !== false ? "TRUE" : "FALSE", "Giáo viên chủ nhiệm được ưu tiên nghỉ 2 buổi/tuần để đi cơ sở, thăm học sinh bán trú/nội trú"],
+            ["Khong_TheDuc_Tiet_4_5", prio.noPEPeriod45 !== false ? "TRUE" : "FALSE", "Tuyệt đối không xếp Thể dục (GDTC) vào tiết 4-5 giữa trưa nắng gắt"],
+            ["ToiDa_4_Tiet_Ngay", prio.maxPeriodsPerDay !== 5 ? "TRUE" : "FALSE", "Giới hạn tối đa 4 tiết dạy mỗi ngày cho mỗi giáo viên"],
+            ["UuTien_TietDoi_KHTN_Van", prio.preferDoublePeriods !== false ? "TRUE" : "FALSE", "Ưu tiên ghép tiết đôi (2 tiết liền) cho môn KHTN và Ngữ văn"],
+            ["Tranh_Trung_GV_100", "TRUE", "Khóa cứng chống trùng tiết dạy giáo viên tuyệt đối 100%"]
+        ];
+        const wsPrio = XLSX.utils.aoa_to_sheet(prioRows);
+        XLSX.utils.book_append_sheet(wb, wsPrio, "UU_TIEN_SU_PHAM");
+
+        // 5. SHEET: THOI_KHOA_BIEU
+        const tkbRows = [
+            ["LỚP", "THỨ TRONG TUẦN", "TIẾT HỌC", "MÔN HỌC", "GIÁO VIÊN GIẢNG DẠY", "PHÒNG HỌC BỘ MÔN", "TIẾT CỐ ĐỊNH (TRUE/FALSE)"]
+        ];
+        const dayNames = this.engine.DAYS || ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+        this.engine.classes.forEach(cls => {
+            if (timetable[cls]) {
+                for (let d = 0; d < dayNames.length; d++) {
+                    for (let p = 0; p < 5; p++) {
+                        const cell = timetable[cls][d] ? timetable[cls][d][p] : null;
+                        if (cell) {
+                            tkbRows.push([
+                                cls,
+                                dayNames[d],
+                                `Tiết ${p + 1}`,
+                                cell.subject || "",
+                                cell.teacher || "",
+                                cell.room || "",
+                                cell.isFixed ? "TRUE" : "FALSE"
+                            ]);
+                        }
+                    }
+                }
+            }
+        });
+        const wsTKB = XLSX.utils.aoa_to_sheet(tkbRows);
+        XLSX.utils.book_append_sheet(wb, wsTKB, "THOI_KHOA_BIEU");
+
+        // Tải file Excel .xlsx (chuẩn Excel)
+        const cleanSchoolName = (sc.schoolName || 'EDUSTUDIO_TKB').replace(/\s+/g, '_');
+        const cleanYear = (sc.academicYear || '2026-2027').replace(/\s+/g, '');
+        const filename = `${cleanSchoolName}_MAU_TKB_MASTER_${cleanYear}.xlsx`;
+
+        XLSX.writeFile(wb, filename);
+        this.showToast(`📊 Đã xuất file Excel Mẫu TKB Master [${filename}] đầy đủ 5 Sheets thành công!`);
     }
 
     /**
-     * KÍCH HOẠT NHẬP LẠI GÓI TKB MASTER
+     * KÍCH HOẠT NHẬP LẠI GÓI TKB MASTER TỪ FILE EXCEL / JSON
      */
     triggerMasterPackageImport() {
         const fileInput = document.getElementById('tkbMasterPackageInput');
@@ -2815,20 +2923,102 @@ setPCCMFilter(filterName) {
     }
 
     /**
-     * XỬ LÝ NHẬP LẠI GÓI TKB MASTER TỪ FILE JSON ĐƯỢC CHỌN
+     * XỬ LÝ NHẬP LẠI GÓI TKB MASTER TỪ FILE EXCEL (.XLSX / .XLS) HOẶC JSON
+     * Đọc toàn bộ 5 Sheets và cập nhật tức thì vào hệ thống trong 1 giây!
      */
     handleMasterPackageFile(event) {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const content = e.target.result;
-                const res = this.engine.importJSON(content);
+        const fileName = file.name.toLowerCase();
 
-                if (res && res.success) {
-                    // Cập nhật toàn bộ các phân hệ giao diện
+        // 1. XỬ LÝ FILE EXCEL (.XLSX / .XLS)
+        if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    if (typeof XLSX === 'undefined') {
+                        alert('Chưa nạp được thư viện xử lý Excel!');
+                        return;
+                    }
+                    const data = new Uint8Array(e.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+
+                    // 1.1 Đọc Sheet THONG_TIN_TRUONG
+                    if (wb.SheetNames.includes('THONG_TIN_TRUONG')) {
+                        const schoolAoa = XLSX.utils.sheet_to_json(wb.Sheets['THONG_TIN_TRUONG'], { header: 1 });
+                        for (let r = 1; r < schoolAoa.length; r++) {
+                            const key = schoolAoa[r][0];
+                            const val = schoolAoa[r][1];
+                            if (key === 'TenTruong') this.engine.schoolConfig.schoolName = val;
+                            if (key === 'CapHoc') this.engine.schoolConfig.educationalTier = val;
+                            if (key === 'MoHinh') this.engine.schoolConfig.schoolModel = val;
+                            if (key === 'NamHoc') this.engine.schoolConfig.academicYear = val;
+                            if (key === 'HocKy') this.engine.schoolConfig.semester = val;
+                            if (key === 'DinhMucChuan') this.engine.schoolConfig.standardPeriodsPerWeek = parseInt(val) || 17;
+                            if (key === 'SoTuanKeHoach') this.engine.schoolConfig.totalWeeks = parseInt(val) || 35;
+                            if (key === 'CaHoc') this.engine.schoolConfig.session = val;
+                        }
+                    }
+
+                    // 1.2 Đọc Sheet KHUNG_PPCT_MON_HOC
+                    if (wb.SheetNames.includes('KHUNG_PPCT_MON_HOC')) {
+                        const ppctAoa = XLSX.utils.sheet_to_json(wb.Sheets['KHUNG_PPCT_MON_HOC'], { header: 1 });
+                        let newSubjects = [];
+                        for (let r = 1; r < ppctAoa.length; r++) {
+                            const row = ppctAoa[r];
+                            if (row && row[2]) {
+                                newSubjects.push({
+                                    id: row[1] || `sub_${r}`,
+                                    name: row[2],
+                                    periodsPerWeek: parseInt(row[3]) || 1,
+                                    doublePeriod: String(row[4]).toUpperCase() === 'TRUE',
+                                    roomReq: row[5] || null
+                                });
+                            }
+                        }
+                        if (newSubjects.length > 0) this.engine.subjects = newSubjects;
+                    }
+
+                    // 1.3 Đọc Sheet UU_TIEN_SU_PHAM
+                    if (wb.SheetNames.includes('UU_TIEN_SU_PHAM')) {
+                        const prioAoa = XLSX.utils.sheet_to_json(wb.Sheets['UU_TIEN_SU_PHAM'], { header: 1 });
+                        if (!this.engine.pedagogicalPriorities) this.engine.pedagogicalPriorities = {};
+                        for (let r = 1; r < prioAoa.length; r++) {
+                            const key = prioAoa[r][0];
+                            const val = String(prioAoa[r][1]).toUpperCase() === 'TRUE';
+                            if (key === 'GVCN_Nghi_2_Buoi_Tuan') this.engine.pedagogicalPriorities.gvcnOffDays = val;
+                            if (key === 'Khong_TheDuc_Tiet_4_5') this.engine.pedagogicalPriorities.noPEPeriod45 = val;
+                            if (key === 'ToiDa_4_Tiet_Ngay') this.engine.pedagogicalPriorities.maxPeriodsPerDay = val ? 4 : 5;
+                            if (key === 'UuTien_TietDoi_KHTN_Van') this.engine.pedagogicalPriorities.preferDoublePeriods = val;
+                        }
+                    }
+
+                    // 1.4 Đọc Sheet THOI_KHOA_BIEU
+                    if (wb.SheetNames.includes('THOI_KHOA_BIEU')) {
+                        const tkbAoa = XLSX.utils.sheet_to_json(wb.Sheets['THOI_KHOA_BIEU'], { header: 1 });
+                        const dayMap = { 'Thứ Hai': 0, 'Thứ Ba': 1, 'Thứ Tư': 2, 'Thứ Năm': 3, 'Thứ Sáu': 4, 'Thứ Bảy': 5 };
+                        for (let r = 1; r < tkbAoa.length; r++) {
+                            const [cls, thuStr, tietStr, subj, teacher, room, fixedStr] = tkbAoa[r];
+                            if (cls && thuStr && tietStr && subj) {
+                                const d = dayMap[thuStr] !== undefined ? dayMap[thuStr] : -1;
+                                const pMatch = String(tietStr).match(/\d+/);
+                                const p = pMatch ? parseInt(pMatch[0]) - 1 : -1;
+                                if (d >= 0 && p >= 0 && p < 5) {
+                                    if (!this.engine.timetable[cls]) this.engine.timetable[cls] = [[],[],[],[],[],[]];
+                                    if (!this.engine.timetable[cls][d]) this.engine.timetable[cls][d] = [];
+                                    this.engine.timetable[cls][d][p] = {
+                                        subject: subj,
+                                        teacher: teacher || '',
+                                        room: room || null,
+                                        isFixed: String(fixedStr).toUpperCase() === 'TRUE'
+                                    };
+                                }
+                            }
+                        }
+                    }
+
+                    this.engine.saveState();
                     this.updateFilterControls();
                     this.updateSchoolScaleSummary();
                     this.renderCurrentView();
@@ -2836,10 +3026,61 @@ setPCCMFilter(filterName) {
                     this.renderConfigTab();
                     this.renderStats();
 
+                    // Cập nhật tên trường & cấp học
+                    const nameDisp = document.getElementById('tkbGlobalSchoolNameDisplay');
+                    if (nameDisp) nameDisp.innerHTML = `🏫 ${this.engine.schoolConfig.schoolName}`;
+
+                    const tierSelect = document.getElementById('tkbGlobalTierSelect');
+                    if (tierSelect && this.engine.schoolConfig.educationalTier) {
+                        tierSelect.value = this.engine.schoolConfig.educationalTier;
+                    }
+
+                    const modelSelect = document.getElementById('tkbGlobalModelSelect');
+                    if (modelSelect && this.engine.schoolConfig.schoolModel) {
+                        modelSelect.value = this.engine.schoolConfig.schoolModel;
+                    }
+
                     // Nếu Hộp thoại Master đang mở, tự động cập nhật lại toàn bộ nội dung hộp thoại
                     const masterModal = document.getElementById('tkbMasterDeclarationModal');
                     if (masterModal && masterModal.style.display !== 'none') {
                         this.openMasterDeclarationModal();
+                    }
+
+                    this.showToast(`🎉 Đã nhập thành công toàn bộ Thời khóa biểu & Phân công từ file Excel [${file.name}]!`);
+                } catch(err) {
+                    alert(`❌ Lỗi khi đọc file Excel: ${err.message}`);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            return;
+        }
+
+        // 2. NẾU LÀ FILE JSON CŨ (Backward-compatibility)
+        if (fileName.endsWith('.json')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+                    const res = this.engine.importJSON(content);
+                    if (res && res.success) {
+                        this.updateFilterControls();
+                        this.updateSchoolScaleSummary();
+                        this.renderCurrentView();
+                        this.renderPCCMTable();
+                        this.renderConfigTab();
+                        this.renderStats();
+                        this.showToast(`🎉 Đã nhập thành công từ file JSON [${file.name}]!`);
+                    }
+                } catch(err) {
+                    alert(`❌ Lỗi khi đọc file JSON: ${err.message}`);
+                }
+            };
+            reader.readAsText(file, 'utf-8');
+        }
+    }
+
+
+    openMasterDeclarationModal();
                     }
 
                     // Cập nhật hiển thị tên trường & năm học
@@ -2908,11 +3149,11 @@ setPCCMFilter(filterName) {
 
                     <!-- Cụm Nút Xuất / Nhập Mẫu Ngay Tại Header Hộp Thoại -->
                     <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <button type="button" onclick="window.smartTKBUI.exportMasterTKBPackage()" style="background: #059669; color: #ffffff; border: none; padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Xuất toàn bộ thông tin trong hộp thoại thành file JSON mẫu">
-                            <span>📤</span> <span>Xuất Mẫu TKB (.json)</span>
+                        <button type="button" onclick="window.smartTKBUI.exportMasterTKBPackage()" style="background: #059669; color: #ffffff; border: none; padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Xuất toàn bộ thông tin trong hộp thoại thành file Excel (.xlsx / .xls) mẫu">
+                            <span>📤</span> <span>Xuất Mẫu Excel (.xls)</span>
                         </button>
-                        <button type="button" onclick="window.smartTKBUI.triggerMasterPackageImport()" style="background: #d97706; color: #ffffff; border: none; padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Nhập lại từ file JSON mẫu để điền toàn bộ thông tin trong 1 giây">
-                            <span>📥</span> <span>Nhập Lại File Mẫu</span>
+                        <button type="button" onclick="window.smartTKBUI.triggerMasterPackageImport()" style="background: #d97706; color: #ffffff; border: none; padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Nhập lại từ file Excel (.xlsx / .xls) mẫu để điền toàn bộ thông tin trong 1 giây">
+                            <span>📥</span> <span>Nhập Lại Excel (.xls)</span>
                         </button>
                         <button type="button" onclick="window.smartTKBUI.closeMasterDeclarationModal()" style="background: rgba(255,255,255,0.15); border: none; color: #ffffff; font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 0.15rem 0.5rem; border-radius: 6px;">&times;</button>
                     </div>
