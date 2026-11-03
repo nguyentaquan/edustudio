@@ -1222,13 +1222,95 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
      * - Nếu đang ở chế độ Hoán đổi -> thực hiện hoán đổi ngay lập tức!
      * - Nếu bình thường -> mở Modal Chỉnh Sửa / Gán Tiết Sư Phạm!
      */
+    /**
+     * KÍCH HOẠT CHẾ ĐỘ HOÁN ĐỔI 1 CHẠM TRỰC TIẾP TỪ NÚT BẤM HOẶC MODAL
+     */
+    activateDirectSwapMode() {
+        this.swapSource = null;
+        this.directSwapStep = 1;
+
+        let banner = document.getElementById('tkbDirectSwapBanner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'tkbDirectSwapBanner';
+            banner.style.cssText = `
+                background: linear-gradient(135deg, #fffbeb, #fef3c7);
+                border: 2px dashed #f59e0b;
+                border-radius: 8px;
+                padding: 0.6rem 1rem;
+                margin: 0.6rem 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.85rem;
+                color: #92400e;
+                font-weight: 700;
+                box-shadow: 0 2px 6px rgba(245,158,11,0.15);
+            `;
+            const container = document.querySelector('.tkb-live-preview-container');
+            if (container) {
+                const header = container.querySelector('div');
+                if (header) {
+                    header.insertAdjacentElement('afterend', banner);
+                } else {
+                    container.insertBefore(banner, container.firstChild);
+                }
+            }
+        }
+
+        banner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.3rem;">🔄</span>
+                <span><strong>CHẾ ĐỘ HOÁN ĐỔI TIẾT 1 CHẠM ĐANG BẬT:</strong> 👉 <em>Bước 1: Hãy bấm vào Ô Tiết Thứ Nhất bạn muốn đổi!</em></span>
+            </div>
+            <button onclick="window.smartTKBUI.cancelDirectSwapMode()" style="background: #ef4444; color: #fff; border: none; padding: 0.3rem 0.75rem; border-radius: 6px; font-weight: 800; cursor: pointer; font-size: 0.78rem;">
+                ✕ Hủy Hoán Đổi
+            </button>
+        `;
+        banner.style.display = 'flex';
+        this.showToast('🔄 Chế độ Hoán đổi 1 chạm: Hãy bấm vào Ô Tiết Thứ Nhất bạn muốn đổi!');
+    }
+
+    cancelDirectSwapMode() {
+        this.directSwapStep = 0;
+        this.swapSource = null;
+        const banner = document.getElementById('tkbDirectSwapBanner');
+        if (banner) banner.style.display = 'none';
+        this.renderCurrentView();
+    }
+
     handleCellClick(classId, day, period) {
-        // 1. Nếu đang trong chế độ Hoán đổi 1 chạm
+        // 1. Nếu đang ở Bước 1 của Direct Swap (chọn ô nguồn)
+        if (this.directSwapStep === 1 && !this.swapSource) {
+            this.swapSource = { classId, day, period };
+            this.directSwapStep = 2;
+            const cell = this.engine.timetable[classId] && this.engine.timetable[classId][day] ? this.engine.timetable[classId][day][period] : null;
+            const subName = cell ? cell.subject : 'Ô trống';
+            const teacherName = cell ? cell.teacher : '';
+
+            let banner = document.getElementById('tkbDirectSwapBanner');
+            if (banner) {
+                banner.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.3rem;">🔄</span>
+                        <span>ĐÃ CHỌN TIẾT 1: <strong style="color: #1e40af;">Lớp ${classId} • ${this.engine.DAYS[day]} - Tiết ${period + 1} (${subName}${teacherName ? ' - ' + teacherName : ''})</strong> &rarr; 👉 <strong style="color: #b45309;">Bước 2: Bấm vào Ô Tiết thứ hai để hoán đổi chỗ ngay!</strong></span>
+                    </div>
+                    <button onclick="window.smartTKBUI.cancelDirectSwapMode()" style="background: #ef4444; color: #fff; border: none; padding: 0.3rem 0.75rem; border-radius: 6px; font-weight: 800; cursor: pointer; font-size: 0.78rem;">
+                        ✕ Hủy Hoán Đổi
+                    </button>
+                `;
+            }
+            this.showToast(`👉 Đã chọn Tiết 1 (${subName} Lớp ${classId}). Bây giờ hãy bấm vào Ô Tiết thứ hai để đổi chỗ!`);
+            this.renderCurrentView();
+            return;
+        }
+
+        // 2. Nếu đang trong Bước 2 của Hoán đổi 1 chạm (đã có swapSource)
         if (this.swapSource) {
             const src = this.swapSource;
             // Nếu bấm lại chính ô đó -> hủy
             if (src.classId === classId && src.day === day && src.period === period) {
-                this.cancelSwapMode();
+                this.cancelDirectSwapMode();
                 return;
             }
 
@@ -1240,13 +1322,13 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 alert(`⚠️ Không thể hoán đổi: ${res.reason}`);
             }
 
-            this.cancelSwapMode();
+            this.cancelDirectSwapMode();
             this.renderCurrentView();
             this.renderStats();
             return;
         }
 
-        // 2. Mở Modal Chỉnh Sửa Tiết Học
+        // 3. Mở Modal Chỉnh Sửa Tiết Học bình thường
         this.openSlotEditModal(classId, day, period);
     }
 
@@ -1451,8 +1533,8 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                     <div>
                         ${cell ? `
-                            <button onclick="window.smartTKBUI.startSwapFromModal()" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 6px; padding: 0.45rem 0.75rem; font-weight: 700; font-size: 0.78rem; cursor: pointer;">
-                                🔄 Hoán Đổi Sang Tiết Khác
+                            <button onclick="window.smartTKBUI.startSwapFromModal()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; border-radius: 6px; padding: 0.45rem 0.85rem; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 1px 3px rgba(245,158,11,0.35);">
+                                <span>🔄</span> <span>Hoán Đổi Sang Tiết Khác</span>
                             </button>
                         ` : ''}
                     </div>
@@ -1527,8 +1609,9 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
     startSwapFromModal() {
         if (!this.editingSlot) return;
         const { classId, day, period } = this.editingSlot;
-        this.swapSource = { classId, day, period };
         this.closeSlotEditModal();
+        this.activateDirectSwapMode();
+        this.handleCellClick(classId, day, period);
 
         // Chuyển sang góc nhìn Lớp đó nếu đang ở góc nhìn khác
         if (this.currentViewMode !== 'class' || this.selectedClass !== classId) {
