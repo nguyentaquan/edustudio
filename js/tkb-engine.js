@@ -9,7 +9,7 @@ import { TEACHER_WORKLOAD_ROLES } from './teacher-workload-data.js';
  * ==============================================================================
  */
 
-import { CANH_THUAN_TKB_DATA } from './canh-thuan-tkb-data.js';
+import { CANH_THUAN_TKB_DATA } from './canh-thuan-tkb-data.js?v=3.10.4';
 
 export class SmartTKBEngine {
     constructor() {

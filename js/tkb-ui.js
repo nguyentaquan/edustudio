@@ -8,7 +8,7 @@
  * ==============================================================================
  */
 
-import { SmartTKBEngine } from './tkb-engine.js';
+import { SmartTKBEngine } from './tkb-engine.js?v=3.10.4';
 
 export class SmartTKBUI {
     constructor(appInstance) {
