@@ -763,7 +763,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         let colDayWidth = '50px';
         let colPeriodWidth = '30px';
         let colClassWidth = `calc((100% - 80px) / ${classes.length})`;
-        let cellHeight = '22px';
+        let cellHeight = '20px';
         let cellPadding = '1px 2px';
         let subjectFontSize = '0.74rem';
         let teacherFontSize = '0.70rem';
@@ -773,7 +773,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             colDayWidth = '46px';
             colPeriodWidth = '28px';
             colClassWidth = `calc((100% - 74px) / ${classes.length})`;
-            cellHeight = '19px';
+            cellHeight = '18px';
             cellPadding = '0px 1px';
             subjectFontSize = '0.70rem';
             teacherFontSize = '0.66rem';
@@ -782,10 +782,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             colDayWidth = '54px';
             colPeriodWidth = '34px';
             colClassWidth = `calc((100% - 88px) / ${classes.length})`;
-            cellHeight = '26px';
+            cellHeight = '24px';
             cellPadding = '2px 3px';
             subjectFontSize = '0.78rem';
-            teacherFontSize = '0.73rem';
+            teacherFontSize = '0.74rem';
             headerFontSize = '0.78rem';
         }
 
@@ -988,11 +988,9 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                             `;
                         } else {
                             cellContent = `
-                                <div style="font-weight: 700; color: #0f172a; font-size: ${subjectFontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.05;">
-                                    ${cell.subject}
-                                </div>
-                                <div style="font-weight: 800; color: ${teacherColor}; font-size: ${teacherFontSize}; white-space: nowrap; line-height: 1.05; margin-top: 0px;">
-                                    ${isQuanSlot ? '⭐ ' : ''}${shortTeacher}
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 0.3rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1;">
+                                    <span style="font-weight: 700; color: #0f172a; font-size: ${subjectFontSize};">${cell.subject}</span>
+                                    <span style="font-weight: 800; color: ${teacherColor}; font-size: ${teacherFontSize};">${isQuanSlot ? '⭐ ' : ''}${shortTeacher}</span>
                                 </div>
                             `;
                         }
