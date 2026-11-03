@@ -779,7 +779,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         const density = this.masterDensity || 'compact';
         let colDayWidth = '50px';
         let colPeriodWidth = '30px';
-        let colClassWidth = `calc((100% - 80px) / ${classes.length})`;
+        let colClassWidth = displayClasses.length > 0 ? `calc((100% - 80px) / ${displayClasses.length})` : '80px';
         let cellHeight = '20px';
         let cellPadding = '1px 2px';
         let subjectFontSize = '0.74rem';
@@ -806,23 +806,36 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             headerFontSize = '0.78rem';
         }
 
-        // 2. Tiêu đề khối lớp động (Dynamic Grade Headers)
+        // 2. Lọc danh sách lớp hiển thị trên Bàn cờ tổng thể theo Bộ lọc Khối chuẩn xác 100%
+        const displayClasses = (activeGrade === 'all')
+            ? classes
+            : classes.filter(c => {
+                if (gradeGroups[activeGrade]) return gradeGroups[activeGrade].includes(c);
+                return c.startsWith(activeGrade);
+            });
+
+        // Tiêu đề khối lớp động (Dynamic Grade Headers)
         let dynamicTopHeadersHtml = '';
         const gEntries = Object.entries(gradeGroups);
-        if (gEntries.length > 0) {
-            dynamicTopHeadersHtml = gEntries.map(([gKey, gClasses], idx) => {
-                const isLast = (idx === gEntries.length - 1);
+        const filteredGEntries = (activeGrade === 'all')
+            ? gEntries
+            : gEntries.filter(([gKey]) => gKey === activeGrade);
+
+        if (filteredGEntries.length > 0) {
+            dynamicTopHeadersHtml = filteredGEntries.map(([gKey, gClasses], idx) => {
+                const isLast = (idx === filteredGEntries.length - 1);
                 const bg = gradePalette[gKey] || fallbackColors[idx % fallbackColors.length];
                 const isQuanGrade = gClasses.includes('8A1');
                 const label = isNaN(gKey) ? gKey : `KHỐI ${gKey}${isQuanGrade ? ' ⭐' : ''}`;
+                const colSpan = (activeGrade === 'all') ? gClasses.length : displayClasses.length;
                 return `
-                    <th class="grade-header-th" colspan="${gClasses.length}" style="text-align: center; background: ${bg} !important; color: #ffffff !important; border-right: ${isLast ? 'none' : '2px solid rgba(255,255,255,0.4)'}; padding: 5px 2px; font-weight: 900; font-size: 0.80rem; text-shadow: 0 1px 2px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
+                    <th class="grade-header-th" colspan="${colSpan}" style="text-align: center; background: ${bg} !important; color: #ffffff !important; border-right: ${isLast ? 'none' : '2px solid rgba(255,255,255,0.4)'}; padding: 5px 2px; font-weight: 900; font-size: 0.80rem; text-shadow: 0 1px 2px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
                         ${label}
                     </th>
                 `;
             }).join('');
         } else {
-            dynamicTopHeadersHtml = `<th colspan="${classes.length}" style="text-align: center; background: #1e3a8a; padding: 4px; font-weight: 800; font-size: ${headerFontSize};">TẤT CẢ CÁC LỚP</th>`;
+            dynamicTopHeadersHtml = `<th colspan="${displayClasses.length}" style="text-align: center; background: #1e3a8a; padding: 4px; font-weight: 800; font-size: ${headerFontSize};">TẤT CẢ CÁC LỚP</th>`;
         }
 
         let html = `
@@ -893,6 +906,16 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         </button>
                     </div>
 
+                    <!-- NHÓM 1.5: BỘ LỌC KHỐI LỚP TRỰC TIẾP TRÊN BÀN CỜ -->
+                    <div style="display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase; display: flex; align-items: center; gap: 0.2rem;">
+                            <span>🏫</span> <span>Khối:</span>
+                        </span>
+                        <div style="display: flex; gap: 0.2rem; flex-wrap: wrap;">
+                            ${gradeFilterButtonsHtml}
+                        </div>
+                    </div>
+
                     <!-- NHÓM 2: TÙY CHỈNH NỘI DUNG & THỊ GIÁC -->
                     <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
                         <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase; display: flex; align-items: center; gap: 0.2rem;">
@@ -942,10 +965,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                                 ${dynamicTopHeadersHtml}
                             </tr>
                             <tr style="background: #f8fafc;">
-                                ${classes.map((c, cIdx) => {
+                                ${displayClasses.map((c, cIdx) => {
                                     const gvcn = this.getHomeroomTeacherForClass(c);
                                     const isQuanClass = (gvcn && gvcn.isQuan) || (c === '8A1');
-                                    const isLastOfGrade = (cIdx === classes.length - 1) || (classes[cIdx + 1] && classes[cIdx + 1].match(/^(\d+)/) && c.match(/^(\d+)/) && classes[cIdx + 1].match(/^(\d+)/)[1] !== c.match(/^(\d+)/)[1]);
+                                    const isLastOfGrade = (cIdx === displayClasses.length - 1) || (displayClasses[cIdx + 1] && displayClasses[cIdx + 1].match(/^(\d+)/) && c.match(/^(\d+)/) && displayClasses[cIdx + 1].match(/^(\d+)/)[1] !== c.match(/^(\d+)/)[1]);
                                     const classStyle = isQuanClass
                                         ? 'background: #1d4ed8 !important; color: #ffffff !important; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.3);'
                                         : 'background: #ffffff !important; color: #0f172a !important; font-weight: 800;';
@@ -986,10 +1009,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     </td>
                 `;
 
-                // Các Cột Lớp: TUYỆT ĐỐI NỀN TRẮNG (NO FILL COLOR), THU HẸP GỌN GÀNG
-                for (let cIdx = 0; cIdx < classes.length; cIdx++) {
-                    const c = classes[cIdx];
-                    const isLastOfGrade = (cIdx === classes.length - 1) || (classes[cIdx + 1] && classes[cIdx + 1].match(/^(\d+)/) && c.match(/^(\d+)/) && classes[cIdx + 1].match(/^(\d+)/)[1] !== c.match(/^(\d+)/)[1]);
+                // Các Cột Lớp: TUYỆT ĐỐI NỀN TRẮNG (NO FILL COLOR), MỞ RỘNG CHIỀU NGANG, ÉP CHIỀU DỌC
+                for (let cIdx = 0; cIdx < displayClasses.length; cIdx++) {
+                    const c = displayClasses[cIdx];
+                    const isLastOfGrade = (cIdx === displayClasses.length - 1) || (displayClasses[cIdx + 1] && displayClasses[cIdx + 1].match(/^(\d+)/) && c.match(/^(\d+)/) && displayClasses[cIdx + 1].match(/^(\d+)/)[1] !== c.match(/^(\d+)/)[1]);
                     const cell = this.engine.timetable[c] && this.engine.timetable[c][d] ? this.engine.timetable[c][d][p] : null;
 
                     if (cell) {
@@ -4316,8 +4339,13 @@ setPCCMFilter(filterName) {
 
         const assignments = this.engine.assignments || [];
         const teachers = this.engine.getAllTeachers ? this.engine.getAllTeachers() : (this.engine.teachers ? this.engine.teachers.map(t => (typeof t === "string" ? t : (t.displayName || t.fullName || t.name || ""))) : []);
-        const subjects = this.engine.subjects || [];
         const classes = this.engine.classes || [];
+        
+        // Danh mục môn học chuẩn hóa đa cấp (Mầm Non, Phổ Thông GDPT 2018, Quốc Tế K-12)
+        const currentSubjects = Array.from(new Set([
+            ...(this.engine.subjects || []).map(s => typeof s === 'string' ? s : s.name),
+            ...assignments.map(a => a.subject)
+        ])).filter(Boolean);
 
         modal.classList.add('active');
         modal.style.setProperty('display', 'flex', 'important');
@@ -4363,7 +4391,8 @@ setPCCMFilter(filterName) {
                         </div>
                         <input type="hidden" id="pccmEditIndex" value="-1">
 
-                        <div style="display: grid; grid-template-columns: 2fr 1.6fr 1.2fr 1.1fr auto; gap: 0.55rem; align-items: end;">
+                        <div style="display: grid; grid-template-columns: 1.8fr 1.1fr 0.9fr 1.8fr auto; gap: 0.55rem; align-items: end;">
+                            <!-- 1. Họ Tên Thầy Cô -->
                             <div>
                                 <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
                                     👨‍🏫 Họ Tên Thầy Cô:
@@ -4374,15 +4403,7 @@ setPCCMFilter(filterName) {
                                 </datalist>
                             </div>
 
-                            <div>
-                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
-                                    📚 Môn Học:
-                                </label>
-                                <select id="pccmInputSubject" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #0f172a;">
-                                    ${subjects.map(s => `<option value="${s.name}">${s.name} (${s.periodsPerWeek}t/tuần)</option>`).join('')}
-                                </select>
-                            </div>
-
+                            <!-- 2. Lớp Học -->
                             <div>
                                 <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
                                     🎒 Lớp Học:
@@ -4392,13 +4413,75 @@ setPCCMFilter(filterName) {
                                 </select>
                             </div>
 
+                            <!-- 3. Số Tiết/Tuần (ĐỨNG LIỀN KỀ TRƯỚC MÔN HỌC THEO CHỈ ĐẠO CỦA THẦY QUAN) -->
                             <div>
-                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
+                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #0369a1; margin-bottom: 0.2rem;">
                                     ⏱️ Số Tiết/Tuần:
                                 </label>
-                                <input type="number" id="pccmInputPeriods" value="3" min="1" max="15" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; color: #1d4ed8; background: #ffffff;">
+                                <input type="number" id="pccmInputPeriods" value="3" min="1" max="30" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1.5px solid #0284c7; border-radius: 6px; color: #0369a1; background: #f0f9ff;">
                             </div>
 
+                            <!-- 4. Môn Học (CHỈ LIST TÊN MÔN, KHÔNG KÈM SỐ TIẾT, HỖ TRỢ ĐA CẤP GDMN & GDPT QUỐC TẾ) -->
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
+                                    📚 Môn Học (MN &amp; GDPT):
+                                </label>
+                                <select id="pccmInputSubject" style="width: 100%; padding: 0.42rem 0.5rem; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #0f172a;">
+                                    <optgroup label="📋 Môn Phân Công Hiện Hành (${currentSubjects.length})">
+                                        ${currentSubjects.map(s => `<option value="${s}">${s}</option>`).join('')}
+                                    </optgroup>
+                                    <optgroup label="🌱 Bậc Mầm Non (GDMN)">
+                                        <option value="Khám phá khoa học">Khám phá khoa học</option>
+                                        <option value="Phát triển nhận thức">Phát triển nhận thức</option>
+                                        <option value="Phát triển thể chất">Phát triển thể chất</option>
+                                        <option value="Phát triển ngôn ngữ">Phát triển ngôn ngữ</option>
+                                        <option value="Làm quen với Toán">Làm quen với Toán</option>
+                                        <option value="Làm quen văn học">Làm quen văn học</option>
+                                        <option value="Giáo dục âm nhạc">Giáo dục âm nhạc</option>
+                                        <option value="Hoạt động tạo hình">Hoạt động tạo hình</option>
+                                        <option value="Kỹ năng sống &amp; Xã hội">Kỹ năng sống &amp; Xã hội</option>
+                                    </optgroup>
+                                    <optgroup label="🏫 Bậc Phổ Thông (Tiểu Học - THCS - THPT)">
+                                        <option value="Toán">Toán</option>
+                                        <option value="Ngữ Văn">Ngữ Văn</option>
+                                        <option value="Tiếng Việt">Tiếng Việt</option>
+                                        <option value="Tiếng Anh">Tiếng Anh</option>
+                                        <option value="KHTN">KHTN</option>
+                                        <option value="Khoa học">Khoa học</option>
+                                        <option value="Lịch Sử">Lịch Sử</option>
+                                        <option value="Địa Lí">Địa Lí</option>
+                                        <option value="Lịch Sử &amp; Địa Lí">Lịch Sử &amp; Địa Lí</option>
+                                        <option value="Tin Học">Tin Học</option>
+                                        <option value="Công Nghệ">Công Nghệ</option>
+                                        <option value="Giáo Dục Thể Chất">Giáo Dục Thể Chất</option>
+                                        <option value="Nghệ Thuật">Nghệ Thuật</option>
+                                        <option value="Âm Nhạc">Âm Nhạc</option>
+                                        <option value="Mĩ Thuật">Mĩ Thuật</option>
+                                        <option value="Giáo Dục Công Dân">Giáo Dục Công Dân</option>
+                                        <option value="Giáo Dục Kinh Tế &amp; Pháp Luật">Giáo Dục Kinh Tế &amp; Pháp Luật</option>
+                                        <option value="HĐTN, HN">HĐTN, HN</option>
+                                        <option value="STEM">STEM</option>
+                                    </optgroup>
+                                    <optgroup label="🌐 Chương Trình Quốc Tế (International K-12)">
+                                        <option value="Mathematics">Mathematics</option>
+                                        <option value="English Language Arts">English Language Arts</option>
+                                        <option value="Science">Science</option>
+                                        <option value="Physics">Physics</option>
+                                        <option value="Chemistry">Chemistry</option>
+                                        <option value="Biology">Biology</option>
+                                        <option value="Social Studies">Social Studies</option>
+                                        <option value="World History">World History</option>
+                                        <option value="Geography">Geography</option>
+                                        <option value="Information Technology">Information Technology</option>
+                                        <option value="Visual Arts">Visual Arts</option>
+                                        <option value="Physical Education">Physical Education</option>
+                                        <option value="Global Perspectives">Global Perspectives</option>
+                                        <option value="Robotics">Robotics</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- 5. Nút Thao Tác -->
                             <div style="display: flex; gap: 0.35rem;">
                                 <button type="button" id="pccmBtnSubmit" onclick="window.smartTKBUI.savePCCMFromDetailModal()" style="background: #059669; color: #ffffff; border: none; padding: 0.42rem 0.95rem; border-radius: 6px; font-weight: 800; font-size: 0.78rem; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(5,150,105,0.25);">
                                     ➕ Thêm Phân Công
@@ -4407,6 +4490,29 @@ setPCCMFilter(filterName) {
                                     Hủy
                                 </button>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- BỘ LỌC TÌM KIẾM & PHÂN LOẠI DANH SÁCH PHÂN CÔNG (126 PHÂN CÔNG) -->
+                    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.5rem 0.75rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+                            <span style="font-size: 0.74rem; font-weight: 800; color: #475569;">🔍 Lọc Phân Công:</span>
+                            <input type="text" id="pccmFilterKeyword" oninput="window.smartTKBUI.filterPCCMListInModal()" placeholder="Tìm Thầy Cô, Môn..." style="padding: 0.25rem 0.5rem; font-size: 0.74rem; border: 1px solid #cbd5e1; border-radius: 5px; width: 140px; color: #0f172a; background: #fff;">
+                            <select id="pccmFilterClass" onchange="window.smartTKBUI.filterPCCMListInModal()" style="padding: 0.25rem 0.5rem; font-size: 0.74rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: #1e293b;">
+                                <option value="all">🎒 Tất Cả Lớp (${classes.length})</option>
+                                ${classes.map(c => `<option value="${c}">Lớp ${c}</option>`).join('')}
+                            </select>
+                            <select id="pccmFilterTeacher" onchange="window.smartTKBUI.filterPCCMListInModal()" style="padding: 0.25rem 0.5rem; font-size: 0.74rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: #1e293b;">
+                                <option value="all">👨‍🏫 Tất Cả Giáo Viên (${teachers.length})</option>
+                                ${teachers.map(t => `<option value="${t}">${t}</option>`).join('')}
+                            </select>
+                            <select id="pccmFilterSubject" onchange="window.smartTKBUI.filterPCCMListInModal()" style="padding: 0.25rem 0.5rem; font-size: 0.74rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: #1e293b;">
+                                <option value="all">📚 Tất Cả Môn (${currentSubjects.length})</option>
+                                ${currentSubjects.map(s => `<option value="${s}">${s}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div id="pccmFilterCounter" style="font-size: 0.73rem; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 0.2rem 0.55rem; border-radius: 4px; border: 1px solid #bae6fd;">
+                            Hiển thị: ${assignments.length} / ${assignments.length} phân công
                         </div>
                     </div>
 
@@ -4428,7 +4534,7 @@ setPCCMFilter(filterName) {
                                     const isQuan = a.teacher && a.teacher.includes('Tá Quan');
                                     const pVal = a.periodsPerWeek || a.periods || 1;
                                     return `
-                                        <tr style="border-bottom: 1px solid #f1f5f9; ${isQuan ? 'background: #eff6ff; font-weight: 800; color: #1d4ed8;' : ''}">
+                                        <tr class="pccm-data-row" data-teacher="${(a.teacher || '').toLowerCase()}" data-subject="${(a.subject || '').toLowerCase()}" data-class="${a.classId || ''}" style="border-bottom: 1px solid #f1f5f9; ${isQuan ? 'background: #eff6ff; font-weight: 800; color: #1d4ed8;' : ''}">
                                             <td style="padding: 0.4rem 0.6rem; text-align: center; color: #64748b;">${idx + 1}</td>
                                             <td style="padding: 0.4rem 0.6rem;">
                                                 <strong>${a.teacher}</strong>${isQuan ? ' ⭐' : ''}
@@ -4513,6 +4619,42 @@ setPCCMFilter(filterName) {
         this.updateFilterControls();
         this.renderCurrentView();
         this.renderPCCMTable();
+    }
+
+    /**
+     * Bộ lọc động tức thì trong Hộp thoại Phân Công Chuyên Môn (PCCM)
+     */
+    filterPCCMListInModal() {
+        const keyword = (document.getElementById('pccmFilterKeyword')?.value || '').toLowerCase().trim();
+        const classVal = document.getElementById('pccmFilterClass')?.value || 'all';
+        const teacherVal = (document.getElementById('pccmFilterTeacher')?.value || 'all').toLowerCase();
+        const subjectVal = (document.getElementById('pccmFilterSubject')?.value || 'all').toLowerCase();
+
+        const rows = document.querySelectorAll('.pccm-data-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const tText = row.getAttribute('data-teacher') || '';
+            const sText = row.getAttribute('data-subject') || '';
+            const cText = row.getAttribute('data-class') || '';
+
+            const matchKeyword = !keyword || tText.includes(keyword) || sText.includes(keyword);
+            const matchClass = (classVal === 'all') || (cText === classVal);
+            const matchTeacher = (teacherVal === 'all') || (tText === teacherVal);
+            const matchSubject = (subjectVal === 'all') || (sText === subjectVal);
+
+            if (matchKeyword && matchClass && matchTeacher && matchSubject) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const counter = document.getElementById('pccmFilterCounter');
+        if (counter) {
+            counter.innerText = `Hiển thị: ${visibleCount} / ${rows.length} phân công`;
+        }
     }
 
     editPCCMInModal(idx) {
