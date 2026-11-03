@@ -1102,25 +1102,23 @@ export class SmartTKBUI {
         const panePCCM = document.getElementById('tkb-pane-pccm');
         if (!panePCCM) return;
 
-        const officialList = this.engine.officialPCCM || [];
         const allAssignments = this.engine.assignments || [];
         const workloadReport = this.engine.getTeacherWorkloadReport ? this.engine.getTeacherWorkloadReport() : [];
-
-        // Lọc danh sách phân công chi tiết
-        let filteredAssignments = allAssignments;
-        if (this.pccmFilter === 'Tổ Tự Nhiên') {
-            filteredAssignments = allAssignments.filter(a => a.department === 'Tổ Tự Nhiên');
-        } else if (this.pccmFilter === 'Tổ Xã Hội') {
-            filteredAssignments = allAssignments.filter(a => a.department === 'Tổ Xã Hội');
-        }
-
-        const naturalCount = allAssignments.filter(a => a.department === 'Tổ Tự Nhiên').reduce((acc, a) => acc + a.periods, 0);
-        const socialCount = allAssignments.filter(a => a.department === 'Tổ Xã Hội').reduce((acc, a) => acc + a.periods, 0);
-
-        // Thống kê tổng quan định mức
         const totalStandard = workloadReport.filter(r => r.diff === 0).length;
         const totalSurplus = workloadReport.filter(r => r.diff > 0).length;
         const totalReducedPeriods = workloadReport.reduce((sum, r) => sum + r.reducedTotal, 0);
+
+        let bodyHtml = '';
+        if (this.pccmFilter === 'annual') {
+            bodyHtml = this.renderAnnualTable();
+        } else if (this.pccmFilter === 'official') {
+            bodyHtml = this.renderOfficialPCCMTable();
+        } else if (this.pccmFilter === 'all' || this.pccmFilter === 'Tổ Tự Nhiên' || this.pccmFilter === 'Tổ Xã Hội') {
+            bodyHtml = this.renderDetailAssignmentsTable();
+        } else {
+            // Mặc định: workload
+            bodyHtml = this.renderWorkloadTable();
+        }
 
         panePCCM.innerHTML = `
             <div class="tkb-config-card">
@@ -1131,7 +1129,7 @@ export class SmartTKBUI {
                             <span>⚖️</span> <span>HỆ QUẢN TRỊ ĐỊNH MỨC & PHÂN CÔNG CHUYÊN MÔN GDPT 2018</span>
                         </h3>
                         <p style="margin: 0.25rem 0 0 0; font-size: 0.82rem; color: #64748b;">
-                            Trường THCS Bán Trú Canh Thuận • Cân bằng định mức 17 tiết/tuần chuẩn Thông tư 28/2009 & TT 15/2020 BGDĐT
+                            Trường THCS Bán Trú Canh Thuận • Cân bằng định mức 17 tiết/tuần chuẩn Điều 6 Thông tư 28/2009/TT-BGDĐT
                         </p>
                     </div>
 
@@ -1153,9 +1151,9 @@ export class SmartTKBUI {
                     <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.85rem; display: flex; align-items: center; gap: 0.75rem;">
                         <div style="font-size: 1.8rem;">🎯</div>
                         <div>
-                            <div style="font-size: 0.75rem; font-weight: 700; color: #166534; text-transform: uppercase;">Định Mức Chuẩn Trường Bán Trú</div>
+                            <div style="font-size: 0.75rem; font-weight: 700; color: #166534; text-transform: uppercase;">Định Mức Chuẩn Bán Trú</div>
                             <div style="font-size: 1.35rem; font-weight: 800; color: #15803d;">17 Tiết / Tuần</div>
-                            <div style="font-size: 0.7rem; color: #15803d;">Theo TT 28/2009/TT-BGDĐT</div>
+                            <div style="font-size: 0.7rem; color: #15803d;">Theo Điều 6 TT 28/2009/TT-BGDĐT</div>
                         </div>
                     </div>
 
@@ -1173,7 +1171,7 @@ export class SmartTKBUI {
                         <div>
                             <div style="font-size: 0.75rem; font-weight: 700; color: #854d0e; text-transform: uppercase;">Tiết Kiêm Nhiệm Quy Đổi</div>
                             <div style="font-size: 1.35rem; font-weight: 800; color: #a16207;">${totalReducedPeriods} Tiết</div>
-                            <div style="font-size: 0.7rem; color: #a16207;">GVCN, Tổ trưởng, Lab, CNTT, Đội</div>
+                            <div style="font-size: 0.7rem; color: #a16207;">GVCN, Tổ trưởng, Lab, Bán trú, Đội</div>
                         </div>
                     </div>
 
@@ -1209,275 +1207,300 @@ export class SmartTKBUI {
                     </button>
                 </div>
 
-                
-                ${this.pccmFilter === 'annual' ? `
-                    <!-- VIEW: BẢNG QUYẾT TOÁN ĐỊNH MỨC CẢ NĂM (35 TUẦN - 595 TIẾT CHUẨN PTDTBT) -->
-                    <div style="margin-bottom: 0.75rem; background: #eef2ff; border: 1px solid #c7d2fe; padding: 0.75rem 1rem; border-radius: 8px; color: #3730a3; font-size: 0.82rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                        <div>
-                            📌 <strong>Căn cứ Điều 5 & Điều 6 Thông tư 28/2009/TT-BGDĐT:</strong> Định mức tiết dạy của giáo viên trường phổ thông dân tộc bán trú là 17 tiết/tuần. Tổng số tiết định mức trong cả năm học = 17 tiết x 35 tuần = <strong>595 tiết/năm</strong>. Cho phép bù trừ linh hoạt giữa Học kỳ I (18 tuần) và Học kỳ II (17 tuần).
-                        </div>
-                        <button onclick="window.smartTKBUI.exportAnnualSettlementCSV()" style="background: #4338ca; color: #fff; border: none; padding: 0.35rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.78rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;">
-                            <span>📥</span> <span>Xuất CSV Quyết Toán Cả Năm</span>
-                        </button>
-                    </div>
-
-                    <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px;">
-                        <table class="tkb-table" style="margin: 0; width: 100%; border-collapse: collapse; font-size: 0.8rem;">
-                            <thead>
-                                <tr style="background: #1e1b4b; color: #ffffff;">
-                                    <th style="width: 45px; text-align: center;">STT</th>
-                                    <th style="width: 200px; text-align: left;">Họ và Tên Giáo Viên</th>
-                                    <th style="width: 110px; text-align: center;">Tổ Chuyên Môn</th>
-                                    <th style="width: 90px; text-align: center;">Dạy HK I/Tuần</th>
-                                    <th style="width: 90px; text-align: center;">Dạy HK II/Tuần</th>
-                                    <th style="width: 110px; text-align: center;">Tổng Tiết Dạy Cả Năm (35t)</th>
-                                    <th style="width: 120px; text-align: center;">Kiêm Nhiệm Cả Năm (TT28)</th>
-                                    <th style="width: 110px; text-align: center;">Tổng Thực Hiện Cả Năm</th>
-                                    <th style="width: 90px; text-align: center;">Định Mức Năm</th>
-                                    <th style="width: 130px; text-align: center;">Trạng Thái Quyết Toán</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${(this.engine.getAnnualWorkloadSettlement ? this.engine.getAnnualWorkloadSettlement() : []).map(r => {
-                                    const isNat = (r.department || '').includes('Tự Nhiên');
-                                    const rowBg = r.isQuan ? 'background: #f0fdf4;' : (r.index % 2 === 0 ? 'background: #f8fafc;' : 'background: #ffffff;');
-                                    
-                                    let badgeHtml = '';
-                                    if (r.diffAnnual === 0) {
-                                        badgeHtml = '<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">✅ Chuẩn 595 tiết</span>';
-                                    } else if (r.diffAnnual > 0) {
-                                        badgeHtml = `<span style="background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">🟢 Thừa +${r.diffAnnual} tiết</span>`;
-                                    } else {
-                                        badgeHtml = `<span style="background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">⚠️ Thiếu ${r.diffAnnual} tiết</span>`;
-                                    }
-
-                                    return `
-                                        <tr style="${rowBg}">
-                                            <td style="text-align: center; font-weight: 700; color: #64748b;">${r.index}</td>
-                                            <td style="font-weight: 700; color: ${r.isQuan ? '#15803d' : '#0f172a'}; text-align: left;">
-                                                ${r.isQuan ? '⭐ ' : ''}${r.teacherName}
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 700; font-size: 0.72rem; border: 1px solid ${isNat ? '#a7f3d0' : '#fbcfe8'};">
-                                                    ${r.department}
-                                                </span>
-                                            </td>
-                                            <td style="text-align: center; font-weight: 700; color: #c2410c;">
-                                                ${r.teachingHK1} tiết
-                                            </td>
-                                            <td style="text-align: center; font-weight: 700; color: #059669;">
-                                                ${r.teachingHK2} tiết
-                                            </td>
-                                            <td style="text-align: center; font-weight: 800; color: #1e293b;">
-                                                ${r.annualTeaching} tiết
-                                            </td>
-                                            <td style="text-align: center; font-weight: 700; color: #b45309;">
-                                                -${r.annualReduced} tiết
-                                            </td>
-                                            <td style="text-align: center; font-weight: 800; font-size: 0.95rem; color: ${r.annualFinal >= 595 ? '#15803d' : '#b91c1c'};">
-                                                ${r.annualFinal} tiết
-                                            </td>
-                                            <td style="text-align: center; font-weight: 800; color: #64748b;">
-                                                595 tiết
-                                            </td>
-                                            <td style="text-align: center;">
-                                                ${badgeHtml}
-                                            </td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                ` : `
-${this.pccmFilter === 'workload' ? `
-                    <!-- VIEW 0: MA TRẬN ĐỊNH MỨC & KIÊM NHIỆM 20 THẦY CÔ (CHUẨN BGDĐT & VNEDU/SMAS) -->
-                    <div style="margin-bottom: 0.75rem; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 0.65rem 1rem; border-radius: 8px; color: #065f46; font-size: 0.82rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                        <div>
-                            📌 <strong>Giải pháp đột phá cho Quản lý Giáo dục:</strong> Tính đủ tiết giảng dạy chuyên môn, tiết HĐTN và các nhiệm vụ kiêm nhiệm (Chủ nhiệm, Tổ trưởng, Lab, CNTT, Đoàn Đội). Khai báo chuẩn xác lên vnEdu/SMAS/CSDL ngành, không còn tình trạng bị báo thiếu định mức hoặc ép giờ vô lý.
-                        </div>
-                        <button onclick="window.smartTKBUI.resetWorkloadRoles()" style="background: #ffffff; color: #047857; border: 1px solid #059669; padding: 0.25rem 0.65rem; border-radius: 4px; font-weight: 700; font-size: 0.75rem; cursor: pointer;">
-                            🔄 Khôi Phục Kiêm Nhiệm Gốc
-                        </button>
-                    </div>
-
-                    <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px;">
-                        <table class="tkb-table" id="workloadMasterTable" style="margin: 0; width: 100%; border-collapse: collapse; font-size: 0.8rem;">
-                            <thead>
-                                <tr style="background: #0f172a; color: #ffffff;">
-                                    <th style="width: 45px; text-align: center;">STT</th>
-                                    <th style="width: 190px; text-align: left;">Họ và Tên Giáo Viên</th>
-                                    <th style="width: 110px; text-align: center;">Tổ Chuyên Môn</th>
-                                    <th style="width: 140px; text-align: left;">Tiết Chuyên Môn</th>
-                                    <th style="width: 130px; text-align: left;">HĐTN Gánh Giờ</th>
-                                    <th style="text-align: left;">Nhiệm Vụ Kiêm Nhiệm Hỗ Trợ Trường</th>
-                                    <th style="width: 95px; text-align: center;">Quy Đổi TT28</th>
-                                    <th style="width: 90px; text-align: center;">Tổng Thực Nhận</th>
-                                    <th style="width: 80px; text-align: center;">Định Mức</th>
-                                    <th style="width: 130px; text-align: center;">Trạng Thái</th>
-                                    <th style="width: 120px; text-align: center;">Thao Tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${workloadReport.map(r => {
-                                    const isNat = (r.department || '').includes('Tự Nhiên');
-                                    const rowBg = r.isQuan ? 'background: #f0fdf4;' : (r.index % 2 === 0 ? 'background: #f8fafc;' : 'background: #ffffff;');
-                                    
-                                    let badgeHtml = '';
-                                    if (r.diff === 0) {
-                                        badgeHtml = '<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">✅ Chuẩn 17 tiết</span>';
-                                    } else if (r.diff > 0) {
-                                        badgeHtml = `<span style="background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">🟢 Thừa +${r.diff} tiết</span>`;
-                                    } else {
-                                        badgeHtml = `<span style="background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">⚠️ Thiếu ${r.diff} tiết</span>`;
-                                    }
-
-                                    const rolesListHtml = r.roles.length > 0 ? r.roles.map(role => `
-                                        <div style="font-size: 0.74rem; line-height: 1.4; color: #334155; margin-bottom: 2px;">
-                                            • <strong>${role.name}</strong> <span style="color: #64748b;">(-${role.reduced}t: ${role.note})</span>
-                                        </div>
-                                    `).join('') : '<span style="color: #94a3b8; font-style: italic;">Giảng dạy thuần túy</span>';
-
-                                    return `
-                                        <tr style="${rowBg}">
-                                            <td style="text-align: center; font-weight: 700; color: #64748b;">${r.index}</td>
-                                            <td style="font-weight: 700; color: ${r.isQuan ? '#15803d' : '#0f172a'}; text-align: left;">
-                                                ${r.isQuan ? '⭐ ' : ''}${r.teacherName}
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 700; font-size: 0.72rem; border: 1px solid ${isNat ? '#a7f3d0' : '#fbcfe8'};">
-                                                    ${r.department}
-                                                </span>
-                                            </td>
-                                            <td style="text-align: left; line-height: 1.3;">
-                                                <strong style="color: #1e293b;">${r.academicPeriods} tiết</strong>
-                                                <div style="font-size: 0.7rem; color: #64748b;">${r.academicSubjects}</div>
-                                            </td>
-                                            <td style="text-align: left; line-height: 1.3;">
-                                                <strong style="color: ${r.hdtnPeriods > 0 ? '#0e7490' : '#94a3b8'};">${r.hdtnPeriods} tiết</strong>
-                                                <div style="font-size: 0.7rem; color: #64748b;">${r.hdtnSubjects}</div>
-                                            </td>
-                                            <td style="text-align: left;">
-                                                ${rolesListHtml}
-                                            </td>
-                                            <td style="text-align: center; font-weight: 800; color: #b45309;">
-                                                -${r.reducedTotal} tiết
-                                            </td>
-                                            <td style="text-align: center; font-weight: 800; font-size: 0.9rem; color: ${r.finalTotal >= 17 ? '#15803d' : '#b91c1c'};">
-                                                ${r.finalTotal}
-                                            </td>
-                                            <td style="text-align: center; font-weight: 700; color: #64748b;">
-                                                ${r.standardQuota}
-                                            </td>
-                                            <td style="text-align: center;">
-                                                ${badgeHtml}
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <button onclick="window.smartTKBUI.openEditRoleModal('${r.teacherName}')" style="background: #2563eb; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; margin-right: 2px;" title="Tùy chỉnh vai trò kiêm nhiệm">
-                                                    ✏️ Sửa
-                                                </button>
-                                                <button onclick="window.smartTKBUI.openTeachingScheduleModal('${r.teacherName}')" style="background: #059669; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer;" title="Xem lịch báo giảng">
-                                                    📋 Lịch
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                ` : (this.pccmFilter === 'official' ? `
-                    <!-- VIEW 1: BẢNG PHÂN CÔNG CHUYÊN MÔN GỐC CHUẨN BGDĐT -->
-                    <div style="margin-bottom: 0.75rem; background: #fff1f2; border: 1px solid #fecdd3; padding: 0.6rem 1rem; border-radius: 8px; color: #9f1239; font-size: 0.82rem; font-weight: 600;">
-                        📌 Đây là bản Phân công chuyên môn chính thức năm học 2026 - 2027 được phê duyệt của Trường THCS Bán Trú Canh Thuận gồm đúng 20 Thầy Cô giáo chủ chốt.
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table class="tkb-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 50px;">TT</th>
-                                    <th style="width: 220px; text-align: left;">Họ và Tên</th>
-                                    <th style="width: 140px;">Tổ Bộ Môn</th>
-                                    <th style="text-align: left;">Phân Công Học Kỳ I</th>
-                                    <th style="text-align: left;">Phân Công Học Kỳ II</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${officialList.map(t => {
-                                    const isQuan = t['Họ và tên'].includes('Nguyễn Tá Quan');
-                                    const isNat = (t['Tổ bộ môn'] || '').includes('Tự Nhiên');
-                                    return `
-                                        <tr style="${isQuan ? 'background: #eff6ff; font-weight: 700;' : ''}">
-                                            <td style="text-align: center; font-weight: 700; color: #64748b;">${t['TT']}</td>
-                                            <td style="font-weight: 700; color: ${isQuan ? '#1d4ed8' : '#0f172a'}; text-align: left;">
-                                                ${isQuan ? '⭐ ' : ''}${t['Họ và tên']}
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.2rem 0.55rem; border-radius: 12px; font-weight: 700; font-size: 0.75rem; border: 1px solid ${isNat ? '#a7f3d0' : '#fbcfe8'};">
-                                                    ${t['Tổ bộ môn']}
-                                                </span>
-                                            </td>
-                                            <td style="text-align: left; line-height: 1.5; color: #334155; white-space: pre-line;">${t['Phân công HK I'] || '—'}</td>
-                                            <td style="text-align: left; line-height: 1.5; color: #64748b; white-space: pre-line;">${t['Phân công HK II'] || '—'}</td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                ` : `
-                    <!-- VIEW 2: BẢNG MA TRẬN TIẾT GIẢNG DẠY THEO LỚP -->
-                    <div style="overflow-x: auto;">
-                        <table class="tkb-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 50px;">STT</th>
-                                    <th style="text-align: left;">Giáo Viên Phụ Trách</th>
-                                    <th>Tổ Bộ Môn</th>
-                                    <th>Môn Học</th>
-                                    <th>Lớp Học</th>
-                                    <th>Số Tiết/Tuần</th>
-                                    <th>Tiết Kép</th>
-                                    <th>Phòng Bộ Môn</th>
-                                    <th style="width: 100px;">Thao Tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${filteredAssignments.map((a, index) => {
-                                    const roomDef = a.roomReq ? this.engine.specialRooms.find(r => r.id === a.roomReq) : null;
-                                    const isQuan = a.teacher.includes('Nguyễn Tá Quan');
-                                    const isNat = (a.department || '').includes('Tự Nhiên');
-                                    const rawIndex = allAssignments.indexOf(a);
-
-                                    return `
-                                        <tr style="${isQuan ? 'background: #f0fdf4;' : ''}">
-                                            <td style="text-align: center; font-weight: 700; color: #64748b;">${index + 1}</td>
-                                            <td style="font-weight: 700; color: ${isQuan ? '#15803d' : '#1e293b'}; text-align: left;">
-                                                ${isQuan ? '👨‍🏫 ' : ''}${a.teacher}
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.72rem;">
-                                                    ${a.department || '—'}
-                                                </span>
-                                            </td>
-                                            <td><span style="font-weight: 600; color: #0f172a;">${a.subject}</span></td>
-                                            <td style="text-align: center;"><span style="background: #e0e7ff; color: #3730a3; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Lớp ${a.classId}</span></td>
-                                            <td style="text-align: center; font-weight: 800; color: #1d4ed8;">${a.periods} tiết/tuần</td>
-                                            <td style="text-align: center;">${a.doublePeriod ? '<span class="tkb-badge-double">Có (Tiết kép)</span>' : '<span style="color: #94a3b8;">Không</span>'}</td>
-                                            <td>${roomDef ? `<span class="tkb-badge-room">${roomDef.icon} ${roomDef.name}</span>` : '<span style="color: #94a3b8;">Phòng lớp</span>'}</td>
-                                            <td style="text-align: center;">
-                                                <button onclick="window.smartTKBUI.openPCCMModal(${rawIndex})" style="background: #3b82f6; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; margin-right: 0.25rem;">✏ Sửa</button>
-                                                <button onclick="window.smartTKBUI.deletePCCMRow(${rawIndex})" style="background: #ef4444; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">🗑 Xóa</button>
-                                            </td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `)}
+                ${bodyHtml}
             </div>
         `;
+    }
+
+    renderWorkloadTable() {
+        const workloadReport = this.engine.getTeacherWorkloadReport ? this.engine.getTeacherWorkloadReport() : [];
+        let html = `
+            <div style="margin-bottom: 0.75rem; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 0.65rem 1rem; border-radius: 8px; color: #065f46; font-size: 0.82rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                    📌 <strong>Giải pháp đột phá cho Quản lý Giáo dục:</strong> Tính đủ tiết giảng dạy chuyên môn, tiết HĐTN và các nhiệm vụ kiêm nhiệm (Chủ nhiệm, Tổ trưởng, Lab, CNTT, Đoàn Đội). Khai báo chuẩn xác lên vnEdu/SMAS/CSDL ngành theo định mức 17 tiết/tuần trường bán trú.
+                </div>
+                <button onclick="window.smartTKBUI.resetWorkloadRoles()" style="background: #ffffff; color: #047857; border: 1px solid #059669; padding: 0.25rem 0.65rem; border-radius: 4px; font-weight: 700; font-size: 0.75rem; cursor: pointer;">
+                    🔄 Khôi Phục Kiêm Nhiệm Gốc
+                </button>
+            </div>
+
+            <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px;">
+                <table class="tkb-table" id="workloadMasterTable" style="margin: 0; width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                    <thead>
+                        <tr style="background: #0f172a; color: #ffffff;">
+                            <th style="width: 45px; text-align: center;">STT</th>
+                            <th style="width: 190px; text-align: left;">Họ và Tên Giáo Viên</th>
+                            <th style="width: 110px; text-align: center;">Tổ Chuyên Môn</th>
+                            <th style="width: 140px; text-align: left;">Tiết Chuyên Môn</th>
+                            <th style="width: 130px; text-align: left;">HĐTN Gánh Giờ</th>
+                            <th style="text-align: left;">Nhiệm Vụ Kiêm Nhiệm Hỗ Trợ Trường</th>
+                            <th style="width: 95px; text-align: center;">Quy Đổi TT28</th>
+                            <th style="width: 90px; text-align: center;">Tổng Thực Nhận</th>
+                            <th style="width: 80px; text-align: center;">Định Mức</th>
+                            <th style="width: 130px; text-align: center;">Trạng Thái</th>
+                            <th style="width: 120px; text-align: center;">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        for (const r of workloadReport) {
+            const isNat = (r.department || '').includes('Tự Nhiên');
+            const rowBg = r.isQuan ? 'background: #f0fdf4;' : (r.index % 2 === 0 ? 'background: #f8fafc;' : 'background: #ffffff;');
+
+            let badgeHtml = '';
+            if (r.diff === 0) {
+                badgeHtml = '<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">✅ Chuẩn 17 tiết</span>';
+            } else if (r.diff > 0) {
+                badgeHtml = `<span style="background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">🟢 Thừa +${r.diff} tiết</span>`;
+            } else {
+                badgeHtml = `<span style="background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">⚠️ Thiếu ${r.diff} tiết</span>`;
+            }
+
+            const rolesListHtml = r.roles.length > 0 ? r.roles.map(role => `
+                <div style="font-size: 0.74rem; line-height: 1.4; color: #334155; margin-bottom: 2px;">
+                    • <strong>${role.name}</strong> <span style="color: #64748b;">(-${role.reduced}t: ${role.note})</span>
+                </div>
+            `).join('') : '<span style="color: #94a3b8; font-style: italic;">Giảng dạy thuần túy</span>';
+
+            html += `
+                <tr style="${rowBg}">
+                    <td style="text-align: center; font-weight: 700; color: #64748b;">${r.index}</td>
+                    <td style="font-weight: 700; color: ${r.isQuan ? '#15803d' : '#0f172a'}; text-align: left;">
+                        ${r.isQuan ? '⭐ ' : ''}${r.teacherName}
+                    </td>
+                    <td style="text-align: center;">
+                        <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 700; font-size: 0.72rem; border: 1px solid ${isNat ? '#a7f3d0' : '#fbcfe8'};">
+                            ${r.department}
+                        </span>
+                    </td>
+                    <td style="text-align: left; line-height: 1.3;">
+                        <strong style="color: #1e293b;">${r.academicPeriods} tiết</strong>
+                        <div style="font-size: 0.7rem; color: #64748b;">${r.academicSubjects}</div>
+                    </td>
+                    <td style="text-align: left; line-height: 1.3;">
+                        <strong style="color: ${r.hdtnPeriods > 0 ? '#0e7490' : '#94a3b8'};">${r.hdtnPeriods} tiết</strong>
+                        <div style="font-size: 0.7rem; color: #64748b;">${r.hdtnSubjects}</div>
+                    </td>
+                    <td style="text-align: left;">
+                        ${rolesListHtml}
+                    </td>
+                    <td style="text-align: center; font-weight: 800; color: #b45309;">
+                        -${r.reducedTotal} tiết
+                    </td>
+                    <td style="text-align: center; font-weight: 800; font-size: 0.9rem; color: ${r.finalTotal >= 17 ? '#15803d' : '#b91c1c'};">
+                        ${r.finalTotal}
+                    </td>
+                    <td style="text-align: center; font-weight: 700; color: #64748b;">
+                        ${r.standardQuota}
+                    </td>
+                    <td style="text-align: center;">
+                        ${badgeHtml}
+                    </td>
+                    <td style="text-align: center;">
+                        <button onclick="window.smartTKBUI.openEditRoleModal('${r.teacherName}')" style="background: #2563eb; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; margin-right: 2px;" title="Tùy chỉnh vai trò kiêm nhiệm">
+                            ✏️ Sửa
+                        </button>
+                        <button onclick="window.smartTKBUI.openTeachingScheduleModal('${r.teacherName}')" style="background: #059669; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer;" title="Xem lịch báo giảng">
+                            📋 Lịch
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        html += `</tbody></table></div>`;
+        return html;
+    }
+
+    renderAnnualTable() {
+        const report = this.engine.getAnnualWorkloadSettlement ? this.engine.getAnnualWorkloadSettlement() : [];
+        let html = `
+            <div style="margin-bottom: 0.75rem; background: #eef2ff; border: 1px solid #c7d2fe; padding: 0.75rem 1rem; border-radius: 8px; color: #3730a3; font-size: 0.82rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                    📌 <strong>Căn cứ Điều 5 & Điều 6 Thông tư 28/2009/TT-BGDĐT:</strong> Định mức tiết dạy của giáo viên trường phổ thông dân tộc bán trú là 17 tiết/tuần. Tổng số tiết định mức trong cả năm học = 17 tiết x 35 tuần = <strong>595 tiết/năm</strong>. Cho phép bù trừ linh hoạt giữa Học kỳ I (18 tuần) và Học kỳ II (17 tuần).
+                </div>
+                <button onclick="window.smartTKBUI.exportAnnualSettlementCSV()" style="background: #4338ca; color: #fff; border: none; padding: 0.35rem 0.85rem; border-radius: 6px; font-weight: 700; font-size: 0.78rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;">
+                    <span>📥</span> <span>Xuất CSV Quyết Toán Cả Năm</span>
+                </button>
+            </div>
+
+            <div style="overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px;">
+                <table class="tkb-table" style="margin: 0; width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                    <thead>
+                        <tr style="background: #1e1b4b; color: #ffffff;">
+                            <th style="width: 45px; text-align: center;">STT</th>
+                            <th style="width: 200px; text-align: left;">Họ và Tên Giáo Viên</th>
+                            <th style="width: 110px; text-align: center;">Tổ Chuyên Môn</th>
+                            <th style="width: 90px; text-align: center;">Dạy HK I/Tuần</th>
+                            <th style="width: 90px; text-align: center;">Dạy HK II/Tuần</th>
+                            <th style="width: 110px; text-align: center;">Tổng Tiết Dạy Cả Năm (35t)</th>
+                            <th style="width: 120px; text-align: center;">Kiêm Nhiệm Cả Năm (TT28)</th>
+                            <th style="width: 110px; text-align: center;">Tổng Thực Hiện Cả Năm</th>
+                            <th style="width: 90px; text-align: center;">Định Mức Năm</th>
+                            <th style="width: 130px; text-align: center;">Trạng Thái Quyết Toán</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        for (const r of report) {
+            const isNat = (r.department || '').includes('Tự Nhiên');
+            const rowBg = r.isQuan ? 'background: #f0fdf4;' : (r.index % 2 === 0 ? 'background: #f8fafc;' : 'background: #ffffff;');
+
+            let badgeHtml = '';
+            if (r.diffAnnual === 0) {
+                badgeHtml = '<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">✅ Chuẩn 595 tiết</span>';
+            } else if (r.diffAnnual > 0) {
+                badgeHtml = `<span style="background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">🟢 Thừa +${r.diffAnnual} tiết</span>`;
+            } else {
+                badgeHtml = `<span style="background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800; font-size: 0.72rem;">⚠️ Thiếu ${r.diffAnnual} tiết</span>`;
+            }
+
+            html += `
+                <tr style="${rowBg}">
+                    <td style="text-align: center; font-weight: 700; color: #64748b;">${r.index}</td>
+                    <td style="font-weight: 700; color: ${r.isQuan ? '#15803d' : '#0f172a'}; text-align: left;">
+                        ${r.isQuan ? '⭐ ' : ''}${r.teacherName}
+                    </td>
+                    <td style="text-align: center;">
+                        <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 700; font-size: 0.72rem; border: 1px solid ${isNat ? '#a7f3d0' : '#fbcfe8'};">
+                            ${r.department}
+                        </span>
+                    </td>
+                    <td style="text-align: center; font-weight: 700; color: #c2410c;">
+                        ${r.teachingHK1} tiết
+                    </td>
+                    <td style="text-align: center; font-weight: 700; color: #059669;">
+                        ${r.teachingHK2} tiết
+                    </td>
+                    <td style="text-align: center; font-weight: 800; color: #1e293b;">
+                        ${r.annualTeaching} tiết
+                    </td>
+                    <td style="text-align: center; font-weight: 700; color: #b45309;">
+                        -${r.annualReduced} tiết
+                    </td>
+                    <td style="text-align: center; font-weight: 800; font-size: 0.95rem; color: ${r.annualFinal >= 595 ? '#15803d' : '#b91c1c'};">
+                        ${r.annualFinal} tiết
+                    </td>
+                    <td style="text-align: center; font-weight: 800; color: #64748b;">
+                        595 tiết
+                    </td>
+                    <td style="text-align: center;">
+                        ${badgeHtml}
+                    </td>
+                </tr>
+            `;
+        }
+
+        html += `</tbody></table></div>`;
+        return html;
+    }
+
+    renderOfficialPCCMTable() {
+        const officialList = this.engine.officialPCCM || [];
+        let html = `
+            <div style="margin-bottom: 0.75rem; background: #fff1f2; border: 1px solid #fecdd3; padding: 0.6rem 1rem; border-radius: 8px; color: #9f1239; font-size: 0.82rem; font-weight: 600;">
+                📌 Đây là bản Phân công chuyên môn chính thức năm học 2026 - 2027 được phê duyệt của Trường THCS Bán Trú Canh Thuận gồm đúng 20 Thầy Cô giáo chủ chốt.
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="tkb-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">TT</th>
+                            <th style="width: 220px; text-align: left;">Họ và Tên</th>
+                            <th style="width: 140px;">Tổ Bộ Môn</th>
+                            <th style="text-align: left;">Phân Công Học Kỳ I</th>
+                            <th style="text-align: left;">Phân Công Học Kỳ II</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        for (const t of officialList) {
+            const isQuan = t['Họ và tên'].includes('Nguyễn Tá Quan');
+            const isNat = (t['Tổ bộ môn'] || '').includes('Tự Nhiên');
+            html += `
+                <tr style="${isQuan ? 'background: #eff6ff; font-weight: 700;' : ''}">
+                    <td style="text-align: center; font-weight: 700; color: #64748b;">${t['TT']}</td>
+                    <td style="font-weight: 700; color: ${isQuan ? '#1d4ed8' : '#0f172a'}; text-align: left;">
+                        ${isQuan ? '⭐ ' : ''}${t['Họ và tên']}
+                    </td>
+                    <td style="text-align: center;">
+                        <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.2rem 0.55rem; border-radius: 12px; font-weight: 700; font-size: 0.75rem; border: 1px solid ${isNat ? '#a7f3d0' : '#fbcfe8'};">
+                            ${t['Tổ bộ môn']}
+                        </span>
+                    </td>
+                    <td style="text-align: left; line-height: 1.5; color: #334155; white-space: pre-line;">${t['Phân công HK I'] || '—'}</td>
+                    <td style="text-align: left; line-height: 1.5; color: #64748b; white-space: pre-line;">${t['Phân công HK II'] || '—'}</td>
+                </tr>
+            `;
+        }
+
+        html += `</tbody></table></div>`;
+        return html;
+    }
+
+    renderDetailAssignmentsTable() {
+        const allAssignments = this.engine.assignments || [];
+        let filtered = allAssignments;
+        if (this.pccmFilter === 'Tổ Tự Nhiên') {
+            filtered = allAssignments.filter(a => a.department === 'Tổ Tự Nhiên');
+        } else if (this.pccmFilter === 'Tổ Xã Hội') {
+            filtered = allAssignments.filter(a => a.department === 'Tổ Xã Hội');
+        }
+
+        let html = `
+            <div style="overflow-x: auto;">
+                <table class="tkb-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">STT</th>
+                            <th style="text-align: left;">Giáo Viên Phụ Trách</th>
+                            <th>Tổ Bộ Môn</th>
+                            <th>Môn Học</th>
+                            <th>Lớp Học</th>
+                            <th>Số Tiết/Tuần</th>
+                            <th>Tiết Kép</th>
+                            <th>Phòng Bộ Môn</th>
+                            <th style="width: 100px;">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        filtered.forEach((a, index) => {
+            const roomDef = a.roomReq ? this.engine.specialRooms.find(r => r.id === a.roomReq) : null;
+            const isQuan = a.teacher.includes('Nguyễn Tá Quan');
+            const isNat = (a.department || '').includes('Tự Nhiên');
+            const rawIndex = allAssignments.indexOf(a);
+
+            html += `
+                <tr style="${isQuan ? 'background: #f0fdf4;' : ''}">
+                    <td style="text-align: center; font-weight: 700; color: #64748b;">${index + 1}</td>
+                    <td style="font-weight: 700; color: ${isQuan ? '#15803d' : '#1e293b'}; text-align: left;">
+                        ${isQuan ? '👨‍🏫 ' : ''}${a.teacher}
+                    </td>
+                    <td style="text-align: center;">
+                        <span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.72rem;">
+                            ${a.department || '—'}
+                        </span>
+                    </td>
+                    <td><span style="font-weight: 600; color: #0f172a;">${a.subject}</span></td>
+                    <td style="text-align: center;"><span style="background: #e0e7ff; color: #3730a3; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Lớp ${a.classId}</span></td>
+                    <td style="text-align: center; font-weight: 800; color: #1d4ed8;">${a.periods} tiết/tuần</td>
+                    <td style="text-align: center;">${a.doublePeriod ? '<span class="tkb-badge-double">Có (Tiết kép)</span>' : '<span style="color: #94a3b8;">Không</span>'}</td>
+                    <td>${roomDef ? `<span class="tkb-badge-room">${roomDef.icon} ${roomDef.name}</span>` : '<span style="color: #94a3b8;">Phòng lớp</span>'}</td>
+                    <td style="text-align: center;">
+                        <button onclick="window.smartTKBUI.openPCCMModal(${rawIndex})" style="background: #3b82f6; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; margin-right: 0.25rem;">✏ Sửa</button>
+                        <button onclick="window.smartTKBUI.deletePCCMRow(${rawIndex})" style="background: #ef4444; color: #fff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">🗑 Xóa</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += `</tbody></table></div>`;
+        return html;
     }
 setPCCMFilter(filterName) {
         this.pccmFilter = filterName;
