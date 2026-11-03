@@ -707,11 +707,11 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
 
         // Bảng màu phân biệt từng khối lớp chuẩn sư phạm (tối ưu thị giác, hài hòa)
         const gradePalette = {
-            '1': '#1e3a8a', '2': '#065f46', '3': '#831843', '4': '#581c87', '5': '#0f766e',
-            '6': '#1e3a8a', '7': '#065f46', '8': '#831843', '9': '#581c87',
-            '10': '#0f766e', '11': '#b45309', '12': '#c2410c'
+            '1': '#0284c7', '2': '#059669', '3': '#dc2626', '4': '#7c3aed', '5': '#0f766e',
+            '6': '#0369a1', '7': '#047857', '8': '#be123c', '9': '#6d28d9',
+            '10': '#0f766e', '11': '#c2410c', '12': '#4338ca'
         };
-        const fallbackColors = ['#1e3a8a', '#065f46', '#831843', '#581c87', '#0f766e', '#b45309', '#c2410c', '#334155'];
+        const fallbackColors = ['#0369a1', '#047857', '#be123c', '#6d28d9', '#0f766e', '#c2410c', '#4338ca', '#334155'];
 
         // Sinh HTML các nút bộ lọc khối lớp tự động theo đúng dữ liệu lớp
         let gradeFilterButtonsHtml = `
@@ -799,7 +799,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 const isQuanGrade = gClasses.includes('8A1');
                 const label = isNaN(gKey) ? gKey : `KHỐI ${gKey}${isQuanGrade ? ' ⭐' : ''}`;
                 return `
-                    <th colspan="${gClasses.length}" style="text-align: center; background: ${bg}; border-right: ${isLast ? 'none' : '2px solid #64748b'}; padding: 4px 2px; font-weight: 800; font-size: ${headerFontSize};">
+                    <th class="grade-header-th" colspan="${gClasses.length}" style="text-align: center; background: ${bg} !important; color: #ffffff !important; border-right: ${isLast ? 'none' : '2px solid rgba(255,255,255,0.4)'}; padding: 5px 2px; font-weight: 900; font-size: 0.80rem; text-shadow: 0 1px 2px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
                         ${label}
                     </th>
                 `;
@@ -920,16 +920,19 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     <table class="tkb-table tkb-master-table" style="width: 100%; min-width: 860px; table-layout: fixed; margin: 0; border-collapse: collapse; font-size: ${subjectFontSize}; background: #ffffff; border: 1px solid #cbd5e1;">
                         <thead>
                             <tr style="background: #0f172a; color: #ffffff;">
-                                <th rowspan="2" style="width: ${colDayWidth}; text-align: center; border-right: 1px solid #334155; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800;">Thứ</th>
-                                <th rowspan="2" style="width: ${colPeriodWidth}; text-align: center; border-right: 2px solid #64748b; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800;">Tiết</th>
+                                <th rowspan="2" style="width: ${colDayWidth}; text-align: center; border-right: 1px solid #334155; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800; background: #0f172a !important; color: #ffffff !important;">Thứ</th>
+                                <th rowspan="2" style="width: ${colPeriodWidth}; text-align: center; border-right: 2px solid #64748b; padding: 4px 2px; font-size: ${headerFontSize}; font-weight: 800; background: #0f172a !important; color: #ffffff !important;">Tiết</th>
                                 ${dynamicTopHeadersHtml}
                             </tr>
-                            <tr style="background: #1e293b; color: #ffffff;">
+                            <tr style="background: #f8fafc;">
                                 ${classes.map((c, cIdx) => {
                                     const isQuanClass = (c === '8A1');
                                     const isLastOfGrade = (cIdx === classes.length - 1) || (classes[cIdx + 1] && classes[cIdx + 1].match(/^(\d+)/) && c.match(/^(\d+)/) && classes[cIdx + 1].match(/^(\d+)/)[1] !== c.match(/^(\d+)/)[1]);
+                                    const classStyle = isQuanClass
+                                        ? 'background: #1d4ed8 !important; color: #ffffff !important; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.3);'
+                                        : 'background: #ffffff !important; color: #0f172a !important; font-weight: 800;';
                                     return `
-                                        <th style="width: ${colClassWidth}; text-align: center; padding: 4px 2px; font-weight: 800; font-size: ${headerFontSize}; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #334155'}; background: ${isQuanClass ? '#2563eb' : ''};">
+                                        <th style="width: ${colClassWidth}; text-align: center; padding: 4px 2px; font-size: ${headerFontSize}; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #cbd5e1'}; border-bottom: 2px solid #94a3b8; ${classStyle}">
                                             ${c}${isQuanClass ? ' ⭐' : ''}
                                         </th>
                                     `;

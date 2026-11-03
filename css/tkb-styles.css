@@ -491,3 +491,8 @@
 .tkb-master-table th {
     vertical-align: middle !important;
 }
+
+.tkb-master-table th.grade-header-th {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
+}
