@@ -20,7 +20,7 @@ import { SmartTKBUI } from './tkb-ui.js?v=3.10.34';
 
 class EduStudioApp {
         syncVersionLabels() {
-        const label = 'v3.10.36 GDMN & GDPT';
+        const label = 'v3.10.37 GDMN & GDPT';
         document.querySelectorAll('.badge-version-gold, [data-version-badge]').forEach(el => {
             el.textContent = label;
         });
@@ -42,13 +42,13 @@ class EduStudioApp {
         } else {
             this.currentUser = {
                 name: "Thầy Nguyễn Tá Quan",
-                email: "quannt@edustudio.edu.vn",
+                email: "nguyentaquan@gmail.com",
                 role: "admin", // 'admin' hoặc 'member'
-                school: "Chuyên gia Giáo dục & CNTT",
-                cccd: "03808500xxxx",
-                phone: "0912.345.678",
+                school: "Trường THCS Bán Trú Canh Thuận",
+                cccd: "",
+                phone: "",
                 subject: "HĐTN-HN, KHTN, Tin học",
-                points: 125, // Điểm cống hiến
+                points: 500, // Điểm cống hiến thực tế
                 avatarEmoji: "👨‍🏫",
                 isLoggedIn: true
             };
@@ -1240,8 +1240,8 @@ class EduStudioApp {
                 school: accountData.school || 'Cơ sở Giáo dục GDMN & GDPT',
                 cccd: accountData.cccd || '',
                 phone: accountData.phone || '',
-                subject: accountData.subject || 'HĐTN-HN, KHTN, Tin học...',
-                points: accountData.points !== undefined ? accountData.points : 125,
+                subject: accountData.subject || 'Giáo viên bộ môn',
+                points: accountData.points !== undefined ? accountData.points : 0,
                 avatarEmoji: accountData.avatarEmoji || (accountData.role === 'admin' ? '👑' : (accountData.role === 'vip_pro' ? '💎' : '👨‍🏫')),
                 isLoggedIn: true
             };
@@ -1249,6 +1249,8 @@ class EduStudioApp {
             const inputEmail = document.getElementById('authCustomEmail')?.value.trim();
             const inputName = document.getElementById('authCustomName')?.value.trim();
             const inputSchool = document.getElementById('authCustomSchool')?.value.trim();
+            const inputPhone = document.getElementById('authCustomPhone')?.value.trim() || '';
+            const inputSubject = document.getElementById('authCustomSubject')?.value.trim() || 'Giáo viên bộ môn';
             const inputRole = document.getElementById('authCustomRole')?.value || 'member';
 
             if (inputEmail) {
@@ -1258,22 +1260,22 @@ class EduStudioApp {
                     role: inputRole,
                     school: inputSchool || 'Cơ sở Giáo dục',
                     cccd: '',
-                    phone: '',
-                    subject: 'Giáo viên bộ môn',
-                    points: 125,
+                    phone: inputPhone,
+                    subject: inputSubject,
+                    points: 0,
                     avatarEmoji: inputRole === 'admin' ? '👑' : (inputRole === 'vip_pro' ? '💎' : '👨‍🏫'),
                     isLoggedIn: true
                 };
             } else {
                 user = {
                     name: "Thầy Nguyễn Tá Quan",
-                    email: "quannt@edustudio.edu.vn",
+                    email: "nguyentaquan@gmail.com",
                     role: "admin",
-                    school: "Chuyên gia Giáo dục & CNTT",
-                    cccd: "03808500xxxx",
-                    phone: "0912.345.678",
+                    school: "Trường THCS Bán Trú Canh Thuận",
+                    cccd: "",
+                    phone: "",
                     subject: "HĐTN-HN, KHTN, Tin học",
-                    points: 125,
+                    points: 500,
                     avatarEmoji: "👨‍🏫",
                     isLoggedIn: true
                 };
@@ -1290,19 +1292,19 @@ class EduStudioApp {
 
         document.getElementById('authModal')?.classList.remove('active');
         sound.playFanfare();
-        alert(`🎉 [ĐĂNG NHẬP GOOGLE THÀNH CÔNG!]\nChào mừng ${this.currentUser.name}\nEmail: ${this.currentUser.email}\nVai trò: ${this.currentUser.role === 'admin' ? '👑 Quản Trị Master' : (this.currentUser.role === 'vip_pro' ? '💎 VIP PRO' : '👨‍🏫 Thành Viên Chuẩn')}`);
+        alert(`🎉 [ĐĂNG NHẬP GOOGLE THÀNH CÔNG!]\nChào mừng: ${this.currentUser.name}\nEmail: ${this.currentUser.email}\nĐơn vị: ${this.currentUser.school}\nVai trò: ${this.currentUser.role === 'admin' ? '👑 Quản Trị Master' : (this.currentUser.role === 'vip_pro' ? '💎 VIP PRO' : '👨‍🏫 Thành Viên Chuẩn')}`);
     }
 
     loginWithQRCode() {
         this.currentUser = {
             name: "Thầy Nguyễn Tá Quan",
-            email: "quannt@edustudio.edu.vn",
+            email: "nguyentaquan@gmail.com",
             role: "admin",
-            school: "Chuyên gia Giáo dục & CNTT",
-            cccd: "03808500xxxx",
-            phone: "0912.345.678",
+            school: "Trường THCS Bán Trú Canh Thuận",
+            cccd: "",
+            phone: "",
             subject: "HĐTN-HN, KHTN, Tin học",
-            points: 125,
+            points: 500,
             avatarEmoji: "👨‍🏫",
             isLoggedIn: true
         };
@@ -1311,7 +1313,7 @@ class EduStudioApp {
         this.checkAdminStorageVisibility();
         document.getElementById('authModal')?.classList.remove('active');
         sound.playFanfare();
-        alert("📷 [QUÉT MÃ QR THÀNH CÔNG!]\nXác thực thẻ giáo viên an toàn 2 lớp thành công.\nChào mừng Thầy Nguyễn Tá Quan!");
+        alert("📷 [QUÉT MÃ QR THÀNH CÔNG!]\nXác thực thẻ giáo viên an toàn 2 lớp thành công.\nChào mừng Thầy Nguyễn Tá Quan (nguyentaquan@gmail.com)!");
     }
 
     logout() {
@@ -1341,7 +1343,8 @@ class EduStudioApp {
         const u = this.currentUser || {};
         document.getElementById('profDisplayName').textContent = u.name || 'Thành Viên';
         document.getElementById('profEmailDisplay').textContent = u.email || 'Chưa liên kết email';
-        document.getElementById('profPointsDisplay').textContent = `🪙 Điểm tích lũy: ${u.points || 125} điểm`;
+        const userPts = (u.points !== undefined && u.points !== null) ? u.points : 0;
+        document.getElementById('profPointsDisplay').textContent = `🪙 Điểm tích lũy: ${userPts} điểm`;
         document.getElementById('profFullName').value = u.name || '';
         document.getElementById('profSchool').value = u.school || '';
         document.getElementById('profCCCD').value = u.cccd || '';
@@ -1402,10 +1405,10 @@ class EduStudioApp {
         const tickerEl = document.getElementById('tickerText');
         if (!tickerEl) return;
         const messages = [
-            "Hệ thống EduStudio v3.10.36 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
+            "Hệ thống EduStudio v3.10.37 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
             "Cô Hoàng Mai vừa tạo bộ trò chơi 'Đoán Con Vật Mầm Non' tương tác trực quan",
             "Thầy Lê Hải vừa biên soạn đề kiểm tra Giữa kỳ I môn Toán 7 chuẩn 3 dạng TNKQ",
-            "Hệ thống EduStudio v3.10.36 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
+            "Hệ thống EduStudio v3.10.37 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
             "Xưởng Video Studio đã hoàn tất kịch bản Audio-Driven Lip-Sync 3D"
         ];
         let idx = 0;
@@ -1448,41 +1451,25 @@ class EduStudioApp {
     switchUserRole(newRole) {
         sound.playClick();
         if (!this.currentUser) {
-            this.currentUser = { name: "Thầy Nguyễn Tá Quan", email: "quannt@edustudio.edu.vn" };
+            this.currentUser = { name: "Thầy Nguyễn Tá Quan", email: "nguyentaquan@gmail.com" };
         }
 
         this.currentUser.role = newRole;
         this.currentUser.isLoggedIn = (newRole !== 'guest');
 
         if (newRole === 'admin') {
-            this.currentUser.name = "Thầy Nguyễn Tá Quan";
-            this.currentUser.email = "quannt@edustudio.edu.vn";
-            this.currentUser.points = 9999;
-            this.currentUser.demoUses = 999;
-            this.currentUser.avatarEmoji = "👨‍🏫";
+            this.currentUser.avatarEmoji = "👑";
+            if (!this.currentUser.email) this.currentUser.email = "nguyentaquan@gmail.com";
         } else if (newRole === 'vip_pro') {
-            this.currentUser.name = "Thầy Nguyễn Tá Quan (VIP PRO)";
-            this.currentUser.email = "quannt@edustudio.edu.vn";
-            this.currentUser.points = 2500;
-            this.currentUser.demoUses = 999;
             this.currentUser.avatarEmoji = "💎";
         } else if (newRole === 'vip') {
-            this.currentUser.name = "Thầy Nguyễn Tá Quan (VIP)";
-            this.currentUser.email = "quannt@edustudio.edu.vn";
-            this.currentUser.points = 800;
-            this.currentUser.demoUses = 999;
             this.currentUser.avatarEmoji = "⭐";
         } else if (newRole === 'member') {
-            this.currentUser.name = "Giáo Viên Thành Viên";
-            this.currentUser.email = "giaovien.kntt@gmail.com";
-            this.currentUser.points = 120;
-            this.currentUser.demoUses = 8;
             this.currentUser.avatarEmoji = "👨‍🏫";
         } else if (newRole === 'guest') {
             this.currentUser.name = "Khách Vãng Lai";
             this.currentUser.email = "";
             this.currentUser.points = 0;
-            this.currentUser.demoUses = 2;
             this.currentUser.avatarEmoji = "👤";
         }
 
@@ -1523,7 +1510,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         const defaultLogs = [
             { id: "LOG-1001", time: "2026-11-04 00:32:10", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Kích hoạt chế độ Hoán đổi tiết 1 chạm (Click-to-Swap)", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
             { id: "LOG-1002", time: "2026-11-04 00:28:45", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tinh chỉnh đệm lề và ép gọn kích thước ô bàn cờ TKB chuẩn 32px", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
-            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.36 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
+            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.37 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
             { id: "LOG-1004", time: "2026-11-03 23:45:00", user: "Cô Hà Thị Thúy Hòa", role: "Nhóm 4: Giáo Viên", action: "Xem thời khóa biểu Lớp 6A2 môn Tin Học", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
             { id: "LOG-1005", time: "2026-11-03 23:15:20", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tạo Đề Kiểm Tra Giữa Kỳ I HĐTN 8 chuẩn ma trận & đặc tả BGDĐT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" },
             { id: "LOG-1006", time: "2026-11-03 22:50:11", user: "Cô Dương Thị Ngọc Lành", role: "Nhóm 4: Giáo Viên", action: "Đăng nhập xác thực tài khoản Google SSO", module: "Xác Thực", type: "auth", status: "Thành công" },
@@ -1721,7 +1708,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             </div>
                             <div class="google-account-name">${this.currentUser.name}</div>
                             <div style="margin-top:0.35rem;">${roleDisplay}</div>
-                            <div style="font-size:0.72rem; color:#64748b; margin-top:0.25rem;">${this.currentUser.school || 'Chuyên gia Giáo dục & CNTT'}</div>
+                            <div style="font-size:0.72rem; color:#64748b; margin-top:0.25rem;">${this.currentUser.school || 'Trường THCS Bán Trú Canh Thuận'}</div>
 
                             <!-- BỘ CHUYỂN ĐỔI NHANH 5 VAI TRÒ DÀNH CHO THẦY KIỂM THỬ -->
                             <div style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:8px; padding:0.45rem 0.6rem; margin-top:0.6rem; text-align:left;">
@@ -1748,7 +1735,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
                             <div class="google-stat-pill">
                                 <span>🪙 Điểm cống hiến:</span>
-                                <strong style="color:#059669; font-size:0.85rem;">${this.currentUser.points || 125} điểm</strong>
+                                <strong style="color:#059669; font-size:0.85rem;">${(this.currentUser.points !== undefined && this.currentUser.points !== null) ? this.currentUser.points : 0} điểm</strong>
                             </div>
                             <div style="font-size: 0.72rem; color: #475569; line-height: 1.5; padding: 0 0.2rem;">
                                 <div>• Tích điểm: <strong>+5 điểm</strong> khi đóng góp được duyệt</div>
@@ -8473,7 +8460,7 @@ D. Nói xấu sau lưng bạn với những người khác
             {
                 id: "user_001",
                 name: "Thầy Nguyễn Tá Quan",
-                email: "quannt@edustudio.edu.vn",
+                email: "nguyentaquan@gmail.com",
                 cccd: "052084000123",
                 school: "Ban Quản Trị Hệ Thống EduStudio",
                 grade: "management",
@@ -10501,7 +10488,7 @@ function launchEduStudio() {
         try {
             window.app = new EduStudioApp();
             window.__appLoaded = true;
-            console.log("EduStudio v3.10.36 GDMN & GDPT Master đã khởi tạo thành công!");
+            console.log("EduStudio v3.10.37 GDMN & GDPT Master đã khởi tạo thành công!");
         } catch (err) {
             console.error("Lỗi khởi tạo EduStudio:", err);
         }

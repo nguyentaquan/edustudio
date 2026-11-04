@@ -101,7 +101,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.36 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.37 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -139,13 +139,13 @@
                             if (!u) {
                                 u = {
                                     name: "Thầy Nguyễn Tá Quan",
-                                    email: "quannt@edustudio.edu.vn",
+                                    email: "nguyentaquan@gmail.com",
                                     role: "admin",
-                                    school: "Chuyên gia Giáo dục & CNTT",
-                                    cccd: "03808500xxxx",
-                                    phone: "0912.345.678",
+                                    school: "Trường THCS Bán Trú Canh Thuận",
+                                    cccd: "",
+                                    phone: "",
                                     subject: "HĐTN-HN, KHTN, Tin học",
-                                    points: 125,
+                                    points: 500,
                                     avatarEmoji: "👨‍🏫",
                                     isLoggedIn: true
                                 };
@@ -158,7 +158,8 @@
                                     if (u.role === 'admin') roleBadge = '<span class="role-badge-admin">👑 Nhóm 1: Quản Trị</span>';
                                     else if (u.role === 'vip_pro') roleBadge = '<span class="role-badge-vip-pro">💎 Nhóm 2: VIP PRO</span>';
                                     else if (u.role === 'vip') roleBadge = '<span class="role-badge-vip">⭐ Nhóm 3: VIP</span>';
-                                    zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span>' + roleBadge + '</div><div class="banner-user-points"><span>🪙 ' + (u.points || 125) + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">• Gói Demo: ∞</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button><button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web">🔍</button></div>';
+                                    var pts = (u.points !== undefined && u.points !== null) ? u.points : 0;
+                                    zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span>' + roleBadge + '</div><div class="banner-user-points"><span>🪙 ' + pts + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">• Gói Demo: ∞</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button><button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web">🔍</button></div>';
                                 } else {
                                     zone.innerHTML = '<button id="btnOpenAuthModal" class="btn-banner-login" onclick="document.getElementById(\'authModal\')?.classList.add(\'active\');"><span>👤</span> <span>ĐĂNG NHẬP</span></button>';
                                 }
@@ -1957,7 +1958,7 @@
                             </div>
                             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                                 <span class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">
-                                    Phiên bản: v3.10.36 GDMN & GDPT
+                                    Phiên bản: v3.10.37 GDMN & GDPT
                                 </span>
                             </div>
                         </div>
@@ -3516,12 +3517,12 @@ window.openPPCTDirect = function() {
                     ⚡ Chọn Tài Khoản Đăng Nhập Nhanh:
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem;">
-                    <button type="button" onclick="window.app && window.app.loginWithGoogle({ name: 'Thầy Nguyễn Tá Quan', email: 'quannt@edustudio.edu.vn', role: 'admin', school: 'Chuyên gia Giáo dục & CNTT' })" style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; border: 1.5px solid #bfdbfe; border-radius: 8px; background: #eff6ff; cursor: pointer; text-align: left; transition: all 0.15s ease;" onmouseover="this.style.background='#dbeafe';" onmouseout="this.style.background='#eff6ff';">
+                    <button type="button" onclick="window.app && window.app.loginWithGoogle({ name: 'Thầy Nguyễn Tá Quan', email: 'nguyentaquan@gmail.com', role: 'admin', school: 'Trường THCS Bán Trú Canh Thuận', subject: 'HĐTN-HN, KHTN, Tin học', phone: '', cccd: '', points: 500 })" style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; border: 1.5px solid #bfdbfe; border-radius: 8px; background: #eff6ff; cursor: pointer; text-align: left; transition: all 0.15s ease;" onmouseover="this.style.background='#dbeafe';" onmouseout="this.style.background='#eff6ff';">
                         <div style="display: flex; align-items: center; gap: 0.6rem;">
                             <span style="font-size: 1.3rem;">👑</span>
                             <div>
                                 <strong style="font-size: 0.82rem; color: #1e3a8a; display: block;">Thầy Nguyễn Tá Quan</strong>
-                                <span style="font-size: 0.72rem; color: #2563eb;">quannt@edustudio.edu.vn</span>
+                                <span style="font-size: 0.72rem; color: #2563eb;">nguyentaquan@gmail.com • THCS Canh Thuận</span>
                             </div>
                         </div>
                         <span style="background: #1e3a8a; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;">Admin Master</span>
@@ -3571,6 +3572,17 @@ window.openPPCTDirect = function() {
                         <div>
                             <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">🏫 Cơ Sở Giáo Dục:</label>
                             <input type="text" id="authCustomSchool" placeholder="Ví dụ: THCS Canh Thuận" style="width: 100%; padding: 0.45rem 0.65rem; font-size: 0.82rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">📱 Số Điện Thoại (Tùy chọn):</label>
+                            <input type="tel" id="authCustomPhone" placeholder="Số điện thoại thực tế..." style="width: 100%; padding: 0.45rem 0.65rem; font-size: 0.82rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">📚 Môn Giảng Dạy:</label>
+                            <input type="text" id="authCustomSubject" placeholder="Ví dụ: Toán, KHTN, Tin học..." style="width: 100%; padding: 0.45rem 0.65rem; font-size: 0.82rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
                         </div>
                     </div>
 
@@ -3624,10 +3636,10 @@ window.openPPCTDirect = function() {
                         <strong id="profDisplayName" style="font-size: 0.95rem; color: #0f172a;">Thầy Nguyễn Tá Quan</strong>
                         <span class="badge-tag-tiny" id="profRoleBadge" style="background: #f59e0b; color: #ffffff;">Admin</span>
                     </div>
-                    <div id="profEmailDisplay" style="font-size: 0.75rem; color: #64748b;">quannt@edustudio.edu.vn</div>
+                    <div id="profEmailDisplay" style="font-size: 0.75rem; color: #64748b;">nguyentaquan@gmail.com</div>
                     <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.35rem;">
                         <span class="badge-tag-tiny" style="background: #ecfdf5; color: #047857; font-weight: 700;" id="profPointsDisplay">
-                            🪙 Điểm tích lũy: 125 điểm
+                            🪙 Điểm tích lũy: 0 điểm
                         </span>
                         <span style="font-size: 0.7rem; color: #059669; font-weight: 600;">(+5 điểm khi được duyệt / -5 điểm khi tải về)</span>
                     </div>
@@ -4014,7 +4026,7 @@ window.openPPCTDirect = function() {
         <span class="footer-dot-sep">•</span>
         <span>Định hướng & Bản quyền chuyên môn: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
         <span class="footer-dot-sep">•</span>
-        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.36 GDMN & GDPT</span>
+        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.37 GDMN & GDPT</span>
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->
