@@ -101,7 +101,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.39 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.40 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -1960,7 +1960,7 @@
                             </div>
                             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                                 <span class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">
-                                    Phiên bản: v3.10.39 GDMN & GDPT
+                                    Phiên bản: v3.10.40 GDMN & GDPT
                                 </span>
                             </div>
                         </div>
@@ -1996,7 +1996,7 @@
                                 <div class="admin-kpi-content">
                                     <div class="admin-kpi-label">Tổng Giáo Viên Thành Viên</div>
                                     <div class="admin-kpi-val" id="kpiTotalUsers">8</div>
-                                    <div class="admin-kpi-desc">100% Xác thực Google SSO</div>
+                                    <div class="admin-kpi-desc" id="kpiOnlineDesc">🟢 Đang online thực tế: 1 người</div>
                                 </div>
                             </div>
                             <div class="admin-kpi-card">
@@ -2666,7 +2666,7 @@ window.openPPCTDirect = function() {
                                     <!-- Nhóm 3: Định Danh Trường (TỰ NHẬP TAY • BỎ GDPT 2018 • NH: "code") -->
                                     <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: #1e293b; font-weight: 700;">
                                         <span style="font-size: 0.95rem;">🏫</span>
-                                        <input type="text" id="tkbGlobalSchoolNameInput" value="THCS Bán Trú Canh Thuận" 
+                                        <input type="text" id="tkbGlobalSchoolNameInput" value="" placeholder="Nhập tên trường của bạn..." 
                                                style="padding: 0.2rem 0.5rem; font-size: 0.75rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #0f172a; background: #ffffff; min-width: 185px; outline: none;" 
                                                placeholder="Trường Mầm Non / Phổ Thông..." 
                                                oninput="if(window.smartTKBUI) window.smartTKBUI.onSchoolNameChange(this.value);"
@@ -2719,8 +2719,11 @@ window.openPPCTDirect = function() {
                                         <button id="btnTKBAutoSolve" class="btn-tkb-action btn-tkb-primary" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px; box-shadow: 0 1px 3px rgba(37,99,235,0.2);">
                                             <span>⚡</span> <span>Xếp AI</span>
                                         </button>
+                                        <button id="btnTKBCreateNew" class="btn-tkb-action btn-tkb-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px;" title="Xóa trắng bàn cờ để khởi tạo TKB mới cho trường của bạn">
+                                            <span>➕</span> <span>Tạo TKB Mới</span>
+                                        </button>
                                         <button id="btnTKBLoadSample" class="btn-tkb-action btn-tkb-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px;" title="Nạp đúng 100% nguyên bản TKB Tuần 9 trường THCS Bán Trú Canh Thuận">
-                                            <span>📁</span> <span>TKB Gốc Tuần 9</span>
+                                            <span>📁</span> <span>TKB Mẫu Canh Thuận</span>
                                         </button>
                                         <button id="btnTKBPrint" class="btn-tkb-action btn-tkb-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.74rem; border-radius: 6px;" title="In Thời khóa biểu chuẩn A4">
                                             <span>🖨️</span> <span>In A4</span>
@@ -4010,7 +4013,7 @@ window.openPPCTDirect = function() {
         <span class="footer-dot-sep">•</span>
         <span>Định hướng & Bản quyền chuyên môn: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
         <span class="footer-dot-sep">•</span>
-        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.39 GDMN & GDPT</span>
+        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.40 GDMN & GDPT</span>
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->

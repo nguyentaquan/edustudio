@@ -1,0 +1,21 @@
+[
+  {
+    "id": "user_admin",
+    "name": "Thầy Nguyễn Tá Quan",
+    "email": "nguyentaquan@gmail.com",
+    "school": "Trường THCS Bán Trú Canh Thuận",
+    "grade": "thcs",
+    "subject": "HĐTN-HN, KHTN, Tin học (GVCN 8A1)",
+    "role": "admin",
+    "points": 500,
+    "balance": 0,
+    "demoUses": 999,
+    "status": "active",
+    "avatar": "👑",
+    "joinDate": "01/01/2026",
+    "lastLogin": "Vừa xong",
+    "lastSeen": 1793785285,
+    "device": "💻 Máy Tính",
+    "loginCount": 1
+  }
+]

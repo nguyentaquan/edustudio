@@ -43,7 +43,47 @@ export class SmartTKBUI {
     /**
      * Khởi tạo và gắn các sự kiện điều khiển
      */
-        onSchoolNameChange(val) {
+            onUserSwitched(user) {
+        this.loadUserTKB();
+    }
+
+    loadUserTKB() {
+        this.engine.loadState();
+        const inpName = document.getElementById('tkbGlobalSchoolNameInput');
+        if (inpName) {
+            inpName.value = this.engine.schoolConfig.schoolName || '';
+        }
+        const classSelect = document.getElementById('tkbClassSelect');
+        if (classSelect) {
+            classSelect.innerHTML = (this.engine.classes || []).map(c => `<option value="${c}">${c}</option>`).join('');
+            if (this.engine.classes && this.engine.classes.length > 0) {
+                if (!this.engine.classes.includes(this.selectedClass)) {
+                    this.selectedClass = this.engine.classes[0];
+                }
+                classSelect.value = this.selectedClass;
+            }
+        }
+        const teacherSelect = document.getElementById('tkbTeacherSelect');
+        if (teacherSelect) {
+            const tNames = (this.engine.teachers && this.engine.teachers.length > 0)
+                ? this.engine.teachers.map(t => typeof t === 'string' ? t : t.name)
+                : ["(Chưa có GV)"];
+            teacherSelect.innerHTML = tNames.map(t => `<option value="${t}">${t}</option>`).join('');
+            if (!tNames.includes(this.selectedTeacher)) {
+                this.selectedTeacher = tNames[0];
+            }
+            teacherSelect.value = this.selectedTeacher;
+        }
+        const container = document.getElementById('tkbGridTableContainer');
+        if (container) {
+            if (this.currentViewMode === 'class') this.renderClassView(container);
+            else if (this.currentViewMode === 'teacher') this.renderTeacherView(container);
+            else if (this.currentViewMode === 'room') this.renderRoomView(container);
+            else if (this.currentViewMode === 'school') this.renderSchoolMasterView(container);
+        }
+    }
+
+    onSchoolNameChange(val) {
         if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
         this.engine.schoolConfig.schoolName = val;
         try { localStorage.setItem('edustudio_custom_school_name', val); } catch(e){}
@@ -76,8 +116,8 @@ export class SmartTKBUI {
     }
 
     init() {
-        // Luôn nạp mặc định Thời khóa biểu chính thức Canh Thuận (Tuần 9)
-        this.engine.loadDefaultSampleData();
+        // Nạp Thời khóa biểu theo đúng tài khoản đang đăng nhập
+        this.loadUserTKB();
 
         // Khôi phục tên trường và năm học tùy chỉnh nếu đã nhập trước đó
         try {
@@ -132,13 +172,33 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         });
 
         document.getElementById('btnTKBLoadSample')?.addEventListener('click', () => {
-            this.engine.loadDefaultSampleData();
-            this.updateFilterControls();
-            this.renderCurrentView();
-            this.renderPCCMTable();
-            this.renderConfigTab();
-            this.renderStats();
-            this.showToast('✅ Đã nạp Thời khóa biểu chính thức THCS Bán Trú Canh Thuận (Tuần 9)!');
+            const ok = confirm('📋 [NẠP DỮ LIỆU MẪU THAM KHẢO]\n\nBạn có muốn nạp dữ liệu Thời Khóa Biểu mẫu chuẩn (Trường THCS Bán Trú Canh Thuận - 9 lớp) vào bàn cờ để nghiên cứu và tham khảo không?\n\n(Lưu ý: Bàn cờ sẽ nạp dữ liệu mẫu Canh Thuận để Thầy Cô đối chiếu)');
+            if (ok) {
+                this.engine.loadDefaultSampleData();
+                this.loadUserTKB();
+                this.updateFilterControls();
+                this.renderCurrentView();
+                this.renderPCCMTable();
+                this.renderConfigTab();
+                this.renderStats();
+                this.showToast('✅ Đã nạp Thời khóa biểu mẫu THCS Bán Trú Canh Thuận!');
+            }
+        });
+
+        document.getElementById('btnTKBCreateNew')?.addEventListener('click', () => {
+            const u = this.app?.currentUser;
+            const currentSchool = (u && u.school) ? u.school : 'Trường THCS ';
+            const schoolName = prompt('🏫 Vui lòng nhập Tên Trường của bạn để khởi tạo Thời Khóa Biểu mới:', currentSchool);
+            if (schoolName !== null && schoolName.trim()) {
+                this.engine.initCleanTimetableForUser({ school: schoolName.trim() });
+                this.loadUserTKB();
+                this.updateFilterControls();
+                this.renderCurrentView();
+                this.renderPCCMTable();
+                this.renderConfigTab();
+                this.renderStats();
+                this.showToast('✅ Đã khởi tạo bảng Thời Khóa Biểu mới cho: ' + schoolName.trim());
+            }
         });
 
         document.getElementById('btnTKBExportExcel')?.addEventListener('click', () => {

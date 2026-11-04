@@ -1175,7 +1175,8 @@ class EduStudioApp {
         // Khởi chạy các khối chức năng (Ưu tiên gắn sự kiện trước để ICON không bao giờ bị đơ)
         try { this.initRealtimeClock(); } catch(e) { console.warn(e); }
         try { this.initCommunityTicker(); } catch(e) { console.warn(e); }
-        try { this.renderBannerAuthZone(); } catch(e) { console.warn(e); }
+        try { this.renderBannerAuthZone();
+        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){} } catch(e) { console.warn(e); }
         try { this.initEventListeners(); } catch(e) { console.warn(e); }
         try { this.initCopyrightProtection(); } catch(e) { console.warn(e); }
         try { this.updateDemoCounterBadge(); } catch(e) { console.warn(e); }
@@ -1308,6 +1309,7 @@ class EduStudioApp {
         this.currentUser = user;
         this.saveUserSession(this.currentUser);
         this.renderBannerAuthZone();
+        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
         this.checkAdminStorageVisibility();
         try {
             this.syncUserToAdminDirectory(user);
@@ -1343,6 +1345,7 @@ ${user.role === 'admin' ? 'Đơn vị: ' + user.school : 'Dữ liệu cá nhân:
         };
         this.saveUserSession(this.currentUser);
         this.renderBannerAuthZone();
+        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
         this.checkAdminStorageVisibility();
         document.getElementById('authModal')?.classList.remove('active');
         sound.playFanfare();
@@ -1364,6 +1367,7 @@ ${user.role === 'admin' ? 'Đơn vị: ' + user.school : 'Dữ liệu cá nhân:
         };
         this.saveUserSession(this.currentUser);
         this.renderBannerAuthZone();
+        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
         this.checkAdminStorageVisibility();
         sound.playClick();
         alert("Đã đăng xuất tài khoản an toàn! Thầy có thể bấm nút ĐĂNG NHẬP góc trên banner để đăng nhập lại bất cứ lúc nào.");
@@ -1432,6 +1436,7 @@ ${user.role === 'admin' ? 'Đơn vị: ' + user.school : 'Dữ liệu cá nhân:
 
         this.saveUserSession(this.currentUser);
         this.renderBannerAuthZone();
+        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
         try {
             this.syncUserToAdminDirectory(this.currentUser);
             this.logUserActivity("Cập nhật thông tin hồ sơ cá nhân", "Hồ Sơ", "profile", this.currentUser.school);
@@ -1535,6 +1540,7 @@ ${user.role === 'admin' ? 'Đơn vị: ' + user.school : 'Dữ liệu cá nhân:
 
         this.saveUserSession(this.currentUser);
         this.renderBannerAuthZone();
+        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
         this.checkAdminStorageVisibility();
         this.checkMediaAIPermission();
         try { this.renderAdminUsersList(); } catch(e) {}
@@ -4137,6 +4143,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.currentUser.points = (this.currentUser.points || 120) + 5;
             this.saveUserSession(this.currentUser);
             this.renderBannerAuthZone();
+        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
         }
 
         document.getElementById('uploadResourceModal')?.classList.remove('active');
@@ -8549,19 +8556,25 @@ D. Nói xấu sau lưng bạn với những người khác
     }
 
     initUserAccounts() {
+        // Tải danh sách người dùng thực tế từ máy chủ (Server API)
+        this.fetchUsersFromServer();
+
         try {
             const saved = localStorage.getItem('edustudio_admin_users');
             if (saved) {
-                return JSON.parse(saved);
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    return parsed;
+                }
             }
         } catch(e) {
             console.warn('Lỗi đọc danh sách tài khoản từ localStorage:', e);
         }
 
-        // Danh sách tài khoản giáo viên thực tế Trường THCS Bán Trú Canh Thuận & Thành viên thật
+        // KHÔNG DÙNG NGƯỜI DÙNG ẢO: Khởi tạo duy nhất Quản Trị Viên Master Thầy Nguyễn Tá Quan
         const defaultUsers = [
             {
-                id: "user_001",
+                id: "user_admin",
                 name: "Thầy Nguyễn Tá Quan",
                 email: "nguyentaquan@gmail.com",
                 cccd: "",
@@ -8573,136 +8586,12 @@ D. Nói xấu sau lưng bạn với những người khác
                 balance: 0,
                 demoUses: 999,
                 status: "active",
-                avatar: "👨‍🏫",
+                avatar: "👑",
                 joinDate: "01/01/2026",
                 lastLogin: "Vừa xong",
-                device: "💻 Máy Tính"
-            },
-            {
-                id: "user_002",
-                name: "Thầy Lương Văn Tuấn",
-                email: "luongvantuan.c2@gmail.com",
-                cccd: "",
-                school: "Trường THCS Bán Trú Canh Thuận",
-                grade: "thcs",
-                subject: "GDTC, GDQP (GVCN 6A1)",
-                role: "teacher",
-                points: 25,
-                balance: 0,
-                demoUses: 10,
-                status: "active",
-                avatar: "🏃‍♂️",
-                joinDate: "15/01/2026",
-                lastLogin: "15 phút trước",
-                device: "📱 Di Động"
-            },
-            {
-                id: "user_003",
-                name: "Cô Hà Thị Thúy Hòa",
-                email: "hathithuyhoa.c2@gmail.com",
-                cccd: "",
-                school: "Trường THCS Bán Trú Canh Thuận",
-                grade: "thcs",
-                subject: "Tin học (GVCN 6A2)",
-                role: "teacher",
-                points: 30,
-                balance: 0,
-                demoUses: 10,
-                status: "active",
-                avatar: "👩‍🏫",
-                joinDate: "18/01/2026",
-                lastLogin: "30 phút trước",
-                device: "💻 Máy Tính"
-            },
-            {
-                id: "user_004",
-                name: "Cô Dương Thị Ngọc Lành",
-                email: "duongthingoclanh.c2@gmail.com",
-                cccd: "",
-                school: "Trường THCS Bán Trú Canh Thuận",
-                grade: "thcs",
-                subject: "KHTN (Hóa-Sinh) (GVCN 7A1)",
-                role: "teacher",
-                points: 20,
-                balance: 0,
-                demoUses: 10,
-                status: "active",
-                avatar: "🔬",
-                joinDate: "20/01/2026",
-                lastLogin: "1 giờ trước",
-                device: "📱 Di Động"
-            },
-            {
-                id: "user_005",
-                name: "Thầy Nguyễn Bá Hiền",
-                email: "nguyenbahien.c2@gmail.com",
-                cccd: "",
-                school: "Trường THCS Bán Trú Canh Thuận",
-                grade: "thcs",
-                subject: "Lịch sử & Địa lý (GVCN 7A2)",
-                role: "teacher",
-                points: 15,
-                balance: 0,
-                demoUses: 10,
-                status: "active",
-                avatar: "🌏",
-                joinDate: "22/01/2026",
-                lastLogin: "2 giờ trước",
-                device: "💻 Máy Tính"
-            },
-            {
-                id: "user_006",
-                name: "Cô Phạm Thị Nhàn",
-                email: "phamthinhan.c2@gmail.com",
-                cccd: "",
-                school: "Trường THCS Bán Trú Canh Thuận",
-                grade: "thcs",
-                subject: "Ngữ Văn (GVCN 8A2)",
-                role: "teacher",
-                points: 35,
-                balance: 0,
-                demoUses: 10,
-                status: "active",
-                avatar: "📚",
-                joinDate: "25/01/2026",
-                lastLogin: "Hôm qua",
-                device: "💻 Máy Tính"
-            },
-            {
-                id: "user_007",
-                name: "Thầy Lê Quốc Thái",
-                email: "lequocthai.c2@gmail.com",
-                cccd: "",
-                school: "Trường THCS Bán Trú Canh Thuận",
-                grade: "thcs",
-                subject: "GDTC, HĐTN (GVCN 9A1)",
-                role: "teacher",
-                points: 10,
-                balance: 0,
-                demoUses: 10,
-                status: "active",
-                avatar: "⚽",
-                joinDate: "28/01/2026",
-                lastLogin: "Hôm qua",
-                device: "📱 Di Động"
-            },
-            {
-                id: "user_008",
-                name: "Thầy Nguyễn Thanh Tuấn",
-                email: "nguyenthanhtuan.c2@gmail.com",
-                cccd: "",
-                school: "Trường THCS Bán Trú Canh Thuận",
-                grade: "thcs",
-                subject: "Toán học (GVCN 9A2)",
-                role: "teacher",
-                points: 20,
-                balance: 0,
-                demoUses: 10,
-                status: "active",
-                avatar: "📐",
-                joinDate: "30/01/2026",
-                lastLogin: "2 ngày trước",
-                device: "💻 Máy Tính"
+                device: "💻 Máy Tính",
+                loginCount: 1,
+                isOnline: true
             }
         ];
 
@@ -8710,6 +8599,21 @@ D. Nói xấu sau lưng bạn với những người khác
             localStorage.setItem('edustudio_admin_users', JSON.stringify(defaultUsers));
         } catch(e) {}
         return defaultUsers;
+    }
+
+    async fetchUsersFromServer() {
+        try {
+            const res = await fetch('/api/users');
+            if (res.ok) {
+                const users = await res.json();
+                if (Array.isArray(users) && users.length > 0) {
+                    this.userAccounts = users;
+                    localStorage.setItem('edustudio_admin_users', JSON.stringify(users));
+                    this.renderAdminKPIs();
+                    this.renderAdminUsersList();
+                }
+            }
+        } catch(e) {}
     }
 
     initSystemAIConfig() {
@@ -8760,59 +8664,90 @@ D. Nói xấu sau lưng bạn với những người khác
         } catch(e) {}
     }
 
-        syncUserToAdminDirectory(user) {
+        async syncUserToAdminDirectory(user) {
         if (!user || !user.email) return;
+        const now = new Date();
+        const nowStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} ${now.getDate()}/${now.getMonth()+1}`;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const devStr = isMobile ? '📱 Di Động' : '💻 Máy Tính';
+
+        const payload = {
+            name: user.name,
+            email: user.email,
+            school: user.school || '',
+            phone: user.phone || '',
+            cccd: user.cccd || '',
+            subject: user.subject || '',
+            role: user.role || 'member',
+            points: user.points || 0,
+            avatarEmoji: user.avatarEmoji || '👨‍🏫',
+            device: devStr
+        };
+
+        // Gửi lên server để lưu vào data/users.json thực tế
         try {
-            let users = this.getAdminUsers();
-            let existing = users.find(u => u.email.toLowerCase() === user.email.toLowerCase());
-            const now = new Date();
-            const nowStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} ${now.getDate()}/${now.getMonth()+1}`;
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const devStr = isMobile ? '📱 Di Động' : '💻 Máy Tính';
-
-            if (existing) {
-                existing.name = user.name || existing.name;
-                existing.school = user.school || existing.school;
-                existing.phone = user.phone || existing.phone;
-                existing.subject = user.subject || existing.subject;
-                existing.role = user.role || existing.role;
-                existing.avatar = user.avatarEmoji || existing.avatar;
-                existing.lastLogin = `Vừa xong (${nowStr})`;
-                existing.device = devStr;
-                existing.loginCount = (existing.loginCount || 1) + 1;
-            } else {
-                const newUser = {
-                    id: `user_${Date.now().toString().slice(-4)}`,
-                    name: user.name,
-                    email: user.email,
-                    school: user.school || 'Cơ sở Giáo dục GDMN & GDPT',
-                    phone: user.phone || '',
-                    subject: user.subject || 'Giáo viên bộ môn',
-                    grade: 'thcs',
-                    role: user.role || 'member',
-                    points: user.points || 0,
-                    balance: 0,
-                    demoUses: 10,
-                    status: 'active',
-                    avatar: user.avatarEmoji || '👨‍🏫',
-                    joinDate: new Date().toLocaleDateString('vi-VN'),
-                    lastLogin: `Vừa xong (${nowStr})`,
-                    device: devStr,
-                    loginCount: 1
-                };
-                users.unshift(newUser);
+            const res = await fetch('/api/users/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                await this.fetchUsersFromServer();
+                return;
             }
+        } catch(e) {}
 
-            localStorage.setItem('edustudio_admin_users', JSON.stringify(users));
-            this.userAccounts = users;
-            try { this.renderAdminKPIs(); } catch(e){}
-            try { this.renderAdminUsersList(); } catch(e){}
-        } catch(err) {
-            console.warn('Lỗi đồng bộ danh bạ người dùng thực tế:', err);
+        // Fallback lưu local nếu server không phản hồi
+        let users = this.getAdminUsers();
+        let existing = users.find(u => u.email.toLowerCase() === user.email.toLowerCase());
+        if (existing) {
+            existing.name = user.name || existing.name;
+            existing.school = user.school || existing.school;
+            existing.phone = user.phone || existing.phone;
+            existing.subject = user.subject || existing.subject;
+            existing.role = user.role || existing.role;
+            existing.avatar = user.avatarEmoji || existing.avatar;
+            existing.lastLogin = `Vừa xong (${nowStr})`;
+            existing.device = devStr;
+            existing.loginCount = (existing.loginCount || 1) + 1;
+        } else {
+            const newUser = {
+                id: `user_${Date.now().toString().slice(-4)}`,
+                name: user.name,
+                email: user.email,
+                school: user.school || '',
+                phone: user.phone || '',
+                subject: user.subject || '',
+                grade: 'thcs',
+                role: user.role || 'member',
+                points: user.points || 0,
+                balance: 0,
+                demoUses: 10,
+                status: 'active',
+                avatar: user.avatarEmoji || '👨‍🏫',
+                joinDate: new Date().toLocaleDateString('vi-VN'),
+                lastLogin: `Vừa xong (${nowStr})`,
+                device: devStr,
+                loginCount: 1,
+                isOnline: true
+            };
+            users.unshift(newUser);
         }
+
+        localStorage.setItem('edustudio_admin_users', JSON.stringify(users));
+        this.userAccounts = users;
+        try { this.renderAdminKPIs(); } catch(e){}
+        try { this.renderAdminUsersList(); } catch(e){}
     }
 
 initAdminAccountModule() {
+        // Khởi động đồng bộ người dùng thực tế từ server định kỳ (15s/lần)
+        if (!this._userSyncTimer) {
+            this._userSyncTimer = setInterval(() => {
+                this.fetchUsersFromServer();
+            }, 15000);
+        }
+
         // 1. Chuyển đổi giữa các sub-pane trong Admin
         document.querySelectorAll('.admin-subnav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -8923,20 +8858,24 @@ initAdminAccountModule() {
     }
 
     renderAdminKPIs() {
-        const total = this.userAccounts.length;
-        const vipCount = this.userAccounts.filter(u => u.role === 'vip' || u.role === 'admin').length;
-        const totalPts = this.userAccounts.reduce((sum, u) => sum + (u.points || 0), 0);
+        const users = this.userAccounts || [];
+        const total = users.length;
+        const vipCount = users.filter(u => u.role === 'vip' || u.role === 'vip_pro' || u.role === 'admin').length;
+        const totalPts = users.reduce((sum, u) => sum + (u.points || 0), 0);
+        const onlineCount = users.filter(u => u.isOnline).length || 1;
 
         const kpiTotal = document.getElementById('kpiTotalUsers');
         const kpiVip = document.getElementById('kpiVIPUsers');
         const kpiPts = document.getElementById('kpiTotalPoints');
-
-        const downloadLogsCount = this.getUserLogs().filter(l => l.type === 'export' || l.action.toLowerCase().includes('xuất') || l.action.toLowerCase().includes('tải')).length;
-        const kpiDownloads = document.getElementById('kpiTotalDownloads');
+        const kpiOnline = document.getElementById('kpiOnlineDesc');
 
         if (kpiTotal) kpiTotal.textContent = total.toLocaleString('vi-VN');
         if (kpiVip) kpiVip.textContent = vipCount.toLocaleString('vi-VN');
         if (kpiPts) kpiPts.textContent = totalPts.toLocaleString('vi-VN');
+        if (kpiOnline) kpiOnline.textContent = `🟢 Đang online thực tế: ${onlineCount} người`;
+
+        const downloadLogsCount = this.getUserLogs().filter(l => l.type === 'export' || l.action.toLowerCase().includes('xuất') || l.action.toLowerCase().includes('tải')).length;
+        const kpiDownloads = document.getElementById('kpiTotalDownloads');
         if (kpiDownloads) kpiDownloads.textContent = downloadLogsCount.toLocaleString('vi-VN');
     }
 

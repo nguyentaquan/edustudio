@@ -69,10 +69,8 @@ export class SmartTKBEngine {
             avoidFirstPeriodForYoungKids: true // Tránh tiết 1 sáng cho GV con nhỏ
         };
 
-        // Tự động khôi phục dữ liệu đã lưu trong máy, nếu chưa có hoặc không phải Canh Thuận thì nạp chuẩn
-        if (!this.loadState() || !this.timetable['8A1'] || this.classes.length !== 9) {
-            this.loadDefaultSampleData();
-        }
+        // Tự động khôi phục dữ liệu TKB theo tài khoản người dùng đang đăng nhập
+        this.loadState();
     }
 
     loadDefaultSampleData() {
@@ -508,8 +506,21 @@ export class SmartTKBEngine {
     /**
      * Tự động lưu toàn bộ dữ liệu TKB vào bộ nhớ trình duyệt (LocalStorage)
      */
-    saveState() {
+    getUserStorageKey(email = null) {
+        let userEmail = email;
+        if (!userEmail && window.app && window.app.currentUser && window.app.currentUser.email) {
+            userEmail = window.app.currentUser.email;
+        }
+        if (!userEmail) userEmail = 'guest';
+        return 'edustudio_tkb_data_' + userEmail.toLowerCase().trim();
+    }
+
+    /**
+     * Tự động lưu toàn bộ dữ liệu TKB vào bộ nhớ trình duyệt theo tài khoản riêng biệt
+     */
+    saveState(email = null) {
         try {
+            const key = this.getUserStorageKey(email);
             const data = {
                 schoolConfig: this.schoolConfig,
                 specialRooms: this.specialRooms,
@@ -522,7 +533,7 @@ export class SmartTKBEngine {
                 ppctLessons: this.ppctLessons || {},
                 savedAt: new Date().toISOString()
             };
-            localStorage.setItem('edustudio_tkb_canhthuan_official_v31028', JSON.stringify(data));
+            localStorage.setItem(key, JSON.stringify(data));
             return true;
         } catch(e) {
             console.warn("Lỗi lưu dữ liệu TKB:", e);
@@ -531,50 +542,73 @@ export class SmartTKBEngine {
     }
 
     /**
-     * Tự động khôi phục dữ liệu TKB từ LocalStorage
+     * Tự động khôi phục dữ liệu TKB từ LocalStorage phân lập theo tài khoản
      */
-    loadState() {
+    loadState(email = null) {
         try {
-            const raw = localStorage.getItem('edustudio_tkb_canhthuan_official_v31028');
-            if (!raw) return false;
-            const data = JSON.parse(raw);
-            if (data && data.classes && data.timetable && data.assignments) {
-                this.schoolConfig = data.schoolConfig || this.schoolConfig;
-                if (CANH_THUAN_TKB_DATA?.schoolConfig?.homeroomTeachers) {
-                    this.schoolConfig.homeroomTeachers = Object.assign({}, CANH_THUAN_TKB_DATA.schoolConfig.homeroomTeachers, this.schoolConfig.homeroomTeachers || {});
+            const user = (window.app && window.app.currentUser) ? window.app.currentUser : null;
+            const currentMail = (email || (user && user.email) || 'guest').toLowerCase().trim();
+            const isAdmin = (currentMail === 'nguyentaquan@gmail.com');
+            const key = this.getUserStorageKey(currentMail);
+
+            let raw = localStorage.getItem(key);
+            // Đối với Admin Thầy Quan, nếu chưa có key mới thì nạp từ legacy key
+            if (!raw && isAdmin) {
+                raw = localStorage.getItem('edustudio_tkb_canhthuan_official_v31028');
+            }
+
+            if (!raw) {
+                if (isAdmin) {
+                    this.loadDefaultSampleData();
+                    return true;
+                } else {
+                    // Thành viên khác hoặc khách: Khởi tạo TKB mới sạch sẽ cho trường của họ
+                    this.initCleanTimetableForUser(user);
+                    return true;
                 }
-                if (data.pedagogicalPriorities) this.pedagogicalPriorities = data.pedagogicalPriorities;
-                if (data.ppctLessons) this.ppctLessons = data.ppctLessons;
-                if (data.subjects && data.subjects.length > 0) this.subjects = data.subjects;
-                this.specialRooms = data.specialRooms || this.specialRooms;
-                this.classes = data.classes;
-                if (data.teachers && data.teachers.length > 0) this.teachers = data.teachers;
-                if (data.officialPCCM && data.officialPCCM.length > 0) this.officialPCCM = data.officialPCCM;
-                this.assignments = data.assignments;
-                this.timetable = data.timetable;
-                if (data.timetableHK1) this.timetableHK1 = data.timetableHK1;
-                if (data.timetableHK2) this.timetableHK2 = data.timetableHK2;
-                this.saveState();
-                return { success: true };
-                this.schoolConfig = data.schoolConfig || this.schoolConfig;
-                this.specialRooms = data.specialRooms || this.specialRooms;
-                this.classes = data.classes;
-                this.teachers = (data.teachers && data.teachers.length > 0) ? data.teachers : (CANH_THUAN_TKB_DATA.teachers || []);
-                this.officialPCCM = (data.officialPCCM && data.officialPCCM.length > 0) ? data.officialPCCM : (CANH_THUAN_TKB_DATA.officialPCCM || []);
-                this.subjects = data.subjects || this.subjects;
-                this.assignments = data.assignments;
-                this.timetable = data.timetable;
+            }
+
+            const data = JSON.parse(raw);
+            if (!data || !data.classes || !data.timetable) {
+                if (isAdmin) this.loadDefaultSampleData();
+                else this.initCleanTimetableForUser(user);
                 return true;
             }
+
+            this.schoolConfig = data.schoolConfig || this.schoolConfig;
+            this.specialRooms = data.specialRooms || this.specialRooms;
+            this.classes = data.classes || [];
+            this.teachers = data.teachers || [];
+            this.officialPCCM = data.officialPCCM || [];
+            this.subjects = data.subjects || this.subjects;
+            this.assignments = data.assignments || [];
+            this.timetable = data.timetable || {};
+            this.ppctLessons = data.ppctLessons || {};
+            return true;
         } catch(e) {
             console.warn("Lỗi đọc dữ liệu TKB:", e);
+            return false;
         }
-        return false;
     }
 
-    /**
-     * Xuất toàn bộ CSDL trường học ra chuỗi JSON để sao lưu / nộp cấp trên
-     */
+    initCleanTimetableForUser(user = null) {
+        const schoolName = (user && user.school && user.school.trim()) ? user.school.trim() : "Trường Mầm Non / Phổ Thông Của Bạn";
+        this.schoolConfig = {
+            schoolName: schoolName,
+            academicYear: "2026 - 2027",
+            semester: "Học kỳ I",
+            applyFromDate: "02/11/2026",
+            session: "Sáng (5 tiết/buổi)"
+        };
+        this.classes = ["6A1", "7A1", "8A1", "9A1"];
+        this.teachers = [];
+        this.officialPCCM = [];
+        this.assignments = [];
+        this.ppctLessons = {};
+        this.resetTimetableGrid();
+        this.saveState();
+    }
+
     exportJSON() {
         return JSON.stringify({
             generator: "EduStudio v3.5.5 - Smart Timetable AI Master Package",
