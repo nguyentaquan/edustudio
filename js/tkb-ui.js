@@ -121,6 +121,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             e.preventDefault();
             this.openPCCMDetailModal();
         });
+        document.getElementById('btnOpenPPCTModal')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.openCurriculumConfigModal();
+        });
 
         // Gắn sự kiện các nút chính trên Header
         document.getElementById('btnTKBAutoSolve')?.addEventListener('click', () => {
@@ -3357,18 +3361,20 @@ setPCCMFilter(filterName) {
     }
 
     /**
-     * MỞ MODAL ĐIỀU CHỈNH KHUNG PHÂN PHỐI CHƯƠNG TRÌNH (PPCT) MÔN HỌC
-     * Phục vụ cập nhật nhanh khi có thay đổi quy định/văn bản mới của Bộ/Sở
+     * ==============================================================================
+     * HỘP THOẠI QUẢN TRỊ KHUNG PPCT & KẾ HOẠCH BÀI DẠY CHI TIẾT 35 TUẦN (CV 5512)
+     * Thiết kế bởi Thầy Nguyễn Tá Quan • Liên thông TKB & Lịch Báo Giảng tự động
+     * ==============================================================================
      */
-    openCurriculumConfigModal() {
+    openCurriculumConfigModal(activeTab = 'quota', selectedSubject = 'toan', selectedGrade = '8') {
         let modal = document.getElementById('tkbCurriculumModal');
         if (!modal) {
             modal = document.createElement('div');
             modal.id = 'tkbCurriculumModal';
             modal.className = 'modal-overlay';
             modal.style.cssText = `
-                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
-                backdrop-filter: blur(5px); z-index: 999999; align-items: center; justify-content: center;
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+                backdrop-filter: blur(6px); z-index: 9999999; align-items: center; justify-content: center;
                 padding: 1rem;
             `;
             document.body.appendChild(modal);
@@ -3376,92 +3382,253 @@ setPCCMFilter(filterName) {
 
         const subjects = this.engine.subjects || [];
         const rooms = this.engine.specialRooms || [];
+        this.ppctActiveTab = activeTab;
+        this.ppctCurrentSubject = selectedSubject;
+        this.ppctCurrentGrade = selectedGrade;
 
-        let rowsHtml = '';
-        subjects.forEach((sub, idx) => {
-            let roomOptions = '<option value="">(Không yêu cầu)</option>';
-            rooms.forEach(r => {
-                roomOptions += `<option value="${r.id}" ${sub.roomReq === r.id ? 'selected' : ''}>${r.icon} ${r.name}</option>`;
-            });
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        modal.style.zIndex = '9999999';
 
-            rowsHtml += `
-                <tr data-index="${idx}">
-                    <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
-                    <td style="padding: 0.45rem 0.6rem;">
-                        <input type="text" class="cfg-sub-name" value="${sub.name}" style="width: 100%; padding: 0.25rem 0.45rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
-                    </td>
-                    <td style="padding: 0.45rem 0.6rem; text-align: center;">
-                        <input type="number" class="cfg-sub-periods" value="${sub.periodsPerWeek}" min="1" max="10" style="width: 60px; padding: 0.25rem 0.45rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; color: #1d4ed8;">
-                    </td>
-                    <td style="padding: 0.45rem 0.6rem; text-align: center;">
-                        <input type="checkbox" class="cfg-sub-double" ${sub.doublePeriod ? 'checked' : ''} style="cursor: pointer;">
-                    </td>
-                    <td style="padding: 0.45rem 0.6rem;">
-                        <select class="cfg-sub-room" style="width: 100%; padding: 0.25rem 0.45rem; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff;">
-                            ${roomOptions}
-                        </select>
-                    </td>
-                </tr>
-            `;
-        });
+        // Tính tổng số tiết/tuần toàn trường
+        let totalPeriodsPerWeek = 0;
+        subjects.forEach(s => { totalPeriodsPerWeek += (parseInt(s.periodsPerWeek) || 0); });
 
         modal.innerHTML = `
-            <div style="background: #ffffff; border-radius: 12px; max-width: 760px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid #cbd5e1; overflow: hidden; animation: modalPop 0.2s ease-out;">
+            <div style="background: #ffffff; border-radius: 12px; max-width: 960px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.35); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 92vh; animation: modalPop 0.2s ease-out;">
                 
-                <!-- HEADER MODAL -->
-                <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; padding: 0.9rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 1.4rem;">📚</span>
+                <!-- 1. HEADER MODAL: TIÊU ĐỀ + NÚT XUẤT NHẬP EXCEL -->
+                <div style="background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #7c3aed 100%); color: #ffffff; padding: 0.9rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.65rem;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <span style="font-size: 1.5rem;">📚</span>
                         <div>
-                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; letter-spacing: 0.3px;">ĐIỀU CHỈNH KHUNG PHÂN PHỐI CHƯƠNG TRÌNH (PPCT) MÔN HỌC</h3>
-                            <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #e0f2fe;">Cập nhật nhanh số tiết/tuần khi có thay đổi quy định GDPT 2018 &amp; GDMN</p>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; letter-spacing: 0.3px;">QUẢN TRỊ KHUNG PPCT &amp; KẾ HOẠCH BÀI DẠY GDPT 2018 (CV 5512)</h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.73rem; color: #ede9fe;">Chuẩn hóa kế hoạch giáo dục 35 tuần • Kết nối Thời khóa biểu &amp; Lịch Báo Giảng tự động</p>
                         </div>
                     </div>
-                    <button onclick="window.smartTKBUI.closeCurriculumConfigModal()" style="background: transparent; border: none; color: #ffffff; font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+
+                    <!-- Cụm Nút Xuất / Nhập Mẫu Excel -->
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <button type="button" onclick="window.smartTKBUI.exportPPCTExcel()" style="background: #059669; color: #ffffff; border: none; padding: 0.32rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Xuất toàn bộ Phân phối chương trình thành file Excel (.xls) đa môn">
+                            <span>📤</span> <span>Xuất Excel PPCT</span>
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.triggerPPCTExcelImport()" style="background: #d97706; color: #ffffff; border: none; padding: 0.32rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Nhập danh mục bài dạy từ file Excel vào hệ thống">
+                            <span>📥</span> <span>Nhập Excel PPCT</span>
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.closeCurriculumConfigModal()" style="background: rgba(255,255,255,0.15); border: none; color: #ffffff; font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 0.15rem 0.5rem; border-radius: 6px;">&times;</button>
+                    </div>
                 </div>
 
-                <!-- BODY MODAL -->
-                <div style="padding: 1.25rem; max-height: 70vh; overflow-y: auto;">
+                <!-- 2. THANH SUBNAV 2 TABS CHUYÊN MÔN -->
+                <div style="background: #f8fafc; border-bottom: 1px solid #cbd5e1; display: flex; padding: 0 1rem; gap: 0.35rem; overflow-x: auto;">
+                    <button id="btnPpctTabQuota" class="btn-ppct-subtab ${activeTab === 'quota' ? 'active' : ''}" onclick="window.smartTKBUI.switchPPCTModalTab('quota')" style="padding: 0.65rem 0.95rem; font-size: 0.78rem; font-weight: 800; border: none; border-bottom: 3px solid ${activeTab === 'quota' ? '#7c3aed' : 'transparent'}; background: transparent; color: ${activeTab === 'quota' ? '#6d28d9' : '#64748b'}; cursor: pointer; white-space: nowrap;">
+                        📊 1. Khung Định Mức Số Tiết Môn Học (GDPT 2018)
+                    </button>
+                    <button id="btnPpctTabLessons" class="btn-ppct-subtab ${activeTab === 'lessons' ? 'active' : ''}" onclick="window.smartTKBUI.switchPPCTModalTab('lessons')" style="padding: 0.65rem 0.95rem; font-size: 0.78rem; font-weight: 800; border: none; border-bottom: 3px solid ${activeTab === 'lessons' ? '#7c3aed' : 'transparent'}; background: transparent; color: ${activeTab === 'lessons' ? '#6d28d9' : '#64748b'}; cursor: pointer; white-space: nowrap;">
+                        📖 2. Kế Hoạch Bài Dạy 35 Tuần (Theo Tiết PPCT &amp; CV 5512)
+                    </button>
+                </div>
+
+                <!-- 3. NỘI DUNG 2 TABS -->
+                <div style="padding: 1.15rem; overflow-y: auto; flex: 1;">
                     
-                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 0.5rem 0.85rem; margin-bottom: 0.85rem; font-size: 0.75rem; color: #166534; line-height: 1.4;">
-                        💡 <strong>Lưu ý nghiệp vụ:</strong> Khi Bộ GD&amp;ĐT hoặc Sở ban hành văn bản điều chỉnh số tiết (ví dụ: Công văn 1496/BGDĐT hoán đổi Lịch sử - Địa lí, tách HĐTN...), Thầy Cô chỉ cần chỉnh số tiết/tuần tại bảng này rồi bấm <strong>Lưu &amp; Cập Nhật</strong>, toàn bộ hệ thống sẽ tự động đồng bộ!
+                    <!-- TAB 1: KHUNG ĐỊNH MỨC SỐ TIẾT -->
+                    <div id="ppct-pane-quota" style="display: ${activeTab === 'quota' ? 'block' : 'none'};">
+                        
+                        <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 0.65rem 0.95rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+                            <div>
+                                <span style="font-size: 0.8rem; font-weight: 800; color: #5b21b6;">💡 Quy chuẩn Định mức PPCT (Căn cứ CV 5512/BGDĐT &amp; CT GDPT 2018):</span>
+                                <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #6d28d9;">
+                                    Tổng số tiết thực dạy cả năm = 35 tuần (Học kỳ I: 18 tuần • Học kỳ II: 17 tuần). Khi điều chỉnh số tiết/tuần, hệ thống tự động tính lại số tiết cả năm và đồng bộ vào Bàn cờ TKB.
+                                </p>
+                            </div>
+                            <div style="background: #ffffff; border: 1.5px solid #7c3aed; padding: 0.35rem 0.75rem; border-radius: 6px; text-align: right;">
+                                <div style="font-size: 0.68rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Tổng Tiết/Tuần Khối:</div>
+                                <div style="font-size: 1.05rem; font-weight: 900; color: #6d28d9;">
+                                    <span id="ppctTotalPeriodsBadge">${totalPeriodsPerWeek}</span> Tiết / Tuần
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                                <thead>
+                                    <tr style="background: #f8fafc; color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1;">
+                                        <th style="padding: 0.55rem 0.6rem; width: 45px; text-align: center;">STT</th>
+                                        <th style="padding: 0.55rem 0.6rem;">Tên Môn Học (Bộ Môn)</th>
+                                        <th style="padding: 0.55rem 0.6rem; width: 100px; text-align: center;">Cả Năm (35T)</th>
+                                        <th style="padding: 0.55rem 0.6rem; width: 95px; text-align: center;">Học Kỳ I (18T)</th>
+                                        <th style="padding: 0.55rem 0.6rem; width: 95px; text-align: center;">Học Kỳ II (17T)</th>
+                                        <th style="padding: 0.55rem 0.6rem; width: 90px; text-align: center;">Tiết/Tuần</th>
+                                        <th style="padding: 0.55rem 0.6rem; width: 85px; text-align: center;">Tiết Kép (2t)</th>
+                                        <th style="padding: 0.55rem 0.6rem;">Phòng Bộ Môn</th>
+                                        <th style="padding: 0.55rem 0.6rem; width: 130px; text-align: center;">Kế Hoạch Bài Dạy</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblMasterPPCTQuotaBody">
+                                    ${subjects.map((sub, idx) => {
+                                        const pw = parseInt(sub.periodsPerWeek) || 1;
+                                        const py = pw * 35;
+                                        const p1 = pw * 18;
+                                        const p2 = pw * 17;
+                                        let roomOpts = '<option value="">(Không)</option>';
+                                        rooms.forEach(r => {
+                                            roomOpts += `<option value="${r.id}" ${sub.roomReq === r.id ? 'selected' : ''}>${r.icon} ${r.name}</option>`;
+                                        });
+
+                                        return `
+                                            <tr data-index="${idx}" style="border-bottom: 1px solid #f1f5f9;">
+                                                <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                                                <td style="padding: 0.45rem 0.6rem;">
+                                                    <input type="text" class="ppct-sub-name" value="${sub.name}" style="width: 100%; padding: 0.25rem 0.45rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px; color: #0f172a;">
+                                                </td>
+                                                <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #475569;">
+                                                    <span class="ppct-year-label">${py}</span>t
+                                                </td>
+                                                <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; color: #0369a1;">
+                                                    <span class="ppct-sem1-label">${p1}</span>t
+                                                </td>
+                                                <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; color: #047857;">
+                                                    <span class="ppct-sem2-label">${p2}</span>t
+                                                </td>
+                                                <td style="padding: 0.45rem 0.6rem; text-align: center;">
+                                                    <input type="number" class="ppct-sub-pw" onchange="window.smartTKBUI.onPPCTPeriodsChange(this)" value="${pw}" min="1" max="10" style="width: 55px; padding: 0.25rem 0.35rem; font-size: 0.8rem; font-weight: 900; text-align: center; border: 1px solid #93c5fd; border-radius: 4px; color: #1d4ed8; background: #eff6ff;">
+                                                </td>
+                                                <td style="padding: 0.45rem 0.6rem; text-align: center;">
+                                                    <input type="checkbox" class="ppct-sub-double" ${sub.doublePeriod ? 'checked' : ''} style="cursor: pointer;">
+                                                </td>
+                                                <td style="padding: 0.45rem 0.6rem;">
+                                                    <select class="ppct-sub-room" style="width: 100%; padding: 0.25rem 0.4rem; font-size: 0.75rem; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff;">
+                                                        ${roomOpts}
+                                                    </select>
+                                                </td>
+                                                <td style="padding: 0.45rem 0.6rem; text-align: center;">
+                                                    <button type="button" onclick="window.smartTKBUI.openPPCTLessonsTab('${sub.id}', '8')" style="background: #ede9fe; color: #6d28d9; border: 1px solid #c4b5fd; padding: 0.22rem 0.55rem; border-radius: 5px; font-size: 0.72rem; font-weight: 800; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#ddd6fe';" onmouseout="this.style.background='#ede9fe';" title="Xem &amp; sửa chi tiết bài dạy từng tiết môn ${sub.name}">
+                                                        📖 Bài Dạy 35T
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+                            <button type="button" onclick="window.smartTKBUI.closeCurriculumConfigModal()" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                                Đóng
+                            </button>
+                            <button type="button" onclick="window.smartTKBUI.saveCurriculumQuotaFromUI()" style="padding: 0.45rem 1.15rem; font-size: 0.78rem; font-weight: 800; border-radius: 6px; border: none; background: #7c3aed; color: #ffffff; cursor: pointer; box-shadow: 0 2px 6px rgba(124,58,237,0.35);">
+                                💾 Lưu &amp; Cập Nhật Khung Số Tiết
+                            </button>
+                        </div>
                     </div>
 
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
-                        <thead>
-                            <tr style="background: #f1f5f9; color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1;">
-                                <th style="padding: 0.5rem 0.6rem; width: 45px; text-align: center;">STT</th>
-                                <th style="padding: 0.5rem 0.6rem;">Tên Môn Học (Bộ Môn)</th>
-                                <th style="padding: 0.5rem 0.6rem; width: 110px; text-align: center;">Số Tiết/Tuần</th>
-                                <th style="padding: 0.5rem 0.6rem; width: 90px; text-align: center;">Tiết Kép (2t)</th>
-                                <th style="padding: 0.5rem 0.6rem;">Phòng Bộ Môn Yêu Cầu</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tblCurriculumBody">
-                            ${rowsHtml}
-                        </tbody>
-                    </table>
+                    <!-- TAB 2: CHI TIẾT BÀI DẠY 35 TUẦN -->
+                    <div id="ppct-pane-lessons" style="display: ${activeTab === 'lessons' ? 'block' : 'none'};">
+                        
+                        <!-- Thanh Điều Khiển: Chọn Môn • Khối • Bộ Sách -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.85rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.65rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                                <div>
+                                    <label style="display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 0.2rem; text-transform: uppercase;">Môn Học:</label>
+                                    <select id="ppctLessonSubSelect" onchange="window.smartTKBUI.onPPCTSubjectFilterChange()" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; font-weight: 800; border: 1px solid #7c3aed; border-radius: 6px; background: #ffffff; color: #5b21b6; cursor: pointer; outline: none;">
+                                        ${subjects.map(s => `<option value="${s.id}" ${s.id === selectedSubject ? 'selected' : ''}>${s.name} (${s.periodsPerWeek}t/tuần)</option>`).join('')}
+                                    </select>
+                                </div>
 
-                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 0.2rem; text-transform: uppercase;">Khối Lớp:</label>
+                                    <select id="ppctLessonGradeSelect" onchange="window.smartTKBUI.onPPCTSubjectFilterChange()" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #1e293b; cursor: pointer; outline: none;">
+                                        <option value="6" ${selectedGrade === '6' ? 'selected' : ''}>Khối 6 (Lớp 6)</option>
+                                        <option value="7" ${selectedGrade === '7' ? 'selected' : ''}>Khối 7 (Lớp 7)</option>
+                                        <option value="8" ${selectedGrade === '8' ? 'selected' : ''}>Khối 8 (Lớp 8)</option>
+                                        <option value="9" ${selectedGrade === '9' ? 'selected' : ''}>Khối 9 (Lớp 9)</option>
+                                    </select>
+                                </div>
 
-                <!-- FOOTER MODAL -->
-                <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="font-size: 0.72rem; color: #64748b;">
-                        Tổng số: ${subjects.length} môn học trong chương trình
+                                <div>
+                                    <label style="display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 0.2rem; text-transform: uppercase;">Bộ Sách Giáo Khoa:</label>
+                                    <select id="ppctLessonBookSelect" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #334155; cursor: pointer; outline: none;">
+                                        <option value="KNTT" selected>📘 Kết Nối Tri Thức Với Cuộc Sống</option>
+                                        <option value="CD">📗 Cánh Diều</option>
+                                        <option value="CTST">📙 Chân Trời Sáng Tạo</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Cụm nút hành động nhanh cho Tab 2 -->
+                            <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+                                <button type="button" onclick="window.smartTKBUI.loadDefaultPPCTSampleForUI()" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; padding: 0.32rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;" title="Nạp tự động toàn bộ bài học 35 tuần chuẩn của Bộ GD&ĐT cho môn này">
+                                    <span>⚡</span> <span>Nạp Mẫu Chuẩn BGD</span>
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.togglePPCTFastPaste()" style="background: #fdf4ff; color: #a21caf; border: 1px solid #f0abfc; padding: 0.32rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;" title="Mở ô dán nhanh danh mục bài dạy từ Word hoặc Excel giáo án">
+                                    <span>📋</span> <span>Dán Nhanh Word/Excel</span>
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.addPPCTLessonRow()" style="background: #0284c7; color: #ffffff; border: none; padding: 0.32rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <span>➕</span> <span>Thêm Tiết</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Khung Dán Nhanh Từ Word/Excel (Ẩn/Hiện linh hoạt) -->
+                        <div id="ppctFastPasteZone" style="display: none; background: #faf5ff; border: 1.5px dashed #c084fc; border-radius: 8px; padding: 0.85rem; margin-bottom: 0.85rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                                <strong style="font-size: 0.78rem; color: #7e22ce;">📋 Dán Danh Mục Bài Dạy Từ File Word / Excel Giáo Án:</strong>
+                                <span style="font-size: 0.7rem; color: #9333ea;">Mỗi dòng 1 bài học (Ví dụ: Tiết 1: Tên bài dạy | Thiết bị)</span>
+                            </div>
+                            <textarea id="ppctFastPasteInput" rows="5" placeholder="Dán danh sách bài học vào đây...&#10;Ví dụ:&#10;Tiết 1: Đơn thức nhiều biến&#10;Tiết 2: Các phép tính với đơn thức&#10;Tiết 3: Đa thức nhiều biến..." style="width: 100%; padding: 0.5rem; font-size: 0.78rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; outline: none;"></textarea>
+                            <div style="margin-top: 0.4rem; display: flex; justify-content: flex-end; gap: 0.4rem;">
+                                <button type="button" onclick="window.smartTKBUI.togglePPCTFastPaste()" style="padding: 0.28rem 0.65rem; font-size: 0.73rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 5px; background: #ffffff; color: #475569; cursor: pointer;">Hủy</button>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTFastPaste()" style="padding: 0.28rem 0.85rem; font-size: 0.73rem; font-weight: 800; border: none; border-radius: 5px; background: #9333ea; color: #ffffff; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">⚡ Phân Tích &amp; Nạp Vào Bảng</button>
+                            </div>
+                        </div>
+
+                        <!-- Bảng Chi Tiết Bài Dạy Từng Tiết PPCT -->
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); max-height: 52vh; overflow-y: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
+                                <thead style="position: sticky; top: 0; background: #f1f5f9; z-index: 5;">
+                                    <tr style="color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1;">
+                                        <th style="padding: 0.5rem 0.5rem; width: 65px; text-align: center;">Tiết PPCT</th>
+                                        <th style="padding: 0.5rem 0.5rem; width: 60px; text-align: center;">Tuần</th>
+                                        <th style="padding: 0.5rem 0.6rem;">Tên Bài Dạy / Chủ Đề (CV 5512)</th>
+                                        <th style="padding: 0.5rem 0.5rem; width: 65px; text-align: center;">Số Tiết</th>
+                                        <th style="padding: 0.5rem 0.6rem; width: 190px;">Thiết Bị Dạy Học / Phòng Lab</th>
+                                        <th style="padding: 0.5rem 0.6rem; width: 110px;">Ghi Chú</th>
+                                        <th style="padding: 0.5rem 0.4rem; width: 45px; text-align: center;">Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblPPCTLessonsBody">
+                                    <!-- Render động qua renderPPCTLessonsTable -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Footer Tab 2: Thống kê & Nút Lưu Kế Hoạch -->
+                        <div style="margin-top: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">
+                                Tổng số tiết đã lên kế hoạch: <span id="ppctLessonsCountBadge" style="color: #7c3aed; font-weight: 900; font-size: 0.85rem;">0</span> tiết
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="button" onclick="window.smartTKBUI.closeCurriculumConfigModal()" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                                    Đóng
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.savePPCTLessonsFromUI()" style="padding: 0.45rem 1.15rem; font-size: 0.78rem; font-weight: 800; border-radius: 6px; border: none; background: #059669; color: #ffffff; cursor: pointer; box-shadow: 0 2px 6px rgba(5,150,105,0.35);">
+                                    💾 Lưu Kế Hoạch Bài Dạy PPCT
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button type="button" onclick="window.smartTKBUI.closeCurriculumConfigModal()" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
-                            Đóng
-                        </button>
-                        <button type="button" onclick="window.smartTKBUI.saveCurriculumConfig()" style="padding: 0.45rem 1rem; font-size: 0.78rem; font-weight: 800; border-radius: 6px; border: none; background: #0284c7; color: #ffffff; cursor: pointer; box-shadow: 0 2px 6px rgba(2,132,199,0.3);">
-                            💾 Lưu &amp; Cập Nhật PPCT
-                        </button>
-                    </div>
+
                 </div>
 
             </div>
         `;
-        modal.style.display = 'flex';
+
+        this.renderPPCTLessonsTable();
     }
 
     closeCurriculumConfigModal() {
@@ -3469,23 +3636,76 @@ setPCCMFilter(filterName) {
         if (modal) modal.style.display = 'none';
     }
 
-    saveCurriculumConfig() {
-        const rows = document.querySelectorAll('#tblCurriculumBody tr');
+    switchPPCTModalTab(tabName) {
+        this.ppctActiveTab = tabName;
+        const pQuota = document.getElementById('ppct-pane-quota');
+        const pLessons = document.getElementById('ppct-pane-lessons');
+        const bQuota = document.getElementById('btnPpctTabQuota');
+        const bLessons = document.getElementById('btnPpctTabLessons');
+
+        if (tabName === 'quota') {
+            if (pQuota) pQuota.style.display = 'block';
+            if (pLessons) pLessons.style.display = 'none';
+            if (bQuota) { bQuota.style.borderBottomColor = '#7c3aed'; bQuota.style.color = '#6d28d9'; }
+            if (bLessons) { bLessons.style.borderBottomColor = 'transparent'; bLessons.style.color = '#64748b'; }
+        } else {
+            if (pQuota) pQuota.style.display = 'none';
+            if (pLessons) pLessons.style.display = 'block';
+            if (bLessons) { bLessons.style.borderBottomColor = '#7c3aed'; bLessons.style.color = '#6d28d9'; }
+            if (bQuota) { bQuota.style.borderBottomColor = 'transparent'; bQuota.style.color = '#64748b'; }
+            this.renderPPCTLessonsTable();
+        }
+    }
+
+    openPPCTLessonsTab(subId, grade = '8') {
+        this.ppctCurrentSubject = subId;
+        this.ppctCurrentGrade = grade;
+        const subSel = document.getElementById('ppctLessonSubSelect');
+        const grSel = document.getElementById('ppctLessonGradeSelect');
+        if (subSel) subSel.value = subId;
+        if (grSel) grSel.value = grade;
+        this.switchPPCTModalTab('lessons');
+    }
+
+    onPPCTPeriodsChange(inputElem) {
+        const row = inputElem.closest('tr');
+        if (!row) return;
+        const pw = parseInt(inputElem.value) || 1;
+        const yLbl = row.querySelector('.ppct-year-label');
+        const s1Lbl = row.querySelector('.ppct-sem1-label');
+        const s2Lbl = row.querySelector('.ppct-sem2-label');
+        if (yLbl) yLbl.textContent = pw * 35;
+        if (s1Lbl) s1Lbl.textContent = pw * 18;
+        if (s2Lbl) s2Lbl.textContent = pw * 17;
+
+        let total = 0;
+        document.querySelectorAll('#tblMasterPPCTQuotaBody .ppct-sub-pw').forEach(inp => {
+            total += parseInt(inp.value) || 0;
+        });
+        const badge = document.getElementById('ppctTotalPeriodsBadge');
+        if (badge) badge.textContent = total;
+    }
+
+    saveCurriculumQuotaFromUI() {
+        const rows = document.querySelectorAll('#tblMasterPPCTQuotaBody tr');
         if (!rows || rows.length === 0) return;
 
         let updatedSubjects = [];
         rows.forEach(tr => {
             const idx = parseInt(tr.dataset.index);
-            const name = tr.querySelector('.cfg-sub-name')?.value || '';
-            const periods = parseInt(tr.querySelector('.cfg-sub-periods')?.value) || 1;
-            const isDouble = tr.querySelector('.cfg-sub-double')?.checked || false;
-            const room = tr.querySelector('.cfg-sub-room')?.value || null;
+            const name = tr.querySelector('.ppct-sub-name')?.value || '';
+            const pw = parseInt(tr.querySelector('.ppct-sub-pw')?.value) || 1;
+            const isDouble = tr.querySelector('.ppct-sub-double')?.checked || false;
+            const room = tr.querySelector('.ppct-sub-room')?.value || null;
 
             const oldSub = this.engine.subjects[idx] || {};
             updatedSubjects.push({
                 ...oldSub,
                 name: name,
-                periodsPerWeek: periods,
+                periodsPerWeek: pw,
+                periodsYear: pw * 35,
+                periodsSem1: pw * 18,
+                periodsSem2: pw * 17,
                 doublePeriod: isDouble,
                 roomReq: room || null
             });
@@ -3494,13 +3714,300 @@ setPCCMFilter(filterName) {
         this.engine.subjects = updatedSubjects;
         this.engine.saveState();
 
-        this.closeCurriculumConfigModal();
         this.renderPCCMTable();
         this.renderConfigTab();
         this.renderStats();
 
-        this.showToast('🎉 Đã cập nhật thành công Khung Phân Phối Chương Trình (PPCT) môn học!');
+        this.showToast('🎉 Đã cập nhật thành công Khung Số Tiết PPCT môn học toàn trường!');
     }
+
+    onPPCTSubjectFilterChange() {
+        const subSel = document.getElementById('ppctLessonSubSelect');
+        const grSel = document.getElementById('ppctLessonGradeSelect');
+        if (subSel) this.ppctCurrentSubject = subSel.value;
+        if (grSel) this.ppctCurrentGrade = grSel.value;
+        this.renderPPCTLessonsTable();
+    }
+
+    renderPPCTLessonsTable() {
+        const tbody = document.getElementById('tblPPCTLessonsBody');
+        if (!tbody) return;
+
+        const subId = this.ppctCurrentSubject || 'toan';
+        const grade = this.ppctCurrentGrade || '8';
+        const subObj = (this.engine.subjects || []).find(s => s.id === subId) || { name: 'Toán', periodsPerWeek: 4 };
+
+        const lessons = this.engine.getPPCTLessons(subObj.name, grade) || [];
+        const countBadge = document.getElementById('ppctLessonsCountBadge');
+        if (countBadge) countBadge.textContent = lessons.length;
+
+        if (lessons.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="padding: 2rem; text-align: center; color: #94a3b8; font-size: 0.8rem;">
+                        Chưa có kế hoạch bài dạy cho môn <strong>${subObj.name} - Khối ${grade}</strong>.<br>
+                        Bấm <strong>[ ⚡ Nạp Mẫu Chuẩn BGD ]</strong> hoặc <strong>[ 📋 Dán Nhanh Word/Excel ]</strong> để nạp ngay!
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = lessons.map((item, idx) => `
+            <tr data-index="${idx}" style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 900; color: #7c3aed;">
+                    <input type="number" class="ppct-row-period" value="${item.period || (idx + 1)}" style="width: 45px; text-align: center; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.2rem;">
+                </td>
+                <td style="padding: 0.4rem 0.5rem; text-align: center;">
+                    <input type="number" class="ppct-row-week" value="${item.week || Math.ceil((idx + 1) / (subObj.periodsPerWeek || 2))}" style="width: 42px; text-align: center; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.2rem;">
+                </td>
+                <td style="padding: 0.4rem 0.6rem;">
+                    <input type="text" class="ppct-row-title" value="${item.title || ''}" placeholder="Tên bài dạy..." style="width: 100%; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.25rem 0.45rem; color: #0f172a;">
+                </td>
+                <td style="padding: 0.4rem 0.5rem; text-align: center;">
+                    <input type="number" class="ppct-row-count" value="${item.periodsCount || 1}" min="1" max="5" style="width: 45px; text-align: center; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.2rem;">
+                </td>
+                <td style="padding: 0.4rem 0.6rem;">
+                    <input type="text" class="ppct-row-eq" value="${item.equipment || 'SGK, Máy chiếu'}" placeholder="Thiết bị dạy học..." style="width: 100%; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.25rem 0.45rem;">
+                </td>
+                <td style="padding: 0.4rem 0.6rem;">
+                    <input type="text" class="ppct-row-note" value="${item.note || ''}" placeholder="Ghi chú..." style="width: 100%; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.25rem 0.45rem;">
+                </td>
+                <td style="padding: 0.4rem 0.4rem; text-align: center;">
+                    <button type="button" onclick="this.closest('tr').remove();" style="background: transparent; border: none; color: #ef4444; font-weight: 800; cursor: pointer; font-size: 1rem;" title="Xóa tiết này">&times;</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    addPPCTLessonRow(lessonData = null) {
+        const tbody = document.getElementById('tblPPCTLessonsBody');
+        if (!tbody) return;
+        const currentRows = tbody.querySelectorAll('tr');
+        const nextPeriod = currentRows.length + 1;
+        const subId = this.ppctCurrentSubject || 'toan';
+        const subObj = (this.engine.subjects || []).find(s => s.id === subId) || { periodsPerWeek: 4 };
+        const nextWeek = Math.ceil(nextPeriod / (subObj.periodsPerWeek || 2));
+
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #f1f5f9';
+        tr.innerHTML = `
+            <td style="padding: 0.4rem 0.5rem; text-align: center; font-weight: 900; color: #7c3aed;">
+                <input type="number" class="ppct-row-period" value="${lessonData?.period || nextPeriod}" style="width: 45px; text-align: center; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.2rem;">
+            </td>
+            <td style="padding: 0.4rem 0.5rem; text-align: center;">
+                <input type="number" class="ppct-row-week" value="${lessonData?.week || nextWeek}" style="width: 42px; text-align: center; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.2rem;">
+            </td>
+            <td style="padding: 0.4rem 0.6rem;">
+                <input type="text" class="ppct-row-title" value="${lessonData?.title || 'Bài học mới'}" placeholder="Tên bài dạy..." style="width: 100%; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.25rem 0.45rem; color: #0f172a;">
+            </td>
+            <td style="padding: 0.4rem 0.5rem; text-align: center;">
+                <input type="number" class="ppct-row-count" value="${lessonData?.periodsCount || 1}" min="1" max="5" style="width: 45px; text-align: center; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.2rem;">
+            </td>
+            <td style="padding: 0.4rem 0.6rem;">
+                <input type="text" class="ppct-row-eq" value="${lessonData?.equipment || 'SGK, Máy chiếu'}" placeholder="Thiết bị dạy học..." style="width: 100%; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.25rem 0.45rem;">
+            </td>
+            <td style="padding: 0.4rem 0.6rem;">
+                <input type="text" class="ppct-row-note" value="${lessonData?.note || ''}" placeholder="Ghi chú..." style="width: 100%; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.25rem 0.45rem;">
+            </td>
+            <td style="padding: 0.4rem 0.4rem; text-align: center;">
+                <button type="button" onclick="this.closest('tr').remove();" style="background: transparent; border: none; color: #ef4444; font-weight: 800; cursor: pointer; font-size: 1rem;">&times;</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+        const countBadge = document.getElementById('ppctLessonsCountBadge');
+        if (countBadge) countBadge.textContent = tbody.querySelectorAll('tr').length;
+    }
+
+    loadDefaultPPCTSampleForUI() {
+        const subId = this.ppctCurrentSubject || 'toan';
+        const grade = this.ppctCurrentGrade || '8';
+        const subObj = (this.engine.subjects || []).find(s => s.id === subId) || { name: 'Toán' };
+
+        const sample = this.engine.getDefaultPPCTSample(subObj.name, grade);
+        this.engine.savePPCTLessons(subObj.name, grade, sample);
+        this.renderPPCTLessonsTable();
+        this.showToast(`⚡ Đã nạp thành công ${sample.length} tiết bài học mẫu chuẩn BGD cho môn [${subObj.name} - Khối ${grade}]!`);
+    }
+
+    togglePPCTFastPaste() {
+        const zone = document.getElementById('ppctFastPasteZone');
+        if (zone) zone.style.display = (zone.style.display === 'none') ? 'block' : 'none';
+    }
+
+    applyPPCTFastPaste() {
+        const text = document.getElementById('ppctFastPasteInput')?.value || '';
+        if (!text.trim()) {
+            alert('Vui lòng dán danh sách bài học vào khung!');
+            return;
+        }
+
+        const subId = this.ppctCurrentSubject || 'toan';
+        const grade = this.ppctCurrentGrade || '8';
+        const subObj = (this.engine.subjects || []).find(s => s.id === subId) || { name: 'Toán', periodsPerWeek: 4 };
+
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        let parsedLessons = [];
+        lines.forEach((line, idx) => {
+            const p = idx + 1;
+            const w = Math.ceil(p / (subObj.periodsPerWeek || 2));
+            let title = line;
+            let eq = 'SGK, Máy chiếu, Thiết bị dạy học';
+            if (line.includes('|')) {
+                const parts = line.split('|');
+                title = parts[0].trim();
+                eq = parts[1].trim() || eq;
+            }
+            title = title.replace(/^Tiết\s*\d+[:\.-]?\s*/i, '');
+
+            parsedLessons.push({
+                period: p,
+                week: w,
+                title: title,
+                periodsCount: 1,
+                equipment: eq,
+                room: 'Lớp học',
+                note: `Tuần ${w}`
+            });
+        });
+
+        this.engine.savePPCTLessons(subObj.name, grade, parsedLessons);
+        this.togglePPCTFastPaste();
+        this.renderPPCTLessonsTable();
+        this.showToast(`🎉 Đã phân tích và nạp thành công ${parsedLessons.length} bài học từ văn bản dán!`);
+    }
+
+    savePPCTLessonsFromUI() {
+        const rows = document.querySelectorAll('#tblPPCTLessonsBody tr');
+        const subId = this.ppctCurrentSubject || 'toan';
+        const grade = this.ppctCurrentGrade || '8';
+        const subObj = (this.engine.subjects || []).find(s => s.id === subId) || { name: 'Toán' };
+
+        let lessons = [];
+        rows.forEach(tr => {
+            const period = parseInt(tr.querySelector('.ppct-row-period')?.value) || (lessons.length + 1);
+            const week = parseInt(tr.querySelector('.ppct-row-week')?.value) || 1;
+            const title = tr.querySelector('.ppct-row-title')?.value || '';
+            const count = parseInt(tr.querySelector('.ppct-row-count')?.value) || 1;
+            const eq = tr.querySelector('.ppct-row-eq')?.value || 'SGK, Máy chiếu';
+            const note = tr.querySelector('.ppct-row-note')?.value || '';
+
+            if (title) {
+                lessons.push({
+                    period: period,
+                    week: week,
+                    title: title,
+                    periodsCount: count,
+                    equipment: eq,
+                    room: 'Lớp học',
+                    note: note
+                });
+            }
+        });
+
+        this.engine.savePPCTLessons(subObj.name, grade, lessons);
+        this.showToast(`✅ Đã lưu ${lessons.length} tiết bài dạy PPCT môn [${subObj.name} - Khối ${grade}]! Đồng bộ vào Lịch Báo Giảng thành công.`);
+    }
+
+    exportPPCTExcel() {
+        try {
+            const subjects = this.engine.subjects || [];
+            let rows = [];
+            rows.push(['STT', 'MÔN HỌC', 'KHỐI', 'TIẾT PPCT', 'TUẦN', 'TÊN BÀI DẠY / CHỦ ĐỀ', 'SỐ TIẾT', 'THIẾT BỊ DẠY HỌC', 'GHI CHÚ']);
+
+            let stt = 1;
+            subjects.forEach(sub => {
+                ['6', '7', '8', '9'].forEach(gr => {
+                    const lessons = this.engine.getPPCTLessons(sub.name, gr) || [];
+                    lessons.forEach(l => {
+                        rows.push([
+                            stt++,
+                            sub.name,
+                            `Khối ${gr}`,
+                            l.period,
+                            `Tuần ${l.week}`,
+                            l.title,
+                            l.periodsCount || 1,
+                            l.equipment || 'SGK, Máy chiếu',
+                            l.note || ''
+                        ]);
+                    });
+                });
+            });
+
+            if (typeof XLSX !== 'undefined') {
+                const ws = XLSX.utils.aoa_to_sheet(rows);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "KHUNG_PPCT_GDPT_2018");
+                XLSX.writeFile(wb, `EduStudio_Khung_PPCT_GDPT2018_${Date.now()}.xlsx`);
+            } else {
+                let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `EduStudio_Khung_PPCT_GDPT2018.csv`);
+                document.body.appendChild(link);
+                link.click();
+            }
+            this.showToast("📤 Đã xuất toàn bộ Khung PPCT ra file Excel thành công!");
+        } catch(err) {
+            alert('Lỗi khi xuất file Excel PPCT: ' + err.message);
+        }
+    }
+
+    triggerPPCTExcelImport() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.xlsx, .xls, .csv';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const aoa = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                    
+                    let importedCount = 0;
+                    for (let r = 1; r < aoa.length; r++) {
+                        const row = aoa[r];
+                        if (row && row[1] && row[5]) {
+                            const subName = String(row[1]).trim();
+                            const grade = String(row[2] || '8').replace(/\D/g, '') || '8';
+                            const period = parseInt(row[3]) || (importedCount + 1);
+                            const week = parseInt(String(row[4]).replace(/\D/g, '')) || Math.ceil(period / 4);
+                            const title = String(row[5]).trim();
+                            const eq = String(row[7] || 'SGK, Máy chiếu');
+                            const note = String(row[8] || '');
+
+                            const key = `${subName}_${grade}`;
+                            if (!this.engine.ppctLessons[key]) this.engine.ppctLessons[key] = [];
+                            this.engine.ppctLessons[key].push({
+                                period: period,
+                                week: week,
+                                title: title,
+                                periodsCount: 1,
+                                equipment: eq,
+                                room: 'Lớp học',
+                                note: note
+                            });
+                            importedCount++;
+                        }
+                    }
+                    this.engine.saveState();
+                    this.renderPPCTLessonsTable();
+                    this.showToast(`📥 Đã nhập thành công ${importedCount} tiết PPCT từ file Excel!`);
+                } catch(err) {
+                    alert('Lỗi nhập Excel: ' + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        };
+        input.click();
+    }
+
 
     /**
      * XUẤT TOÀN BỘ GÓI THÔNG TIN TKB MASTER (.JSON)
@@ -4033,6 +4540,15 @@ setPCCMFilter(filterName) {
 
                     <!-- TAB 2: KHUNG PPCT MÔN HỌC -->
                     <div id="master-tab-curriculum" class="master-modal-pane" style="display: none;">
+                        <div style="background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 1.5px solid #c4b5fd; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <strong style="color: #6d28d9; font-size: 0.82rem;">📖 Kế Hoạch Bài Dạy Chi Tiết 35 Tuần (Theo Chuẩn CV 5512):</strong>
+                                <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #5b21b6;">Quản lý từng tiết bài dạy, nạp mẫu chuẩn SGK hoặc dán nhanh danh mục bài học để tự động sinh Lịch Báo Giảng.</p>
+                            </div>
+                            <button type="button" onclick="window.smartTKBUI.openCurriculumConfigModal('lessons')" style="background: #7c3aed; color: #ffffff; border: none; padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; cursor: pointer; box-shadow: 0 2px 5px rgba(124,58,237,0.3);">
+                                <span>🔍 Mở Trình Quản Trị Chi Tiết Bài Dạy (CV 5512) ⟶</span>
+                            </button>
+                        </div>
                         <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 0.5rem 0.85rem; margin-bottom: 0.85rem; font-size: 0.75rem; color: #166534; line-height: 1.4;">
                             💡 <strong>Thay đổi quy định PPCT:</strong> Chỉnh sửa số tiết/tuần của từng môn học khi có văn bản chỉ đạo mới của Bộ/Sở. Hệ thống sẽ tự động cập nhật ngay trên Bàn cờ TKB và ma trận phân công chuyên môn!
                         </div>

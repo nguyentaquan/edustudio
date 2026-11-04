@@ -101,7 +101,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.34 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.35 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -1948,7 +1948,7 @@
                             </div>
                             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                                 <span class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">
-                                    Phiên bản: v3.10.34 GDMN & GDPT
+                                    Phiên bản: v3.10.35 GDMN & GDPT
                                 </span>
                             </div>
                         </div>
@@ -2575,6 +2575,23 @@ window.openPCCMMonDirect = function() {
         console.error('Lỗi mở PCCM Môn:', err);
     }
 };
+
+window.openPPCTDirect = function() {
+    try {
+        if (window.smartTKBUI && typeof window.smartTKBUI.openCurriculumConfigModal === 'function') {
+            window.smartTKBUI.openCurriculumConfigModal();
+        } else if (window.app && window.app.tkbUI && typeof window.app.tkbUI.openCurriculumConfigModal === 'function') {
+            window.app.tkbUI.openCurriculumConfigModal();
+        } else {
+            console.warn('SmartTKBUI đang nạp, mở Khung PPCT sau 250ms...');
+            setTimeout(function() {
+                if (window.smartTKBUI) window.smartTKBUI.openCurriculumConfigModal();
+            }, 250);
+        }
+    } catch(err) {
+        console.error('Lỗi mở Khung PPCT:', err);
+    }
+};
 </script>
                                 <!-- HÀNG 1: CÔNG CỤ CẤU HÌNH MASTER • HỌC KỲ • THÔNG TIN TRƯỜNG (TỰ NHẬP TAY) -->
                                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.45rem; margin-bottom: 0.45rem;">
@@ -2588,6 +2605,10 @@ window.openPCCMMonDirect = function() {
                                         <!-- Nút Mở Chi Tiết Phân Công Chuyên Môn (PCCM) (Nhập & Sửa Giáo Viên, Môn, Số Tiết) -->
                                         <button id="btnOpenPCCMModal" type="button" onclick="window.openPCCMMonDirect();" style="background: #0284c7; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 2px 5px rgba(2,132,199,0.3);" title="Bấm để mở hộp thoại nhập &amp; phân công chuyên môn giáo viên">
                                             <span>⚖️</span> <span>PCCM Môn</span>
+                                        </button>
+                                        <!-- Nút Mở Chi Tiết Phân Phối Chương Trình (PPCT) & Kế Hoạch Bài Dạy 35 Tuần -->
+                                        <button id="btnOpenPPCTModal" type="button" onclick="window.openPPCTDirect();" style="background: #7c3aed; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 2px 5px rgba(124,58,237,0.3); transition: all 0.15s ease;" title="Bấm để mở hộp thoại nhập &amp; quản trị Phân Phối Chương Trình (PPCT), Kế hoạch bài dạy 35 tuần chuẩn GDPT 2018">
+                                            <span>📚</span> <span>Khung PPCT</span>
                                         </button>
                                         <!-- Nút Xuất Excel Mẫu Đa Sheet -->
                                         <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.exportMasterTKBPackage(); else if(window.app && window.app.tkbUI) window.app.tkbUI.exportMasterTKBPackage();" style="background: #059669; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" title="Xuất toàn bộ thông tin thành file Excel (.xlsx / .xls) đa Sheet chuẩn">
@@ -3924,7 +3945,7 @@ window.openPCCMMonDirect = function() {
         <span class="footer-dot-sep">•</span>
         <span>Định hướng & Bản quyền chuyên môn: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
         <span class="footer-dot-sep">•</span>
-        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.34 GDMN & GDPT</span>
+        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.35 GDMN & GDPT</span>
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->
@@ -4277,6 +4298,22 @@ window.openPCCMMonDirect = function() {
                 }
             } catch(e) {
                 console.error('Lỗi khi mở PCCM Môn:', e);
+            }
+        };
+
+        window.openPPCTDirect = function() {
+            try {
+                if (window.smartTKBUI && typeof window.smartTKBUI.openCurriculumConfigModal === 'function') {
+                    window.smartTKBUI.openCurriculumConfigModal();
+                } else if (window.app && window.app.tkbUI) {
+                    window.app.tkbUI.openCurriculumConfigModal();
+                } else {
+                    setTimeout(function() {
+                        if (window.smartTKBUI) window.smartTKBUI.openCurriculumConfigModal();
+                    }, 200);
+                }
+            } catch(e) {
+                console.error('Lỗi khi mở Khung PPCT:', e);
             }
         };
     </script>

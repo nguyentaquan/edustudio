@@ -57,6 +57,8 @@ export class SmartTKBEngine {
 
         // Lịch kết quả [classId][dayIndex][periodIndex] = { subject, teacher, room, isFixed }
         this.timetable = {};
+        // Khung Phân Phối Chương Trình & Kế Hoạch Bài Dạy Chi Tiết 35 Tuần (CV 5512)
+        this.ppctLessons = {};
 
         // Ràng buộc Ưu tiên Sư phạm Đẳng cấp (GDMN & GDPT)
         this.pedagogicalPriorities = {
@@ -517,6 +519,7 @@ export class SmartTKBEngine {
                 subjects: this.subjects,
                 assignments: this.assignments,
                 timetable: this.timetable,
+                ppctLessons: this.ppctLessons || {},
                 savedAt: new Date().toISOString()
             };
             localStorage.setItem('edustudio_tkb_canhthuan_official_v31028', JSON.stringify(data));
@@ -541,6 +544,7 @@ export class SmartTKBEngine {
                     this.schoolConfig.homeroomTeachers = Object.assign({}, CANH_THUAN_TKB_DATA.schoolConfig.homeroomTeachers, this.schoolConfig.homeroomTeachers || {});
                 }
                 if (data.pedagogicalPriorities) this.pedagogicalPriorities = data.pedagogicalPriorities;
+                if (data.ppctLessons) this.ppctLessons = data.ppctLessons;
                 if (data.subjects && data.subjects.length > 0) this.subjects = data.subjects;
                 this.specialRooms = data.specialRooms || this.specialRooms;
                 this.classes = data.classes;
@@ -629,6 +633,231 @@ export class SmartTKBEngine {
      * TÍNH NĂNG VŨ KHÍ: TỰ ĐỘNG SINH LỊCH BÁO GIẢNG TUẦN CHO GIÁO VIÊN
      * Tự động tính toán số tiết PPCT và chuẩn hóa tên bài dạy theo tuần
      */
+    
+    /**
+     * ==============================================================================
+     * HỆ THỐNG QUẢN LÝ PHÂN PHỐI CHƯƠNG TRÌNH (PPCT) & KẾ HOẠCH BÀI DẠY (CV 5512)
+     * ==============================================================================
+     */
+    getPPCTLessons(subjectName, grade = '8') {
+        const key = `${subjectName}_${grade}`;
+        if (this.ppctLessons && this.ppctLessons[key] && this.ppctLessons[key].length > 0) {
+            return this.ppctLessons[key];
+        }
+        return this.getDefaultPPCTSample(subjectName, grade);
+    }
+
+    savePPCTLessons(subjectName, grade, lessonsList) {
+        if (!this.ppctLessons) this.ppctLessons = {};
+        const key = `${subjectName}_${grade}`;
+        this.ppctLessons[key] = lessonsList;
+        this.saveState();
+        return true;
+    }
+
+    getLessonByPPCT(subjectName, classId, periodNumber) {
+        const grade = classId ? classId.replace(/\D/g, '') || '8' : '8';
+        const key = `${subjectName}_${grade}`;
+        const list = (this.ppctLessons && this.ppctLessons[key]) || this.getDefaultPPCTSample(subjectName, grade);
+        if (list && list.length > 0) {
+            const found = list.find(item => item.period === periodNumber);
+            if (found) return found;
+            if (list[periodNumber - 1]) return list[periodNumber - 1];
+        }
+        return null;
+    }
+
+    getDefaultPPCTSample(subjectName, grade = '8') {
+        const sub = (subjectName || '').toLowerCase().trim();
+        
+        // 1. MÔN HOẠT ĐỘNG TRẢI NGHIỆM, HƯỚNG NGHIỆP (105 TIẾT - 35 TUẦN x 3T)
+        if (sub.includes('hđtn') || sub.includes('hdtn')) {
+            const topics = [
+                { w: 1, p: 1, t: "Sinh hoạt dưới cờ: Khám phá truyền thống nhà trường", type: "SHDC", eq: "Cờ, Loa, Khung kịch bản" },
+                { w: 1, p: 2, t: "Hoạt động giáo dục theo chủ đề: Nhận diện cảm xúc & Bản thân", type: "HĐGD", eq: "Phiếu học tập, Tranh ảnh" },
+                { w: 1, p: 3, t: "Sinh hoạt lớp: Bầu ban cán sự lớp & Xây dựng quy ước lớp", type: "SHL", eq: "Biên bản, Sổ tay cờ đỏ" },
+                { w: 2, p: 4, t: "Sinh hoạt dưới cờ: Tự hào người học sinh Đội viên", type: "SHDC", eq: "Cờ Đội, Loa" },
+                { w: 2, p: 5, t: "Hoạt động giáo dục theo chủ đề: Kỹ năng quản lý cảm xúc bản thân", type: "HĐGD", eq: "Phiếu bài tập rèn luyện" },
+                { w: 2, p: 6, t: "Sinh hoạt lớp: Rèn luyện nền nếp học tập & Vệ sinh bán trú", type: "SHL", eq: "Kế hoạch tuần" },
+                { w: 3, p: 7, t: "Sinh hoạt dưới cờ: Văn hóa ứng xử trong nhà trường", type: "SHDC", eq: "Tiểu phẩm" },
+                { w: 3, p: 8, t: "Hoạt động giáo dục theo chủ đề: Xác định mục tiêu năm học", type: "HĐGD", eq: "Bảng mục tiêu cá nhân" },
+                { w: 3, p: 9, t: "Sinh hoạt lớp: Sơ kết phong trào thi đua học tốt", type: "SHL", eq: "Sổ theo dõi thi đua" },
+                { w: 4, p: 10, t: "Sinh hoạt dưới cờ: An toàn giao thông & Cổng trường bình yên", type: "SHDC", eq: "Mô hình biển báo" },
+                { w: 4, p: 11, t: "Hoạt động giáo dục: Phòng chống bạo lực học đường & Kỹ năng ứng phó", type: "HĐGD", eq: "Video tình huống" },
+                { w: 4, p: 12, t: "Sinh hoạt lớp: Rà soát nhiệm vụ tuần 4 & Đánh giá tháng 9", type: "SHL", eq: "Sổ tay chủ nhiệm" },
+                { w: 5, p: 13, t: "Sinh hoạt dưới cờ: Phát động phong trào Đọc sách & Học tập suốt đời", type: "SHDC", eq: "Tủ sách măng non" },
+                { w: 5, p: 14, t: "Hoạt động giáo dục: Khám phá khả năng tranh biện và tư duy logic", type: "HĐGD", eq: "Bảng tranh biện nhóm" },
+                { w: 5, p: 15, t: "Sinh hoạt lớp: Tuyên dương cá nhân tích cực tuần 5", type: "SHL", eq: "Bảng vinh danh" },
+                { w: 6, p: 16, t: "Sinh hoạt dưới cờ: Tôn vinh vẻ đẹp gia đình và lòng hiếu thảo", type: "SHDC", eq: "Bài hát gia đình" },
+                { w: 6, p: 17, t: "Hoạt động giáo dục: Kỹ năng lắng nghe & Chia sẻ với cha mẹ", type: "HĐGD", eq: "Thiệp tri ân" },
+                { w: 6, p: 18, t: "Sinh hoạt lớp: Kế hoạch phối hợp gia đình học sinh bán trú", type: "SHL", eq: "Phiếu liên lạc" },
+                { w: 7, p: 19, t: "Sinh hoạt dưới cờ: Giao lưu tìm hiểu phong tục truyền thống địa phương", type: "SHDC", eq: "Trang phục dân tộc" },
+                { w: 7, p: 20, t: "Hoạt động giáo dục: Xây dựng mối quan hệ bạn bè trong sáng, lành mạnh", type: "HĐGD", eq: "Bài tập tình huống" },
+                { w: 7, p: 21, t: "Sinh hoạt lớp: Đánh giá nếp sống bán trú tháng 10", type: "SHL", eq: "Sổ chấm điểm phòng ở" },
+                { w: 8, p: 22, t: "Sinh hoạt dưới cờ: Hưởng ứng phong trào Xanh - Sạch - Đẹp", type: "SHDC", eq: "Cây xanh mini" },
+                { w: 8, p: 23, t: "Hoạt động giáo dục: Phân loại rác thải & Bảo vệ môi trường bán trú", type: "HĐGD", eq: "Túi phân loại rác" },
+                { w: 8, p: 24, t: "Sinh hoạt lớp: Chuẩn bị nội dung kiểm tra giữa kỳ I", type: "SHL", eq: "Ma trận ôn tập" },
+                { w: 9, p: 25, t: "Sinh hoạt dưới cờ: Tự tin bước vào kỳ kiểm tra giữa học kỳ I", type: "SHDC", eq: "Khẩu hiệu quyết tâm" },
+                { w: 9, p: 26, t: "Hoạt động giáo dục: Kỹ năng giải tỏa căng thẳng mùa thi", type: "HĐGD", eq: "Bản đồ tư duy cảm xúc" },
+                { w: 9, p: 27, t: "Sinh hoạt lớp: Đánh giá nền nếp sau tuần kiểm tra giữa kỳ", type: "SHL", eq: "Báo cáo tổng kết tuần 9" }
+            ];
+            
+            // Tự động bổ sung các tuần còn lại đến tuần 35
+            for (let w = 10; w <= 35; w++) {
+                const p1 = (w - 1) * 3 + 1;
+                const p2 = p1 + 1;
+                const p3 = p1 + 2;
+                topics.push({ w: w, p: p1, t: `Sinh hoạt dưới cờ: Chủ đề rèn luyện tuần ${w}`, type: "SHDC", eq: "Cờ, Loa, Thiết bị âm thanh" });
+                topics.push({ w: w, p: p2, t: `Hoạt động giáo dục theo chủ đề tuần ${w}: Phát triển năng lực cá nhân`, type: "HĐGD", eq: "SGK HĐTN, Phiếu học tập" });
+                topics.push({ w: w, p: p3, t: `Sinh hoạt lớp: Đánh giá kết quả tuần ${w} & Kế hoạch tuần tiếp theo`, type: "SHL", eq: "Sổ tay GVCN" });
+            }
+            return topics.map(item => ({
+                period: item.p,
+                week: item.w,
+                title: item.t,
+                periodsCount: 1,
+                equipment: item.eq,
+                room: item.type === 'SHDC' ? 'Sân trường' : 'Lớp học',
+                note: item.type
+            }));
+        }
+
+        // 2. MÔN TIN HỌC (70 TIẾT - 35 TUẦN x 2T)
+        if (sub.includes('tin')) {
+            let tinLessons = [];
+            const titles = [
+                "Chủ đề A: Máy tính và cộng đồng - Lịch sử phát triển thiết bị số",
+                "Chủ đề A: Thông tin trong môi trường số và khả năng xử lý",
+                "Chủ đề B: Mạng máy tính và Internet - Khái niệm dịch vụ đám mây",
+                "Chủ đề B: Thực hành chia sẻ tài nguyên an toàn trên Google Drive",
+                "Chủ đề D: Đạo đức, pháp luật và văn hóa trong môi trường số",
+                "Chủ đề D: Phòng tránh lừa đảo và bảo vệ thông tin cá nhân trên mạng",
+                "Chủ đề E: Ứng dụng tin học - Định dạng văn bản nâng cao với bảng biểu",
+                "Chủ đề E: Thực hành thiết kế tài liệu học tập chuẩn GDPT",
+                "Chủ đề E: Sử dụng phần mềm bảng tính Excel xử lý số liệu khảo sát",
+                "Chủ đề E: Các hàm thống kê cơ bản trong phân tích dữ liệu học tập",
+                "Chủ đề E: Vẽ biểu đồ trực quan hóa số liệu bảng tính",
+                "Chủ đề E: Thực hành tổng hợp số liệu và in ấn báo cáo",
+                "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính - Thuật toán",
+                "Chủ đề F: Cấu trúc tuần tự và cấu trúc rẽ nhánh trong lập trình trực quan",
+                "Chủ đề F: Cấu trúc lặp và biến nhớ trong Scratch / Python",
+                "Chủ đề F: Thực hành lập trình trò chơi học tập tương tác"
+            ];
+            for (let i = 1; i <= 70; i++) {
+                const w = Math.ceil(i / 2);
+                const titleIdx = (i - 1) % titles.length;
+                tinLessons.push({
+                    period: i,
+                    week: w,
+                    title: `${titles[titleIdx]} (Tiết ${i})`,
+                    periodsCount: 1,
+                    equipment: "Phòng máy tính, Máy chiếu, Phần mềm",
+                    room: "room_tin",
+                    note: "Thực hành phòng máy"
+                });
+            }
+            return tinLessons;
+        }
+
+        // 3. MÔN TOÁN (140 TIẾT - 35 TUẦN x 4T)
+        if (sub.includes('toán') || sub.includes('toan')) {
+            let mathLessons = [];
+            const sampleTitles = [
+                "Bài 1: Đơn thức nhiều biến (Khái niệm & Bậc đơn thức)",
+                "Bài 1: Đơn thức đồng dạng & Cộng trừ đơn thức",
+                "Bài 2: Đa thức nhiều biến (Khái niệm & Thu gọn đa thức)",
+                "Bài 2: Tính giá trị của đa thức tại các giá trị cho trước",
+                "Bài 3: Phép cộng và phép trừ đa thức",
+                "Luyện tập chung: Các phép tính trên đa thức nhiều biến",
+                "Bài 4: Phép nhân đơn thức với đa thức & Đa thức với đa thức",
+                "Bài 5: Phép chia đa thức cho đơn thức",
+                "Bài 6: Hiệu hai bình phương. Bình phương của một tổng hay một hiệu",
+                "Luyện tập hằng đẳng thức đáng nhớ số 1, 2, 3",
+                "Bài 7: Lập phương của một tổng. Lập phương của một hiệu",
+                "Bài 8: Tổng và hiệu của hai lập phương",
+                "Bài 9: Phân tích đa thức thành nhân tử bằng phương pháp đặt nhân tử chung",
+                "Bài 9: Phân tích đa thức thành nhân tử bằng phương pháp dùng hằng đẳng thức",
+                "Bài 10: Tứ giác. Định lí về tổng các góc của một tứ giác",
+                "Bài 11: Hình thang cân. Dấu hiệu nhận biết hình thang cân"
+            ];
+            for (let i = 1; i <= 140; i++) {
+                const w = Math.ceil(i / 4);
+                const tIdx = (i - 1) % sampleTitles.length;
+                mathLessons.push({
+                    period: i,
+                    week: w,
+                    title: `${sampleTitles[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1,
+                    equipment: "SGK Toán 8, Thước thẳng, Máy tính bỏ túi",
+                    room: "Lớp học",
+                    note: "Đại số & Hình học"
+                });
+            }
+            return mathLessons;
+        }
+
+        // 4. MÔN KHTN (140 TIẾT - 35 TUẦN x 4T)
+        if (sub.includes('khtn')) {
+            let khtnLessons = [];
+            const khtnTitles = [
+                "Mở đầu: Sử dụng hóa chất, dụng cụ và an toàn trong phòng thực hành",
+                "Mở đầu: Viết báo cáo thực hành thí nghiệm KHTN",
+                "Bài 1: Biến đổi vật lí và biến đổi hóa học",
+                "Bài 2: Phản ứng hóa học và năng lượng trong phản ứng hóa học",
+                "Bài 3: Định luật bảo toàn khối lượng và phương trình hóa học",
+                "Luyện tập: Lập phương trình hóa học của phản ứng",
+                "Bài 4: Khối lượng mol và tỉ khối của chất khí",
+                "Bài 5: Dung dịch và nồng độ dung dịch (Nồng độ C% và CM)",
+                "Bài 6: Tốc độ phản ứng và các yếu tố ảnh hưởng đến tốc độ phản ứng",
+                "Bài 13: Khối lượng riêng và đơn vị đo khối lượng riêng",
+                "Bài 14: Thực hành đo khối lượng riêng của vật rắn",
+                "Bài 15: Tác dụng của áp suất lên chất lỏng và chất khí",
+                "Bài 16: Lực đẩy Ác-si-mét và điều kiện vật nổi",
+                "Bài 17: Áp suất khí quyển và ứng dụng trong đời sống"
+            ];
+            for (let i = 1; i <= 140; i++) {
+                const w = Math.ceil(i / 4);
+                const tIdx = (i - 1) % khtnTitles.length;
+                khtnLessons.push({
+                    period: i,
+                    week: w,
+                    title: `${khtnTitles[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1,
+                    equipment: "Dụng cụ, Hóa chất, Mô hình phòng Lab",
+                    room: "room_khtn",
+                    note: "Vật lí - Hóa học - Sinh học"
+                });
+            }
+            return khtnLessons;
+        }
+
+        // 5. CÁC MÔN HỌC KHÁC: TỰ ĐỘNG SINH KHUNG CHUẨN ĐẦU ĐỦ THEO SỐ TIẾT
+        const periodsPerWeekMap = {
+            'ngữ văn': 4, 'tiếng anh': 3, 'lịch sử': 3, 'địa lí': 3,
+            'giáo dục thể chất': 2, 'công nghệ': 1, 'giáo dục công dân': 1,
+            'âm nhạc': 1, 'mĩ thuật': 1
+        };
+        let pPerWeek = 2;
+        for (const [k, v] of Object.entries(periodsPerWeekMap)) {
+            if (sub.includes(k)) { pPerWeek = v; break; }
+        }
+        const totalPeriods = pPerWeek * 35;
+        let genericLessons = [];
+        for (let i = 1; i <= totalPeriods; i++) {
+            const w = Math.ceil(i / pPerWeek);
+            genericLessons.push({
+                period: i,
+                week: w,
+                title: `Bài học môn ${subjectName}: Nội dung chuẩn chương trình GDPT (Tiết ${i})`,
+                periodsCount: 1,
+                equipment: "SGK, Máy chiếu, Thiết bị dạy học bộ môn",
+                room: "Lớp học",
+                note: `Tuần ${w}`
+            });
+        }
+        return genericLessons;
+    }
+
     generateTeachingSchedule(teacherName, weekNumber = 9) {
         const grid = this.getTeacherTimetable(teacherName);
         let scheduleRows = [];
@@ -652,7 +881,20 @@ export class SmartTKBEngine {
                     const currentPPCT = ppctCounter[key];
 
                     // Tên bài dạy theo chuẩn SGK Kết Nối Tri Thức
-                    let lessonTitle = `Bài học theo PPCT tiết ${currentPPCT}`;
+                    // Lấy tên bài học chính xác từ kho PPCT chi tiết
+                    const ppctLesson = this.getLessonByPPCT(cell.subject, cell.classId, currentPPCT);
+                    let lessonTitle = ppctLesson && ppctLesson.title ? ppctLesson.title : `Bài học theo PPCT tiết ${currentPPCT}`;
+                    if (!ppctLesson || !ppctLesson.title) {
+                        if (cell.subject === 'HĐTN, HN') {
+                            lessonTitle = `Chủ đề: Khám phá bản thân & Kỹ năng ứng phó (Tiết ${currentPPCT})`;
+                        } else if (cell.subject === 'Tin Học') {
+                            lessonTitle = `Chủ đề D: Đạo đức, pháp luật & văn hóa số (Tiết ${currentPPCT})`;
+                        } else if (cell.subject === 'Toán') {
+                            lessonTitle = `Đại số & Hình học trực quan (Tiết ${currentPPCT})`;
+                        } else if (cell.subject === 'Ngữ Văn') {
+                            lessonTitle = `Đọc hiểu văn bản & Thực hành tiếng Việt (Tiết ${currentPPCT})`;
+                        }
+                    }
                     if (cell.subject === 'HĐTN, HN') {
                         lessonTitle = `Chủ đề: Khám phá bản thân & Kỹ năng ứng phó (Tiết ${currentPPCT})`;
                     } else if (cell.subject === 'Tin Học') {
