@@ -1353,6 +1353,7 @@ ${user.role === 'admin' ? 'Đơn vị: ' + user.school : 'Dữ liệu cá nhân:
     }
 
     logout() {
+        const prevEmail = this.currentUser ? this.currentUser.email : '';
         this.currentUser = {
             name: "Khách Vãng Lai",
             email: "",
@@ -1367,10 +1368,21 @@ ${user.role === 'admin' ? 'Đơn vị: ' + user.school : 'Dữ liệu cá nhân:
         };
         this.saveUserSession(this.currentUser);
         this.renderBannerAuthZone();
+        this.updateBannerStats({ onlineCount: 0 });
+
+        // Đồng bộ trạng thái đăng xuất lên máy chủ để giảm số trực tuyến về 0
+        try {
+            fetch('/api/users/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: prevEmail })
+            }).then(() => this.fetchServerStats()).catch(() => {});
+        } catch(e) {}
+
         try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
         this.checkAdminStorageVisibility();
         sound.playClick();
-        alert("Đã đăng xuất tài khoản an toàn! Thầy có thể bấm nút ĐĂNG NHẬP góc trên banner để đăng nhập lại bất cứ lúc nào.");
+        this.showToast('🚪 Đã đăng xuất tài khoản an toàn!');
     }
 
     openUserProfileModal() {
@@ -8628,18 +8640,24 @@ D. Nói xấu sau lưng bạn với những người khác
         const elUsers = document.getElementById('bannerTotalUsers');
         const elOnline = document.getElementById('bannerOnlineUsers');
         
-        let totalUsers = this.userAccounts ? this.userAccounts.length : 1;
-        let onlineUsers = 1;
+        const isUserLoggedIn = Boolean(this.currentUser && this.currentUser.isLoggedIn);
+        let totalUsers = this.userAccounts ? this.userAccounts.length : (isUserLoggedIn ? 1 : 0);
+        let onlineUsers = isUserLoggedIn ? 1 : 0;
 
         if (stats) {
             if (stats.totalUsers !== undefined) totalUsers = stats.totalUsers;
-            if (stats.onlineCount !== undefined) onlineUsers = stats.onlineCount;
+            if (stats.onlineCount !== undefined) {
+                onlineUsers = stats.onlineCount;
+            }
         } else if (this.userAccounts) {
-            onlineUsers = this.userAccounts.filter(u => u.isOnline).length || 1;
+            onlineUsers = this.userAccounts.filter(u => u.isOnline).length;
         }
 
         if (elUsers) elUsers.textContent = totalUsers.toLocaleString('vi-VN');
-        if (elOnline) elOnline.textContent = onlineUsers.toLocaleString('vi-VN');
+        if (elOnline) {
+            elOnline.textContent = onlineUsers.toLocaleString('vi-VN');
+            elOnline.style.color = (onlineUsers > 0) ? '#6ee7b7' : '#94a3b8';
+        }
     }
 
     initSystemAIConfig() {

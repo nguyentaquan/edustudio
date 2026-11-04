@@ -101,7 +101,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.42 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.43 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -115,7 +115,7 @@
                         <div class="lbl">Thầy Cô Tham Gia</div>
                     </div>
                     <div class="stat-box-mini" title="Số lượng người dùng và thiết bị đang trực tuyến thực tế">
-                        <div class="val" id="bannerOnlineUsers" style="color: #6ee7b7;">1</div>
+                        <div class="val" id="bannerOnlineUsers" style="color: #94a3b8;">0</div>
                         <div class="lbl">🟢 Đang Trực Tuyến</div>
                     </div>
                 </div>
@@ -164,6 +164,8 @@
                                     zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span>' + roleBadge + '</div><div class="banner-user-points"><span>🪙 ' + pts + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">' + demoText + '</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button><button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web">🔍</button></div>';
                                 } else {
                                     zone.innerHTML = '<button id="btnOpenAuthModal" class="btn-banner-login" onclick="document.getElementById(\'authModal\')?.classList.add(\'active\');"><span>👤</span> <span>ĐĂNG NHẬP</span></button>';
+                                    var onlEl = document.getElementById('bannerOnlineUsers');
+                                    if (onlEl) { onlEl.textContent = '0'; onlEl.style.color = '#94a3b8'; }
                                 }
                             }
                         } catch(err) {}

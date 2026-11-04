@@ -32,10 +32,10 @@ def get_default_users():
             "status": "active",
             "avatar": "👑",
             "joinDate": "01/01/2026",
-            "lastLogin": "Vừa xong",
-            "lastSeen": int(time.time()),
+            "lastLogin": "Chưa đăng nhập",
+            "lastSeen": 0,
             "device": "💻 Máy Tính",
-            "loginCount": 1
+            "loginCount": 0
         }
     ]
 
@@ -146,13 +146,13 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         elif clean_path == '/api/stats':
             users = load_users()
             now = int(time.time())
-            online_count = sum(1 for u in users if (now - u.get('lastSeen', 0)) < 300)
+            online_count = sum(1 for u in users if (now - u.get('lastSeen', 0)) < 120)
             vip_count = sum(1 for u in users if u.get('role') in ('admin', 'vip', 'vip_pro'))
             total_logins = sum(u.get('loginCount', 1) for u in users)
             total_pts = sum(u.get('points', 0) for u in users)
             stats = {
                 "totalUsers": len(users),
-                "onlineCount": max(1, online_count),
+                "onlineCount": online_count,
                 "vipCount": vip_count,
                 "totalLogins": total_logins,
                 "totalPoints": total_pts,
@@ -266,6 +266,30 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 "user": target_user
             }
             data_bytes = json.dumps(res, ensure_ascii=False).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Length', str(len(data_bytes)))
+            self.end_headers()
+            self.wfile.write(data_bytes)
+            return
+
+        elif clean_path == '/api/users/logout':
+            try:
+                length = int(self.headers.get('Content-Length', 0))
+                body = self.rfile.read(length).decode('utf-8') if length > 0 else '{}'
+                data = json.loads(body)
+            except Exception:
+                data = {}
+            email = (data.get('email') or '').strip().lower()
+            users = load_users()
+            for u in users:
+                if not email or u.get('email', '').lower() == email:
+                    u['lastSeen'] = 0
+            save_users(users)
+            now = int(time.time())
+            online_count = sum(1 for u in users if (now - u.get('lastSeen', 0)) < 120)
+            res = {"success": True, "onlineCount": online_count}
+            data_bytes = json.dumps(res).encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.send_header('Content-Length', str(len(data_bytes)))
