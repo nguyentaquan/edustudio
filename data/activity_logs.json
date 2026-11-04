@@ -1,5 +1,15 @@
 [
   {
+    "id": "LOG-86690",
+    "time": "2026-11-04 17:04:51",
+    "user": "Thầy Trần Minh Đức",
+    "role": "👨‍🏫 Thành Viên",
+    "action": "Đăng nhập thành công (giaovien.chuvanan@gmail.com) trên 💻 Máy Tính",
+    "module": "Xác Thực Google",
+    "type": "auth",
+    "status": "Thành công"
+  },
+  {
     "id": "LOG-85263",
     "time": "2026-11-04 16:41:03",
     "user": "Thầy Nguyễn Tá Quan",

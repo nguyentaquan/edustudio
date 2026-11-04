@@ -598,7 +598,8 @@ export class SmartTKBEngine {
             academicYear: "2026 - 2027",
             semester: "Học kỳ I",
             applyFromDate: "02/11/2026",
-            session: "Sáng (5 tiết/buổi)"
+            session: "Sáng (5 tiết/buổi)",
+            homeroomTeachers: {}
         };
         this.classes = ["6A1", "7A1", "8A1", "9A1"];
         this.teachers = [];
@@ -1017,14 +1018,19 @@ export class SmartTKBEngine {
         // Tạo danh sách tổng hợp 21 Thầy Cô
         const report = [];
         
-        // Danh sách tên chuẩn
-        const teacherNamesList = [
-            "Nguyễn Tá Quan", "Nguyễn Thanh Tuấn", "Lương Văn Tuấn", "Nguyễn Đình Minh", 
-            "Hà Thị Thúy Hòa", "Dương Thị Ngọc Lành", "Nguyễn Thị Hồng Phúc", "Nguyễn Thị Hồng Duyên",
-            "Lê Quốc Thái", "Nguyễn Tú Tài", "Võ Thị Hồng Ánh", "Nguyễn Bá Công",
-            "Nguyễn Bá Hiền", "Đoàn Thị Hồ", "Phạm Thị Nhàn", "Nguyễn Thị Nương",
-            "Đoàn Văn Rích", "Lê Thị Anh Thư", "Trần Thị Thanh Thảo", "Trần Duy Trung", "Thầy Tú (Công Nghệ)"
-        ];
+        const isCanhThuan = (this.schoolConfig?.schoolName || '').includes('Canh Thuận');
+        let teacherNamesList = [];
+        if (this.teachers && this.teachers.length > 0) {
+            teacherNamesList = this.teachers.map(t => typeof t === 'string' ? t : (t.fullName || t.name));
+        } else if (isCanhThuan) {
+            teacherNamesList = [
+                "Nguyễn Tá Quan", "Nguyễn Thanh Tuấn", "Lương Văn Tuấn", "Nguyễn Đình Minh", 
+                "Hà Thị Thúy Hòa", "Dương Thị Ngọc Lành", "Nguyễn Thị Hồng Phúc", "Nguyễn Thị Hồng Duyên",
+                "Lê Quốc Thái", "Nguyễn Tú Tài", "Võ Thị Hồng Ánh", "Nguyễn Bá Công",
+                "Nguyễn Bá Hiền", "Đoàn Thị Hồ", "Phạm Thị Nhàn", "Nguyễn Thị Nương",
+                "Đoàn Văn Rích", "Lê Thị Anh Thư", "Trần Thị Thanh Thảo", "Trần Duy Trung", "Thầy Tú (Công Nghệ)"
+            ];
+        }
 
         for (let i = 0; i < teacherNamesList.length; i++) {
             const tName = teacherNamesList[i];
@@ -1112,18 +1118,19 @@ export class SmartTKBEngine {
     getHomeroomTeacher(className) {
         if (!className) return null;
         const clean = className.trim().toUpperCase();
+        const isCanhThuan = (this.schoolConfig?.schoolName || '').includes('Canh Thuận');
 
         // 1. Lấy trực tiếp từ Khai Báo Toàn Diện (schoolConfig.homeroomTeachers)
         if (this.schoolConfig?.homeroomTeachers?.[clean]) {
             const tName = this.schoolConfig.homeroomTeachers[clean];
             return {
                 fullName: tName,
-                isQuan: tName.includes('Tá Quan')
+                isQuan: isCanhThuan && tName.includes('Tá Quan')
             };
         }
 
         // 2. Lấy trực tiếp từ Đội ngũ Giáo viên trong Khai Báo Toàn Diện (t.homeroom)
-        if (this.teachers && Array.isArray(this.teachers)) {
+        if (this.teachers && Array.isArray(this.teachers) && this.teachers.length > 0) {
             const t = this.teachers.find(item => {
                 const h = item.homeroom || item.homeroomClass;
                 return h && h.trim().toUpperCase() === clean;
@@ -1132,34 +1139,34 @@ export class SmartTKBEngine {
                 const tName = t.fullName || t.displayName || t.name;
                 return {
                     fullName: tName,
-                    isQuan: tName.includes('Tá Quan')
+                    isQuan: isCanhThuan && tName.includes('Tá Quan')
                 };
             }
         }
 
-        // 3. Lấy trực tiếp từ Phân Công Chuyên Môn (PCCM) / Vai trò kiêm nhiệm chính thức
-        const report = this.getTeacherWorkloadReport ? this.getTeacherWorkloadReport() : [];
-        for (const r of report) {
-            if (r.roles && Array.isArray(r.roles)) {
-                for (const role of r.roles) {
-                    const rName = (role.name || '').toUpperCase();
-                    const rCode = (role.code || '').toUpperCase();
-                    if ((rCode === 'GVCN' || rName.includes('CHỦ NHIỆM') || rName.includes('GVCN')) && rName.includes(clean)) {
-                        return {
-                            fullName: r.teacherName,
-                            isQuan: r.isQuan || r.teacherName.includes('Tá Quan')
-                        };
+        // 3. Lấy trực tiếp từ Phân Công Chuyên Môn (PCCM) NẾU trường có giáo viên
+        if (this.teachers && this.teachers.length > 0) {
+            const report = this.getTeacherWorkloadReport ? this.getTeacherWorkloadReport() : [];
+            for (const r of report) {
+                if (r.roles && Array.isArray(r.roles)) {
+                    for (const role of r.roles) {
+                        const rName = (role.name || '').toUpperCase();
+                        const rCode = (role.code || '').toUpperCase();
+                        if ((rCode === 'GVCN' || rName.includes('CHỦ NHIỆM') || rName.includes('GVCN')) && rName.includes(clean)) {
+                            return {
+                                fullName: r.teacherName,
+                                isQuan: isCanhThuan && (r.isQuan || r.teacherName.includes('Tá Quan'))
+                            };
+                        }
                     }
                 }
             }
         }
 
+        // Tuyệt đối không tự động gán giáo viên trường Canh Thuận cho trường khác
         return null;
     }
 
-    /**
-     * Cập nhật vai trò kiêm nhiệm cho một giáo viên
-     */
     updateTeacherWorkloadRoles(teacherName, newRoles) {
         let customRoles = {};
         try {

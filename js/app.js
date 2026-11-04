@@ -1175,8 +1175,8 @@ class EduStudioApp {
         // Khởi chạy các khối chức năng (Ưu tiên gắn sự kiện trước để ICON không bao giờ bị đơ)
         try { this.initRealtimeClock(); } catch(e) { console.warn(e); }
         try { this.initCommunityTicker(); } catch(e) { console.warn(e); }
-        try { this.renderBannerAuthZone();
-        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){} } catch(e) { console.warn(e); }
+        try { this.renderBannerAuthZone(); } catch(e) { console.warn(e); }
+        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
         try { this.initEventListeners(); } catch(e) { console.warn(e); }
         try { this.initCopyrightProtection(); } catch(e) { console.warn(e); }
         try { this.updateDemoCounterBadge(); } catch(e) { console.warn(e); }

@@ -814,30 +814,46 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             `;
         }
 
-        // Danh sách 21 Thầy Cô giáo và mã màu chữ riêng biệt
-        const legendTeachers = [
-            { name: 'Quan', label: '⭐ Thầy Quan', color: '#15803d' },
-            { name: 'T. Tuấn', label: 'T. Tuấn', color: '#1d4ed8' },
-            { name: 'L. Tuấn', label: 'L. Tuấn', color: '#c2410c' },
-            { name: 'Minh', label: 'Minh', color: '#6d28d9' },
-            { name: 'Nhàn', label: 'Nhàn', color: '#be123c' },
-            { name: 'Hòa', label: 'Hòa', color: '#0e7490' },
-            { name: 'Lành', label: 'Lành', color: '#047857' },
-            { name: 'Duyên', label: 'Duyên', color: '#7e22ce' },
-            { name: 'Hiền', label: 'Hiền', color: '#9a3412' },
-            { name: 'Công', label: 'Công', color: '#334155' },
-            { name: 'Hồ', label: 'Hồ', color: '#a21caf' },
-            { name: 'Nương', label: 'Nương', color: '#4338ca' },
-            { name: 'Thái', label: 'Thái', color: '#4d7c0f' },
-            { name: 'Tài', label: 'Tài', color: '#b91c1c' },
-            { name: 'Rích', label: 'Rích', color: '#0f766e' },
-            { name: 'Thư', label: 'Thư', color: '#be185d' },
-            { name: 'Thảo', label: 'Thảo', color: '#0369a1' },
-            { name: 'Trung', label: 'Trung', color: '#1e3a8a' },
-            { name: 'Phúc', label: 'Phúc', color: '#4f46e5' },
-            { name: 'Ánh', label: 'Ánh', color: '#b45309' },
-            { name: 'Tú', label: 'Tú', color: '#78350f' }
-        ];
+        const isCanhThuan = (this.engine.schoolConfig?.schoolName || '').includes('Canh Thuận');
+        let legendTeachers = [];
+        const baseColors = ['#15803d', '#1d4ed8', '#c2410c', '#6d28d9', '#be123c', '#0e7490', '#047857', '#7e22ce', '#9a3412', '#334155', '#a21caf', '#4338ca', '#4d7c0f', '#b91c1c', '#0f766e', '#be185d', '#0369a1', '#1e3a8a', '#4f46e5', '#b45309', '#78350f'];
+
+        if (this.engine.teachers && this.engine.teachers.length > 0) {
+            legendTeachers = this.engine.teachers.map((t, idx) => {
+                const tFullName = typeof t === 'string' ? t : (t.fullName || t.name);
+                const tShort = this.getCompactTeacherName(tFullName);
+                const isQuan = isCanhThuan && tFullName.includes('Tá Quan');
+                return {
+                    name: tShort,
+                    label: isQuan ? `⭐ ${tShort}` : tShort,
+                    color: baseColors[idx % baseColors.length]
+                };
+            });
+        } else if (isCanhThuan) {
+            legendTeachers = [
+                { name: 'Quan', label: '⭐ Thầy Quan', color: '#15803d' },
+                { name: 'T. Tuấn', label: 'T. Tuấn', color: '#1d4ed8' },
+                { name: 'L. Tuấn', label: 'L. Tuấn', color: '#c2410c' },
+                { name: 'Minh', label: 'Minh', color: '#6d28d9' },
+                { name: 'Nhàn', label: 'Nhàn', color: '#be123c' },
+                { name: 'Hòa', label: 'Hòa', color: '#0e7490' },
+                { name: 'Lành', label: 'Lành', color: '#047857' },
+                { name: 'Duyên', label: 'Duyên', color: '#7e22ce' },
+                { name: 'Hiền', label: 'Hiền', color: '#9a3412' },
+                { name: 'Công', label: 'Công', color: '#334155' },
+                { name: 'Hồ', label: 'Hồ', color: '#a21caf' },
+                { name: 'Nương', label: 'Nương', color: '#4338ca' },
+                { name: 'Thái', label: 'Thái', color: '#4d7c0f' },
+                { name: 'Tài', label: 'Tài', color: '#b91c1c' },
+                { name: 'Rích', label: 'Rích', color: '#0f766e' },
+                { name: 'Thư', label: 'Thư', color: '#be185d' },
+                { name: 'Thảo', label: 'Thảo', color: '#0369a1' },
+                { name: 'Trung', label: 'Trung', color: '#1e3a8a' },
+                { name: 'Phúc', label: 'Phúc', color: '#4f46e5' },
+                { name: 'Ánh', label: 'Ánh', color: '#b45309' },
+                { name: 'Tú', label: 'Tú', color: '#78350f' }
+            ];
+        }
 
         // 2. Lọc danh sách lớp hiển thị trên Bàn cờ tổng thể theo Bộ lọc Khối chuẩn xác 100% (GDMN & GDPT)
         let rawDisplayClasses = (activeGrade === 'all')
@@ -899,7 +915,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             dynamicTopHeadersHtml = filteredGEntries.map(([gKey, gClasses], idx) => {
                 const isLast = (idx === filteredGEntries.length - 1);
                 const bg = gradePalette[gKey] || fallbackColors[idx % fallbackColors.length];
-                const isQuanGrade = gClasses.includes('8A1');
+                const isQuanGrade = isCanhThuan && gClasses.includes('8A1');
                 const label = isNaN(gKey) ? gKey : `KHỐI ${gKey}${isQuanGrade ? ' ⭐' : ''}`;
                 const colSpan = (activeGrade === 'all') ? gClasses.length : displayClasses.length;
                 return `
@@ -1034,19 +1050,19 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 0.75rem; margin-bottom: 0.85rem;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                             <div style="font-size: 0.73rem; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.3px;">
-                                🎨 Chú Giải Mã Màu Chữ Từng Thầy Cô (${legendTeachers.length} Giáo Viên):
+                                🎨 Chú Giải Mã Màu Giáo Viên: ${legendTeachers.length > 0 ? `(${legendTeachers.length} Thầy Cô)` : ''}
                             </div>
                             <button onclick="window.smartTKBUI.toggleMasterLegend()" style="background: none; border: none; font-size: 0.7rem; color: #64748b; cursor: pointer; text-decoration: underline;">
                                 Thu gọn ✖
                             </button>
                         </div>
                         <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center;">
-                            ${legendTeachers.map(t => `
+                            ${legendTeachers.length > 0 ? legendTeachers.map(t => `
                                 <span style="display: inline-flex; align-items: center; gap: 0.25rem; background: #ffffff; border: 1px solid #cbd5e1; padding: 0.12rem 0.45rem; border-radius: 12px; font-size: 0.70rem; font-weight: 800; color: ${t.color}; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
                                     <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: ${t.color};"></span>
                                     ${t.label}
                                 </span>
-                            `).join('')}
+                            `).join('') : '<span style="font-size: 0.72rem; color: #64748b; font-style: italic;">Chưa có dữ liệu giáo viên • Thầy Cô vui lòng nhập danh sách giáo viên tại thẻ <strong>Phân Công & Định Mức (PCCM)</strong> hoặc bấm <strong>[📁 TKB Mẫu Canh Thuận]</strong> để nạp dữ liệu mẫu tham khảo.</span>'}
                         </div>
                     </div>
                 ` : ''}
@@ -1063,12 +1079,12 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                             <tr style="background: #f8fafc;">
                                 ${displayClasses.map((c, cIdx) => {
                                     const gvcn = this.getHomeroomTeacherForClass(c);
-                                    const isQuanClass = (gvcn && gvcn.isQuan) || (c === '8A1');
+                                    const isQuanClass = isCanhThuan && ((gvcn && gvcn.isQuan) || (c === '8A1'));
                                     const isLastOfGrade = (cIdx === displayClasses.length - 1) || (displayClasses[cIdx + 1] && displayClasses[cIdx + 1].match(/^(\d+)/) && c.match(/^(\d+)/) && displayClasses[cIdx + 1].match(/^(\d+)/)[1] !== c.match(/^(\d+)/)[1]);
                                     const classStyle = isQuanClass
                                         ? 'background: #1d4ed8 !important; color: #ffffff !important; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.3);'
                                         : 'background: #ffffff !important; color: #0f172a !important; font-weight: 800;';
-                                    const gvcnLabel = gvcn ? ` (${gvcn.isQuan ? '⭐ ' : ''}${gvcn.shortName})` : '';
+                                    const gvcnLabel = gvcn ? ` (${(isCanhThuan && gvcn.isQuan) ? '⭐ ' : ''}${gvcn.shortName})` : '';
                                     return `
                                         <th style="width: ${colClassWidth}; text-align: center; padding: 4px 2px; font-size: ${headerFontSize}; border-right: ${isLastOfGrade ? '2px solid #94a3b8' : '1px solid #cbd5e1'}; border-bottom: 2px solid #94a3b8; ${classStyle}"
                                             title="Lớp ${c}${gvcn ? ` • GVCN: ${gvcn.fullName}` : ''}">
