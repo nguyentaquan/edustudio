@@ -20,7 +20,7 @@ import { SmartTKBUI } from './tkb-ui.js?v=3.10.34';
 
 class EduStudioApp {
         syncVersionLabels() {
-        const label = 'v3.10.35 GDMN & GDPT';
+        const label = 'v3.10.36 GDMN & GDPT';
         document.querySelectorAll('.badge-version-gold, [data-version-badge]').forEach(el => {
             el.textContent = label;
         });
@@ -35,9 +35,9 @@ class EduStudioApp {
         window.closeGameCreatorModal = () => this.closeGameCreatorModal(); // 'home', 'ppt', 'games', 'authoring-repo', 'video-repo', 'exam-studio', 'media-studio', 'storage5tb'
         this.currentGameId = 'wheel'; // 'wheel', 'box', 'speed', 'guess'
 
-        // Trạng thái tài khoản người dùng (Mặc định khởi tạo định danh Thầy Nguyễn Tá Quan)
+        // Trạng thái tài khoản người dùng (Lưu giữ đúng danh tính đã đăng nhập)
         const session = this.loadUserSession();
-        if (session && session.isLoggedIn && session.name && session.name !== "Khách Vãng Lai") {
+        if (session && session.name) {
             this.currentUser = session;
         } else {
             this.currentUser = {
@@ -1230,25 +1230,67 @@ class EduStudioApp {
         } catch (e) {}
     }
 
-    loginWithGoogle() {
-        this.currentUser = {
-            name: "Thầy Nguyễn Tá Quan",
-            email: "quannt@edustudio.edu.vn",
-            role: "admin",
-            school: "Chuyên gia Giáo dục & CNTT",
-            cccd: "03808500xxxx",
-            phone: "0912.345.678",
-            subject: "HĐTN-HN, KHTN, Tin học",
-            points: 125,
-            avatarEmoji: "👨‍🏫",
-            isLoggedIn: true
-        };
+    loginWithGoogle(accountData = null) {
+        let user = null;
+        if (accountData && accountData.email) {
+            user = {
+                name: accountData.name || accountData.email.split('@')[0],
+                email: accountData.email,
+                role: accountData.role || 'member',
+                school: accountData.school || 'Cơ sở Giáo dục GDMN & GDPT',
+                cccd: accountData.cccd || '',
+                phone: accountData.phone || '',
+                subject: accountData.subject || 'HĐTN-HN, KHTN, Tin học...',
+                points: accountData.points !== undefined ? accountData.points : 125,
+                avatarEmoji: accountData.avatarEmoji || (accountData.role === 'admin' ? '👑' : (accountData.role === 'vip_pro' ? '💎' : '👨‍🏫')),
+                isLoggedIn: true
+            };
+        } else {
+            const inputEmail = document.getElementById('authCustomEmail')?.value.trim();
+            const inputName = document.getElementById('authCustomName')?.value.trim();
+            const inputSchool = document.getElementById('authCustomSchool')?.value.trim();
+            const inputRole = document.getElementById('authCustomRole')?.value || 'member';
+
+            if (inputEmail) {
+                user = {
+                    name: inputName || inputEmail.split('@')[0],
+                    email: inputEmail,
+                    role: inputRole,
+                    school: inputSchool || 'Cơ sở Giáo dục',
+                    cccd: '',
+                    phone: '',
+                    subject: 'Giáo viên bộ môn',
+                    points: 125,
+                    avatarEmoji: inputRole === 'admin' ? '👑' : (inputRole === 'vip_pro' ? '💎' : '👨‍🏫'),
+                    isLoggedIn: true
+                };
+            } else {
+                user = {
+                    name: "Thầy Nguyễn Tá Quan",
+                    email: "quannt@edustudio.edu.vn",
+                    role: "admin",
+                    school: "Chuyên gia Giáo dục & CNTT",
+                    cccd: "03808500xxxx",
+                    phone: "0912.345.678",
+                    subject: "HĐTN-HN, KHTN, Tin học",
+                    points: 125,
+                    avatarEmoji: "👨‍🏫",
+                    isLoggedIn: true
+                };
+            }
+        }
+
+        this.currentUser = user;
         this.saveUserSession(this.currentUser);
         this.renderBannerAuthZone();
         this.checkAdminStorageVisibility();
+        try {
+            this.logUserActivity(`Đăng nhập Google SSO thành công (${user.email})`, 'Xác Thực', 'auth', 'Thành công');
+        } catch(e) {}
+
         document.getElementById('authModal')?.classList.remove('active');
         sound.playFanfare();
-        alert("🎉 [ĐĂNG NHẬP GOOGLE THÀNH CÔNG!]\nChào mừng Thầy Nguyễn Tá Quan đã trở lại hệ thống EduStudio.");
+        alert(`🎉 [ĐĂNG NHẬP GOOGLE THÀNH CÔNG!]\nChào mừng ${this.currentUser.name}\nEmail: ${this.currentUser.email}\nVai trò: ${this.currentUser.role === 'admin' ? '👑 Quản Trị Master' : (this.currentUser.role === 'vip_pro' ? '💎 VIP PRO' : '👨‍🏫 Thành Viên Chuẩn')}`);
     }
 
     loginWithQRCode() {
@@ -1360,10 +1402,10 @@ class EduStudioApp {
         const tickerEl = document.getElementById('tickerText');
         if (!tickerEl) return;
         const messages = [
-            "Hệ thống EduStudio v3.10.35 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
+            "Hệ thống EduStudio v3.10.36 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
             "Cô Hoàng Mai vừa tạo bộ trò chơi 'Đoán Con Vật Mầm Non' tương tác trực quan",
             "Thầy Lê Hải vừa biên soạn đề kiểm tra Giữa kỳ I môn Toán 7 chuẩn 3 dạng TNKQ",
-            "Hệ thống EduStudio v3.10.35 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
+            "Hệ thống EduStudio v3.10.36 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
             "Xưởng Video Studio đã hoàn tất kịch bản Audio-Driven Lip-Sync 3D"
         ];
         let idx = 0;
@@ -1481,7 +1523,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         const defaultLogs = [
             { id: "LOG-1001", time: "2026-11-04 00:32:10", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Kích hoạt chế độ Hoán đổi tiết 1 chạm (Click-to-Swap)", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
             { id: "LOG-1002", time: "2026-11-04 00:28:45", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tinh chỉnh đệm lề và ép gọn kích thước ô bàn cờ TKB chuẩn 32px", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
-            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.35 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
+            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.36 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
             { id: "LOG-1004", time: "2026-11-03 23:45:00", user: "Cô Hà Thị Thúy Hòa", role: "Nhóm 4: Giáo Viên", action: "Xem thời khóa biểu Lớp 6A2 môn Tin Học", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
             { id: "LOG-1005", time: "2026-11-03 23:15:20", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tạo Đề Kiểm Tra Giữa Kỳ I HĐTN 8 chuẩn ma trận & đặc tả BGDĐT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" },
             { id: "LOG-1006", time: "2026-11-03 22:50:11", user: "Cô Dương Thị Ngọc Lành", role: "Nhóm 4: Giáo Viên", action: "Đăng nhập xác thực tài khoản Google SSO", module: "Xác Thực", type: "auth", status: "Thành công" },
@@ -10459,7 +10501,7 @@ function launchEduStudio() {
         try {
             window.app = new EduStudioApp();
             window.__appLoaded = true;
-            console.log("EduStudio v3.10.35 GDMN & GDPT Master đã khởi tạo thành công!");
+            console.log("EduStudio v3.10.36 GDMN & GDPT Master đã khởi tạo thành công!");
         } catch (err) {
             console.error("Lỗi khởi tạo EduStudio:", err);
         }

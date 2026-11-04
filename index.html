@@ -101,7 +101,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.35 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.36 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -126,7 +126,7 @@
                         <span>👤</span> <span>ĐĂNG NHẬP</span>
                     </button>
                 </div>
-                <!-- BẢO VỆ PHIÊN ĐĂNG NHẬP THẦY NGUYỄN TÁ QUAN (TỰ ĐỘNG KHÔI PHỤC NGAY LẬP TỨC 0MS) -->
+                <!-- BẢO VỆ PHIÊN ĐĂNG NHẬP THÀNH VIÊN (LƯU GIỮ CHUẨN XÁC TÀI KHOẢN ĐÃ ĐĂNG NHẬP) -->
                 <script>
                     (function() {
                         try {
@@ -135,7 +135,8 @@
                             if (raw) {
                                 try { u = JSON.parse(raw); } catch(e){}
                             }
-                            if (!u || !u.isLoggedIn || !u.name || u.name === 'Khách Vãng Lai') {
+                            // Chỉ nạp mặc định Thầy Quan khi lần đầu mở web (chưa từng có session nào)
+                            if (!u) {
                                 u = {
                                     name: "Thầy Nguyễn Tá Quan",
                                     email: "quannt@edustudio.edu.vn",
@@ -151,8 +152,16 @@
                                 localStorage.setItem('edustudio_user_session', JSON.stringify(u));
                             }
                             var zone = document.getElementById('bannerAuthZone');
-                            if (zone && u && u.isLoggedIn) {
-                                zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span><span class="role-badge-admin">👑 Nhóm 1: Quản Trị</span></div><div class="banner-user-points"><span>🪙 ' + (u.points || 125) + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">• Gói Demo: ∞</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button><button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web">🔍</button></div>';
+                            if (zone) {
+                                if (u && u.isLoggedIn && u.role !== 'guest') {
+                                    var roleBadge = '<span class="role-badge-member">👨‍🏫 Thành Viên</span>';
+                                    if (u.role === 'admin') roleBadge = '<span class="role-badge-admin">👑 Nhóm 1: Quản Trị</span>';
+                                    else if (u.role === 'vip_pro') roleBadge = '<span class="role-badge-vip-pro">💎 Nhóm 2: VIP PRO</span>';
+                                    else if (u.role === 'vip') roleBadge = '<span class="role-badge-vip">⭐ Nhóm 3: VIP</span>';
+                                    zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span>' + roleBadge + '</div><div class="banner-user-points"><span>🪙 ' + (u.points || 125) + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">• Gói Demo: ∞</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button><button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web">🔍</button></div>';
+                                } else {
+                                    zone.innerHTML = '<button id="btnOpenAuthModal" class="btn-banner-login" onclick="document.getElementById(\'authModal\')?.classList.add(\'active\');"><span>👤</span> <span>ĐĂNG NHẬP</span></button>';
+                                }
                             }
                         } catch(err) {}
                     })();
@@ -1948,7 +1957,7 @@
                             </div>
                             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                                 <span class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">
-                                    Phiên bản: v3.10.35 GDMN & GDPT
+                                    Phiên bản: v3.10.36 GDMN & GDPT
                                 </span>
                             </div>
                         </div>
@@ -3487,51 +3496,111 @@ window.openPPCTDirect = function() {
          - Tự động kích hoạt Trợ lý AI Gemini cho từng thành viên
          - Phí vi mô siêu thấp: 500 VNĐ / file Documents (.DOCX), 10.000 VNĐ / gói Trò chơi
          ====================================================================== -->
-    <div id="authModal" class="modal-overlay">
-        <div class="modal-box-center" style="max-width: 460px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.65rem; margin-bottom: 1.25rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-size: 1.5rem;">🎓</span>
+        <div id="authModal" class="modal-overlay">
+        <div class="modal-box-center" style="max-width: 480px; border-radius: 14px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.35);">
+            <!-- Header Modal -->
+            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="font-size: 1.6rem;">🎓</span>
                     <div>
-                        <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">Đăng Nhập Thành Viên EduStudio</h3>
-                        <p style="font-size: 0.72rem; color: #64748b;">Cổng Định Danh Duy Nhất Qua Tài Khoản Google</p>
+                        <h3 style="font-size: 1.1rem; font-weight: 800; margin: 0; color: #ffffff;">Đăng Nhập Tài Khoản Google SSO</h3>
+                        <p style="font-size: 0.73rem; margin: 0.15rem 0 0 0; color: #bfdbfe;">Cổng Xác Thực Sư Phạm GDMN &amp; GDPT Toàn Quốc</p>
                     </div>
                 </div>
-                <button id="btnCloseAuthModal" onclick="window.closeModal('authModal')" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #94a3b8;">✕</button>
+                <button id="btnCloseAuthModal" onclick="window.closeModal('authModal')" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.2rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.1rem 0.45rem; line-height: 1;">✕</button>
             </div>
 
-            <!-- NÚT DUY NHẤT: ĐĂNG NHẬP BẰNG TÀI KHOẢN GOOGLE -->
-            <button id="btnGoogleSignIn" class="btn-google-sign" style="width: 100%; justify-content: center; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.25); margin-bottom: 1.25rem; border: 1.5px solid #cbd5e1;">
-                <svg width="22" height="22" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.14z"/>
-                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
-                    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
-                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                </svg>
-                <span>Đăng Nhập Với Tài Khoản Google</span>
-            </button>
-
-            <!-- HỘP THÔNG ĐIỆP CHÍNH SÁCH SƯ PHẠM & BIỂU PHÍ VI MÔ -->
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.85rem; margin-bottom: 1rem;">
-                <div style="font-size: 0.76rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.35rem;">
-                    <span>💡</span> <span>Quyền Lợi & Định Hướng Thành Viên Google:</span>
+            <div style="padding: 1.25rem;">
+                <!-- 1. Danh sách tài khoản chọn nhanh (Google One-Tap Chooser) -->
+                <div style="font-size: 0.74rem; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 0.5rem;">
+                    ⚡ Chọn Tài Khoản Đăng Nhập Nhanh:
                 </div>
-                <div style="font-size: 0.73rem; color: #334155; line-height: 1.55;">
-                    • <strong>Tích hợp AI Gemini miễn phí:</strong> Sử dụng tài khoản Google để phân tán tải AI, soạn KHBD và tạo đề nhanh gấp 10 lần.<br>
-                    • <strong>Tặng ngay 125 điểm thưởng:</strong> Tích điểm khi đóng góp tư liệu và trừ điểm khi tải tài nguyên.<br>
-                    • <strong>Biểu phí vi mô duy trì web:</strong> Chỉ <strong>500 VNĐ / file</strong> Word (.DOCX) và <strong>10.000 VNĐ / gói</strong> Trò chơi tương tác để gây quỹ duy trì máy chủ cộng đồng!
-                </div>
-            </div>
+                <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem;">
+                    <button type="button" onclick="window.app && window.app.loginWithGoogle({ name: 'Thầy Nguyễn Tá Quan', email: 'quannt@edustudio.edu.vn', role: 'admin', school: 'Chuyên gia Giáo dục & CNTT' })" style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; border: 1.5px solid #bfdbfe; border-radius: 8px; background: #eff6ff; cursor: pointer; text-align: left; transition: all 0.15s ease;" onmouseover="this.style.background='#dbeafe';" onmouseout="this.style.background='#eff6ff';">
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.3rem;">👑</span>
+                            <div>
+                                <strong style="font-size: 0.82rem; color: #1e3a8a; display: block;">Thầy Nguyễn Tá Quan</strong>
+                                <span style="font-size: 0.72rem; color: #2563eb;">quannt@edustudio.edu.vn</span>
+                            </div>
+                        </div>
+                        <span style="background: #1e3a8a; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;">Admin Master</span>
+                    </button>
 
-            <div style="text-align: center; font-size: 0.72rem; color: #64748b;">
-                Bảo vệ bản quyền & điều hành hệ thống: <strong>Thầy Nguyễn Tá Quan</strong>
+                    <button type="button" onclick="window.app && window.app.loginWithGoogle({ name: 'Cô Hoàng Mai', email: 'hoangmai.mn@gmail.com', role: 'vip_pro', school: 'Trường Mầm Non Họa Mi' })" style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; cursor: pointer; text-align: left; transition: all 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='#ffffff';">
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.3rem;">💎</span>
+                            <div>
+                                <strong style="font-size: 0.82rem; color: #0f172a; display: block;">Cô Hoàng Mai</strong>
+                                <span style="font-size: 0.72rem; color: #64748b;">hoangmai.mn@gmail.com • Mầm Non Họa Mi</span>
+                            </div>
+                        </div>
+                        <span style="background: #0284c7; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;">VIP Pro</span>
+                    </button>
+
+                    <button type="button" onclick="window.app && window.app.loginWithGoogle({ name: 'Thầy Lê Văn Hùng', email: 'hunglv.c2canhthuan@gmail.com', role: 'member', school: 'THCS Bán Trú Canh Thuận' })" style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; cursor: pointer; text-align: left; transition: all 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='#ffffff';">
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.3rem;">👨‍🏫</span>
+                            <div>
+                                <strong style="font-size: 0.82rem; color: #0f172a; display: block;">Thầy Lê Văn Hùng</strong>
+                                <span style="font-size: 0.72rem; color: #64748b;">hunglv.c2canhthuan@gmail.com • THCS Canh Thuận</span>
+                            </div>
+                        </div>
+                        <span style="background: #059669; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;">Thành Viên</span>
+                    </button>
+                </div>
+
+                <div style="display: flex; align-items: center; margin-bottom: 0.85rem;">
+                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                    <span style="padding: 0 0.65rem; font-size: 0.72rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Hoặc Đăng Nhập Với Gmail Khác</span>
+                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                </div>
+
+                <!-- 2. Form Nhập Tài Khoản Google / Gmail Tùy Ý (Trường Khác) -->
+                <form id="formCustomGoogleLogin" onsubmit="event.preventDefault(); window.app && window.app.loginWithGoogle();" style="display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 0.85rem;">
+                    <div>
+                        <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">📧 Địa Chỉ Gmail Của Thầy Cô:</label>
+                        <input type="email" id="authCustomEmail" placeholder="Nhập địa chỉ Gmail của bạn (vd: giaovien@gmail.com)" required style="width: 100%; padding: 0.45rem 0.65rem; font-size: 0.82rem; font-weight: 700; border: 1.5px solid #cbd5e1; border-radius: 6px; outline: none;">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">👤 Họ và Tên:</label>
+                            <input type="text" id="authCustomName" placeholder="Ví dụ: Thầy Trần Duy Trung" required style="width: 100%; padding: 0.45rem 0.65rem; font-size: 0.82rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">🏫 Cơ Sở Giáo Dục:</label>
+                            <input type="text" id="authCustomSchool" placeholder="Ví dụ: THCS Canh Thuận" style="width: 100%; padding: 0.45rem 0.65rem; font-size: 0.82rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">🎭 Vai Trò Hệ Thống:</label>
+                        <select id="authCustomRole" style="width: 100%; padding: 0.42rem 0.65rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff;">
+                            <option value="member" selected>👨‍🏫 Nhóm 4: Giáo Viên / Thành Viên Chuẩn</option>
+                            <option value="vip_pro">💎 Nhóm 2: Cán Bộ Quản Lý / VIP PRO</option>
+                            <option value="admin">👑 Nhóm 1: Quản Trị Viên (Admin Master)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="btnGoogleSignIn" class="btn-google-sign" style="width: 100%; justify-content: center; padding: 0.65rem 1rem; font-size: 0.88rem; font-weight: 800; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.25); border: 1.5px solid #2563eb; background: #2563eb; color: #ffffff; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem;">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#ffffff" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.14z"/>
+                            <path fill="#ffffff" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                            <path fill="#ffffff" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                            <path fill="#ffffff" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                        </svg>
+                        <span>Xác Nhận Đăng Nhập Với Tài Khoản Này</span>
+                    </button>
+                </form>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.72rem; color: #475569; line-height: 1.5;">
+                    💡 <strong>Cơ chế bảo mật Google SSO:</strong> Hệ thống lưu giữ chuẩn xác địa chỉ Gmail và họ tên người dùng để hiển thị trên bản quyền và nhật ký thao tác. Thầy Cô có thể bấm <strong>Đăng nhập với tài khoản khác</strong> tại menu bánh răng bất cứ lúc nào!
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ======================================================================
-         MODAL MỚI: XEM & BỔ SUNG THÔNG TIN TÀI KHOẢN THÀNH VIÊN (NÚT TK)
-         ====================================================================== -->
     <div id="userProfileModal" class="modal-overlay">
         <div class="modal-box-center" style="max-width: 520px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.65rem; margin-bottom: 1rem;">
@@ -3945,7 +4014,7 @@ window.openPPCTDirect = function() {
         <span class="footer-dot-sep">•</span>
         <span>Định hướng & Bản quyền chuyên môn: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
         <span class="footer-dot-sep">•</span>
-        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.35 GDMN & GDPT</span>
+        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.36 GDMN & GDPT</span>
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->
