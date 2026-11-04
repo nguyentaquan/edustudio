@@ -1606,11 +1606,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             return;
         }
 
-        let csv = '﻿STT,Thời Gian,Họ và Tên,Vai Trò,Hành Động Chi Tiết,Phân Hệ,Trạng Thái
-';
+        let csv = "\uFEFFSTT,Th\u1eddi Gian,H\u1ecd v\xe0 T\xean,Vai Tr\xf2,H\xe0nh \u0110\u1ed9ng Chi Ti\u1ebft,Ph\xe2n H\u1ec7,Tr\u1ea1ng Th\xe1i\n";
         logs.forEach((l, idx) => {
-            csv += `"${idx + 1}","${l.time}","${l.user}","${l.role}","${l.action.replace(/"/g, '""')}","${l.module}","${l.status}"
-`;
+            csv += `"${idx + 1}","${l.time}","${l.user}","${l.role}","${(l.action || "").replace(/"/g, '""')}","${l.module || ""}","${l.status || ""}"\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
