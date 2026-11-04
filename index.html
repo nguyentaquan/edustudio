@@ -101,7 +101,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.40 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.41 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -110,13 +110,13 @@
 
             <div class="banner-actions-right">
                 <div class="banner-stats-mini">
-                    <div class="stat-box-mini">
-                        <div class="val">12,850+</div>
+                    <div class="stat-box-mini" title="Tổng số giáo viên thành viên đã tham gia thực tế trên hệ thống">
+                        <div class="val" id="bannerTotalUsers">1</div>
                         <div class="lbl">Thầy Cô Tham Gia</div>
                     </div>
-                    <div class="stat-box-mini">
-                        <div class="val">48,620+</div>
-                        <div class="lbl">Tiết Học Đã Tạo</div>
+                    <div class="stat-box-mini" title="Số lượng người dùng và thiết bị đang trực tuyến thực tế">
+                        <div class="val" id="bannerOnlineUsers" style="color: #6ee7b7;">1</div>
+                        <div class="lbl">🟢 Đang Trực Tuyến</div>
                     </div>
                 </div>
 
@@ -1960,7 +1960,7 @@
                             </div>
                             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                                 <span class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">
-                                    Phiên bản: v3.10.40 GDMN & GDPT
+                                    Phiên bản: v3.10.41 GDMN & GDPT
                                 </span>
                             </div>
                         </div>
@@ -1995,7 +1995,7 @@
                                 <div class="admin-kpi-icon" style="background: #eff6ff; color: #2563eb;">👥</div>
                                 <div class="admin-kpi-content">
                                     <div class="admin-kpi-label">Tổng Giáo Viên Thành Viên</div>
-                                    <div class="admin-kpi-val" id="kpiTotalUsers">8</div>
+                                    <div class="admin-kpi-val" id="kpiTotalUsers">1</div>
                                     <div class="admin-kpi-desc" id="kpiOnlineDesc">🟢 Đang online thực tế: 1 người</div>
                                 </div>
                             </div>
@@ -2011,7 +2011,7 @@
                                 <div class="admin-kpi-icon" style="background: #fdf4ff; color: #9333ea;">🪙</div>
                                 <div class="admin-kpi-content">
                                     <div class="admin-kpi-label">Điểm Cống Hiến Lưu Hành</div>
-                                    <div class="admin-kpi-val" id="kpiTotalPoints" style="color: #7e22ce;">645</div>
+                                    <div class="admin-kpi-val" id="kpiTotalPoints" style="color: #7e22ce;">500</div>
                                     <div class="admin-kpi-desc">Thưởng đóng góp tài liệu đạt chuẩn</div>
                                 </div>
                             </div>
@@ -2019,7 +2019,7 @@
                                 <div class="admin-kpi-icon" style="background: #ecfdf5; color: #059669;">📥</div>
                                 <div class="admin-kpi-content">
                                     <div class="admin-kpi-label">Lượt Tải Documents (500đ)</div>
-                                    <div class="admin-kpi-val" id="kpiTotalDownloads" style="color: #059669;">12</div>
+                                    <div class="admin-kpi-val" id="kpiTotalDownloads" style="color: #059669;">0</div>
                                     <div class="admin-kpi-desc">Mô hình kinh tế vi mô tự duy trì</div>
                                 </div>
                             </div>
@@ -2422,7 +2422,7 @@
                                     <div class="admin-kpi-icon" style="background: #eff6ff; color: #2563eb;">⚡</div>
                                     <div class="admin-kpi-content">
                                         <div class="admin-kpi-label">Tổng Lượt Hoạt Động</div>
-                                        <div class="admin-kpi-val" id="kpiLogTotal">12</div>
+                                        <div class="admin-kpi-val" id="kpiLogTotal">1</div>
                                         <div class="admin-kpi-desc">Ghi nhận từ hệ thống</div>
                                     </div>
                                 </div>
@@ -2430,7 +2430,7 @@
                                     <div class="admin-kpi-icon" style="background: #f0fdf4; color: #16a34a;">🔑</div>
                                     <div class="admin-kpi-content">
                                         <div class="admin-kpi-label">Phiên Đăng Nhập SSO</div>
-                                        <div class="admin-kpi-val" id="kpiLogLogins">3</div>
+                                        <div class="admin-kpi-val" id="kpiLogLogins">1</div>
                                         <div class="admin-kpi-desc">100% Xác thực bảo mật</div>
                                     </div>
                                 </div>
@@ -2438,7 +2438,7 @@
                                     <div class="admin-kpi-icon" style="background: #fefce8; color: #ca8a04;">📅</div>
                                     <div class="admin-kpi-content">
                                         <div class="admin-kpi-label">Thao Tác TKB & GDPT</div>
-                                        <div class="admin-kpi-val" id="kpiLogTKB">5</div>
+                                        <div class="admin-kpi-val" id="kpiLogTKB">0</div>
                                         <div class="admin-kpi-desc">Xếp AI, hoán đổi tiết, PCCM</div>
                                     </div>
                                 </div>
@@ -2446,7 +2446,7 @@
                                     <div class="admin-kpi-icon" style="background: #faf5ff; color: #7c3aed;">📝</div>
                                     <div class="admin-kpi-content">
                                         <div class="admin-kpi-label">Tạo Đề & Soạn Bài</div>
-                                        <div class="admin-kpi-val" id="kpiLogExams">4</div>
+                                        <div class="admin-kpi-val" id="kpiLogExams">0</div>
                                         <div class="admin-kpi-desc">KHBD 5512, Đề ma trận</div>
                                     </div>
                                 </div>
@@ -4013,7 +4013,7 @@ window.openPPCTDirect = function() {
         <span class="footer-dot-sep">•</span>
         <span>Định hướng & Bản quyền chuyên môn: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
         <span class="footer-dot-sep">•</span>
-        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.40 GDMN & GDPT</span>
+        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.41 GDMN & GDPT</span>
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->

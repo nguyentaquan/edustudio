@@ -8611,9 +8611,35 @@ D. Nói xấu sau lưng bạn với những người khác
                     localStorage.setItem('edustudio_admin_users', JSON.stringify(users));
                     this.renderAdminKPIs();
                     this.renderAdminUsersList();
+                    this.updateBannerStats();
                 }
             }
-        } catch(e) {}
+            const sRes = await fetch('/api/stats');
+            if (sRes.ok) {
+                const stats = await sRes.json();
+                this.updateBannerStats(stats);
+            }
+        } catch(e) {
+            this.updateBannerStats();
+        }
+    }
+
+    updateBannerStats(stats = null) {
+        const elUsers = document.getElementById('bannerTotalUsers');
+        const elOnline = document.getElementById('bannerOnlineUsers');
+        
+        let totalUsers = this.userAccounts ? this.userAccounts.length : 1;
+        let onlineUsers = 1;
+
+        if (stats) {
+            if (stats.totalUsers !== undefined) totalUsers = stats.totalUsers;
+            if (stats.onlineCount !== undefined) onlineUsers = stats.onlineCount;
+        } else if (this.userAccounts) {
+            onlineUsers = this.userAccounts.filter(u => u.isOnline).length || 1;
+        }
+
+        if (elUsers) elUsers.textContent = totalUsers.toLocaleString('vi-VN');
+        if (elOnline) elOnline.textContent = onlineUsers.toLocaleString('vi-VN');
     }
 
     initSystemAIConfig() {
