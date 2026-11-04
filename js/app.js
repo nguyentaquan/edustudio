@@ -20,7 +20,7 @@ import { SmartTKBUI } from './tkb-ui.js?v=3.10.34';
 
 class EduStudioApp {
         syncVersionLabels() {
-        const label = 'v3.10.37 GDMN & GDPT';
+        const label = 'v3.10.38 GDMN & GDPT';
         document.querySelectorAll('.badge-version-gold, [data-version-badge]').forEach(el => {
             el.textContent = label;
         });
@@ -1287,7 +1287,8 @@ class EduStudioApp {
         this.renderBannerAuthZone();
         this.checkAdminStorageVisibility();
         try {
-            this.logUserActivity(`Đăng nhập Google SSO thành công (${user.email})`, 'Xác Thực', 'auth', 'Thành công');
+            this.syncUserToAdminDirectory(user);
+            this.logUserActivity(`Đăng nhập Google SSO thành công (${user.email})`, 'Xác Thực', 'auth', user.school || 'Thành công');
         } catch(e) {}
 
         document.getElementById('authModal')?.classList.remove('active');
@@ -1376,6 +1377,10 @@ class EduStudioApp {
 
         this.saveUserSession(this.currentUser);
         this.renderBannerAuthZone();
+        try {
+            this.syncUserToAdminDirectory(this.currentUser);
+            this.logUserActivity("Cập nhật thông tin hồ sơ cá nhân", "Hồ Sơ", "profile", this.currentUser.school);
+        } catch(e) {}
 
         document.getElementById('userProfileModal')?.classList.remove('active');
         sound.playFanfare();
@@ -1405,10 +1410,10 @@ class EduStudioApp {
         const tickerEl = document.getElementById('tickerText');
         if (!tickerEl) return;
         const messages = [
-            "Hệ thống EduStudio v3.10.37 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
+            "Hệ thống EduStudio v3.10.38 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
             "Cô Hoàng Mai vừa tạo bộ trò chơi 'Đoán Con Vật Mầm Non' tương tác trực quan",
             "Thầy Lê Hải vừa biên soạn đề kiểm tra Giữa kỳ I môn Toán 7 chuẩn 3 dạng TNKQ",
-            "Hệ thống EduStudio v3.10.37 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
+            "Hệ thống EduStudio v3.10.38 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
             "Xưởng Video Studio đã hoàn tất kịch bản Audio-Driven Lip-Sync 3D"
         ];
         let idx = 0;
@@ -1510,7 +1515,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         const defaultLogs = [
             { id: "LOG-1001", time: "2026-11-04 00:32:10", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Kích hoạt chế độ Hoán đổi tiết 1 chạm (Click-to-Swap)", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
             { id: "LOG-1002", time: "2026-11-04 00:28:45", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tinh chỉnh đệm lề và ép gọn kích thước ô bàn cờ TKB chuẩn 32px", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
-            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.37 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
+            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.38 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
             { id: "LOG-1004", time: "2026-11-03 23:45:00", user: "Cô Hà Thị Thúy Hòa", role: "Nhóm 4: Giáo Viên", action: "Xem thời khóa biểu Lớp 6A2 môn Tin Học", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
             { id: "LOG-1005", time: "2026-11-03 23:15:20", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tạo Đề Kiểm Tra Giữa Kỳ I HĐTN 8 chuẩn ma trận & đặc tả BGDĐT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" },
             { id: "LOG-1006", time: "2026-11-03 22:50:11", user: "Cô Dương Thị Ngọc Lành", role: "Nhóm 4: Giáo Viên", action: "Đăng nhập xác thực tài khoản Google SSO", module: "Xác Thực", type: "auth", status: "Thành công" },
@@ -1529,25 +1534,38 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     logUserActivity(action, module = 'Hệ Thống', type = 'general', details = '') {
         const logs = this.getUserLogs();
         const userName = (this.currentUser && this.currentUser.name) || 'Thầy Nguyễn Tá Quan';
-        const role = (this.currentUser && this.currentUser.role === 'admin') ? 'Nhóm 1: Quản Trị' : 'Nhóm 4: Giáo Viên';
+        const userEmail = (this.currentUser && this.currentUser.email) || 'nguyentaquan@gmail.com';
+        const userSchool = (this.currentUser && this.currentUser.school) || 'Trường THCS Bán Trú Canh Thuận';
+        const role = (this.currentUser && this.currentUser.role === 'admin') ? 'Nhóm 1: Quản Trị' : 
+                     ((this.currentUser && this.currentUser.role === 'vip_pro') ? 'Nhóm 2: VIP PRO' : 
+                     ((this.currentUser && this.currentUser.role === 'vip') ? 'Nhóm 3: VIP' : 'Nhóm 4: Giáo Viên'));
 
         const now = new Date();
         const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const deviceStr = isMobile ? '📱 Di Động' : '💻 Máy Tính';
 
         const newLog = {
             id: `LOG-${Date.now().toString().slice(-4)}`,
             time: timeStr,
             user: userName,
+            email: userEmail,
+            school: userSchool,
+            device: deviceStr,
             role: role,
             action: action + (details ? ` (${details})` : ''),
             module: module,
             type: type,
-            status: "Thành công"
+            status: 'Thành công'
         };
 
         logs.unshift(newLog);
-        if (logs.length > 200) logs.pop(); // giữ 200 log gần nhất
-        localStorage.setItem('edustudio_user_activity_logs', JSON.stringify(logs));
+        if (logs.length > 300) logs.pop();
+
+        try {
+            localStorage.setItem('edustudio_user_activity_logs', JSON.stringify(logs));
+        } catch(e) {}
 
         // Nếu đang ở màn hình log, cập nhật luôn
         if (document.getElementById('admin-subpane-user-logs')?.classList.contains('active')) {
@@ -1596,8 +1614,15 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #f8fafc;' : ''}">
                     <td style="padding: 0.45rem; text-align: center; color: #94a3b8; font-weight: 700;">${idx + 1}</td>
                     <td style="padding: 0.45rem; font-family: monospace; font-size: 0.72rem; color: #64748b;">${log.time}</td>
-                    <td style="padding: 0.45rem; font-weight: 700; color: ${isQuan ? '#1d4ed8' : '#0f172a'};">
-                        ${isQuan ? '⭐ ' : ''}${log.user}
+                    <td style="padding: 0.45rem; color: #0f172a;">
+                        <div style="font-weight: 700; color: ${isQuan ? '#1d4ed8' : '#0f172a'};">
+                            ${isQuan ? '⭐ ' : ''}${log.user}
+                        </div>
+                        <div style="font-size: 0.68rem; color: #64748b; margin-top: 0.15rem; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+                            <span>${log.email || ''}</span>
+                            ${log.school ? '• <span>' + log.school + '</span>' : ''}
+                            ${log.device ? '• <span style="color:#0284c7; font-weight:700;">' + log.device + '</span>' : ''}
+                        </div>
                     </td>
                     <td style="padding: 0.45rem; text-align: center;">${roleBadge}</td>
                     <td style="padding: 0.45rem; color: #334155;">${log.action}</td>
@@ -5562,6 +5587,22 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         this.currentTab = tabId;
         sound.playClick();
+        try {
+            const tabNames = {
+                'home': 'Trang Chủ',
+                'tkb': 'Xưởng Xếp Thời Khóa Biểu Toàn Trường',
+                'ppt': 'Kho Bài Giảng PPT & Trình Chiếu',
+                'games': 'Kho Trò Chơi Giáo Dục',
+                'exam-studio': 'Tạo & Đối Soát Đề Kiểm Tra',
+                'authoring-repo': 'Soạn Kế Hoạch Bài Dạy (KHBD 5512)',
+                'video-repo': 'Kho Video Giáo Dục',
+                'media-studio': 'Media Studio Sư Phạm',
+                'storage5tb': 'Quản Trị Hệ Thống & Kho 5TB'
+            };
+            if (tabNames[tabId]) {
+                this.logUserActivity(`Truy cập ${tabNames[tabId]}`, tabNames[tabId], 'nav');
+            }
+        } catch(e) {}
 
         // 1. Cập nhật nút active trên Thanh Ngang
         document.querySelectorAll('.h-nav-btn').forEach(btn => {
@@ -8445,6 +8486,13 @@ D. Nói xấu sau lưng bạn với những người khác
     // HỆ THỐNG QUẢN TRỊ ADMIN TOÀN DIỆN & QUẢN LÝ TÀI KHOẢN (QUẢN LÝ TK)
     // =========================================================================
 
+    getAdminUsers() {
+        if (!this.userAccounts || this.userAccounts.length === 0) {
+            this.userAccounts = this.initUserAccounts();
+        }
+        return this.userAccounts;
+    }
+
     initUserAccounts() {
         try {
             const saved = localStorage.getItem('edustudio_admin_users');
@@ -8455,143 +8503,151 @@ D. Nói xấu sau lưng bạn với những người khác
             console.warn('Lỗi đọc danh sách tài khoản từ localStorage:', e);
         }
 
-        // Danh sách tài khoản giáo viên chuẩn BGD mẫu
+        // Danh sách tài khoản giáo viên thực tế Trường THCS Bán Trú Canh Thuận & Thành viên thật
         const defaultUsers = [
             {
                 id: "user_001",
                 name: "Thầy Nguyễn Tá Quan",
                 email: "nguyentaquan@gmail.com",
-                cccd: "052084000123",
-                school: "Ban Quản Trị Hệ Thống EduStudio",
-                grade: "management",
-                subject: "Chuyên gia Giáo dục & CNTT",
+                cccd: "",
+                school: "Trường THCS Bán Trú Canh Thuận",
+                grade: "thcs",
+                subject: "HĐTN-HN, KHTN, Tin học (GVCN 8A1)",
                 role: "admin",
-                points: 9999,
-                balance: 500000,
+                points: 500,
+                balance: 0,
                 demoUses: 999,
                 status: "active",
                 avatar: "👨‍🏫",
                 joinDate: "01/01/2026",
-                lastLogin: "Vừa xong"
+                lastLogin: "Vừa xong",
+                device: "💻 Máy Tính"
             },
             {
                 id: "user_002",
-                name: "Cô Trần Thu Sương",
-                email: "suongtran.edu@gmail.com",
-                cccd: "048189004567",
-                school: "Trường THCS Lê Quý Đôn",
+                name: "Thầy Lương Văn Tuấn",
+                email: "luongvantuan.c2@gmail.com",
+                cccd: "",
+                school: "Trường THCS Bán Trú Canh Thuận",
                 grade: "thcs",
-                subject: "Toán học & STEM",
-                role: "vip_pro",
-                points: 450,
-                balance: 45000,
-                demoUses: 999,
+                subject: "GDTC, GDQP (GVCN 6A1)",
+                role: "teacher",
+                points: 25,
+                balance: 0,
+                demoUses: 10,
                 status: "active",
-                avatar: "👩‍🏫",
-                joinDate: "15/02/2026",
-                lastLogin: "10 phút trước"
+                avatar: "🏃‍♂️",
+                joinDate: "15/01/2026",
+                lastLogin: "15 phút trước",
+                device: "📱 Di Động"
             },
             {
                 id: "user_003",
-                name: "Cô Nguyễn Thị Lan",
-                email: "lan.mamnon.hoa@gmail.com",
-                cccd: "079192008899",
-                school: "Trường Mầm Non Họa Mi",
-                grade: "mn",
-                subject: "Giáo dục Mầm Non & Khám phá",
-                role: "vip",
-                points: 320,
-                balance: 32000,
-                demoUses: 999,
+                name: "Cô Hà Thị Thúy Hòa",
+                email: "hathithuyhoa.c2@gmail.com",
+                cccd: "",
+                school: "Trường THCS Bán Trú Canh Thuận",
+                grade: "thcs",
+                subject: "Tin học (GVCN 6A2)",
+                role: "teacher",
+                points: 30,
+                balance: 0,
+                demoUses: 10,
                 status: "active",
-                avatar: "🌸",
-                joinDate: "20/03/2026",
-                lastLogin: "35 phút trước"
+                avatar: "👩‍🏫",
+                joinDate: "18/01/2026",
+                lastLogin: "30 phút trước",
+                device: "💻 Máy Tính"
             },
             {
                 id: "user_004",
-                name: "Thầy Lê Văn Hùng",
-                email: "hung.le.thpt@gmail.com",
-                cccd: "001090003456",
-                school: "Trường THPT Chuyên Hà Nội - Amsterdam",
-                grade: "thpt",
-                subject: "Vật lý & KHTN",
+                name: "Cô Dương Thị Ngọc Lành",
+                email: "duongthingoclanh.c2@gmail.com",
+                cccd: "",
+                school: "Trường THCS Bán Trú Canh Thuận",
+                grade: "thcs",
+                subject: "KHTN (Hóa-Sinh) (GVCN 7A1)",
                 role: "teacher",
-                points: 85,
-                balance: 8500,
-                demoUses: 7,
+                points: 20,
+                balance: 0,
+                demoUses: 10,
                 status: "active",
                 avatar: "🔬",
-                joinDate: "05/04/2026",
-                lastLogin: "2 giờ trước"
+                joinDate: "20/01/2026",
+                lastLogin: "1 giờ trước",
+                device: "📱 Di Động"
             },
             {
                 id: "user_005",
-                name: "Cô Phạm Minh Anh",
-                email: "minhanh.tieuhoc@gmail.com",
-                cccd: "031195007812",
-                school: "Trường Tiểu Học Trần Quốc Toản",
-                grade: "th",
-                subject: "Tiếng Việt & Đạo đức",
+                name: "Thầy Nguyễn Bá Hiền",
+                email: "nguyenbahien.c2@gmail.com",
+                cccd: "",
+                school: "Trường THCS Bán Trú Canh Thuận",
+                grade: "thcs",
+                subject: "Lịch sử & Địa lý (GVCN 7A2)",
                 role: "teacher",
-                points: 60,
-                balance: 6000,
-                demoUses: 4,
-                status: "pending_vip",
-                avatar: "📚",
-                joinDate: "12/04/2026",
-                lastLogin: "1 ngày trước"
+                points: 15,
+                balance: 0,
+                demoUses: 10,
+                status: "active",
+                avatar: "🌏",
+                joinDate: "22/01/2026",
+                lastLogin: "2 giờ trước",
+                device: "💻 Máy Tính"
             },
             {
                 id: "user_006",
-                name: "Thầy Hoàng Đức Minh",
-                email: "minh.hoang.gd@gmail.com",
-                cccd: "042088001144",
-                school: "Phòng GD&ĐT Thành phố",
-                grade: "management",
-                subject: "Quản trị & Kiểm định chất lượng",
-                role: "vip",
-                points: 580,
-                balance: 58000,
-                demoUses: 999,
+                name: "Cô Phạm Thị Nhàn",
+                email: "phamthinhan.c2@gmail.com",
+                cccd: "",
+                school: "Trường THCS Bán Trú Canh Thuận",
+                grade: "thcs",
+                subject: "Ngữ Văn (GVCN 8A2)",
+                role: "teacher",
+                points: 35,
+                balance: 0,
+                demoUses: 10,
                 status: "active",
-                avatar: "🏛️",
-                joinDate: "18/01/2026",
-                lastLogin: "Hôm qua"
+                avatar: "📚",
+                joinDate: "25/01/2026",
+                lastLogin: "Hôm qua",
+                device: "💻 Máy Tính"
             },
             {
                 id: "user_007",
-                name: "Cô Đỗ Hải Yến",
-                email: "haiyen.mamnon.sao@gmail.com",
-                cccd: "064197003322",
-                school: "Trường Mầm Non Sao Mai",
-                grade: "mn",
-                subject: "Giáo dục Mầm Non",
+                name: "Thầy Lê Quốc Thái",
+                email: "lequocthai.c2@gmail.com",
+                cccd: "",
+                school: "Trường THCS Bán Trú Canh Thuận",
+                grade: "thcs",
+                subject: "GDTC, HĐTN (GVCN 9A1)",
                 role: "teacher",
-                points: 15,
-                balance: 1500,
-                demoUses: 2,
+                points: 10,
+                balance: 0,
+                demoUses: 10,
                 status: "active",
-                avatar: "🐥",
-                joinDate: "28/04/2026",
-                lastLogin: "4 giờ trước"
+                avatar: "⚽",
+                joinDate: "28/01/2026",
+                lastLogin: "Hôm qua",
+                device: "📱 Di Động"
             },
             {
                 id: "user_008",
-                name: "Thầy Vũ Quốc Tuấn",
-                email: "quoctuan.tin@gmail.com",
-                cccd: "038085002938",
-                school: "Trường THCS Chu Văn An",
+                name: "Thầy Nguyễn Thanh Tuấn",
+                email: "nguyenthanhtuan.c2@gmail.com",
+                cccd: "",
+                school: "Trường THCS Bán Trú Canh Thuận",
                 grade: "thcs",
-                subject: "Tin học & Lập trình",
+                subject: "Toán học (GVCN 9A2)",
                 role: "teacher",
-                points: 120,
-                balance: 12000,
-                demoUses: 9,
+                points: 20,
+                balance: 0,
+                demoUses: 10,
                 status: "active",
-                avatar: "💻",
-                joinDate: "10/05/2026",
-                lastLogin: "50 phút trước"
+                avatar: "📐",
+                joinDate: "30/01/2026",
+                lastLogin: "2 ngày trước",
+                device: "💻 Máy Tính"
             }
         ];
 
@@ -8649,7 +8705,59 @@ D. Nói xấu sau lưng bạn với những người khác
         } catch(e) {}
     }
 
-    initAdminAccountModule() {
+        syncUserToAdminDirectory(user) {
+        if (!user || !user.email) return;
+        try {
+            let users = this.getAdminUsers();
+            let existing = users.find(u => u.email.toLowerCase() === user.email.toLowerCase());
+            const now = new Date();
+            const nowStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} ${now.getDate()}/${now.getMonth()+1}`;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const devStr = isMobile ? '📱 Di Động' : '💻 Máy Tính';
+
+            if (existing) {
+                existing.name = user.name || existing.name;
+                existing.school = user.school || existing.school;
+                existing.phone = user.phone || existing.phone;
+                existing.subject = user.subject || existing.subject;
+                existing.role = user.role || existing.role;
+                existing.avatar = user.avatarEmoji || existing.avatar;
+                existing.lastLogin = `Vừa xong (${nowStr})`;
+                existing.device = devStr;
+                existing.loginCount = (existing.loginCount || 1) + 1;
+            } else {
+                const newUser = {
+                    id: `user_${Date.now().toString().slice(-4)}`,
+                    name: user.name,
+                    email: user.email,
+                    school: user.school || 'Cơ sở Giáo dục GDMN & GDPT',
+                    phone: user.phone || '',
+                    subject: user.subject || 'Giáo viên bộ môn',
+                    grade: 'thcs',
+                    role: user.role || 'member',
+                    points: user.points || 0,
+                    balance: 0,
+                    demoUses: 10,
+                    status: 'active',
+                    avatar: user.avatarEmoji || '👨‍🏫',
+                    joinDate: new Date().toLocaleDateString('vi-VN'),
+                    lastLogin: `Vừa xong (${nowStr})`,
+                    device: devStr,
+                    loginCount: 1
+                };
+                users.unshift(newUser);
+            }
+
+            localStorage.setItem('edustudio_admin_users', JSON.stringify(users));
+            this.userAccounts = users;
+            try { this.renderAdminKPIs(); } catch(e){}
+            try { this.renderAdminUsersList(); } catch(e){}
+        } catch(err) {
+            console.warn('Lỗi đồng bộ danh bạ người dùng thực tế:', err);
+        }
+    }
+
+initAdminAccountModule() {
         // 1. Chuyển đổi giữa các sub-pane trong Admin
         document.querySelectorAll('.admin-subnav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -8768,9 +8876,13 @@ D. Nói xấu sau lưng bạn với những người khác
         const kpiVip = document.getElementById('kpiVIPUsers');
         const kpiPts = document.getElementById('kpiTotalPoints');
 
-        if (kpiTotal) kpiTotal.textContent = (12850 + total - 8).toLocaleString('vi-VN');
-        if (kpiVip) kpiVip.textContent = (1420 + vipCount - 3).toLocaleString('vi-VN');
-        if (kpiPts) kpiPts.textContent = (345000 + totalPts).toLocaleString('vi-VN');
+        const downloadLogsCount = this.getUserLogs().filter(l => l.type === 'export' || l.action.toLowerCase().includes('xuất') || l.action.toLowerCase().includes('tải')).length;
+        const kpiDownloads = document.getElementById('kpiTotalDownloads');
+
+        if (kpiTotal) kpiTotal.textContent = total.toLocaleString('vi-VN');
+        if (kpiVip) kpiVip.textContent = vipCount.toLocaleString('vi-VN');
+        if (kpiPts) kpiPts.textContent = totalPts.toLocaleString('vi-VN');
+        if (kpiDownloads) kpiDownloads.textContent = downloadLogsCount.toLocaleString('vi-VN');
     }
 
     renderAdminUsersList() {
@@ -10488,7 +10600,7 @@ function launchEduStudio() {
         try {
             window.app = new EduStudioApp();
             window.__appLoaded = true;
-            console.log("EduStudio v3.10.37 GDMN & GDPT Master đã khởi tạo thành công!");
+            console.log("EduStudio v3.10.38 GDMN & GDPT Master đã khởi tạo thành công!");
         } catch (err) {
             console.error("Lỗi khởi tạo EduStudio:", err);
         }
