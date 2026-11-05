@@ -1,5 +1,45 @@
 [
   {
+    "id": "LOG-47053",
+    "time": "2026-11-05 09:50:53",
+    "user": "Thầy Nguyễn Tá Quan",
+    "role": "👑 Quản Trị Master",
+    "action": "Đăng nhập thành công (nguyentaquan@gmail.com) trên 💻 Máy Tính",
+    "module": "Xác Thực Google",
+    "type": "auth",
+    "status": "Thành công"
+  },
+  {
+    "id": "LOG-47052",
+    "time": "2026-11-05 09:50:52",
+    "user": "Thầy Nguyễn Tá Quan",
+    "role": "👑 Quản Trị Master",
+    "action": "Đăng nhập thành công (nguyentaquan@gmail.com) trên 💻 Máy Tính",
+    "module": "Xác Thực Google",
+    "type": "auth",
+    "status": "Thành công"
+  },
+  {
+    "id": "LOG-46924",
+    "time": "2026-11-05 09:48:44",
+    "user": "Thầy Nguyễn Tá Quan",
+    "role": "👑 Quản Trị Master",
+    "action": "Đăng nhập thành công (nguyentaquan@gmail.com) trên 💻 Máy Tính",
+    "module": "Xác Thực Google",
+    "type": "auth",
+    "status": "Thành công"
+  },
+  {
+    "id": "LOG-46924",
+    "time": "2026-11-05 09:48:44",
+    "user": "Thầy Nguyễn Tá Quan",
+    "role": "👑 Quản Trị Master",
+    "action": "Đăng nhập thành công (nguyentaquan@gmail.com) trên 💻 Máy Tính",
+    "module": "Xác Thực Google",
+    "type": "auth",
+    "status": "Thành công"
+  },
+  {
     "id": "LOG-44881",
     "time": "2026-11-05 09:14:41",
     "user": "Thầy Nguyễn Tá Quan",

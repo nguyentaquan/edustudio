@@ -1235,18 +1235,13 @@ class EduStudioApp {
     async loginWithGoogle(accountData = null) {
         let email = '';
         let password = '';
-        let name = '';
 
         if (accountData && accountData.email) {
-            // Nút đăng nhập nhanh
             email = accountData.email.trim().toLowerCase();
-            name = accountData.name || '';
-            // Mật khẩu mặc định của tài khoản mẫu hoặc tài khoản admin
             password = accountData.password || (email === 'nguyentaquan@gmail.com' ? 'nguyentaquan2026' : '12345678');
         } else {
             const inputEmail = document.getElementById('authCustomEmail')?.value.trim();
             const inputPassword = document.getElementById('authCustomPassword')?.value.trim();
-            const inputName = document.getElementById('authCustomName')?.value.trim();
             const errDiv = document.getElementById('authPasswordError');
             const pwdInput = document.getElementById('authCustomPassword');
 
@@ -1257,7 +1252,11 @@ class EduStudioApp {
             }
 
             if (!inputEmail) {
-                this.showToast('⚠️ Vui lòng nhập địa chỉ Gmail của Thầy Cô!');
+                if (errDiv) {
+                    errDiv.textContent = '⚠️ Vui lòng nhập địa chỉ Gmail của Thầy Cô!';
+                    errDiv.style.display = 'block';
+                }
+                this.showToast('⚠️ Vui lòng nhập địa chỉ Gmail!');
                 document.getElementById('authCustomEmail')?.focus();
                 return;
             }
@@ -1269,51 +1268,35 @@ class EduStudioApp {
                     pwdInput.focus();
                 }
                 if (errDiv) {
-                    errDiv.textContent = '⚠️ Vui lòng nhập mật khẩu Google của Thầy Cô!';
+                    errDiv.textContent = '⚠️ Vui lòng nhập mật khẩu Gmail của Thầy Cô!';
                     errDiv.style.display = 'block';
                 }
                 this.showToast('⚠️ Vui lòng nhập mật khẩu!');
                 return;
             }
 
-            if (inputPassword.length < 6) {
-                if (pwdInput) {
-                    pwdInput.classList.add('pccm-input-error');
-                    pwdInput.style.borderColor = '#ef4444';
-                    pwdInput.focus();
-                }
-                if (errDiv) {
-                    errDiv.textContent = '⚠️ Mật khẩu Google phải có tối thiểu 6 ký tự để bảo mật!';
-                    errDiv.style.display = 'block';
-                }
-                this.showToast('⚠️ Mật khẩu phải có tối thiểu 6 ký tự!');
-                return;
-            }
-
             email = inputEmail.toLowerCase();
             password = inputPassword;
-            name = inputName;
         }
 
-        // BẬT CHẾ ĐỘ XÁC THỰC MẬT KHẨU THỰC TẾ TRÊN MÁY CHỦ (SERVER VERIFICATION)
         const btnSignIn = document.getElementById('btnGoogleSignIn');
         const originalBtnHtml = btnSignIn ? btnSignIn.innerHTML : '';
         if (btnSignIn) {
             btnSignIn.disabled = true;
-            btnSignIn.innerHTML = '<span>⏳</span> <span>Đang xác thực tài khoản Google...</span>';
+            btnSignIn.innerHTML = '<span>⏳ Đang kiểm tra tài khoản Google...</span>';
         }
 
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, password: password, name: name })
+                body: JSON.stringify({ email: email, password: password })
             });
 
             const data = await res.json();
 
             if (!res.ok || !data.success) {
-                // XÁC THỰC THẤT BẠI: SAI MẬT KHẨU -> CHẶN ĐỨNG HOÀN TOÀN!
+                // Sai tài khoản hoặc mật khẩu -> Thông báo theo đúng chỉ đạo
                 if (btnSignIn) {
                     btnSignIn.disabled = false;
                     btnSignIn.innerHTML = originalBtnHtml;
@@ -1327,29 +1310,29 @@ class EduStudioApp {
                     pwdInput.focus();
                     pwdInput.select();
                 }
-                const errorMsg = data.error || '❌ Mật khẩu Google / EduStudio không chính xác!';
+                const errorMsg = data.error || '❌ Thông tin tài khoản không chính xác. Vui lòng kiểm tra và nhập lại thông tin!';
                 if (errDiv) {
                     errDiv.textContent = errorMsg;
                     errDiv.style.display = 'block';
                 }
-                this.showToast(errorMsg, 4500);
+                this.showToast(errorMsg, 4000);
                 sound.playError ? sound.playError() : null;
                 return;
             }
 
-            // XÁC THỰC THÀNH CÔNG: LƯU TÀI KHOẢN VÀ CẬP NHẬT TRỰC TUYẾN
+            // ĐĂNG NHẬP THÀNH CÔNG
             const verifiedUser = data.user;
             verifiedUser.isLoggedIn = true;
             this.currentUser = verifiedUser;
             this.saveUserSession(this.currentUser);
 
-            // Tự động kích hoạt toàn bộ tính năng Trí tuệ Nhân tạo Google Gemini AI cho tài khoản Google này
+            // Kích hoạt quyền thành viên
             try {
                 localStorage.setItem('edustudio_user_is_vip', 'true');
                 localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Google_Connected_' + (verifiedUser.email || 'user'));
             } catch(e) {}
 
-            // Cập nhật giao diện Auth & Banner lập tức
+            // Cập nhật giao diện Auth & Banner ngay lập tức
             this.renderBannerAuthZone();
             this.updateBannerStats({
                 onlineCount: Math.max(1, data.onlineCount || 1),
@@ -1370,10 +1353,9 @@ class EduStudioApp {
             }
 
             sound.playFanfare();
-            const roleText = (verifiedUser.role === 'admin') ? '👑 Quản Trị Master' : '👨‍🏫 Thành Viên Chuẩn';
-            this.showToast(`🎉 Chào mừng ${verifiedUser.name} (${verifiedUser.email}) đã đăng nhập thành công!`, 4000);
+            this.showToast(`🎉 Đăng nhập thành công! Chào mừng ${verifiedUser.name}`, 3500);
 
-            // Bắt đầu Heartbeat định kỳ 30 giây để duy trì trạng thái online
+            // Duy trì Heartbeat
             this.startHeartbeat();
 
         } catch (err) {
@@ -1382,8 +1364,33 @@ class EduStudioApp {
                 btnSignIn.innerHTML = originalBtnHtml;
             }
             console.error('Lỗi khi gọi API xác thực:', err);
-            this.showToast('❌ Không thể kết nối với máy chủ xác thực: ' + err.message, 4000);
+            const errDiv = document.getElementById('authPasswordError');
+            if (errDiv) {
+                errDiv.textContent = '❌ Không thể kết nối với máy chủ: ' + err.message;
+                errDiv.style.display = 'block';
+            }
+            this.showToast('❌ Không thể kết nối với máy chủ: ' + err.message, 4000);
         }
+    }
+
+    showToast(msg) {
+        if (window.smartTKBUI && typeof window.smartTKBUI.showToast === 'function') {
+            window.smartTKBUI.showToast(msg);
+            return;
+        }
+        let toast = document.getElementById('tkbToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'tkbToast';
+            toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#1e293b; color:#fff; padding:0.65rem 1.25rem; border-radius:8px; z-index:99999; font-weight:700; font-size:0.85rem; box-shadow:0 10px 25px rgba(0,0,0,0.3);';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        clearTimeout(this._appToastTimer);
+        this._appToastTimer = setTimeout(() => {
+            if (toast) toast.style.display = 'none';
+        }, 3500);
     }
 
     startHeartbeat() {
@@ -1866,101 +1873,72 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         const authZone = document.getElementById('bannerAuthZone');
         if (!authZone) return;
 
-        if (this.currentUser && this.currentUser.isLoggedIn) {
-            let roleDisplay = '<span class="role-badge-member">👨‍🏫 Thành Viên Chuẩn</span>';
-            if (this.currentUser.role === 'admin') {
+        if (this.currentUser && this.currentUser.isLoggedIn && this.currentUser.role !== 'guest') {
+            // Xác định chính xác 1 trong 5 nhóm tài khoản của Web
+            let roleDisplay = '<span class="role-badge-member">👨‍🏫 Nhóm 4: Giáo Viên</span>';
+            const email = (this.currentUser.email || '').toLowerCase();
+            const role = this.currentUser.role;
+
+            if (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com' || role === 'admin') {
                 roleDisplay = '<span class="role-badge-admin">👑 Nhóm 1: Quản Trị</span>';
-            } else if (this.currentUser.role === 'vip_pro') {
+            } else if (role === 'vip_pro') {
                 roleDisplay = '<span class="role-badge-vip-pro">💎 Nhóm 2: VIP PRO</span>';
-            } else if (this.currentUser.role === 'vip') {
+            } else if (role === 'vip') {
                 roleDisplay = '<span class="role-badge-vip">⭐ Nhóm 3: VIP</span>';
-            } else if (this.currentUser.role === 'guest') {
+            } else if (role === 'guest') {
                 roleDisplay = '<span class="role-badge-guest">👤 Nhóm 5: Khách</span>';
+            } else {
+                roleDisplay = '<span class="role-badge-member">👨‍🏫 Nhóm 4: Giáo Viên</span>';
             }
+
+            const avatar = (email === 'nguyentaquan@gmail.com' || role === 'admin') ? '👑' : (this.currentUser.avatarEmoji || '👨‍🏫');
 
             authZone.innerHTML = `
                 <div class="banner-user-card">
                     <div class="banner-user-avatar">
-                        ${this.currentUser.avatarEmoji || '👨‍🏫'}
+                        ${avatar}
                     </div>
                     <div class="banner-user-info">
                         <div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;">
                             <span>${this.currentUser.name}</span>
                             ${roleDisplay}
                         </div>
-                        <div class="banner-user-points">
-                            <span>🪙 ${this.currentUser.points || 0} điểm</span>
-                            <span style="opacity: 0.85; font-size: 0.62rem;">${this.isVIPPro() ? '• Gói Demo: ∞' : `• Gói Demo: ${this.currentUser.demoUses || 10}/10`}</span>
+                        <div class="banner-user-points" style="font-size:0.68rem; color:#64748b;">
+                            <span>${this.currentUser.email}</span>
                         </div>
                     </div>
 
                     <!-- NÚT BÁNH RĂNG TÀI KHOẢN -->
-                    <button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt & Tài khoản EduStudio">
+                    <button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt tài khoản">
                         ⚙️
                     </button>
 
-                    <!-- NÚT TÌM KIẾM TRÊN WEB (ICON KÍNH LÚP THEO YÊU CẦU CỦA THẦY QUAN) -->
+                    <!-- NÚT TÌM KIẾM TRÊN WEB -->
                     <button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web & Hệ thống EduStudio">
                         🔍
                     </button>
 
-                    <!-- MENU ĐỔ XUỐNG SÁT BÊN CẠNH (GIAO DIỆN CHUẨN GMAIL / GOOGLE ACCOUNT) -->
-                    <div id="userProfileDropdown" class="user-profile-dropdown">
-                        <div class="google-account-header">
-                            <div class="google-account-email">${this.currentUser.email || 'Google SSO Account'}</div>
-                            <div class="google-account-avatar-large">
-                                ${this.currentUser.avatarEmoji || '👨‍🏫'}
-                            </div>
-                            <div class="google-account-name">${this.currentUser.name}</div>
-                            <div style="margin-top:0.35rem;">${roleDisplay}</div>
-                            <div style="font-size:0.72rem; color:#64748b; margin-top:0.25rem;">${this.currentUser.school || '(Chưa cập nhật đơn vị)'}</div>
-
-                            <!-- BỘ CHUYỂN ĐỔI NHANH 5 VAI TRÒ DÀNH CHO THẦY KIỂM THỬ (CHỈ HIỂN THỊ CHO ADMIN) -->
-                            <div style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:8px; padding:0.45rem 0.6rem; margin-top:0.6rem; text-align:left; display: ${this.isAdmin() ? 'block' : 'none'};">
-                                <label style="font-size:0.68rem; font-weight:700; color:#475569; display:block; margin-bottom:0.2rem;">🎭 Thử Nghiệm 5 Nhóm Quyền (Admin Switcher):</label>
-                                <select id="selectQuickRoleSwitch" class="input-clean" style="font-size:0.72rem; padding:0.2rem 0.35rem; font-weight:700; width:100%;">
-                                    <option value="admin" ${this.currentUser.role === 'admin' ? 'selected' : ''}>👑 Nhóm 1: Quản Trị (Admin Master)</option>
-                                    <option value="vip_pro" ${this.currentUser.role === 'vip_pro' ? 'selected' : ''}>💎 Nhóm 2: Thành Viên VIP PRO</option>
-                                    <option value="vip" ${this.currentUser.role === 'vip' ? 'selected' : ''}>⭐ Nhóm 3: Thành Viên VIP</option>
-                                    <option value="member" ${this.currentUser.role === 'member' || this.currentUser.role === 'teacher' ? 'selected' : ''}>👨‍🏫 Nhóm 4: Thành Viên (Chuẩn)</option>
-                                    <option value="guest" ${this.currentUser.role === 'guest' ? 'selected' : ''}>👤 Nhóm 5: Khách Vãng Lai</option>
-                                </select>
-                            </div>
-
-                            <button id="btnMenuOpenProfile" class="btn-google-manage-acc" style="margin-top:0.5rem;">
-                                Quản lý Hồ sơ Cá nhân
-                            </button>
+                    <!-- MENU BÁNH RĂNG TỐI GIẢN THEO ĐÚNG YÊU CẦU: CHỈ HIỆN THÔNG TIN + 2 DÒNG -->
+                    <div id="userProfileDropdown" class="user-profile-dropdown" style="min-width: 250px; padding: 0; overflow: hidden; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); background: #ffffff;">
+                        <div style="padding: 0.85rem 1rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; text-align: center;">
+                            <div style="font-size: 1.8rem; margin-bottom: 0.2rem;">${avatar}</div>
+                            <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a;">${this.currentUser.name}</div>
+                            <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 0.35rem;">${this.currentUser.email}</div>
+                            <div>${roleDisplay}</div>
                         </div>
 
-                        <div class="google-account-body">
-                            <!-- NÚT NÂNG CẤP THÀNH VIÊN VIP PRO TRỰC TIẾP -->
-                            <button id="btnMenuUpgradeVIP" class="btn-menu-upgrade-vip" style="background: linear-gradient(135deg, #1d4ed8, #2563eb); color: #ffffff; width: 100%; border: none; padding: 0.55rem 0.85rem; border-radius: 8px; font-weight: 700; font-size: 0.78rem; display: flex; align-items: center; justify-content: center; gap: 0.45rem; margin-bottom: 0.65rem; cursor: pointer; box-shadow: 0 2px 8px rgba(29, 78, 216, 0.25);">
-                                <span>💎</span> <span>Nâng Cấp Thành Viên (VIP Pro)</span>
+                        <div style="padding: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; background: #ffffff;">
+                            <!-- DÒNG 1: Đăng nhập với tài khoản khác -->
+                            <button id="btnMenuSwitchAccount" style="width: 100%; display: flex; align-items: center; gap: 0.55rem; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #1e293b; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-align: left; transition: background 0.15s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#ffffff'">
+                                <span style="font-size: 1.05rem;">🔄</span>
+                                <span>Đăng nhập với TK khác</span>
                             </button>
 
-                            <div class="google-stat-pill">
-                                <span>🪙 Điểm cống hiến:</span>
-                                <strong style="color:#059669; font-size:0.85rem;">${(this.currentUser.points !== undefined && this.currentUser.points !== null) ? this.currentUser.points : 0} điểm</strong>
-                            </div>
-                            <div style="font-size: 0.72rem; color: #475569; line-height: 1.5; padding: 0 0.2rem;">
-                                <div>• Tích điểm: <strong>+5 điểm</strong> khi đóng góp được duyệt</div>
-                                <div>• Tải tài nguyên: <strong>-5 điểm</strong> / lượt tải</div>
-                                <div>• Trách nhiệm: <strong>Đã cam kết bản quyền sư phạm</strong></div>
-                            </div>
-                        </div>
-
-                        <div class="google-account-footer">
-                            <!-- NÚT ĐĂNG NHẬP VỚI TÀI KHOẢN KHÁC (THEO YÊU CẦU CỦA THẦY) -->
-                            <button id="btnMenuSwitchAccount" class="btn-menu-switch-acc">
-                                <span>🔄</span> <span>Đăng nhập với tài khoản khác</span>
+                            <!-- DÒNG 2: Đăng xuất -->
+                            <button id="btnMenuLogout" style="width: 100%; display: flex; align-items: center; gap: 0.55rem; padding: 0.6rem 0.8rem; border: 1px solid #fecaca; border-radius: 6px; background: #fef2f2; color: #dc2626; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-align: left; transition: background 0.15s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
+                                <span style="font-size: 1.05rem;">🚪</span>
+                                <span>Đăng xuất</span>
                             </button>
-
-                            <button id="btnMenuLogout" class="btn-google-signout">
-                                <span>🚪</span> <span>Đăng xuất khỏi hệ thống</span>
-                            </button>
-                            <div style="text-align: center; font-size: 0.68rem; color: #94a3b8; margin-top: 0.65rem;">
-                                Bản quyền & Điều hành chuyên môn: <strong>Thầy Nguyễn Tá Quan</strong>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1976,24 +1954,12 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 dropdown?.classList.toggle('show');
             });
 
-            // Bấm Nâng cấp Thành viên VIP Pro từ Menu Bánh răng
-            document.getElementById('btnMenuUpgradeVIP')?.addEventListener('click', () => {
-                dropdown?.classList.remove('show');
-                sound.playClick();
-                document.getElementById('membershipUpgradeModal')?.classList.add('active');
-            });
-
-            // Bấm mở modal Quản lý tài khoản (Xem & Bổ sung thông tin)
-            document.getElementById('btnMenuOpenProfile')?.addEventListener('click', () => {
-                dropdown?.classList.remove('show');
-                this.openUserProfileModal();
-            });
-
             // Bấm Đăng nhập với tài khoản khác
             document.getElementById('btnMenuSwitchAccount')?.addEventListener('click', () => {
                 dropdown?.classList.remove('show');
                 sound.playClick();
-                document.getElementById('authModal')?.classList.add('active');
+                if (window.openModal) window.openModal('authModal');
+                else document.getElementById('authModal')?.classList.add('active');
             });
 
             // Bấm Đăng xuất

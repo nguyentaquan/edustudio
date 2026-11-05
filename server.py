@@ -242,7 +242,7 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         self.end_headers()
                         self.wfile.write(json.dumps({
                             "success": False,
-                            "error": "❌ Mật khẩu không chính xác! Vui lòng kiểm tra lại hoặc sử dụng nút Đăng Nhập Nhanh 1 Chạm."
+                            "error": "❌ Thông tin tài khoản không chính xác. Vui lòng kiểm tra và nhập lại thông tin!"
                         }, ensure_ascii=False).encode('utf-8'))
                         return
                 else:

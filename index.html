@@ -3520,114 +3520,52 @@ window.openPPCTDirect = function() {
          - Phí vi mô siêu thấp: 500 VNĐ / file Documents (.DOCX), 10.000 VNĐ / gói Trò chơi
          ====================================================================== -->
         <div id="authModal" class="modal-overlay">
-        <div class="modal-box-center" style="max-width: 460px; border-radius: 14px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.35);">
-            <!-- Header Modal -->
-            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <div class="modal-box-center" style="max-width: 400px; width: 92%; border-radius: 14px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.35); padding: 0; background: #ffffff;">
+            <!-- Header Modal Tối Giản Chuẩn Google -->
+            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 1.1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 0.6rem;">
-                    <span style="font-size: 1.6rem;">🎓</span>
+                    <svg width="22" height="22" viewBox="0 0 24 24" style="background:#fff; border-radius:50%; padding:2px;">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.14z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
                     <div>
-                        <h3 style="font-size: 1.1rem; font-weight: 800; margin: 0; color: #ffffff;">Đăng Nhập Tài Khoản Google</h3>
-                        <p style="font-size: 0.73rem; margin: 0.15rem 0 0 0; color: #bfdbfe;">Cổng Xác Thực Sư Phạm GDMN &amp; GDPT Toàn Quốc</p>
+                        <h3 style="font-size: 1.05rem; font-weight: 800; margin: 0; color: #ffffff;">Đăng Nhập Với TK Google</h3>
+                        <p style="font-size: 0.72rem; margin: 0.1rem 0 0 0; color: #bfdbfe;">Hệ Thống Sư Phạm EduStudio</p>
                     </div>
                 </div>
-                <button id="btnCloseAuthModal" onclick="window.closeModal('authModal')" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.2rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.1rem 0.45rem; line-height: 1;">✕</button>
+                <button id="btnCloseAuthModal" onclick="window.closeModal('authModal')" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.2rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.15rem 0.5rem; line-height: 1;">✕</button>
             </div>
 
-            <div style="padding: 1.25rem;">
-                <!-- 1. Danh sách đăng nhập nhanh 1 chạm -->
-                <div style="font-size: 0.74rem; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 0.5rem;">
-                    ⚡ Đăng Nhập Nhanh 1 Chạm:
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1rem;">
-                    <!-- Nút Thầy Nguyễn Tá Quan -->
-                    <button type="button" onclick="window.app && window.app.loginWithGoogle({ name: 'Thầy Nguyễn Tá Quan', email: 'nguyentaquan@gmail.com', role: 'admin', school: 'Trường THCS Bán Trú Canh Thuận', subject: 'HĐTN-HN, KHTN, Tin học', points: 500 })" style="display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 0.85rem; border: 1.5px solid #bfdbfe; border-radius: 8px; background: #eff6ff; cursor: pointer; text-align: left; transition: all 0.15s ease;" onmouseover="this.style.background='#dbeafe';" onmouseout="this.style.background='#eff6ff';">
-                        <div style="display: flex; align-items: center; gap: 0.6rem;">
-                            <span style="font-size: 1.3rem;">👑</span>
-                            <div>
-                                <strong style="font-size: 0.82rem; color: #1e3a8a; display: block;">Thầy Nguyễn Tá Quan</strong>
-                                <span style="font-size: 0.72rem; color: #2563eb;">nguyentaquan@gmail.com • THCS Canh Thuận</span>
-                            </div>
-                        </div>
-                        <span style="background: #1e3a8a; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;">Admin Master</span>
-                    </button>
-
-                    <!-- Nút Giáo Viên Thành Viên Mới Demo -->
-                    <button type="button" onclick="window.app && window.app.loginWithGoogle({ name: 'Giáo Viên Trải Nghiệm', email: 'giaovien.demo@gmail.com', role: 'member' })" style="display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 0.85rem; border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; cursor: pointer; text-align: left; transition: all 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='#ffffff';">
-                        <div style="display: flex; align-items: center; gap: 0.6rem;">
-                            <span style="font-size: 1.3rem;">👨‍🏫</span>
-                            <div>
-                                <strong style="font-size: 0.82rem; color: #0f172a; display: block;">Tài Khoản Giáo Viên Mới (Trống DL)</strong>
-                                <span style="font-size: 0.72rem; color: #64748b;">giaovien.demo@gmail.com • Trải nghiệm thành viên</span>
-                            </div>
-                        </div>
-                        <span style="background: #059669; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;">Thành Viên</span>
-                    </button>
-                </div>
-
-                <!-- Phân cách -->
-                <div style="display: flex; align-items: center; margin-bottom: 0.85rem;">
-                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
-                    <span style="padding: 0 0.65rem; font-size: 0.72rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Hoặc Đăng Nhập Gmail Cá Nhân</span>
-                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
-                </div>
-
-                <!-- 2. Form nhập Gmail cá nhân đơn giản thuận tiện -->
-                <form id="formCustomGoogleLogin" onsubmit="event.preventDefault(); window.app && window.app.loginWithGoogle();" style="display: flex; flex-direction: column; gap: 0.7rem;">
+            <!-- Form Đúng 2 Trường: Địa chỉ Gmail & Mật khẩu -->
+            <div style="padding: 1.35rem 1.25rem;">
+                <form id="formCustomGoogleLogin" onsubmit="event.preventDefault(); window.app && window.app.loginWithGoogle();" style="display: flex; flex-direction: column; gap: 0.85rem;">
                     <div>
-                        <label style="display: block; font-size: 0.74rem; font-weight: 800; color: #1e293b; margin-bottom: 0.2rem;">
-                            📧 Địa chỉ Gmail của Thầy Cô: <span style="color: #ef4444;">*</span>
+                        <label style="display: block; font-size: 0.78rem; font-weight: 800; color: #1e293b; margin-bottom: 0.3rem;">
+                            📧 Địa chỉ Gmail:
                         </label>
-                        <input type="email" id="authCustomEmail" placeholder="Ví dụ: hoten.giaovien@gmail.com" required autocomplete="username" style="width: 100%; padding: 0.55rem 0.75rem; font-size: 0.84rem; font-weight: 700; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; box-sizing: border-box; transition: border-color 0.15s;" onfocus="this.style.borderColor='#2563eb';" onblur="this.style.borderColor='#cbd5e1';">
+                        <input type="email" id="authCustomEmail" placeholder="Nhập địa chỉ Gmail..." required autocomplete="username" style="width: 100%; padding: 0.6rem 0.8rem; font-size: 0.88rem; font-weight: 600; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; box-sizing: border-box; transition: border-color 0.15s;" onfocus="this.style.borderColor='#2563eb';" onblur="this.style.borderColor='#cbd5e1';">
                     </div>
 
                     <div>
-                        <label style="display: block; font-size: 0.74rem; font-weight: 800; color: #1e293b; margin-bottom: 0.2rem;">
-                            🔑 Mật khẩu Google / EduStudio: <span style="color: #ef4444;">*</span>
+                        <label style="display: block; font-size: 0.78rem; font-weight: 800; color: #1e293b; margin-bottom: 0.3rem;">
+                            🔑 Mật khẩu Gmail:
                         </label>
                         <div style="position: relative;">
-                            <input type="password" id="authCustomPassword" placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)..." required autocomplete="current-password" style="width: 100%; padding: 0.55rem 2.4rem 0.55rem 0.75rem; font-size: 0.84rem; font-weight: 700; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; box-sizing: border-box; transition: border-color 0.15s;" onfocus="this.style.borderColor='#2563eb';" onblur="this.style.borderColor='#cbd5e1';">
-                            <button type="button" onclick="const p = document.getElementById('authCustomPassword'); const isP = p.type === 'password'; p.type = isP ? 'text' : 'password'; this.textContent = isP ? '🙈' : '👁️';" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; color: #64748b; padding: 2px;" title="Hiện / Ẩn mật khẩu">👁️</button>
+                            <input type="password" id="authCustomPassword" placeholder="Nhập mật khẩu..." required autocomplete="current-password" style="width: 100%; padding: 0.6rem 2.4rem 0.6rem 0.8rem; font-size: 0.88rem; font-weight: 600; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; box-sizing: border-box; transition: border-color 0.15s;" onfocus="this.style.borderColor='#2563eb';" onblur="this.style.borderColor='#cbd5e1';" onkeydown="if(event.key==='Enter'){event.preventDefault(); window.app && window.app.loginWithGoogle();}">
+                            <button type="button" onclick="const p = document.getElementById('authCustomPassword'); const isP = p.type === 'password'; p.type = isP ? 'text' : 'password'; this.textContent = isP ? '🙈' : '👁️';" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.05rem; color: #64748b; padding: 2px;" title="Hiện / Ẩn mật khẩu">👁️</button>
                         </div>
-                        <div id="authPasswordError" style="display: none; background: #fef2f2; border: 1px solid #f87171; color: #dc2626; padding: 0.45rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 700; margin-top: 0.35rem;"></div>
                     </div>
 
-                    <div>
-                        <label style="display: block; font-size: 0.74rem; font-weight: 800; color: #1e293b; margin-bottom: 0.2rem;">
-                            👤 Họ và Tên Thầy Cô (Tùy chọn):
-                        </label>
-                        <input type="text" id="authCustomName" placeholder="Tên hiển thị (để trống sẽ lấy từ Gmail)..." style="width: 100%; padding: 0.5rem 0.75rem; font-size: 0.82rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; box-sizing: border-box;">
-                    </div>
+                    <!-- Vùng Báo Lỗi Thông Tin Không Chính Xác -->
+                    <div id="authPasswordError" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 0.55rem 0.75rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700; line-height: 1.4;"></div>
 
-                    <!-- Nút Đăng Nhập Với Tài Khoản Google Chuẩn Quốc Tế -->
-                    <button type="button" id="btnGoogleSignIn" class="btn-google-sign" style="width: 100%; justify-content: center; padding: 0.7rem 1rem; font-size: 0.9rem; font-weight: 800; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); border: 1.5px solid #2563eb; background: #2563eb; color: #ffffff; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; margin-top: 0.25rem; transition: all 0.15s ease;" onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#2563eb';">
-                        <svg width="20" height="20" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.14z"/>
-                            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
-                            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
-                            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                        </svg>
-                        <span>Tiếp Tục Với Tài Khoản Google</span>
+                    <!-- Nút Đăng Nhập Duy Nhất -->
+                    <button type="button" id="btnGoogleSignIn" onclick="window.app && window.app.loginWithGoogle();" style="width: 100%; justify-content: center; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 800; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); border: none; background: #2563eb; color: #ffffff; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem; transition: all 0.15s ease;" onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#2563eb';">
+                        <span>Đăng Nhập</span>
                     </button>
                 </form>
-
-                <!-- 3. TỰ ĐỘNG KÍCH HOẠT TRÍ TUỆ NHÂN TẠO GOOGLE GEMINI AI (KHÔNG CẦN NHẬP KEY PHỨC TẠP) -->
-                <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1.5px solid #86efac; border-radius: 10px; padding: 0.75rem 0.95rem; margin-top: 0.85rem; display: flex; align-items: flex-start; gap: 0.65rem;">
-                    <span style="font-size: 1.5rem; line-height: 1;">🤖</span>
-                    <div>
-                        <div style="font-size: 0.8rem; font-weight: 800; color: #166534; margin-bottom: 0.2rem;">
-                            Tự Động Kích Hoạt Trí Tuệ Nhân Tạo Google Gemini AI
-                        </div>
-                        <p style="font-size: 0.72rem; color: #15803d; margin: 0; line-height: 1.45;">
-                            Tài khoản Google của Thầy Cô được kết nối trực tiếp với toàn bộ tính năng AI sư phạm (soạn giáo án, ra đề thi, lập PPCT, xếp TKB, giải toán). <strong>Hoàn toàn tự động, không cần cài đặt mã API Key phức tạp!</strong>
-                        </p>
-                    </div>
-                </div>
-                <!-- Input ẩn duy trì tính tương thích hệ thống -->
-                <input type="hidden" id="userGeminiApiKeyInput" value="">
-
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.72rem; color: #475569; line-height: 1.5; margin-top: 0.65rem;">
-                    💡 <strong>Chính sách người dùng mới:</strong> Khi đăng nhập bằng tài khoản Gmail mới, toàn bộ dữ liệu (Trường học, SĐT, CCCD, Môn dạy) đều hoàn toàn <strong>trống</strong> để Thầy Cô tự cập nhật trong mục Hồ Sơ Cá Nhân. Mọi thông tin được bảo mật chuẩn mực sư phạm.
-                </div>
             </div>
         </div>
     </div>
