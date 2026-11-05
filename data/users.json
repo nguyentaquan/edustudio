@@ -1,5 +1,27 @@
 [
   {
+    "id": "admin_nguyentaquan8",
+    "name": "Thầy Nguyễn Tá Quan",
+    "email": "nguyentaquan8@gmail.com",
+    "password": "5323a259d7eca7e317248d9cb94217838059973d31fc57219864f57bf3ee28bd",
+    "school": "Trường THCS Bán Trú Canh Thuận",
+    "phone": "0914.xxx.xxx",
+    "cccd": "",
+    "subject": "HĐTN-HN, KHTN, Tin học",
+    "grade": "thcs",
+    "role": "admin",
+    "points": 500,
+    "balance": 0,
+    "demoUses": 999,
+    "status": "active",
+    "avatar": "👑",
+    "joinDate": "01/01/2026",
+    "lastLogin": "Vừa xong (10:15 05/11/2026)",
+    "lastSeen": 1793848519,
+    "device": "💻 Máy Tính",
+    "loginCount": 12
+  },
+  {
     "id": "user_admin",
     "name": "Thầy Nguyễn Tá Quan",
     "email": "nguyentaquan@gmail.com",

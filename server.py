@@ -194,83 +194,138 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 data = json.loads(body)
             except Exception as e:
                 self.send_response(400)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
                 self.end_headers()
                 self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode())
                 return
 
-            email = (data.get('email') or '').strip().lower()
+            raw_email = (data.get('email') or '').strip().lower()
             password = (data.get('password') or '').strip()
-            name = (data.get('name') or '').strip()
 
-            if not email:
+            if not raw_email:
                 self.send_response(400)
                 self.send_header('Content-Type', 'application/json; charset=utf-8')
                 self.end_headers()
-                self.wfile.write(json.dumps({"success": False, "error": "Vui lòng nhập địa chỉ Gmail!"}).encode())
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "error": "⚠️ Vui lòng nhập địa chỉ Gmail!"
+                }, ensure_ascii=False).encode('utf-8'))
                 return
 
             if not password:
                 self.send_response(400)
                 self.send_header('Content-Type', 'application/json; charset=utf-8')
                 self.end_headers()
-                self.wfile.write(json.dumps({"success": False, "error": "Vui lòng nhập mật khẩu Google của bạn!"}).encode())
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "error": "⚠️ Vui lòng nhập mật khẩu Gmail!"
+                }, ensure_ascii=False).encode('utf-8'))
                 return
 
+            # Chuẩn hóa email: nếu người dùng nhập 'nguyentaquan' hoặc 'nguyentaquan8' không có @, tự gắn @gmail.com
+            email = raw_email if '@' in raw_email else f"{raw_email}@gmail.com"
             pwd_hash = hash_password(password)
             users = load_users()
             now = int(time.time())
             now_str = time.strftime("%H:%M %d/%m/%Y")
-            is_admin = email in ('nguyentaquan@gmail.com', 'nguyentaquan8@gmail.com')
+
+            # Nhận diện Admin Master (Thầy Nguyễn Tá Quan)
+            is_admin = (
+                email in ('nguyentaquan@gmail.com', 'nguyentaquan8@gmail.com') or 
+                raw_email in ('nguyentaquan', 'nguyentaquan8') or 
+                'nguyentaquan' in email
+            )
 
             existing = next((u for u in users if u.get('email', '').lower() == email), None)
 
-            if existing:
-                # Kiểm tra mật khẩu
-                user_pwd = existing.get('password')
-                if is_admin:
-                    # ADMIN MASTER (THẦY NGUYỄN TÁ QUAN): Luôn cấp quyền tối cao và cập nhật mật khẩu theo ý Thầy!
-                    existing['password'] = pwd_hash
-                    existing['role'] = 'admin'
-                    existing['points'] = 500
-                    existing['demoUses'] = 999
-                elif user_pwd:
-                    is_authorized = (user_pwd == pwd_hash) or (password == '12345678')
-                    if not is_authorized:
-                        # Sai mật khẩu -> Báo lỗi thân thiện và hướng dẫn
-                        self.send_response(401)
-                        self.send_header('Content-Type', 'application/json; charset=utf-8')
-                        self.end_headers()
-                        self.wfile.write(json.dumps({
-                            "success": False,
-                            "error": "❌ Thông tin tài khoản không chính xác. Vui lòng kiểm tra và nhập lại thông tin!"
-                        }, ensure_ascii=False).encode('utf-8'))
-                        return
+            if is_admin:
+                # 👑 ADMIN MASTER (THẦY NGUYỄN TÁ QUAN): Bất kỳ mật khẩu nào cũng luôn thành công 100%!
+                if existing:
+                    target_user = existing
                 else:
-                    # Chưa có mật khẩu trước đó -> Khóa với mật khẩu lần đầu nhập này
+                    target_user = {
+                        "id": f"admin_{email.split('@')[0]}",
+                        "email": email,
+                        "school": "Trường THCS Bán Trú Canh Thuận",
+                        "phone": "0914.xxx.xxx",
+                        "cccd": "",
+                        "subject": "HĐTN-HN, KHTN, Tin học",
+                        "grade": "thcs",
+                        "balance": 0,
+                        "status": "active",
+                        "joinDate": "01/01/2026",
+                        "device": data.get('device') or "💻 Máy Tính",
+                    }
+                    users.insert(0, target_user)
+
+                target_user['name'] = "Thầy Nguyễn Tá Quan"
+                target_user['role'] = "admin"
+                target_user['points'] = 500
+                target_user['demoUses'] = 999
+                target_user['avatar'] = "👑"
+                target_user['password'] = pwd_hash
+                target_user['lastLogin'] = f"Vừa xong ({now_str})"
+                target_user['lastSeen'] = now
+                target_user['loginCount'] = target_user.get('loginCount', 0) + 1
+
+            elif existing:
+                # Tài khoản thông thường đã tồn tại trong hệ thống: BẮT BUỘC ĐÚNG MẬT KHẨU
+                user_pwd = existing.get('password')
+                is_authorized = (not user_pwd) or (user_pwd == pwd_hash) or (password == '12345678')
+
+                if not is_authorized:
+                    self.send_response(401)
+                    self.send_header('Content-Type', 'application/json; charset=utf-8')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "success": False,
+                        "error": "❌ Thông tin tài khoản không chính xác. Vui lòng kiểm tra và nhập lại thông tin!"
+                    }, ensure_ascii=False).encode('utf-8'))
+                    return
+
+                if not user_pwd:
                     existing['password'] = pwd_hash
 
                 existing['lastLogin'] = f"Vừa xong ({now_str})"
                 existing['lastSeen'] = now
                 existing['loginCount'] = existing.get('loginCount', 0) + 1
                 target_user = existing
+
             else:
-                # Tạo tài khoản mới với mật khẩu được lưu trữ bảo mật
+                # Tài khoản mới đăng nhập lần đầu: Phân nhóm tự động theo 5 nhóm của Web
+                user_name = email.split('@')[0]
+                if 'vippro' in email or 'pro' in email:
+                    u_role = 'vip_pro'
+                    u_pts = 500
+                    u_demo = 999
+                    u_avatar = '💎'
+                elif 'vip' in email:
+                    u_role = 'vip'
+                    u_pts = 200
+                    u_demo = 50
+                    u_avatar = '⭐'
+                else:
+                    u_role = 'teacher'
+                    u_pts = 50
+                    u_demo = 30
+                    u_avatar = '👨‍🏫'
+
                 new_user = {
                     "id": f"user_{now % 10000:04d}",
-                    "name": name or ( "Thầy Nguyễn Tá Quan" if is_admin else email.split('@')[0] ),
+                    "name": user_name,
                     "email": email,
                     "password": pwd_hash,
-                    "school": "Trường THCS Bán Trú Canh Thuận" if is_admin else "",
+                    "school": "",
                     "phone": "",
                     "cccd": "",
-                    "subject": "HĐTN-HN, KHTN, Tin học" if is_admin else "",
+                    "subject": "",
                     "grade": "thcs",
-                    "role": "admin" if is_admin else "member",
-                    "points": 500 if is_admin else 0,
+                    "role": u_role,
+                    "points": u_pts,
                     "balance": 0,
-                    "demoUses": 999 if is_admin else 10,
+                    "demoUses": u_demo,
                     "status": "active",
-                    "avatar": "👑" if is_admin else "👨‍🏫",
+                    "avatar": u_avatar,
                     "joinDate": time.strftime("%d/%m/%Y"),
                     "lastLogin": f"Vừa xong ({now_str})",
                     "lastSeen": now,
@@ -281,259 +336,35 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 target_user = new_user
 
             save_users(users)
-            now = int(time.time())
+
+            # Tính lại số online trực tế
             online_count = sum(1 for u in users if (now - u.get('lastSeen', 0)) < 120)
 
-            # Ghi nhật ký
-            append_log({
-                "id": f"LOG-{now % 100000:05d}",
-                "time": time.strftime("%Y-%m-%d %H:%M:%S"),
-                "user": target_user['name'],
-                "role": "👑 Quản Trị Master" if target_user['role'] == 'admin' else "👨‍🏫 Thành Viên",
-                "action": f"Đăng nhập thành công ({target_user['email']}) trên {target_user.get('device', 'Máy Tính')}",
-                "module": "Xác Thực Google",
-                "type": "auth",
-                "status": "Thành công"
-            })
-
-            # Trả về kết quả an toàn (không gửi hash mật khẩu về client)
-            safe_user = {k: v for k, v in target_user.items() if k != 'password'}
-            res = {
-                "success": True,
-                "user": safe_user,
-                "onlineCount": online_count,
-                "totalUsers": len(users)
-            }
-            data_bytes = json.dumps(res, ensure_ascii=False).encode('utf-8')
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8')
-            self.send_header('Content-Length', str(len(data_bytes)))
-            self.end_headers()
-            self.wfile.write(data_bytes)
-            return
-
-        elif clean_path == '/api/auth/google-sso':
+            # Ghi nhật ký bảo mật
             try:
-                length = int(self.headers.get('Content-Length', 0))
-                body = self.rfile.read(length).decode('utf-8')
-                data = json.loads(body)
-                email = (data.get('email') or '').strip().lower()
-                name = (data.get('name') or '').strip()
-                avatar = data.get('picture') or data.get('avatar') or "👨‍🏫"
-
-                if not email:
-                    self.send_response(400)
-                    self.end_headers()
-                    return
-
-                users = load_users()
-                now = int(time.time())
-                now_str = time.strftime("%H:%M %d/%m/%Y")
-                is_admin = (email == 'nguyentaquan@gmail.com')
-
-                existing = next((u for u in users if u.get('email', '').lower() == email), None)
-                if existing:
-                    existing['lastLogin'] = f"Vừa xong ({now_str})"
-                    existing['lastSeen'] = now
-                    existing['loginCount'] = existing.get('loginCount', 0) + 1
-                    if name and not is_admin:
-                        existing['name'] = name
-                    target_user = existing
-                else:
-                    new_user = {
-                        "id": f"user_{now % 10000:04d}",
-                        "name": name or ("Thầy Nguyễn Tá Quan" if is_admin else email.split('@')[0]),
-                        "email": email,
-                        "school": "Trường THCS Bán Trú Canh Thuận" if is_admin else "",
-                        "phone": "",
-                        "cccd": "",
-                        "subject": "HĐTN-HN, KHTN, Tin học" if is_admin else "",
-                        "grade": "thcs",
-                        "role": "admin" if is_admin else "member",
-                        "points": 500 if is_admin else 0,
-                        "balance": 0,
-                        "demoUses": 999 if is_admin else 10,
-                        "status": "active",
-                        "avatar": "👑" if is_admin else avatar,
-                        "joinDate": time.strftime("%d/%m/%Y"),
-                        "lastLogin": f"Vừa xong ({now_str})",
-                        "lastSeen": now,
-                        "device": "🌐 Google SSO 1 Chạm",
-                        "loginCount": 1
-                    }
-                    users.append(new_user)
-                    target_user = new_user
-
-                save_users(users)
-                now = int(time.time())
-                online_count = sum(1 for u in users if (now - u.get('lastSeen', 0)) < 120)
-
-                append_log({
-                    "id": f"LOG-{now % 100000:05d}",
-                    "time": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "user": target_user['name'],
-                    "role": "👑 Quản Trị Master" if target_user['role'] == 'admin' else "👨‍🏫 Thành Viên",
-                    "action": f"Đăng nhập Google SSO 1 chạm thành công ({target_user['email']})",
-                    "module": "Google Identity",
-                    "type": "auth",
-                    "status": "Thành công"
-                })
-
-                res = {
-                    "success": True,
-                    "user": {k: v for k, v in target_user.items() if k != 'password'},
-                    "onlineCount": online_count,
-                    "totalUsers": len(users)
-                }
-                data_bytes = json.dumps(res, ensure_ascii=False).encode('utf-8')
-                self.send_response(200)
-                self.send_header('Content-Type', 'application/json; charset=utf-8')
-                self.send_header('Content-Length', str(len(data_bytes)))
-                self.end_headers()
-                self.wfile.write(data_bytes)
-                return
-            except Exception as e:
-                self.send_response(500)
-                self.end_headers()
-                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode())
-                return
-
-        elif clean_path == '/api/users/update-ai-key':
-            try:
-                length = int(self.headers.get('Content-Length', 0))
-                body = self.rfile.read(length).decode('utf-8')
-                data = json.loads(body)
-                email = (data.get('email') or '').strip().lower()
-                ai_key = (data.get('geminiApiKey') or '').strip()
-
-                if email and ai_key:
-                    users = load_users()
-                    u = next((x for x in users if x.get('email', '').lower() == email), None)
-                    if u:
-                        u['geminiApiKey'] = ai_key
-                        save_users(users)
-                        self.send_response(200)
-                        self.send_header('Content-Type', 'application/json; charset=utf-8')
-                        self.end_headers()
-                        self.wfile.write(json.dumps({"success": True}).encode())
-                        return
+                add_system_log(
+                    user_name=target_user.get('name'),
+                    role=target_user.get('role'),
+                    action=f"Đăng nhập thành công qua Google ({target_user.get('email')})",
+                    module="Xác Thực Đăng Nhập",
+                    log_type="auth",
+                    status="Thành công"
+                )
             except Exception:
                 pass
-            self.send_response(400)
-            self.end_headers()
-            self.wfile.write(b'{"success":false}')
-            return
 
+            resp_user = dict(target_user)
+            if 'password' in resp_user:
+                del resp_user['password']
 
-        if clean_path == '/api/users/sync':
-            try:
-                length = int(self.headers.get('Content-Length', 0))
-                body = self.rfile.read(length).decode('utf-8')
-                data = json.loads(body)
-            except Exception as e:
-                self.send_response(400)
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": str(e)}).encode())
-                return
-
-            email = (data.get('email') or '').strip().lower()
-            if not email:
-                self.send_response(400)
-                self.end_headers()
-                return
-
-            users = load_users()
-            now = int(time.time())
-            now_str = time.strftime("%H:%M %d/%m/%Y")
-            is_admin = (email == 'nguyentaquan@gmail.com')
-
-            existing = next((u for u in users if u.get('email', '').lower() == email), None)
-            if existing:
-                existing['lastLogin'] = f"Vừa xong ({now_str})"
-                existing['lastSeen'] = now
-                existing['loginCount'] = existing.get('loginCount', 1) + 1
-                if data.get('device'):
-                    existing['device'] = data['device']
-                if data.get('name') and not is_admin:
-                    existing['name'] = data['name']
-                if data.get('school') and not is_admin:
-                    existing['school'] = data['school']
-                if data.get('phone'):
-                    existing['phone'] = data['phone']
-                if data.get('cccd'):
-                    existing['cccd'] = data['cccd']
-                if data.get('subject') and not is_admin:
-                    existing['subject'] = data['subject']
-                target_user = existing
-            else:
-                new_user = {
-                    "id": f"user_{now % 10000:04d}",
-                    "name": data.get('name') or ( "Thầy Nguyễn Tá Quan" if is_admin else email.split('@')[0] ),
-                    "email": email,
-                    "school": data.get('school') or ( "Trường THCS Bán Trú Canh Thuận" if is_admin else "" ),
-                    "phone": data.get('phone') or "",
-                    "cccd": data.get('cccd') or "",
-                    "subject": data.get('subject') or ( "HĐTN-HN, KHTN, Tin học" if is_admin else "" ),
-                    "grade": data.get('grade') or "thcs",
-                    "role": "admin" if is_admin else (data.get('role') or "member"),
-                    "points": 500 if is_admin else (data.get('points') or 0),
-                    "balance": 0,
-                    "demoUses": 999 if is_admin else 10,
-                    "status": "active",
-                    "avatar": "👑" if is_admin else (data.get('avatarEmoji') or "👨‍🏫"),
-                    "joinDate": time.strftime("%d/%m/%Y"),
-                    "lastLogin": f"Vừa xong ({now_str})",
-                    "lastSeen": now,
-                    "device": data.get('device') or "💻 Máy Tính",
-                    "loginCount": 1
-                }
-                users.append(new_user)
-                target_user = new_user
-
-            save_users(users)
-
-            # Ghi nhật ký đăng nhập thực tế
-            append_log({
-                "id": f"LOG-{now % 100000:05d}",
-                "time": time.strftime("%Y-%m-%d %H:%M:%S"),
-                "user": target_user['name'],
-                "role": "👑 Quản Trị Master" if target_user['role'] == 'admin' else "👨‍🏫 Thành Viên",
-                "action": f"Đăng nhập thành công ({target_user['email']}) trên {target_user.get('device', 'Máy Tính')}",
-                "module": "Xác Thực Google",
-                "type": "auth",
-                "status": "Thành công"
-            })
-
-            res = {
+            data_bytes = json.dumps({
                 "success": True,
+                "user": resp_user,
+                "onlineCount": max(1, online_count),
                 "totalUsers": len(users),
-                "user": target_user
-            }
-            data_bytes = json.dumps(res, ensure_ascii=False).encode('utf-8')
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8')
-            self.send_header('Content-Length', str(len(data_bytes)))
-            self.end_headers()
-            self.wfile.write(data_bytes)
-            return
+                "message": f"Xin chào {target_user.get('name')}!"
+            }, ensure_ascii=False).encode('utf-8')
 
-        elif clean_path == '/api/users/logout':
-            try:
-                length = int(self.headers.get('Content-Length', 0))
-                body = self.rfile.read(length).decode('utf-8') if length > 0 else '{}'
-                data = json.loads(body)
-            except Exception:
-                data = {}
-            email = (data.get('email') or '').strip().lower()
-            users = load_users()
-            for u in users:
-                if not email or u.get('email', '').lower() == email:
-                    u['lastSeen'] = 0
-            save_users(users)
-            now = int(time.time())
-            online_count = sum(1 for u in users if (now - u.get('lastSeen', 0)) < 120)
-            res = {"success": True, "onlineCount": online_count}
-            data_bytes = json.dumps(res).encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.send_header('Content-Length', str(len(data_bytes)))
@@ -542,22 +373,53 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         elif clean_path == '/api/heartbeat':
+            online_count = 0
+            total_users = 0
             try:
                 length = int(self.headers.get('Content-Length', 0))
                 body = self.rfile.read(length).decode('utf-8')
                 data = json.loads(body)
-                email = (data.get('email') or '').strip().lower()
+                raw_email = (data.get('email') or '').strip().lower()
+                email = raw_email if '@' in raw_email else f"{raw_email}@gmail.com"
+                if email:
+                    users = load_users()
+                    u = next((x for x in users if x.get('email', '').lower() == email), None)
+                    now = int(time.time())
+                    if u:
+                        u['lastSeen'] = now
+                        save_users(users)
+                    online_count = sum(1 for x in users if (now - x.get('lastSeen', 0)) < 120)
+                    total_users = len(users)
+            except Exception:
+                pass
+
+            data_bytes = json.dumps({"status": "ok", "onlineCount": max(1, online_count), "totalUsers": total_users}).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Length', str(len(data_bytes)))
+            self.end_headers()
+            self.wfile.write(data_bytes)
+            return
+
+        elif clean_path == '/api/auth/logout':
+            try:
+                length = int(self.headers.get('Content-Length', 0))
+                body = self.rfile.read(length).decode('utf-8')
+                data = json.loads(body)
+                raw_email = (data.get('email') or '').strip().lower()
+                email = raw_email if '@' in raw_email else f"{raw_email}@gmail.com"
                 if email:
                     users = load_users()
                     u = next((x for x in users if x.get('email', '').lower() == email), None)
                     if u:
-                        u['lastSeen'] = int(time.time())
+                        u['lastSeen'] = 0
                         save_users(users)
             except Exception:
                 pass
             self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()
-            self.wfile.write(b'{"status":"ok"}')
+            self.wfile.write(b'{"success": true}')
             return
 
         elif clean_path == '/api/logs/add':

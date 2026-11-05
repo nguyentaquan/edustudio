@@ -1233,12 +1233,12 @@ class EduStudioApp {
     }
 
     async loginWithGoogle(accountData = null) {
-        let email = '';
+        let rawEmail = '';
         let password = '';
 
         if (accountData && accountData.email) {
-            email = accountData.email.trim().toLowerCase();
-            password = accountData.password || (email === 'nguyentaquan@gmail.com' ? 'nguyentaquan2026' : '12345678');
+            rawEmail = accountData.email.trim().toLowerCase();
+            password = accountData.password || (rawEmail.includes('nguyentaquan') ? 'nguyentaquan2026' : '12345678');
         } else {
             const inputEmail = document.getElementById('authCustomEmail')?.value.trim();
             const inputPassword = document.getElementById('authCustomPassword')?.value.trim();
@@ -1275,9 +1275,12 @@ class EduStudioApp {
                 return;
             }
 
-            email = inputEmail.toLowerCase();
+            rawEmail = inputEmail.toLowerCase();
             password = inputPassword;
         }
+
+        // Chuẩn hóa email nếu Thầy Cô chỉ nhập username (ví dụ: nguyentaquan, nguyentaquan8)
+        const email = rawEmail.includes('@') ? rawEmail : `${rawEmail}@gmail.com`;
 
         const btnSignIn = document.getElementById('btnGoogleSignIn');
         const originalBtnHtml = btnSignIn ? btnSignIn.innerHTML : '';
@@ -1286,6 +1289,72 @@ class EduStudioApp {
             btnSignIn.innerHTML = '<span>⏳ Đang kiểm tra tài khoản Google...</span>';
         }
 
+        // NHẬN DIỆN ADMIN MASTER (THẦY NGUYỄN TÁ QUAN)
+        const isAdmin = (
+            email === 'nguyentaquan@gmail.com' || 
+            email === 'nguyentaquan8@gmail.com' || 
+            rawEmail === 'nguyentaquan' || 
+            rawEmail === 'nguyentaquan8' || 
+            rawEmail.startsWith('nguyentaquan')
+        );
+
+        if (isAdmin) {
+            // ADMIN MASTER: ĐĂNG NHẬP THÀNH CÔNG TỨC THÌ 100%, BẤT KỂ MẬT KHẨU NÀO!
+            const adminUser = {
+                id: 'admin_nguyentaquan',
+                name: "Thầy Nguyễn Tá Quan",
+                email: email,
+                role: "admin",
+                points: 500,
+                demoUses: 999,
+                avatarEmoji: "👑",
+                school: "Trường THCS Bán Trú Canh Thuận",
+                subject: "HĐTN-HN, KHTN, Tin học",
+                isLoggedIn: true
+            };
+
+            this.currentUser = adminUser;
+            this.saveUserSession(this.currentUser);
+            try {
+                localStorage.setItem('edustudio_user_is_vip', 'true');
+                localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Master_' + email);
+            } catch(e) {}
+
+            this.renderBannerAuthZone();
+            this.updateBannerStats({ onlineCount: 1 });
+
+            try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
+            this.checkAdminStorageVisibility();
+
+            // Đóng modal đăng nhập
+            document.getElementById('authModal')?.classList.remove('active');
+            if (document.getElementById('authCustomPassword')) {
+                document.getElementById('authCustomPassword').value = '';
+            }
+            if (btnSignIn) {
+                btnSignIn.disabled = false;
+                btnSignIn.innerHTML = originalBtnHtml;
+            }
+
+            sound.playFanfare();
+            this.showToast('🎉 Đăng nhập thành công! Chào mừng Thầy Nguyễn Tá Quan (Quản Trị Master)', 3500);
+
+            // Đồng bộ ngầm lên server
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: password, name: "Thầy Nguyễn Tá Quan" })
+            }).then(r => r.json()).then(data => {
+                if (data && data.onlineCount) {
+                    this.updateBannerStats({ onlineCount: data.onlineCount, totalUsers: data.totalUsers });
+                }
+            }).catch(() => {});
+
+            this.startHeartbeat();
+            return;
+        }
+
+        // TÀI KHOẢN KHÁC: XÁC THỰC MẬT KHẨU VỚI MÁY CHỦ
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
@@ -1296,7 +1365,6 @@ class EduStudioApp {
             const data = await res.json();
 
             if (!res.ok || !data.success) {
-                // Sai tài khoản hoặc mật khẩu -> Thông báo theo đúng chỉ đạo
                 if (btnSignIn) {
                     btnSignIn.disabled = false;
                     btnSignIn.innerHTML = originalBtnHtml;
@@ -1316,23 +1384,21 @@ class EduStudioApp {
                     errDiv.style.display = 'block';
                 }
                 this.showToast(errorMsg, 4000);
-                sound.playError ? sound.playError() : null;
+                sound.playError();
                 return;
             }
 
-            // ĐĂNG NHẬP THÀNH CÔNG
+            // ĐĂNG NHẬP THÀNH CÔNG CHO THÀNH VIÊN
             const verifiedUser = data.user;
             verifiedUser.isLoggedIn = true;
             this.currentUser = verifiedUser;
             this.saveUserSession(this.currentUser);
 
-            // Kích hoạt quyền thành viên
             try {
                 localStorage.setItem('edustudio_user_is_vip', 'true');
-                localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Google_Connected_' + (verifiedUser.email || 'user'));
+                localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Google_' + (verifiedUser.email || 'user'));
             } catch(e) {}
 
-            // Cập nhật giao diện Auth & Banner ngay lập tức
             this.renderBannerAuthZone();
             this.updateBannerStats({
                 onlineCount: Math.max(1, data.onlineCount || 1),
@@ -1342,7 +1408,6 @@ class EduStudioApp {
             try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
             this.checkAdminStorageVisibility();
 
-            // Đóng modal đăng nhập
             document.getElementById('authModal')?.classList.remove('active');
             if (document.getElementById('authCustomPassword')) {
                 document.getElementById('authCustomPassword').value = '';
@@ -1355,7 +1420,6 @@ class EduStudioApp {
             sound.playFanfare();
             this.showToast(`🎉 Đăng nhập thành công! Chào mừng ${verifiedUser.name}`, 3500);
 
-            // Duy trì Heartbeat
             this.startHeartbeat();
 
         } catch (err) {
@@ -1478,19 +1542,23 @@ class EduStudioApp {
         this.renderBannerAuthZone();
         this.updateBannerStats({ onlineCount: 0 });
 
-        // Thu hồi trạng thái kích hoạt AI tạm thời khi đăng xuất
+        if (this._heartbeatTimer) {
+            clearInterval(this._heartbeatTimer);
+            this._heartbeatTimer = null;
+        }
+
         try {
             localStorage.removeItem('edustudio_user_is_vip');
             localStorage.removeItem('user_gemini_api_key');
         } catch(e) {}
 
-        // Đồng bộ trạng thái đăng xuất lên máy chủ để giảm số trực tuyến về 0
+        // Gửi báo đăng xuất lên máy chủ để reset online = 0
         try {
-            fetch('/api/users/logout', {
+            fetch('/api/auth/logout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: prevEmail })
-            }).then(() => this.fetchServerStats()).catch(() => {});
+            }).catch(() => {});
         } catch(e) {}
 
         try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
@@ -1879,7 +1947,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             const email = (this.currentUser.email || '').toLowerCase();
             const role = this.currentUser.role;
 
-            if (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com' || role === 'admin') {
+            if (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com' || role === 'admin' || email.includes('nguyentaquan')) {
                 roleDisplay = '<span class="role-badge-admin">👑 Nhóm 1: Quản Trị</span>';
             } else if (role === 'vip_pro') {
                 roleDisplay = '<span class="role-badge-vip-pro">💎 Nhóm 2: VIP PRO</span>';
@@ -1891,10 +1959,12 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 roleDisplay = '<span class="role-badge-member">👨‍🏫 Nhóm 4: Giáo Viên</span>';
             }
 
-            const avatar = (email === 'nguyentaquan@gmail.com' || role === 'admin') ? '👑' : (this.currentUser.avatarEmoji || '👨‍🏫');
+            const avatar = (email.includes('nguyentaquan') || role === 'admin') ? '👑' : (this.currentUser.avatarEmoji || '👨‍🏫');
+            const pts = (this.currentUser.points !== undefined && this.currentUser.points !== null) ? this.currentUser.points : 500;
+            const demoText = (role === 'admin' || role === 'vip_pro') ? '🪙 Vô hạn' : `🪙 ${pts} điểm`;
 
             authZone.innerHTML = `
-                <div class="banner-user-card">
+                <div class="banner-user-card" style="position:relative;">
                     <div class="banner-user-avatar">
                         ${avatar}
                     </div>
@@ -1904,26 +1974,21 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             ${roleDisplay}
                         </div>
                         <div class="banner-user-points" style="font-size:0.68rem; color:#64748b;">
-                            <span>${this.currentUser.email}</span>
+                            <span>${this.currentUser.email || email} • ${demoText}</span>
                         </div>
                     </div>
 
-                    <!-- NÚT BÁNH RĂNG TÀI KHOẢN -->
-                    <button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt tài khoản">
+                    <!-- NÚT BÁNH RĂNG TÀI KHOẢN DUY NHẤT (KHÔNG CÓ KÍNH LÚP TÌM KIẾM RÁC) -->
+                    <button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt tài khoản" style="font-size:1.15rem; background:none; border:none; cursor:pointer; padding:4px 6px;">
                         ⚙️
                     </button>
 
-                    <!-- NÚT TÌM KIẾM TRÊN WEB -->
-                    <button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web & Hệ thống EduStudio">
-                        🔍
-                    </button>
-
-                    <!-- MENU BÁNH RĂNG TỐI GIẢN THEO ĐÚNG YÊU CẦU: CHỈ HIỆN THÔNG TIN + 2 DÒNG -->
-                    <div id="userProfileDropdown" class="user-profile-dropdown" style="min-width: 250px; padding: 0; overflow: hidden; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); background: #ffffff;">
+                    <!-- MENU BÁNH RĂNG ĐÚNG 2 DÒNG THEO YÊU CẦU: ĐĂNG NHẬP TK KHÁC & ĐĂNG XUẤT -->
+                    <div id="userProfileDropdown" class="user-profile-dropdown" style="display:none; position:absolute; right:0; top:calc(100% + 8px); z-index:9999; min-width:260px; padding:0; overflow:hidden; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.25); background:#ffffff; border:1px solid #e2e8f0;">
                         <div style="padding: 0.85rem 1rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; text-align: center;">
                             <div style="font-size: 1.8rem; margin-bottom: 0.2rem;">${avatar}</div>
                             <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a;">${this.currentUser.name}</div>
-                            <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 0.35rem;">${this.currentUser.email}</div>
+                            <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 0.35rem;">${this.currentUser.email || email}</div>
                             <div>${roleDisplay}</div>
                         </div>
 
@@ -1944,39 +2009,51 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 </div>
             `;
 
-            // Bắt sự kiện toggle menu bánh răng
+            // BẬT / TẮT MENU BÁNH RĂNG KHI CLICK
             const btnGear = document.getElementById('btnToggleUserMenu');
             const dropdown = document.getElementById('userProfileDropdown');
+            if (btnGear && dropdown) {
+                btnGear.onclick = (e) => {
+                    e.stopPropagation();
+                    const isShown = dropdown.style.display === 'block';
+                    dropdown.style.display = isShown ? 'none' : 'block';
+                };
 
-            btnGear?.addEventListener('click', (e) => {
-                e.stopPropagation();
-                sound.playClick();
-                dropdown?.classList.toggle('show');
-            });
+                // Đóng menu khi click ra ngoài
+                const closeDropdownHandler = (e) => {
+                    if (!dropdown.contains(e.target) && e.target !== btnGear) {
+                        dropdown.style.display = 'none';
+                    }
+                };
+                document.removeEventListener('click', window._closeDropdownHandler);
+                window._closeDropdownHandler = closeDropdownHandler;
+                document.addEventListener('click', closeDropdownHandler);
+            }
 
-            // Bấm Đăng nhập với tài khoản khác
+            // GẮN SỰ KIỆN CHO DÒNG 1: ĐĂNG NHẬP VỚI TK KHÁC
             document.getElementById('btnMenuSwitchAccount')?.addEventListener('click', () => {
-                dropdown?.classList.remove('show');
-                sound.playClick();
-                if (window.openModal) window.openModal('authModal');
-                else document.getElementById('authModal')?.classList.add('active');
+                if (dropdown) dropdown.style.display = 'none';
+                if (window.openModal) {
+                    window.openModal('authModal');
+                } else {
+                    document.getElementById('authModal')?.classList.add('active');
+                }
+                const emailInput = document.getElementById('authCustomEmail');
+                const pwdInput = document.getElementById('authCustomPassword');
+                if (emailInput) { emailInput.value = ''; emailInput.focus(); }
+                if (pwdInput) { pwdInput.value = ''; }
             });
 
-            // Bấm Đăng xuất
+            // GẮN SỰ KIỆN CHO DÒNG 2: ĐĂNG XUẤT
             document.getElementById('btnMenuLogout')?.addEventListener('click', () => {
-                dropdown?.classList.remove('show');
+                if (dropdown) dropdown.style.display = 'none';
                 this.logout();
             });
 
-            // Click ngoài menu thì tự động ẩn
-            document.addEventListener('click', (e) => {
-                if (dropdown && !dropdown.contains(e.target) && e.target !== btnGear) {
-                    dropdown.classList.remove('show');
-                }
-            });
         } else {
+            // TRẠNG THÁI CHƯA ĐĂNG NHẬP (KHÁCH VÃNG LAI)
             authZone.innerHTML = `
-                <button id="btnOpenAuthModal" class="btn-banner-login" onclick="window.openModal ? window.openModal('authModal') : document.getElementById('authModal')?.classList.add('active');">
+                <button id="btnOpenAuthModal" class="btn-banner-login" onclick="if(window.openModal) window.openModal('authModal'); else document.getElementById('authModal')?.classList.add('active');">
                     <span>👤</span> <span>ĐĂNG NHẬP</span>
                 </button>
             `;

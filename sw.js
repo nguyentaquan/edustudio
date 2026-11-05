@@ -1,75 +1,42 @@
-// EduStudio Service Worker (PWA Engine v3.10.41 GDMN & GDPT)
+// EduStudio Service Worker (v3.10.46 - GDMN & GDPT)
 // Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
 
-const CACHE_NAME = "edustudio-pwa-v3.10.41";
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/css/style.css',
-  '/css/tkb-styles.css',
-  '/js/app.js',
-  '/js/tkb-engine.js',
-  '/js/canh-thuan-tkb-data.js',
-  '/js/tkb-ui.js',
-  '/js/xlsx.full.min.js',
-  '/assets/icon-192.png',
-  '/assets/icon-512.png',
-  '/assets/apple-touch-icon.png',
-  '/assets/favicon-32.png'
-];
+const CACHE_NAME = "edustudio-pwa-v3.10.46-instant";
 
-// 1. Cài đặt Service Worker và lưu trữ Cache cốt lõi
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[PWA] Caching core assets for offline capability...');
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
-  );
+  // Bỏ qua chờ đợi, kích hoạt ngay lập tức
+  self.skipWaiting();
 });
 
-// 2. Kích hoạt và dọn dẹp Cache cũ
 self.addEventListener('activate', (event) => {
+  // Xóa toàn bộ cache cũ ngay lập tức
   event.waitUntil(
     caches.keys().then((keyList) => {
       return Promise.all(
         keyList.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log('[PWA] Removing old cache:', key);
-            return caches.delete(key);
-          }
+          console.log('[PWA] Purging cache:', key);
+          return caches.delete(key);
         })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// 3. Xử lý yêu cầu mạng (Network First, Fallback to Cache)
+// Luôn lấy tài nguyên mới nhất từ Network cho HTML & JS
 self.addEventListener('fetch', (event) => {
-  // Chỉ can thiệp các request GET http/https
   if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
 
+  // Với API, HTML và JS chính: Luôn luôn tải mới từ server (Network Only)
+  const url = new URL(event.request.url);
+  if (url.pathname.startsWith('/api/') || url.pathname.endsWith('.html') || url.pathname.endsWith('.js') || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Các tài nguyên khác (icon, font)
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        // Nếu mạng tốt, lưu bản mới vào cache và trả về
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      })
-      .catch(() => {
-        // Khi mất mạng hoặc sóng yếu, phục vụ từ Cache
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) return cachedResponse;
-          if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('/index.html');
-          }
-        });
-      })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });

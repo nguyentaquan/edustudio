@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- CHỐNG KẸT CACHE PWA / SERVICE WORKER: Tự động dọn sạch cache để luôn nạp mã nguồn mới nhất -->
+    <script>
+        (function() {
+            try {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                        for (var reg of registrations) {
+                            reg.unregister();
+                        }
+                    });
+                }
+                if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                        for (var name of names) {
+                            caches.delete(name);
+                        }
+                    });
+                }
+            } catch(e) {}
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduStudio - Nền Tảng Đa Phương Tiện Sư Phạm Mở</title>
@@ -163,7 +184,7 @@
                                     else if (u.role === 'vip') roleBadge = '<span class="role-badge-vip">⭐ Nhóm 3: VIP</span>';
                                     var pts = (u.points !== undefined && u.points !== null) ? u.points : 0;
                                     var demoText = (u.role === 'admin' || u.role === 'vip_pro') ? '• Gói Demo: ∞' : ('• Gói Demo: ' + (u.demoUses || 10) + '/10');
-                                    zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span>' + roleBadge + '</div><div class="banner-user-points"><span>🪙 ' + pts + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">' + demoText + '</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button><button id="btnGlobalWebSearch" class="btn-search-user" onclick="window.app && window.app.openGlobalSearchModal ? window.app.openGlobalSearchModal() : null" title="Tìm kiếm trên Web">🔍</button></div>';
+                                    zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span>' + roleBadge + '</div><div class="banner-user-points"><span>🪙 ' + pts + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">' + demoText + '</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button></div>';
                                 } else {
                                     zone.innerHTML = '<button id="btnOpenAuthModal" class="btn-banner-login" onclick="document.getElementById(\'authModal\')?.classList.add(\'active\');"><span>👤</span> <span>ĐĂNG NHẬP</span></button>';
                                     var onlEl = document.getElementById('bannerOnlineUsers');
@@ -4289,7 +4310,7 @@ window.openPPCTDirect = function() {
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=3.10.4').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=3.10.46').then(function(reg) {
                     console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
                 }).catch(function(err) {
                     console.warn('Lỗi đăng ký PWA Service Worker:', err);
