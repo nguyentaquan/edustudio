@@ -62,6 +62,8 @@
         }
     </style>
 
+    <!-- THƯ VIỆN XÁC THỰC GOOGLE IDENTITY SERVICES CHÍNH THỨC -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -101,7 +103,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.43 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.44 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -3575,6 +3577,7 @@ window.openPPCTDirect = function() {
                             </button>
                         </div>
                         <div style="font-size: 0.68rem; color: #64748b; margin-top: 0.2rem;">* Bắt buộc nhập mật khẩu (tối thiểu 6 ký tự) để xác thực.</div>
+                        <div id="authPasswordError" style="display: none; background: #fef2f2; color: #dc2626; border: 1.5px solid #fca5a5; border-radius: 6px; padding: 0.45rem 0.65rem; font-size: 0.74rem; font-weight: 800; margin-top: 0.35rem; animation: pccmShake 0.4s ease-in-out;"></div>
                     </div>
 
                     <div>
@@ -3594,6 +3597,28 @@ window.openPPCTDirect = function() {
                         <span>Xác Nhận Đăng Nhập Với Tài Khoản Google</span>
                     </button>
                 </form>
+
+                <!-- 3. KẾT NỐI TRỰC TIẾP TÀI NGUYÊN AI DO TÀI KHOẢN GOOGLE CUNG CẤP -->
+                <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 0.75rem 0.85rem; margin-top: 0.85rem;">
+                    <div style="font-size: 0.78rem; font-weight: 800; color: #166534; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.35rem;">
+                        <span>🤖</span> <span>KẾT NỐI TÀI NGUYÊN AI CỦA TÀI KHOẢN GOOGLE:</span>
+                    </div>
+                    <p style="font-size: 0.72rem; color: #15803d; margin: 0 0 0.5rem 0; line-height: 1.4;">
+                        Thầy Cô có thể kết nối <strong>Google Gemini API Key</strong> riêng để sử dụng toàn bộ tính năng AI soạn bài, ra đề, làm PPCT bằng hạn mức của chính tài khoản Google:
+                    </p>
+                    <div style="display: flex; gap: 0.35rem;">
+                        <input type="password" id="userGeminiApiKeyInput" placeholder="Dán Gemini API Key (AIzaSy...)" style="flex: 1; padding: 0.42rem 0.6rem; font-size: 0.78rem; font-weight: 700; border: 1.5px solid #cbd5e1; border-radius: 6px; color: #0f172a; background: #ffffff;">
+                        <button type="button" onclick="window.app && window.app.saveUserGeminiKey()" style="background: #059669; color: #ffffff; border: none; padding: 0.42rem 0.85rem; border-radius: 6px; font-weight: 800; font-size: 0.74rem; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(5,150,105,0.25);">
+                            💾 Lưu Khóa AI
+                        </button>
+                    </div>
+                    <div style="margin-top: 0.35rem; font-size: 0.7rem; display: flex; justify-content: space-between; align-items: center;">
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: #0284c7; font-weight: 800; text-decoration: underline;">
+                            🔗 Lấy Gemini API Key miễn phí từ Google AI Studio
+                        </a>
+                        <span style="color: #64748b; font-size: 0.68rem;">(Cấp miễn phí 100% từ Google)</span>
+                    </div>
+                </div>
 
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.72rem; color: #475569; line-height: 1.5;">
                     💡 <strong>Chính sách người dùng mới:</strong> Khi đăng nhập bằng tài khoản Gmail mới, toàn bộ dữ liệu (Trường học, SĐT, CCCD, Môn dạy) đều hoàn toàn <strong>trống</strong> để Thầy Cô tự cập nhật trong mục Hồ Sơ Cá Nhân.

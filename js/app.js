@@ -1232,102 +1232,197 @@ class EduStudioApp {
         } catch (e) {}
     }
 
-    loginWithGoogle(accountData = null) {
-        let user = null;
+    async loginWithGoogle(accountData = null) {
+        let email = '';
+        let password = '';
+        let name = '';
+
         if (accountData && accountData.email) {
-            const isAdmin = (accountData.email.toLowerCase() === 'nguyentaquan@gmail.com');
-            user = {
-                name: accountData.name || (isAdmin ? "Thầy Nguyễn Tá Quan" : accountData.email.split('@')[0]),
-                email: accountData.email,
-                role: isAdmin ? 'admin' : (accountData.role || 'member'),
-                school: accountData.school || (isAdmin ? 'Trường THCS Bán Trú Canh Thuận' : ''),
-                cccd: accountData.cccd || '',
-                phone: accountData.phone || '',
-                subject: accountData.subject || (isAdmin ? 'HĐTN-HN, KHTN, Tin học' : ''),
-                points: accountData.points !== undefined ? accountData.points : (isAdmin ? 500 : 0),
-                demoUses: isAdmin ? 999 : 10,
-                avatarEmoji: isAdmin ? '👑' : (accountData.avatarEmoji || '👨‍🏫'),
-                isLoggedIn: true
-            };
+            // Nút đăng nhập nhanh
+            email = accountData.email.trim().toLowerCase();
+            name = accountData.name || '';
+            // Mật khẩu mặc định của tài khoản mẫu hoặc tài khoản admin
+            password = accountData.password || (email === 'nguyentaquan@gmail.com' ? 'nguyentaquan2026' : '12345678');
         } else {
             const inputEmail = document.getElementById('authCustomEmail')?.value.trim();
             const inputPassword = document.getElementById('authCustomPassword')?.value.trim();
             const inputName = document.getElementById('authCustomName')?.value.trim();
+            const errDiv = document.getElementById('authPasswordError');
+            const pwdInput = document.getElementById('authCustomPassword');
+
+            if (errDiv) errDiv.style.display = 'none';
+            if (pwdInput) {
+                pwdInput.classList.remove('pccm-input-error');
+                pwdInput.style.borderColor = '#cbd5e1';
+            }
 
             if (!inputEmail) {
-                alert("⚠️ Vui lòng nhập địa chỉ Gmail để đăng nhập!");
+                this.showToast('⚠️ Vui lòng nhập địa chỉ Gmail của Thầy Cô!');
                 document.getElementById('authCustomEmail')?.focus();
                 return;
             }
 
             if (!inputPassword) {
-                alert("⚠️ Vui lòng nhập mật khẩu Google của bạn!");
-                document.getElementById('authCustomPassword')?.focus();
+                if (pwdInput) {
+                    pwdInput.classList.add('pccm-input-error');
+                    pwdInput.style.borderColor = '#ef4444';
+                    pwdInput.focus();
+                }
+                if (errDiv) {
+                    errDiv.textContent = '⚠️ Vui lòng nhập mật khẩu Google của Thầy Cô!';
+                    errDiv.style.display = 'block';
+                }
+                this.showToast('⚠️ Vui lòng nhập mật khẩu!');
                 return;
             }
 
             if (inputPassword.length < 6) {
-                alert("⚠️ Mật khẩu Google phải có tối thiểu 6 ký tự để bảo mật!");
-                document.getElementById('authCustomPassword')?.focus();
+                if (pwdInput) {
+                    pwdInput.classList.add('pccm-input-error');
+                    pwdInput.style.borderColor = '#ef4444';
+                    pwdInput.focus();
+                }
+                if (errDiv) {
+                    errDiv.textContent = '⚠️ Mật khẩu Google phải có tối thiểu 6 ký tự để bảo mật!';
+                    errDiv.style.display = 'block';
+                }
+                this.showToast('⚠️ Mật khẩu phải có tối thiểu 6 ký tự!');
                 return;
             }
 
-            const isAdmin = (inputEmail.toLowerCase() === 'nguyentaquan@gmail.com');
-
-            if (isAdmin) {
-                user = {
-                    name: inputName || "Thầy Nguyễn Tá Quan",
-                    email: "nguyentaquan@gmail.com",
-                    role: "admin",
-                    school: "Trường THCS Bán Trú Canh Thuận",
-                    cccd: "",
-                    phone: "",
-                    subject: "HĐTN-HN, KHTN, Tin học",
-                    points: 500,
-                    demoUses: 999,
-                    avatarEmoji: "👑",
-                    isLoggedIn: true
-                };
-            } else {
-                // Người dùng mới: Mọi thông tin cá nhân đều TRỐNG ("") để người dùng tự cập nhật
-                user = {
-                    name: inputName || inputEmail.split('@')[0],
-                    email: inputEmail,
-                    role: 'member',
-                    school: '',
-                    cccd: '',
-                    phone: '',
-                    subject: '',
-                    points: 0,
-                    demoUses: 10,
-                    avatarEmoji: '👨‍🏫',
-                    isLoggedIn: true
-                };
-            }
+            email = inputEmail.toLowerCase();
+            password = inputPassword;
+            name = inputName;
         }
 
-        this.currentUser = user;
-        this.saveUserSession(this.currentUser);
-        this.renderBannerAuthZone();
-        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
-        this.checkAdminStorageVisibility();
+        // BẬT CHẾ ĐỘ XÁC THỰC MẬT KHẨU THỰC TẾ TRÊN MÁY CHỦ (SERVER VERIFICATION)
+        const btnSignIn = document.getElementById('btnGoogleSignIn');
+        const originalBtnHtml = btnSignIn ? btnSignIn.innerHTML : '';
+        if (btnSignIn) {
+            btnSignIn.disabled = true;
+            btnSignIn.innerHTML = '<span>⏳</span> <span>Đang xác thực tài khoản Google...</span>';
+        }
+
         try {
-            this.syncUserToAdminDirectory(user);
-            this.logUserActivity(`Đăng nhập Google SSO thành công (${user.email})`, 'Xác Thực', 'auth', user.school || 'Thành viên mới');
-        } catch(e) {}
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: password, name: name })
+            });
 
-        document.getElementById('authModal')?.classList.remove('active');
-        if (document.getElementById('authCustomPassword')) {
-            document.getElementById('authCustomPassword').value = '';
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                // XÁC THỰC THẤT BẠI: SAI MẬT KHẨU -> CHẶN ĐỨNG HOÀN TOÀN!
+                if (btnSignIn) {
+                    btnSignIn.disabled = false;
+                    btnSignIn.innerHTML = originalBtnHtml;
+                }
+
+                const pwdInput = document.getElementById('authCustomPassword');
+                const errDiv = document.getElementById('authPasswordError');
+                if (pwdInput) {
+                    pwdInput.classList.add('pccm-input-error');
+                    pwdInput.style.borderColor = '#ef4444';
+                    pwdInput.focus();
+                    pwdInput.select();
+                }
+                const errorMsg = data.error || '❌ Mật khẩu Google / EduStudio không chính xác!';
+                if (errDiv) {
+                    errDiv.textContent = errorMsg;
+                    errDiv.style.display = 'block';
+                }
+                this.showToast(errorMsg, 4500);
+                sound.playError ? sound.playError() : null;
+                return;
+            }
+
+            // XÁC THỰC THÀNH CÔNG: LƯU TÀI KHOẢN VÀ CẬP NHẬT TRỰC TUYẾN
+            const verifiedUser = data.user;
+            verifiedUser.isLoggedIn = true;
+            this.currentUser = verifiedUser;
+            this.saveUserSession(this.currentUser);
+
+            // Cập nhật giao diện Auth & Banner lập tức
+            this.renderBannerAuthZone();
+            this.updateBannerStats({
+                onlineCount: Math.max(1, data.onlineCount || 1),
+                totalUsers: data.totalUsers || 1
+            });
+
+            try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
+            this.checkAdminStorageVisibility();
+
+            // Đóng modal đăng nhập
+            document.getElementById('authModal')?.classList.remove('active');
+            if (document.getElementById('authCustomPassword')) {
+                document.getElementById('authCustomPassword').value = '';
+            }
+            if (btnSignIn) {
+                btnSignIn.disabled = false;
+                btnSignIn.innerHTML = originalBtnHtml;
+            }
+
+            sound.playFanfare();
+            const roleText = (verifiedUser.role === 'admin') ? '👑 Quản Trị Master' : '👨‍🏫 Thành Viên Chuẩn';
+            this.showToast(`🎉 Chào mừng ${verifiedUser.name} (${verifiedUser.email}) đã đăng nhập thành công!`, 4000);
+
+            // Bắt đầu Heartbeat định kỳ 30 giây để duy trì trạng thái online
+            this.startHeartbeat();
+
+        } catch (err) {
+            if (btnSignIn) {
+                btnSignIn.disabled = false;
+                btnSignIn.innerHTML = originalBtnHtml;
+            }
+            console.error('Lỗi khi gọi API xác thực:', err);
+            this.showToast('❌ Không thể kết nối với máy chủ xác thực: ' + err.message, 4000);
         }
-        sound.playFanfare();
+    }
 
-        const roleText = (user.role === 'admin') ? '👑 Quản Trị Master' : '👨‍🏫 Thành Viên Chuẩn';
-        alert(`🎉 [ĐĂNG NHẬP GOOGLE THÀNH CÔNG!]
-Chào mừng: ${this.currentUser.name}
-Email: ${this.currentUser.email}
-Vai trò: ${roleText}
-${user.role === 'admin' ? 'Đơn vị: ' + user.school : 'Dữ liệu cá nhân: Đang để trống để Thầy Cô tự cập nhật trong mục Hồ Sơ Cá Nhân.'}`);
+    startHeartbeat() {
+        if (this._heartbeatTimer) clearInterval(this._heartbeatTimer);
+        this._heartbeatTimer = setInterval(async () => {
+            if (this.currentUser && this.currentUser.isLoggedIn && this.currentUser.email) {
+                try {
+                    await fetch('/api/heartbeat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: this.currentUser.email })
+                    });
+                } catch(e) {}
+            }
+        }, 30000);
+    }
+
+    async saveUserGeminiKey(keyInput = null) {
+        const key = keyInput || document.getElementById('userGeminiApiKeyInput')?.value.trim();
+        if (!key) {
+            this.showToast('⚠️ Vui lòng nhập mã khóa Gemini API Key!');
+            return;
+        }
+        if (!key.startsWith('AIzaSy')) {
+            this.showToast('⚠️ Khóa Gemini API Key của Google thường bắt đầu bằng AIzaSy... Vui lòng kiểm tra lại!');
+        }
+
+        if (this.currentUser) {
+            this.currentUser.geminiApiKey = key;
+            this.saveUserSession(this.currentUser);
+        }
+        if (!this.systemAIConfig) this.systemAIConfig = {};
+        this.systemAIConfig.geminiApiKey = key;
+        try { localStorage.setItem('edustudio_system_ai_config', JSON.stringify(this.systemAIConfig)); } catch(e){}
+
+        if (this.currentUser && this.currentUser.email) {
+            try {
+                await fetch('/api/users/update-ai-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: this.currentUser.email, geminiApiKey: key })
+                });
+            } catch(e){}
+        }
+        this.showToast('🤖 Đã kết nối thành công Khóa AI của Tài khoản Google! Toàn bộ tính năng AI sẽ dùng hạn mức riêng của Thầy Cô.');
     }
 
     loginWithQRCode() {
@@ -8640,9 +8735,9 @@ D. Nói xấu sau lưng bạn với những người khác
         const elUsers = document.getElementById('bannerTotalUsers');
         const elOnline = document.getElementById('bannerOnlineUsers');
         
-        const isUserLoggedIn = Boolean(this.currentUser && this.currentUser.isLoggedIn);
-        let totalUsers = this.userAccounts ? this.userAccounts.length : (isUserLoggedIn ? 1 : 0);
-        let onlineUsers = isUserLoggedIn ? 1 : 0;
+        const isUserLoggedIn = Boolean(this.currentUser && this.currentUser.isLoggedIn && this.currentUser.role !== 'guest');
+        let totalUsers = this.userAccounts ? this.userAccounts.length : 1;
+        let onlineUsers = 0;
 
         if (stats) {
             if (stats.totalUsers !== undefined) totalUsers = stats.totalUsers;
@@ -8651,6 +8746,11 @@ D. Nói xấu sau lưng bạn với những người khác
             }
         } else if (this.userAccounts) {
             onlineUsers = this.userAccounts.filter(u => u.isOnline).length;
+        }
+
+        // Nếu chính Thầy Cô trên máy này đang đăng nhập tài khoản thực, số trực tuyến ít nhất phải là 1!
+        if (isUserLoggedIn) {
+            onlineUsers = Math.max(1, onlineUsers);
         }
 
         if (elUsers) elUsers.textContent = totalUsers.toLocaleString('vi-VN');
