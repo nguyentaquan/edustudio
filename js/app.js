@@ -2010,12 +2010,13 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             });
         } else {
             authZone.innerHTML = `
-                <button id="btnOpenAuthModal" class="btn-banner-login">
+                <button id="btnOpenAuthModal" class="btn-banner-login" onclick="window.openModal ? window.openModal('authModal') : document.getElementById('authModal')?.classList.add('active');">
                     <span>👤</span> <span>ĐĂNG NHẬP</span>
                 </button>
             `;
             document.getElementById('btnOpenAuthModal')?.addEventListener('click', () => {
-                document.getElementById('authModal')?.classList.add('active');
+                if (window.openModal) window.openModal('authModal');
+                else document.getElementById('authModal')?.classList.add('active');
             });
         }
     }
@@ -8682,7 +8683,11 @@ D. Nói xấu sau lưng bạn với những người khác
             const saved = localStorage.getItem('edustudio_admin_users');
             if (saved) {
                 const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) {
+                // Tự động dọn dẹp danh sách 10 tài khoản ảo mẫu cũ nếu còn tồn đọng trong bộ nhớ trình duyệt
+                const hasMock = Array.isArray(parsed) && parsed.some(u => u.email && (u.email.includes('tranvanan') || u.email.includes('giaovien1') || u.email.includes('nguyenvana')));
+                if (hasMock) {
+                    localStorage.removeItem('edustudio_admin_users');
+                } else if (Array.isArray(parsed) && parsed.length > 0) {
                     return parsed;
                 }
             }

