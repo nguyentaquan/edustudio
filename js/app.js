@@ -2187,13 +2187,15 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             return list;
         }
 
-        // Cấp 2: THCS (Lớp 6 - 9)
+        // Cấp 2: THCS (Lớp 6 - 9): Bao gồm trọn vẹn cả 3 môn theo yêu cầu thực tế của Thầy Nguyễn Tá Quan
         if (gradeNum >= 6 && gradeNum <= 9) {
             return [
                 'Khoa học tự nhiên (KHTN)',
                 'Toán học',
                 'Ngữ văn',
-                'Lịch sử và Địa lí',
+                'Lịch sử & Địa lí',
+                'Lịch sử',
+                'Địa lí',
                 'Hoạt động trải nghiệm, hướng nghiệp (HĐTN-HN)',
                 'Giáo dục công dân (GDCD)',
                 'Tiếng Anh',
@@ -2205,11 +2207,12 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             ];
         }
 
-        // Cấp 3: THPT (Lớp 10 - 12)
+        // Cấp 3: THPT (Lớp 10 - 12): Bao gồm cả 3 môn Lịch sử & Địa lí, Lịch sử, Địa lí
         return [
             'Ngữ văn',
             'Toán học',
             'Tiếng Anh',
+            'Lịch sử & Địa lí',
             'Lịch sử',
             'Địa lí',
             'Giáo dục kinh tế và pháp luật (GDKT&PL)',

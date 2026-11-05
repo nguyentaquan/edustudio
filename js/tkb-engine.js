@@ -36,13 +36,15 @@ export class SmartTKBEngine {
         // Danh sách lớp học
         this.classes = ["6A1", "6A2", "6A3", "7A1", "7A2", "8A1", "8A2", "9A1", "9A2"];
 
-        // Danh sách môn học chuẩn GDPT 2018 THCS
+        // Danh sách môn học chuẩn GDPT 2018 THCS (Bao gồm 3 môn: Lịch Sử & Địa Lí, Lịch Sử, Địa Lí)
         this.subjects = [
             { id: "toan", name: "Toán", periodsPerWeek: 4, doublePeriod: false, roomReq: null, color: "#1d4ed8" },
             { id: "van", name: "Ngữ Văn", periodsPerWeek: 4, doublePeriod: false, roomReq: null, color: "#b91c1c" },
             { id: "tienganh", name: "Tiếng Anh", periodsPerWeek: 3, doublePeriod: false, roomReq: null, color: "#047857" },
             { id: "khtn", name: "KHTN (Lý-Hóa-Sinh)", periodsPerWeek: 4, doublePeriod: true, roomReq: "room_khtn", color: "#6d28d9" },
             { id: "ls_dl", name: "Lịch Sử & Địa Lí", periodsPerWeek: 3, doublePeriod: false, roomReq: null, color: "#b45309" },
+            { id: "lich_su", name: "Lịch Sử", periodsPerWeek: 2, doublePeriod: false, roomReq: null, color: "#9a3412" },
+            { id: "dia_li", name: "Địa Lí", periodsPerWeek: 2, doublePeriod: false, roomReq: null, color: "#065f46" },
             { id: "hdtn", name: "HĐTN, HN", periodsPerWeek: 3, doublePeriod: false, roomReq: null, color: "#0e7490" },
             { id: "gdtc", name: "Giáo Dục Thể Chất", periodsPerWeek: 2, doublePeriod: true, roomReq: "room_gdtc", color: "#15803d" },
             { id: "tinhoc", name: "Tin Học", periodsPerWeek: 2, doublePeriod: true, roomReq: "room_tin", color: "#0369a1" },
@@ -365,7 +367,17 @@ export class SmartTKBEngine {
     }
 
     getSubjectColor(subjectName) {
-        const sub = this.subjects.find(s => s.name === subjectName || subjectName.startsWith(s.name));
+        if (!subjectName) return "#1d4ed8";
+        const trimmed = subjectName.trim().toLowerCase();
+        // 1. Khớp chính xác tên môn trước tiên
+        const exact = this.subjects.find(s => s.name.toLowerCase() === trimmed);
+        if (exact) return exact.color;
+        // 2. Phân biệt rõ rệt 3 môn: Lịch Sử & Địa Lí, Lịch Sử, Địa Lí
+        if (trimmed.includes('lịch sử') && (trimmed.includes('địa lí') || trimmed.includes('địa lý'))) return "#b45309";
+        if (trimmed.includes('lịch sử')) return "#9a3412";
+        if (trimmed.includes('địa lí') || trimmed.includes('địa lý')) return "#065f46";
+        // 3. Khớp tiền tố thông thường
+        const sub = this.subjects.find(s => trimmed.startsWith(s.name.toLowerCase()));
         return sub ? sub.color : "#1d4ed8";
     }
 
@@ -639,7 +651,19 @@ export class SmartTKBEngine {
             if (data && data.classes && data.timetable && data.assignments) {
                 this.schoolConfig = data.schoolConfig || this.schoolConfig;
                 if (data.pedagogicalPriorities) this.pedagogicalPriorities = data.pedagogicalPriorities;
-                if (data.subjects && data.subjects.length > 0) this.subjects = data.subjects;
+                if (data.subjects && data.subjects.length > 0) {
+            this.subjects = data.subjects;
+            // Đảm bảo luôn đầy đủ bộ 3 môn: Lịch Sử & Địa Lí, Lịch Sử, Địa Lí
+            if (!this.subjects.some(s => s.name === 'Lịch Sử' || s.id === 'lich_su')) {
+                this.subjects.push({ id: "lich_su", name: "Lịch Sử", periodsPerWeek: 2, doublePeriod: false, roomReq: null, color: "#9a3412" });
+            }
+            if (!this.subjects.some(s => s.name === 'Địa Lí' || s.id === 'dia_li')) {
+                this.subjects.push({ id: "dia_li", name: "Địa Lí", periodsPerWeek: 2, doublePeriod: false, roomReq: null, color: "#065f46" });
+            }
+            if (!this.subjects.some(s => s.name === 'Lịch Sử & Địa Lí' || s.id === 'ls_dl')) {
+                this.subjects.push({ id: "ls_dl", name: "Lịch Sử & Địa Lí", periodsPerWeek: 3, doublePeriod: false, roomReq: null, color: "#b45309" });
+            }
+        }
                 this.specialRooms = data.specialRooms || this.specialRooms;
                 this.classes = data.classes;
                 if (data.teachers && data.teachers.length > 0) this.teachers = data.teachers;
@@ -866,9 +890,72 @@ export class SmartTKBEngine {
             return khtnLessons;
         }
 
-        // 5. CÁC MÔN HỌC KHÁC: TỰ ĐỘNG SINH KHUNG CHUẨN ĐẦU ĐỦ THEO SỐ TIẾT
+        // 5. MÔN LỊCH SỬ RIÊNG (52-70 TIẾT - CHUẨN GDPT 2018)
+        if (sub === 'lịch sử' || (sub.includes('lịch sử') && !sub.includes('địa'))) {
+            let histLessons = [];
+            const histTitles = [
+                "Bài 1: Nước Đại Việt thời Lê sơ - Tình hình chính trị, quân sự, luật pháp",
+                "Bài 2: Tình hình kinh tế, xã hội nước Đại Việt thời Lê sơ",
+                "Bài 3: Khởi nghĩa Lam Sơn (1418 - 1427) bùng nổ và toàn thắng",
+                "Bài 4: Phong trào Tây Sơn - Lật đổ chính quyền chúa Nguyễn & chúa Trịnh",
+                "Bài 5: Quang Trung đại phá quân Thanh & Chiến thắng Rạch Gầm - Xoài Mút",
+                "Bài 6: Các cuộc cách mạng tư sản thời cận đại ở Châu Âu và Bắc Mỹ",
+                "Bài 7: Phong trào công nhân quốc tế và sự ra đời của chủ nghĩa Mác",
+                "Bài 8: Sự xâm lược của thực dân phương Tây vào các nước Đông Nam Á",
+                "Bài 9: Phong trào Cần Vương và phong trào yêu nước chống thực dân Pháp",
+                "Bài 10: Xã hội Việt Nam trong cuộc khai thác thuộc địa lần thứ nhất"
+            ];
+            for (let i = 1; i <= 70; i++) {
+                const w = Math.ceil(i / 2);
+                const tIdx = (i - 1) % histTitles.length;
+                histLessons.push({
+                    period: i,
+                    week: w,
+                    title: `${histTitles[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1,
+                    equipment: "SGK Lịch sử, Bản đồ lịch sử, Tư liệu hình ảnh",
+                    room: "Lớp học",
+                    note: `Phân môn Lịch sử - Tuần ${w}`
+                });
+            }
+            return histLessons;
+        }
+
+        // 6. MÔN ĐỊA LÍ RIÊNG (52-70 TIẾT - CHUẨN GDPT 2018)
+        if (sub === 'địa lí' || sub === 'địa lý' || ((sub.includes('địa lí') || sub.includes('địa lý')) && !sub.includes('sử'))) {
+            let geoLessons = [];
+            const geoTitles = [
+                "Bài 1: Vị trí địa lí và phạm vi lãnh thổ Việt Nam",
+                "Bài 2: Địa hình Việt Nam - Đồi núi, đồng bằng và bờ biển",
+                "Bài 3: Khoáng sản Việt Nam và vấn đề sử dụng hợp lí tài nguyên",
+                "Bài 4: Khí hậu Việt Nam - Tính chất nhiệt đới gió mùa ẩm",
+                "Bài 5: Thủy văn Việt Nam - Hệ thống sông ngòi và hồ đầm",
+                "Bài 6: Thổ nhưỡng Việt Nam - Nhóm đất feralit và đất phù sa",
+                "Bài 7: Sinh vật Việt Nam - Đa dạng sinh học và bảo tồn thiên nhiên",
+                "Bài 8: Vùng biển đảo Việt Nam - Chủ quyền Hoàng Sa, Trường Sa & Kinh tế biển",
+                "Bài 9: Các vùng kinh tế trọng điểm và phát triển bền vững",
+                "Bài 10: Thực hành: Đọc bản đồ địa lí và phân tích biểu đồ khí hậu"
+            ];
+            for (let i = 1; i <= 70; i++) {
+                const w = Math.ceil(i / 2);
+                const tIdx = (i - 1) % geoTitles.length;
+                geoLessons.push({
+                    period: i,
+                    week: w,
+                    title: `${geoTitles[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1,
+                    equipment: "SGK Địa lí, Atlat Địa lí Việt Nam, Quả địa cầu",
+                    room: "Lớp học",
+                    note: `Phân môn Địa lí - Tuần ${w}`
+                });
+            }
+            return geoLessons;
+        }
+
+        // 7. CÁC MÔN HỌC KHÁC: TỰ ĐỘNG SINH KHUNG CHUẨN ĐẦU ĐỦ THEO SỐ TIẾT
         const periodsPerWeekMap = {
-            'ngữ văn': 4, 'tiếng anh': 3, 'lịch sử': 3, 'địa lí': 3,
+            'ngữ văn': 4, 'tiếng anh': 3, 'lịch sử & địa lí': 3, 'lịch sử và địa lí': 3,
+            'lịch sử': 2, 'địa lí': 2, 'địa lý': 2,
             'giáo dục thể chất': 2, 'công nghệ': 1, 'giáo dục công dân': 1,
             'âm nhạc': 1, 'mĩ thuật': 1
         };
