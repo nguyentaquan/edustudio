@@ -1,5 +1,25 @@
 [
   {
+    "id": "LOG-42606",
+    "time": "2026-11-05 08:36:46",
+    "user": "Cô Nguyễn Thị Thu Hường",
+    "role": "👨‍🏫 Thành Viên",
+    "action": "Đăng nhập thành công (cohuong.toan@gmail.com) trên 💻 Máy Tính",
+    "module": "Xác Thực Google",
+    "type": "auth",
+    "status": "Thành công"
+  },
+  {
+    "id": "LOG-42604",
+    "time": "2026-11-05 08:36:43",
+    "user": "Thầy Nguyễn Tá Quan",
+    "role": "👑 Quản Trị Master",
+    "action": "Đăng nhập thành công (nguyentaquan@gmail.com) trên 💻 Máy Tính",
+    "module": "Xác Thực Google",
+    "type": "auth",
+    "status": "Thành công"
+  },
+  {
     "id": "LOG-39754",
     "time": "2026-11-05 07:49:14",
     "user": "Thầy Quan Test",

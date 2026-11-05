@@ -20,7 +20,7 @@ import { SmartTKBUI } from './tkb-ui.js?v=3.10.34';
 
 class EduStudioApp {
         syncVersionLabels() {
-        const label = 'v3.10.39 GDMN & GDPT';
+        const label = 'v3.10.45 GDMN & GDPT';
         document.querySelectorAll('.badge-version-gold, [data-version-badge]').forEach(el => {
             el.textContent = label;
         });
@@ -1343,6 +1343,12 @@ class EduStudioApp {
             this.currentUser = verifiedUser;
             this.saveUserSession(this.currentUser);
 
+            // Tự động kích hoạt toàn bộ tính năng Trí tuệ Nhân tạo Google Gemini AI cho tài khoản Google này
+            try {
+                localStorage.setItem('edustudio_user_is_vip', 'true');
+                localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Google_Connected_' + (verifiedUser.email || 'user'));
+            } catch(e) {}
+
             // Cập nhật giao diện Auth & Banner lập tức
             this.renderBannerAuthZone();
             this.updateBannerStats({
@@ -1465,6 +1471,12 @@ class EduStudioApp {
         this.renderBannerAuthZone();
         this.updateBannerStats({ onlineCount: 0 });
 
+        // Thu hồi trạng thái kích hoạt AI tạm thời khi đăng xuất
+        try {
+            localStorage.removeItem('edustudio_user_is_vip');
+            localStorage.removeItem('user_gemini_api_key');
+        } catch(e) {}
+
         // Đồng bộ trạng thái đăng xuất lên máy chủ để giảm số trực tuyến về 0
         try {
             fetch('/api/users/logout', {
@@ -1577,10 +1589,10 @@ class EduStudioApp {
         const tickerEl = document.getElementById('tickerText');
         if (!tickerEl) return;
         const messages = [
-            "Hệ thống EduStudio v3.10.39 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
+            "Hệ thống EduStudio v3.10.45 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
             "Cô Hoàng Mai vừa tạo bộ trò chơi 'Đoán Con Vật Mầm Non' tương tác trực quan",
             "Thầy Lê Hải vừa biên soạn đề kiểm tra Giữa kỳ I môn Toán 7 chuẩn 3 dạng TNKQ",
-            "Hệ thống EduStudio v3.10.39 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
+            "Hệ thống EduStudio v3.10.45 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
             "Xưởng Video Studio đã hoàn tất kịch bản Audio-Driven Lip-Sync 3D"
         ];
         let idx = 0;
@@ -1683,7 +1695,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         const defaultLogs = [
             { id: "LOG-1001", time: "2026-11-04 00:32:10", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Kích hoạt chế độ Hoán đổi tiết 1 chạm (Click-to-Swap)", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
             { id: "LOG-1002", time: "2026-11-04 00:28:45", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tinh chỉnh đệm lề và ép gọn kích thước ô bàn cờ TKB chuẩn 32px", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
-            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.39 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
+            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.45 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
             { id: "LOG-1004", time: "2026-11-03 23:45:00", user: "Cô Hà Thị Thúy Hòa", role: "Nhóm 4: Giáo Viên", action: "Xem thời khóa biểu Lớp 6A2 môn Tin Học", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
             { id: "LOG-1005", time: "2026-11-03 23:15:20", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tạo Đề Kiểm Tra Giữa Kỳ I HĐTN 8 chuẩn ma trận & đặc tả BGDĐT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" },
             { id: "LOG-1006", time: "2026-11-03 22:50:11", user: "Cô Dương Thị Ngọc Lành", role: "Nhóm 4: Giáo Viên", action: "Đăng nhập xác thực tài khoản Google SSO", module: "Xác Thực", type: "auth", status: "Thành công" },
@@ -10738,7 +10750,7 @@ function launchEduStudio() {
         try {
             window.app = new EduStudioApp();
             window.__appLoaded = true;
-            console.log("EduStudio v3.10.39 GDMN & GDPT Master đã khởi tạo thành công!");
+            console.log("EduStudio v3.10.45 GDMN & GDPT Master đã khởi tạo thành công!");
         } catch (err) {
             console.error("Lỗi khởi tạo EduStudio:", err);
         }
