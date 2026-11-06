@@ -59,6 +59,23 @@ export class SmartTKBEngine {
 
         // Lịch kết quả [classId][dayIndex][periodIndex] = { subject, teacher, room, isFixed }
         this.timetable = {};
+        
+        // Cấu hình linh hoạt phân môn Lịch Sử - Địa Lí (Không khóa cứng 2-1 hay 1-2)
+        this.lsdlConfig = {
+            mode: 'custom', // 'custom' | 'parallel' | 'sem_block'
+            hk1: { historyPeriods: 2, geographyPeriods: 1 },
+            hk2: { historyPeriods: 1, geographyPeriods: 2 },
+            hk1Weeks: 18,
+            hk2Weeks: 17
+        };
+
+        // Cấu hình linh hoạt PPCT theo đơn vị Tuần (Không khóa cứng 35 tuần)
+        this.ppctConfig = {
+            hk1Weeks: 18,
+            hk2Weeks: 17,
+            totalWeeks: 35,
+            weekPeriodsCustom: {} // Tùy chỉnh số tiết riêng cho từng tuần { "sub_grade": { weekNum: periods } }
+        };
         // Khung Phân Phối Chương Trình & Kế Hoạch Bài Dạy Chi Tiết 35 Tuần (CV 5512)
         this.ppctLessons = {};
 
@@ -542,6 +559,8 @@ export class SmartTKBEngine {
                 subjects: this.subjects,
                 assignments: this.assignments,
                 timetable: this.timetable,
+                lsdlConfig: this.lsdlConfig,
+                ppctConfig: this.ppctConfig,
                 ppctLessons: this.ppctLessons || {},
                 savedAt: new Date().toISOString()
             };
@@ -595,6 +614,8 @@ export class SmartTKBEngine {
             this.subjects = data.subjects || this.subjects;
             this.assignments = data.assignments || [];
             this.timetable = data.timetable || {};
+                    if (data.lsdlConfig) this.lsdlConfig = Object.assign({}, this.lsdlConfig, data.lsdlConfig);
+                    if (data.ppctConfig) this.ppctConfig = Object.assign({}, this.ppctConfig, data.ppctConfig);
             this.ppctLessons = data.ppctLessons || {};
             return true;
         } catch(e) {
@@ -1370,12 +1391,19 @@ export class SmartTKBEngine {
             this.timetableHK1 = JSON.parse(JSON.stringify(this.timetable));
         }
 
-        // Tạo bản sao từ HK1 để kế thừa vị trí tránh trùng giờ
         const hk2 = JSON.parse(JSON.stringify(this.timetableHK1));
+        const cfg = this.lsdlConfig || {
+            hk1: { historyPeriods: 2, geographyPeriods: 1 },
+            hk2: { historyPeriods: 1, geographyPeriods: 2 }
+        };
 
-        // Hoán đổi đối xứng phân môn Lịch sử <-> Địa lí trên từng lớp
+        const targetHistHK2 = (cfg.hk2 && cfg.hk2.historyPeriods !== undefined) ? parseInt(cfg.hk2.historyPeriods) : 1;
+        const targetGeoHK2 = (cfg.hk2 && cfg.hk2.geographyPeriods !== undefined) ? parseInt(cfg.hk2.geographyPeriods) : 2;
+
         for (const c of this.classes) {
             const grid = hk2[c];
+            if (!grid) continue;
+
             let historySlots = [];
             let geographySlots = [];
 
@@ -1385,32 +1413,62 @@ export class SmartTKBEngine {
                 for (let p = 0; p < dayList.length; p++) {
                     const cell = dayList[p];
                     if (cell) {
-                        if (cell.subject === 'Lịch Sử' || (cell.subject.includes('Sử') && !cell.subject.includes('Địa'))) {
+                        const sName = (cell.subject || '').trim();
+                        if (sName === 'Lịch Sử' || (sName.includes('Sử') && !sName.includes('Địa'))) {
                             historySlots.push({ day: d, period: p, cell: cell });
-                        } else if (cell.subject === 'Địa Lí' || (cell.subject.includes('Địa') && !cell.subject.includes('Sử'))) {
+                        } else if (sName === 'Địa Lí' || (sName.includes('Địa') && !sName.includes('Sử'))) {
                             geographySlots.push({ day: d, period: p, cell: cell });
                         }
                     }
                 }
             }
 
-            // Ở HK1: Lịch sử có 2 tiết (Thầy Hiền), Địa lí có 1 tiết (Thầy Công)
-            // Sang HK2: Chuyển 1 tiết Lịch sử thành Địa lí (Thầy Công) để HK2 có 2 tiết Địa lí + 1 tiết Lịch sử
-            if (historySlots.length >= 2 && geographySlots.length >= 1) {
-                // Chọn tiết Lịch sử thứ 2 để chuyển thành Địa lí
-                const targetSlot = historySlots[1];
-                const dayKey = targetSlot.day;
-                const pKey = targetSlot.period;
+            // Tìm giáo viên Sử và Địa lí thực tế của lớp từ PCCM (không hardcode tên)
+            let teacherHist = historySlots.length > 0 ? historySlots[0].cell.teacher : 'Giáo viên Lịch sử';
+            let teacherGeo = geographySlots.length > 0 ? geographySlots[0].cell.teacher : 'Giáo viên Địa lí';
 
-                if (grid[dayKey] && grid[dayKey][pKey]) {
-                    grid[dayKey][pKey] = {
-                        subject: 'Địa Lí',
-                        teacher: 'Thầy Nguyễn Bá Công',
-                        shortTeacher: 'Công',
-                        room: null,
-                        isFixed: false,
-                        color: '#b45309'
-                    };
+            if (this.assignments && this.assignments.length > 0) {
+                const asHist = this.assignments.find(a => (a.classId === c || a.className === c) && (a.subjectId === 'lich_su' || (a.subjectName || '').includes('Sử')));
+                if (asHist && asHist.teacherName) teacherHist = asHist.teacherName;
+                const asGeo = this.assignments.find(a => (a.classId === c || a.className === c) && (a.subjectId === 'dia_li' || (a.subjectName || '').includes('Địa')));
+                if (asGeo && asGeo.teacherName) teacherGeo = asGeo.teacherName;
+            }
+
+            const currentHistCount = historySlots.length;
+            const currentGeoCount = geographySlots.length;
+
+            // Nếu HK2 cần ít tiết Lịch sử hơn HK1 -> Chuyển bớt tiết Sử sang Địa lí
+            if (currentHistCount > targetHistHK2 && targetGeoHK2 > currentGeoCount) {
+                const diff = Math.min(currentHistCount - targetHistHK2, targetGeoHK2 - currentGeoCount);
+                for (let i = 0; i < diff; i++) {
+                    const slot = historySlots[historySlots.length - 1 - i];
+                    if (slot && grid[slot.day] && grid[slot.day][slot.period]) {
+                        grid[slot.day][slot.period] = {
+                            subject: 'Địa Lí',
+                            teacher: teacherGeo,
+                            shortTeacher: teacherGeo.split(' ').pop(),
+                            room: null,
+                            isFixed: false,
+                            color: '#065f46'
+                        };
+                    }
+                }
+            }
+            // Nếu HK2 cần nhiều tiết Lịch sử hơn HK1 -> Chuyển bớt tiết Địa sang Lịch sử
+            else if (targetHistHK2 > currentHistCount && currentGeoCount > targetGeoHK2) {
+                const diff = Math.min(targetHistHK2 - currentHistCount, currentGeoCount - targetGeoHK2);
+                for (let i = 0; i < diff; i++) {
+                    const slot = geographySlots[geographySlots.length - 1 - i];
+                    if (slot && grid[slot.day] && grid[slot.day][slot.period]) {
+                        grid[slot.day][slot.period] = {
+                            subject: 'Lịch Sử',
+                            teacher: teacherHist,
+                            shortTeacher: teacherHist.split(' ').pop(),
+                            room: null,
+                            isFixed: false,
+                            color: '#9a3412'
+                        };
+                    }
                 }
             }
         }
@@ -1419,10 +1477,6 @@ export class SmartTKBEngine {
         return this.timetableHK2;
     }
 
-    /**
-     * CHUYỂN ĐỔI HỌC KỲ HIỆN HÀNH
-     * @param {'HK1' | 'HK2' | 'YEAR'} semester 
-     */
     switchSemester(semester) {
         this.currentSemester = semester;
         if (!this.timetableHK1) {
@@ -1435,12 +1489,20 @@ export class SmartTKBEngine {
             }
             this.timetable = JSON.parse(JSON.stringify(this.timetableHK2));
             this.schoolConfig.semester = "Học kỳ II";
-            this.schoolConfig.note = "Áp dụng Học kỳ II (17 tuần: Tuần 19 đến Tuần 35) • Đảo đối xứng Địa lí 2t - Lịch sử 1t";
+            const cfg = this.lsdlConfig || { hk1: { historyPeriods: 2, geographyPeriods: 1 }, hk2: { historyPeriods: 1, geographyPeriods: 2 } };
+            const pHist = cfg.hk2 ? cfg.hk2.historyPeriods : 1;
+            const pGeo = cfg.hk2 ? cfg.hk2.geographyPeriods : 2;
+            const w2 = (this.ppctConfig && this.ppctConfig.hk2Weeks) || 17;
+            this.schoolConfig.note = `Áp dụng Học kỳ II (${w2} tuần) • Phân môn: Lịch sử ${pHist}t - Địa lí ${pGeo}t (Linh hoạt theo cấu hình)`;
         } else {
             // Mặc định HK1 hoặc Cả năm
             this.timetable = JSON.parse(JSON.stringify(this.timetableHK1));
             this.schoolConfig.semester = "Học kỳ I";
-            this.schoolConfig.note = "Áp dụng Học kỳ I (18 tuần: Tuần 1 đến Tuần 18) • Lịch sử 2t - Địa lí 1t";
+            const cfg1 = this.lsdlConfig || { hk1: { historyPeriods: 2, geographyPeriods: 1 }, hk2: { historyPeriods: 1, geographyPeriods: 2 } };
+            const pHist1 = cfg1.hk1 ? cfg1.hk1.historyPeriods : 2;
+            const pGeo1 = cfg1.hk1 ? cfg1.hk1.geographyPeriods : 1;
+            const w1 = (this.ppctConfig && this.ppctConfig.hk1Weeks) || 18;
+            this.schoolConfig.note = `Áp dụng Học kỳ I (${w1} tuần) • Phân môn: Lịch sử ${pHist1}t - Địa lí ${pGeo1}t (Linh hoạt theo cấu hình)`;
         }
 
         this.saveState();
@@ -1510,6 +1572,35 @@ export class SmartTKBEngine {
         }
 
         return annualReport;
+    }
+
+
+    /**
+     * CẬP NHẬT CẤU HÌNH LINH HOẠT PHÂN MÔN LỊCH SỬ - ĐỊA LÍ
+     */
+    setLSDLConfig(newConfig) {
+        if (!this.lsdlConfig) this.lsdlConfig = {};
+        this.lsdlConfig = Object.assign(this.lsdlConfig, newConfig);
+        this.timetableHK2 = null; // Reset để sinh lại theo tỷ lệ mới
+        this.saveState();
+        return this.lsdlConfig;
+    }
+
+    /**
+     * CẬP NHẬT CẤU HÌNH TUẦN THỰC DẠY LINH HOẠT (KHÔNG CỐ ĐỊNH 35 TUẦN)
+     */
+    setPPCTWeekConfig(hk1Weeks, hk2Weeks) {
+        if (!this.ppctConfig) this.ppctConfig = {};
+        const w1 = parseInt(hk1Weeks) || 18;
+        const w2 = parseInt(hk2Weeks) || 17;
+        this.ppctConfig.hk1Weeks = w1;
+        this.ppctConfig.hk2Weeks = w2;
+        this.ppctConfig.totalWeeks = w1 + w2;
+        if (this.schoolConfig) {
+            this.schoolConfig.totalWeeks = this.ppctConfig.totalWeeks;
+        }
+        this.saveState();
+        return this.ppctConfig;
     }
 
 }

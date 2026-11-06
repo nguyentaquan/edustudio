@@ -8,7 +8,7 @@
  * ==============================================================================
  */
 
-import { SmartTKBEngine } from './tkb-engine.js?v=3.10.4';
+import { SmartTKBEngine } from './tkb-engine.js?v=3.10.47';
 
 export class SmartTKBUI {
     constructor(appInstance) {
@@ -3387,6 +3387,21 @@ setPCCMFilter(filterName) {
         this.engine.schoolConfig.academicYear = academicYear;
         this.engine.schoolConfig.standardPeriodsPerWeek = standardHours;
         this.engine.schoolConfig.totalWeeks = totalWeeks;
+
+        // Lưu cấu hình linh hoạt Lịch Sử & Địa Lí từ Master Modal
+        const mh1 = parseInt(document.getElementById('mcfgLsdlHK1Hist')?.value);
+        const mg1 = parseInt(document.getElementById('mcfgLsdlHK1Geo')?.value);
+        const mh2 = parseInt(document.getElementById('mcfgLsdlHK2Hist')?.value);
+        const mg2 = parseInt(document.getElementById('mcfgLsdlHK2Geo')?.value);
+        if (this.engine.setLSDLConfig && !isNaN(mh1) && !isNaN(mg1)) {
+            this.engine.setLSDLConfig({
+                mode: 'custom',
+                hk1: { historyPeriods: mh1, geographyPeriods: mg1 },
+                hk2: { historyPeriods: mh2, geographyPeriods: mg2 },
+                hk1Weeks: (this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18,
+                hk2Weeks: (this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17
+            });
+        }
         this.engine.schoolConfig.session = session;
 
         // Lưu vào engine
@@ -3650,6 +3665,48 @@ setPCCMFilter(filterName) {
                         </div>
 
                         <!-- Khung Dán Nhanh Từ Word/Excel (Ẩn/Hiện linh hoạt) -->
+                        <!-- THANH LỌC & TÙY CHỈNH THEO ĐƠN VỊ TUẦN (THEO CHỈ ĐẠO CỦA THẦY QUAN: KHÔNG CỐ ĐỊNH CỨNG NHẮC) -->
+                        <div style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.55rem 0.85rem; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                    <span style="font-size: 0.75rem; font-weight: 800; color: #334155;">📅 Lọc Theo Tuần:</span>
+                                    <select id="ppctFilterWeekSelect" onchange="window.smartTKBUI.onPPCTWeekFilterChange(this.value)" style="padding: 0.3rem 0.6rem; font-size: 0.78rem; font-weight: 800; border: 1.5px solid #7c3aed; border-radius: 5px; background: #ffffff; color: #6d28d9; outline: none; cursor: pointer;">
+                                        <option value="all">🗓️ Xem Tất Cả Các Tuần (Trọn Kế Hoạch)</option>
+                                        ${Array.from({length: ((this.engine.ppctConfig && this.engine.ppctConfig.totalWeeks) || 35)}, (_, i) => `<option value="${i+1}">Tuần ${i+1}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <span style="color: #cbd5e1;">|</span>
+                                <button type="button" onclick="window.smartTKBUI.togglePPCTWeekToolbox()" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 0.28rem 0.65rem; border-radius: 5px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <span>⚙️</span> <span>Tùy Chỉnh Phân Bổ Tuần...</span>
+                                </button>
+                            </div>
+                            <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">
+                                💡 Cho phép sửa số Tuần trực tiếp trên từng bài dạy hoặc lọc riêng từng tuần để kiểm tra.
+                            </div>
+                        </div>
+
+                        <!-- HỘP THOẠI NHỎ: CÔNG CỤ TÙY CHỈNH PHÂN BỔ TUẦN -->
+                        <div id="ppctWeekToolboxZone" style="display: none; background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+                                <strong style="font-size: 0.8rem; color: #1e40af;">🎯 CÔNG CỤ ĐÁNH LẠI SỐ TUẦN LINH HOẠT CHO DANH MỤC BÀI DẠY:</strong>
+                                <button type="button" onclick="window.smartTKBUI.togglePPCTWeekToolbox()" style="background: none; border: none; font-size: 1.1rem; color: #64748b; cursor: pointer;">&times;</button>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                    <span style="font-size: 0.75rem; font-weight: 700;">Bắt đầu từ Tuần:</span>
+                                    <input type="number" id="ppctBatchStartWeek" value="1" min="1" max="40" style="width: 50px; padding: 0.2rem 0.35rem; font-weight: 800; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                    <span style="font-size: 0.75rem; font-weight: 700;">Định mức:</span>
+                                    <input type="number" id="ppctBatchPeriodsPerWeek" value="2" min="1" max="10" style="width: 50px; padding: 0.2rem 0.35rem; font-weight: 800; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                    <span style="font-size: 0.75rem;">tiết/tuần</span>
+                                </div>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTBatchWeekReindex()" style="background: #2563eb; color: #ffffff; border: none; padding: 0.32rem 0.85rem; border-radius: 5px; font-size: 0.75rem; font-weight: 800; cursor: pointer;">
+                                    ⚡ Áp Dụng Đánh Lại Tuần
+                                </button>
+                            </div>
+                        </div>
+
                         <div id="ppctFastPasteZone" style="display: none; background: #faf5ff; border: 1.5px dashed #c084fc; border-radius: 8px; padding: 0.85rem; margin-bottom: 0.85rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
                                 <strong style="font-size: 0.78rem; color: #7e22ce;">📋 Dán Danh Mục Bài Dạy Từ File Word / Excel Giáo Án:</strong>
@@ -3664,7 +3721,63 @@ setPCCMFilter(filterName) {
 
                         <!-- Bảng Chi Tiết Bài Dạy Từng Tiết PPCT -->
                         <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); max-height: 52vh; overflow-y: auto;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
+                            <!-- 1. BẢNG CẤU HÌNH TUẦN THỰC DẠY LINH HOẠT (THEO YÊU CẦU CỦA THẦY QUAN: KHÔNG KHÓA CỨNG 35 TUẦN) -->
+                        <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.65rem 0.9rem; margin-bottom: 0.85rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.65rem;">
+                            <div style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                    <label style="font-size: 0.74rem; font-weight: 800; color: #1e293b;">📅 Tuần HK I:</label>
+                                    <input type="number" id="ppctCfgHK1Weeks" value="${(this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18}" min="10" max="25" onchange="window.smartTKBUI.onPPCTWeekConfigChange()" style="width: 50px; padding: 0.2rem 0.35rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1.5px solid #0284c7; border-radius: 5px; color: #0369a1; background: #f0f9ff;" title="Số tuần thực dạy Học kỳ I (cho phép tùy chỉnh)">
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                    <label style="font-size: 0.74rem; font-weight: 800; color: #1e293b;">📅 Tuần HK II:</label>
+                                    <input type="number" id="ppctCfgHK2Weeks" value="${(this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17}" min="10" max="25" onchange="window.smartTKBUI.onPPCTWeekConfigChange()" style="width: 50px; padding: 0.2rem 0.35rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1.5px solid #059669; border-radius: 5px; color: #047857; background: #f0fdf4;" title="Số tuần thực dạy Học kỳ II (cho phép tùy chỉnh)">
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                    <span style="font-size: 0.74rem; font-weight: 800; color: #475569;">🗓️ Tổng Cả Năm:</span>
+                                    <span id="ppctCfgTotalWeeksBadge" style="background: #7c3aed; color: #ffffff; padding: 0.2rem 0.55rem; border-radius: 5px; font-weight: 900; font-size: 0.82rem;">${((this.engine.ppctConfig && this.engine.ppctConfig.totalWeeks) || 35)} Tuần</span>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">
+                                💡 Cho phép tùy chỉnh theo đơn vị Tuần cho từng địa phương/trường học.
+                            </div>
+                        </div>
+
+                        <!-- 2. CẤU HÌNH LINH HOẠT PHÂN MÔN LỊCH SỬ - ĐỊA LÍ (KHÔNG KHÓA CỐ ĐỊNH 2-1 HAY 1-2) -->
+                        <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #f59e0b; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.85rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.4rem;">
+                                <strong style="color: #92400e; font-size: 0.82rem; display: flex; align-items: center; gap: 0.35rem;">
+                                    <span>🏛️</span> <span>CẤU HÌNH LINH HOẠT PHÂN MÔN LỊCH SỬ &amp; ĐỊA LÍ (KHÔNG KHÓA CỐ ĐỊNH):</span>
+                                </strong>
+                                <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('2-1_1-2')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #d97706; color: #b45309; border-radius: 4px; cursor: pointer;">Chuẩn 2-1 / 1-2</button>
+                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('1-2_2-1')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #d97706; color: #b45309; border-radius: 4px; cursor: pointer;">Đảo 1-2 / 2-1</button>
+                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('2-2_2-2')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #059669; color: #047857; border-radius: 4px; cursor: pointer;">Song Song 2-2</button>
+                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('3-0_0-3')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #7c3aed; color: #6d28d9; border-radius: 4px; cursor: pointer;">Cuốn Chiếu (3-0 / 0-3)</button>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                                <div style="background: #ffffff; border: 1px solid #fed7aa; border-radius: 6px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-weight: 800; font-size: 0.76rem; color: #c2410c;">🍂 Học Kỳ I:</span>
+                                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                        <span style="font-size: 0.74rem; font-weight: 700;">Lịch Sử:</span>
+                                        <input type="number" id="lsdlHK1Hist" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk1 && this.engine.lsdlConfig.hk1.historyPeriods) !== undefined) ? this.engine.lsdlConfig.hk1.historyPeriods : 2}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #f97316; border-radius: 4px; padding: 0.15rem; color: #9a3412;">
+                                        <span style="font-size: 0.74rem; font-weight: 700; margin-left: 0.25rem;">Địa Lí:</span>
+                                        <input type="number" id="lsdlHK1Geo" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk1 && this.engine.lsdlConfig.hk1.geographyPeriods) !== undefined) ? this.engine.lsdlConfig.hk1.geographyPeriods : 1}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #065f46; border-radius: 4px; padding: 0.15rem; color: #065f46;">
+                                    </div>
+                                </div>
+                                <div style="background: #ffffff; border: 1px solid #fed7aa; border-radius: 6px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-weight: 800; font-size: 0.76rem; color: #047857;">🌱 Học Kỳ II:</span>
+                                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                        <span style="font-size: 0.74rem; font-weight: 700;">Lịch Sử:</span>
+                                        <input type="number" id="lsdlHK2Hist" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk2 && this.engine.lsdlConfig.hk2.historyPeriods) !== undefined) ? this.engine.lsdlConfig.hk2.historyPeriods : 1}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #f97316; border-radius: 4px; padding: 0.15rem; color: #9a3412;">
+                                        <span style="font-size: 0.74rem; font-weight: 700; margin-left: 0.25rem;">Địa Lí:</span>
+                                        <input type="number" id="lsdlHK2Geo" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk2 && this.engine.lsdlConfig.hk2.geographyPeriods) !== undefined) ? this.engine.lsdlConfig.hk2.geographyPeriods : 2}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #065f46; border-radius: 4px; padding: 0.15rem; color: #065f46;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
                                 <thead style="position: sticky; top: 0; background: #f1f5f9; z-index: 5;">
                                     <tr style="color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1;">
                                         <th style="padding: 0.5rem 0.5rem; width: 65px; text-align: center;">Tiết PPCT</th>
@@ -3760,6 +3873,124 @@ setPCCMFilter(filterName) {
         });
         const badge = document.getElementById('ppctTotalPeriodsBadge');
         if (badge) badge.textContent = total;
+    }
+
+    
+    // =========================================================================
+    // CÁC HÀM HỖ TRỢ TÙY CHỈNH TUẦN & LỊCH SỬ - ĐỊA LÍ (THEO CHỈ ĐẠO THẦY QUAN)
+    // =========================================================================
+    onPPCTWeekConfigChange() {
+        const w1 = parseInt(document.getElementById('ppctCfgHK1Weeks')?.value) || 18;
+        const w2 = parseInt(document.getElementById('ppctCfgHK2Weeks')?.value) || 17;
+        const total = w1 + w2;
+        const badge = document.getElementById('ppctCfgTotalWeeksBadge');
+        if (badge) badge.textContent = `${total} Tuần`;
+
+        if (this.engine.setPPCTWeekConfig) {
+            this.engine.setPPCTWeekConfig(w1, w2);
+        }
+
+        // Cập nhật lại số tiết từng môn trong bảng Quota
+        document.querySelectorAll('#tblMasterPPCTQuotaBody tr').forEach(tr => {
+            const pw = parseInt(tr.querySelector('.ppct-sub-pw')?.value) || 1;
+            const yLbl = tr.querySelector('.ppct-year-label');
+            const s1Lbl = tr.querySelector('.ppct-sem1-label');
+            const s2Lbl = tr.querySelector('.ppct-sem2-label');
+            if (yLbl) yLbl.textContent = pw * total;
+            if (s1Lbl) s1Lbl.textContent = pw * w1;
+            if (s2Lbl) s2Lbl.textContent = pw * w2;
+        });
+    }
+
+    
+    applyMasterQuickLSDLPreset(preset) {
+        const h1 = document.getElementById('mcfgLsdlHK1Hist');
+        const g1 = document.getElementById('mcfgLsdlHK1Geo');
+        const h2 = document.getElementById('mcfgLsdlHK2Hist');
+        const g2 = document.getElementById('mcfgLsdlHK2Geo');
+
+        if (preset === '2-1_1-2') {
+            if (h1) h1.value = 2; if (g1) g1.value = 1;
+            if (h2) h2.value = 1; if (g2) g2.value = 2;
+        } else if (preset === '1-2_2-1') {
+            if (h1) h1.value = 1; if (g1) g1.value = 2;
+            if (h2) h2.value = 2; if (g2) g2.value = 1;
+        } else if (preset === '2-2_2-2') {
+            if (h1) h1.value = 2; if (g1) g1.value = 2;
+            if (h2) h2.value = 2; if (g2) g2.value = 2;
+        } else if (preset === '3-0_0-3') {
+            if (h1) h1.value = 3; if (g1) g1.value = 0;
+            if (h2) h2.value = 0; if (g2) g2.value = 3;
+        }
+        this.showToast('🏛️ Đã áp dụng tỷ lệ Lịch sử - Địa lí!');
+    }
+
+    applyQuickLSDLPreset(preset) {
+        const h1 = document.getElementById('lsdlHK1Hist');
+        const g1 = document.getElementById('lsdlHK1Geo');
+        const h2 = document.getElementById('lsdlHK2Hist');
+        const g2 = document.getElementById('lsdlHK2Geo');
+
+        if (preset === '2-1_1-2') {
+            if (h1) h1.value = 2; if (g1) g1.value = 1;
+            if (h2) h2.value = 1; if (g2) g2.value = 2;
+            this.showToast('🏛️ Đã áp dụng tỷ lệ: HK1 (Sử 2 - Địa 1) • HK2 (Sử 1 - Địa 2)');
+        } else if (preset === '1-2_2-1') {
+            if (h1) h1.value = 1; if (g1) g1.value = 2;
+            if (h2) h2.value = 2; if (g2) g2.value = 1;
+            this.showToast('🏛️ Đã áp dụng tỷ lệ đảo: HK1 (Sử 1 - Địa 2) • HK2 (Sử 2 - Địa 1)');
+        } else if (preset === '2-2_2-2') {
+            if (h1) h1.value = 2; if (g1) g1.value = 2;
+            if (h2) h2.value = 2; if (g2) g2.value = 2;
+            this.showToast('🏛️ Đã áp dụng tỷ lệ song song: Cả năm (Sử 2 - Địa 2)');
+        } else if (preset === '3-0_0-3') {
+            if (h1) h1.value = 3; if (g1) g1.value = 0;
+            if (h2) h2.value = 0; if (g2) g2.value = 3;
+            this.showToast('🏛️ Đã áp dụng tỷ lệ cuốn chiếu: HK1 (Sử 3 - Địa 0) • HK2 (Sử 0 - Địa 3)');
+        }
+    }
+
+    onPPCTWeekFilterChange(selectedWeek = 'all') {
+        this.ppctFilterWeek = selectedWeek;
+        const rows = document.querySelectorAll('#tblPPCTLessonsBody tr');
+        let visibleCount = 0;
+        rows.forEach(tr => {
+            const weekInp = tr.querySelector('.ppct-row-week');
+            if (!weekInp) return;
+            const wVal = weekInp.value.trim();
+            if (selectedWeek === 'all' || wVal === String(selectedWeek)) {
+                tr.style.display = '';
+                visibleCount++;
+            } else {
+                tr.style.display = 'none';
+            }
+        });
+        const badge = document.getElementById('ppctLessonsCountBadge');
+        if (badge) {
+            badge.textContent = (selectedWeek === 'all') ? rows.length : `${visibleCount}/${rows.length} (Tuần ${selectedWeek})`;
+        }
+    }
+
+    togglePPCTWeekToolbox() {
+        const zone = document.getElementById('ppctWeekToolboxZone');
+        if (zone) zone.style.display = (zone.style.display === 'none') ? 'block' : 'none';
+    }
+
+    applyPPCTBatchWeekReindex() {
+        const startW = parseInt(document.getElementById('ppctBatchStartWeek')?.value) || 1;
+        const pw = parseInt(document.getElementById('ppctBatchPeriodsPerWeek')?.value) || 2;
+        const rows = document.querySelectorAll('#tblPPCTLessonsBody tr');
+
+        rows.forEach((tr, idx) => {
+            const weekInp = tr.querySelector('.ppct-row-week');
+            if (weekInp) {
+                const calculatedWeek = startW + Math.floor(idx / pw);
+                weekInp.value = calculatedWeek;
+            }
+        });
+
+        this.togglePPCTWeekToolbox();
+        this.showToast(`⚡ Đã đánh lại số Tuần thành công (bắt đầu từ Tuần ${startW}, định mức ${pw}t/tuần)!`);
     }
 
     saveCurriculumQuotaFromUI() {
@@ -4616,6 +4847,40 @@ setPCCMFilter(filterName) {
 
                     <!-- TAB 2: KHUNG PPCT MÔN HỌC -->
                     <div id="master-tab-curriculum" class="master-modal-pane" style="display: none;">
+                        <!-- KHỐI CẤU HÌNH LINH HOẠT LỊCH SỬ - ĐỊA LÍ TRONG MASTER DECLARATION -->
+                        <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #f59e0b; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.85rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.4rem;">
+                                <strong style="color: #92400e; font-size: 0.82rem; display: flex; align-items: center; gap: 0.35rem;">
+                                    <span>🏛️</span> <span>CẤU HÌNH LINH HOẠT PHÂN MÔN LỊCH SỬ &amp; ĐỊA LÍ (KHÔNG KHÓA CỐ ĐỊNH 2-1 / 1-2):</span>
+                                </strong>
+                                <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                                    <button type="button" onclick="window.smartTKBUI.applyMasterQuickLSDLPreset('2-1_1-2')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #d97706; color: #b45309; border-radius: 4px; cursor: pointer;">Chuẩn 2-1 / 1-2</button>
+                                    <button type="button" onclick="window.smartTKBUI.applyMasterQuickLSDLPreset('1-2_2-1')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #d97706; color: #b45309; border-radius: 4px; cursor: pointer;">Đảo 1-2 / 2-1</button>
+                                    <button type="button" onclick="window.smartTKBUI.applyMasterQuickLSDLPreset('2-2_2-2')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #059669; color: #047857; border-radius: 4px; cursor: pointer;">Song Song 2-2</button>
+                                    <button type="button" onclick="window.smartTKBUI.applyMasterQuickLSDLPreset('3-0_0-3')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #7c3aed; color: #6d28d9; border-radius: 4px; cursor: pointer;">Cuốn Chiếu (3-0 / 0-3)</button>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                                <div style="background: #ffffff; border: 1px solid #fed7aa; border-radius: 6px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-weight: 800; font-size: 0.76rem; color: #c2410c;">🍂 Học Kỳ I:</span>
+                                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                        <span style="font-size: 0.74rem; font-weight: 700;">Lịch Sử:</span>
+                                        <input type="number" id="mcfgLsdlHK1Hist" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk1 && this.engine.lsdlConfig.hk1.historyPeriods) !== undefined) ? this.engine.lsdlConfig.hk1.historyPeriods : 2}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #f97316; border-radius: 4px; padding: 0.15rem; color: #9a3412;">
+                                        <span style="font-size: 0.74rem; font-weight: 700; margin-left: 0.25rem;">Địa Lí:</span>
+                                        <input type="number" id="mcfgLsdlHK1Geo" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk1 && this.engine.lsdlConfig.hk1.geographyPeriods) !== undefined) ? this.engine.lsdlConfig.hk1.geographyPeriods : 1}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #065f46; border-radius: 4px; padding: 0.15rem; color: #065f46;">
+                                    </div>
+                                </div>
+                                <div style="background: #ffffff; border: 1px solid #fed7aa; border-radius: 6px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-weight: 800; font-size: 0.76rem; color: #047857;">🌱 Học Kỳ II:</span>
+                                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                        <span style="font-size: 0.74rem; font-weight: 700;">Lịch Sử:</span>
+                                        <input type="number" id="mcfgLsdlHK2Hist" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk2 && this.engine.lsdlConfig.hk2.historyPeriods) !== undefined) ? this.engine.lsdlConfig.hk2.historyPeriods : 1}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #f97316; border-radius: 4px; padding: 0.15rem; color: #9a3412;">
+                                        <span style="font-size: 0.74rem; font-weight: 700; margin-left: 0.25rem;">Địa Lí:</span>
+                                        <input type="number" id="mcfgLsdlHK2Geo" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk2 && this.engine.lsdlConfig.hk2.geographyPeriods) !== undefined) ? this.engine.lsdlConfig.hk2.geographyPeriods : 2}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #065f46; border-radius: 4px; padding: 0.15rem; color: #065f46;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div style="background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 1.5px solid #c4b5fd; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                             <div>
                                 <strong style="color: #6d28d9; font-size: 0.82rem;">📖 Kế Hoạch Bài Dạy Chi Tiết 35 Tuần (Theo Chuẩn CV 5512):</strong>
