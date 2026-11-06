@@ -5788,34 +5788,8 @@ setPCCMFilter(filterName) {
         modal.style.setProperty('pointer-events', 'auto', 'important');
         modal.style.setProperty('z-index', '9999999', 'important');
 
-        // Thu thập danh sách giáo viên duy nhất
-        const teacherMap = new Map();
-        if (Array.isArray(this.engine.teachers) && this.engine.teachers.length > 0) {
-            this.engine.teachers.forEach(t => {
-                teacherMap.set(t.fullName, {
-                    name: t.fullName,
-                    displayName: t.displayName || t.fullName,
-                    shortName: t.shortName || '',
-                    homeroom: t.homeroom || '',
-                    subjects: Array.isArray(t.subjects) ? t.subjects.join(', ') : (t.subjects || '')
-                });
-            });
-        }
-        if (Array.isArray(this.engine.assignments)) {
-            this.engine.assignments.forEach(a => {
-                if (a.teacher && !teacherMap.has(a.teacher)) {
-                    teacherMap.set(a.teacher, {
-                        name: a.teacher,
-                        displayName: a.teacher,
-                        shortName: a.shortTeacher || '',
-                        homeroom: '',
-                        subjects: a.subject || ''
-                    });
-                }
-            });
-        }
-
-        const teachers = Array.from(teacherMap.values());
+        // LẤY TOÀN BỘ DANH SÁCH GIÁO VIÊN TỪ KHAI BÁO PCCM (officialPCCM + teachers + assignments + GVCN)
+        const teachers = this.engine.getPCCMTeachers();
         const days = [
             { id: 0, label: "Thứ 2" },
             { id: 1, label: "Thứ 3" },
@@ -5826,7 +5800,7 @@ setPCCMFilter(filterName) {
         ];
 
         modal.innerHTML = `
-            <div style="background: #ffffff; border-radius: 14px; max-width: 1050px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.45); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; animation: modalPop 0.2s ease-out;">
+            <div style="background: #ffffff; border-radius: 14px; max-width: 1100px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.45); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 92vh; animation: modalPop 0.2s ease-out;">
                 <!-- Header -->
                 <div style="background: linear-gradient(135deg, #c2410c 0%, #ea580c 50%, #d97706 100%); color: #ffffff; padding: 1rem 1.35rem; display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 0.65rem;">
@@ -5836,7 +5810,7 @@ setPCCMFilter(filterName) {
                                 TÙY CHỈNH NGÀY NGHỈ &amp; NGUYỆN VỌNG TỪNG GIÁO VIÊN
                             </h3>
                             <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #ffedd5;">
-                                Thầy Cô nào muốn nghỉ Thứ mấy $\\rightarrow$ Nhấp chọn trực tiếp để AI không bao giờ xếp tiết vào ngày đó!
+                                Đồng bộ từ Khai Báo PCCM (${teachers.length} Thầy Cô) • Thầy Cô nào muốn nghỉ Thứ mấy ➔ Nhấp chọn trực tiếp để AI không bao giờ xếp tiết vào ngày đó!
                             </p>
                         </div>
                     </div>
@@ -5849,7 +5823,10 @@ setPCCMFilter(filterName) {
                         <span>💡</span>
                         <span>Nhấp vào ô Thứ để chuyển sang <strong>🔴 NGHỈ</strong> hoặc <strong>⚪ DẠY</strong>. AI sẽ tuyệt đối tuân thủ 100%!</span>
                     </div>
-                    <div style="display: flex; gap: 0.4rem;">
+                    <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                        <button type="button" onclick="window.smartTKBUI.syncTeachersFromPCCM(true);" style="background: #0284c7; color: #ffffff; border: 1px solid #0369a1; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;" title="Quét lại toàn bộ danh sách giáo viên từ Khai báo Phân Công Chuyên Môn">
+                            🔄 Đồng Bộ Lại Từ Khai Báo PCCM (${teachers.length} GV)
+                        </button>
                         <button type="button" onclick="window.smartTKBUI.clearAllTeacherOffDays();" style="background: #ffffff; color: #c2410c; border: 1.5px solid #ea580c; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer;">
                             🔄 Bỏ Chọn Nghỉ Tất Cả
                         </button>
@@ -5860,29 +5837,31 @@ setPCCMFilter(filterName) {
                 <div style="padding: 1rem 1.25rem; overflow-y: auto; flex: 1;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
                         <thead>
-                            <tr style="background: #f8fafc; color: #334155; font-size: 0.72rem; text-transform: uppercase; border-bottom: 2px solid #cbd5e1;">
-                                <th style="padding: 0.55rem 0.4rem; text-align: center; width: 40px;">STT</th>
-                                <th style="padding: 0.55rem 0.6rem; text-align: left; min-width: 180px;">Họ Và Tên Giáo Viên</th>
-                                ${days.map(d => `<th style="padding: 0.55rem 0.4rem; text-align: center; width: 68px;">${d.label}</th>`).join('')}
-                                <th style="padding: 0.55rem 0.5rem; text-align: center; width: 95px;">Tránh Tiết 1</th>
-                                <th style="padding: 0.55rem 0.5rem; text-align: center; width: 85px;">Max Tiết/Ngày</th>
+                            <tr style="background: #f8fafc; color: #334155; font-size: 0.72rem; text-transform: uppercase; border-bottom: 2px solid #cbd5e1; position: sticky; top: 0; z-index: 10;">
+                                <th style="padding: 0.55rem 0.4rem; text-align: center; width: 40px; background: #f8fafc;">STT</th>
+                                <th style="padding: 0.55rem 0.6rem; text-align: left; min-width: 240px; background: #f8fafc;">Họ Và Tên Giáo Viên (PCCM)</th>
+                                ${days.map(d => `<th style="padding: 0.55rem 0.4rem; text-align: center; width: 68px; background: #f8fafc;">${d.label}</th>`).join('')}
+                                <th style="padding: 0.55rem 0.5rem; text-align: center; width: 95px; background: #f8fafc;">Tránh Tiết 1</th>
+                                <th style="padding: 0.55rem 0.5rem; text-align: center; width: 85px; background: #f8fafc;">Max Tiết/Ngày</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${teachers.map((t, idx) => {
                                 const tc = this.engine.getTeacherConstraints(t.name);
-                                const isQuan = t.name.includes('Quan');
+                                const isQuan = t.cleanName.includes('Tá Quan') || t.name.includes('Tá Quan');
+                                const isNat = (t.department || '').includes('Tự Nhiên');
                                 return `
                                     <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #fefce8;' : ''}">
                                         <td style="padding: 0.5rem 0.4rem; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
                                         <td style="padding: 0.5rem 0.6rem;">
-                                            <div style="font-weight: 800; color: #0f172a; font-size: 0.82rem; display: flex; align-items: center; gap: 0.3rem;">
+                                            <div style="font-weight: 800; color: ${isQuan ? '#1e40af' : '#0f172a'}; font-size: 0.82rem; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
                                                 <span>${isQuan ? '👑' : '👨‍🏫'}</span>
                                                 <span>${t.displayName || t.name}</span>
                                                 ${t.homeroom ? `<span style="background: #dbeafe; color: #1e40af; font-size: 0.65rem; padding: 0.1rem 0.35rem; border-radius: 4px; font-weight: 800;">CN ${t.homeroom}</span>` : ''}
+                                                ${t.department ? `<span style="background: ${isNat ? '#ecfdf5' : '#fdf2f8'}; color: ${isNat ? '#065f46' : '#9d174d'}; font-size: 0.62rem; padding: 0.08rem 0.3rem; border-radius: 4px; font-weight: 700; border: 1px solid ${isNat ? '#a7f3d0' : '#fbcfe8'};">${t.department}</span>` : ''}
                                             </div>
-                                            <div style="font-size: 0.68rem; color: #64748b; margin-top: 0.1rem;">
-                                                ${t.subjects || 'Bộ môn trường'}
+                                            <div style="font-size: 0.68rem; color: #64748b; margin-top: 0.15rem; line-height: 1.35;">
+                                                ${t.pccmSummary || t.subjects || 'Bộ môn trường'}
                                             </div>
                                         </td>
                                         ${days.map(d => {
@@ -5927,6 +5906,15 @@ setPCCMFilter(filterName) {
                 </div>
             </div>
         `;
+    }
+
+    /**
+     * Đồng bộ lại danh sách giáo viên từ Khai báo PCCM
+     */
+    syncTeachersFromPCCM(force = true) {
+        const teachers = this.engine.getPCCMTeachers(force);
+        this.openTeacherOffDayModal();
+        this.showToast(`🎉 Đã đồng bộ thành công ${teachers.length} Thầy Cô từ Khai báo Phân Công Chuyên Môn (PCCM)!`, 3500);
     }
 
     /**

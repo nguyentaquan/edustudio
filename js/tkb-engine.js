@@ -809,7 +809,185 @@ export class SmartTKBEngine {
         return sub ? sub.color : "#1d4ed8";
     }
 
+    /**
+     * LẤY TOÀN BỘ DANH SÁCH GIÁO VIÊN TỪ KHAI BÁO PHÂN CÔNG CHUYÊN MÔN (PCCM)
+     * Đồng bộ đa nguồn từ: officialPCCM, teachers, assignments, schoolConfig.homeroomTeachers
+     * và tự động liên thông nạp từ CANH_THUAN_TKB_DATA nếu dữ liệu hiện hành bị thiếu.
+     */
+    getPCCMTeachers(forceSampleFallback = false) {
+        const teacherMap = new Map();
+
+        // 1. Quét từ officialPCCM (Bản Phân công chuyên môn chính thức)
+        if (Array.isArray(this.officialPCCM) && this.officialPCCM.length > 0) {
+            this.officialPCCM.forEach(t => {
+                const rawName = t['Họ và tên'] || t.fullName || t.name || '';
+                if (!rawName) return;
+                const clean = rawName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+                const dept = t['Tổ bộ môn'] || t.department || '';
+                const pc1 = t['Phân công HK I'] || '';
+                const pc2 = t['Phân công HK II'] || '';
+                const pc = pc1 || pc2 || '';
+                teacherMap.set(clean, {
+                    name: rawName,
+                    cleanName: clean,
+                    displayName: rawName,
+                    shortName: t.shortName || '',
+                    department: dept,
+                    homeroom: t.homeroom || '',
+                    subjects: pc ? pc.split('\n').join(' • ') : (t.subjects || ''),
+                    pccmSummary: pc ? pc.split('\n').join(' • ') : ''
+                });
+            });
+        }
+
+        // 2. Quét từ teachers (Danh sách GV khai báo trong cấu hình trường)
+        if (Array.isArray(this.teachers) && this.teachers.length > 0) {
+            this.teachers.forEach(t => {
+                const rawName = typeof t === 'string' ? t : (t.fullName || t.name || t.displayName || '');
+                if (!rawName) return;
+                const clean = rawName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+                const existing = teacherMap.get(clean) || {};
+                const subs = Array.isArray(t.subjects) ? t.subjects.join(', ') : (t.subjects || t.subject || '');
+                teacherMap.set(clean, {
+                    name: existing.name || t.fullName || rawName,
+                    cleanName: clean,
+                    displayName: t.displayName || existing.displayName || rawName,
+                    shortName: t.shortName || existing.shortName || '',
+                    department: t.department || existing.department || '',
+                    homeroom: t.homeroom || existing.homeroom || '',
+                    subjects: existing.subjects || subs,
+                    pccmSummary: existing.pccmSummary || subs
+                });
+            });
+        }
+
+        // 3. Quét từ assignments (Phân công chi tiết từng môn - từng lớp)
+        if (Array.isArray(this.assignments) && this.assignments.length > 0) {
+            this.assignments.forEach(a => {
+                if (!a.teacher) return;
+                const clean = a.teacher.replace(/^(Thầy|Cô)\s+/i, '').trim();
+                const existing = teacherMap.get(clean) || {};
+                const subjectStr = a.subject ? `${a.subject} (${a.classId || a.class || ''})` : '';
+                let newSubs = existing.subjects || '';
+                if (subjectStr && !newSubs.includes(a.subject)) {
+                    newSubs = newSubs ? `${newSubs}, ${a.subject}` : a.subject;
+                }
+                teacherMap.set(clean, {
+                    name: existing.name || a.teacher,
+                    cleanName: clean,
+                    displayName: existing.displayName || a.teacher,
+                    shortName: existing.shortName || a.shortTeacher || '',
+                    department: existing.department || a.department || '',
+                    homeroom: existing.homeroom || '',
+                    subjects: newSubs,
+                    pccmSummary: existing.pccmSummary || newSubs
+                });
+            });
+        }
+
+        // 4. Bổ sung giáo viên chủ nhiệm từ schoolConfig.homeroomTeachers nếu có
+        if (this.schoolConfig && this.schoolConfig.homeroomTeachers) {
+            for (const [cls, teacherName] of Object.entries(this.schoolConfig.homeroomTeachers)) {
+                if (!teacherName) continue;
+                const clean = teacherName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+                if (teacherMap.has(clean)) {
+                    const obj = teacherMap.get(clean);
+                    if (!obj.homeroom) obj.homeroom = cls;
+                } else {
+                    teacherMap.set(clean, {
+                        name: teacherName,
+                        cleanName: clean,
+                        displayName: teacherName,
+                        shortName: '',
+                        department: '',
+                        homeroom: cls,
+                        subjects: 'Chủ nhiệm ' + cls,
+                        pccmSummary: 'Chủ nhiệm ' + cls
+                    });
+                }
+            }
+        }
+
+        // 5. NẾU VẪN < 5 GIÁO VIÊN hoặc forceSampleFallback: Tự động khôi phục từ nguồn chuẩn CANH_THUAN_TKB_DATA
+        if ((teacherMap.size < 5 || forceSampleFallback) && typeof CANH_THUAN_TKB_DATA !== 'undefined' && CANH_THUAN_TKB_DATA) {
+            if (Array.isArray(CANH_THUAN_TKB_DATA.officialPCCM)) {
+                CANH_THUAN_TKB_DATA.officialPCCM.forEach(t => {
+                    const rawName = t['Họ và tên'];
+                    if (!rawName) return;
+                    const clean = rawName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+                    const pc = (t['Phân công HK I'] || '').split('\n').join(' • ');
+                    const existing = teacherMap.get(clean) || {};
+                    teacherMap.set(clean, {
+                        name: rawName,
+                        cleanName: clean,
+                        displayName: rawName,
+                        shortName: existing.shortName || '',
+                        department: t['Tổ bộ môn'] || existing.department || '',
+                        homeroom: existing.homeroom || '',
+                        subjects: pc || existing.subjects || '',
+                        pccmSummary: pc || existing.pccmSummary || ''
+                    });
+                });
+            }
+            if (Array.isArray(CANH_THUAN_TKB_DATA.teachers)) {
+                CANH_THUAN_TKB_DATA.teachers.forEach(t => {
+                    const clean = t.fullName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+                    const existing = teacherMap.get(clean) || {};
+                    const subs = Array.isArray(t.subjects) ? t.subjects.join(', ') : (t.subjects || '');
+                    teacherMap.set(clean, {
+                        name: t.fullName,
+                        cleanName: clean,
+                        displayName: t.displayName || t.fullName,
+                        shortName: t.shortName || existing.shortName || '',
+                        department: t.department || existing.department || '',
+                        homeroom: t.homeroom || existing.homeroom || '',
+                        subjects: existing.subjects || subs,
+                        pccmSummary: existing.pccmSummary || subs
+                    });
+                });
+            }
+
+            // Đồng bộ dữ liệu vào state hiện tại
+            if (!this.teachers || this.teachers.length < 5) {
+                this.teachers = CANH_THUAN_TKB_DATA.teachers ? JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.teachers)) : [];
+            }
+            if (!this.officialPCCM || this.officialPCCM.length < 5) {
+                this.officialPCCM = CANH_THUAN_TKB_DATA.officialPCCM ? JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.officialPCCM)) : [];
+            }
+            if ((!this.assignments || this.assignments.length < 10) && CANH_THUAN_TKB_DATA.assignments) {
+                this.assignments = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.assignments));
+            }
+        }
+
+        // Chuyển Map thành mảng và sắp xếp chuẩn sư phạm:
+        // Thầy Nguyễn Tá Quan lên đầu (👑), kế đến GVCN, sau đó theo Tổ Bộ Môn, rồi vần ABC tiếng Việt
+        const list = Array.from(teacherMap.values());
+        list.sort((a, b) => {
+            const isQuanA = a.cleanName.includes('Tá Quan');
+            const isQuanB = b.cleanName.includes('Tá Quan');
+            if (isQuanA) return -1;
+            if (isQuanB) return 1;
+
+            // Ưu tiên GVCN
+            if (a.homeroom && !b.homeroom) return -1;
+            if (!a.homeroom && b.homeroom) return 1;
+
+            // Theo tổ
+            const deptA = a.department || '';
+            const deptB = b.department || '';
+            if (deptA !== deptB) return deptA.localeCompare(deptB, 'vi');
+
+            return a.cleanName.localeCompare(b.cleanName, 'vi');
+        });
+
+        return list;
+    }
+
     getAllTeachers() {
+        const pccmTeachers = this.getPCCMTeachers();
+        if (pccmTeachers && pccmTeachers.length > 0) {
+            return pccmTeachers.map(t => t.name);
+        }
         const set = new Set();
         for (const a of this.assignments) {
             if (a.teacher) set.add(a.teacher);
