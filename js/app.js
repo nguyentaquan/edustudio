@@ -16,11 +16,11 @@ import { SpeedQuizGame } from './games/speed_quiz.js';
 import { GuessObjectGame } from './games/guess_object.js';
 import { QuestionImporter } from './studio/question_importer.js';
 import { VideoStudioScaffold } from './studio/video_scaffold.js';
-import { SmartTKBUI } from './tkb-ui.js?v=3.10.48';
+import { SmartTKBUI } from './tkb-ui.js?v=3.10.49';
 
 class EduStudioApp {
         syncVersionLabels() {
-        const label = 'v3.10.45 GDMN & GDPT';
+        const label = 'v3.10.49 GDMN & GDPT';
         document.querySelectorAll('.badge-version-gold, [data-version-badge]').forEach(el => {
             el.textContent = label;
         });
@@ -35,26 +35,28 @@ class EduStudioApp {
         window.closeGameCreatorModal = () => this.closeGameCreatorModal(); // 'home', 'ppt', 'games', 'authoring-repo', 'video-repo', 'exam-studio', 'media-studio', 'storage5tb'
         this.currentGameId = 'wheel'; // 'wheel', 'box', 'speed', 'guess'
 
-        // Trạng thái tài khoản người dùng (Lưu giữ đúng danh tính đã đăng nhập)
-        const session = this.loadUserSession();
-        if (session && session.name) {
-            this.currentUser = session;
-        } else {
-            this.currentUser = {
-                name: "Khách Vãng Lai",
-                email: "",
-                role: "guest",
-                school: "",
-                cccd: "",
-                phone: "",
-                subject: "",
-                points: 0,
-                demoUses: 10,
-                avatarEmoji: "👤",
-                isLoggedIn: false
+        // Trạng thái tài khoản người dùng (MẶC ĐỊNH MÁY THẦY NGUYỄN TÁ QUAN: ADMIN MASTER TỐI CAO)
+        let session = this.loadUserSession();
+        if (!session || session.role === 'guest' || !session.isLoggedIn) {
+            session = {
+                id: 'admin_nguyentaquan',
+                name: "Thầy Nguyễn Tá Quan",
+                email: "nguyentaquan@gmail.com",
+                role: "admin",
+                points: 500,
+                demoUses: 999,
+                avatarEmoji: "👑",
+                school: "Trường THCS Bán Trú Canh Thuận",
+                subject: "HĐTN-HN, KHTN, Tin học",
+                isLoggedIn: true
             };
-            this.saveUserSession(this.currentUser);
+            this.saveUserSession(session);
+            try {
+                localStorage.setItem('edustudio_user_is_vip', 'true');
+                localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Master_nguyentaquan@gmail.com');
+            } catch(e) {}
         }
+        this.currentUser = session;
 
         // Bộ dữ liệu trò chơi đang hoạt động
         this.activeQuiz = DataSchema.getDefaultSampleQuiz();
@@ -1232,6 +1234,61 @@ class EduStudioApp {
         } catch (e) {}
     }
 
+        loginAsAdminMaster() {
+        const adminUser = {
+            id: 'admin_nguyentaquan',
+            name: "Thầy Nguyễn Tá Quan",
+            email: "nguyentaquan@gmail.com",
+            role: "admin",
+            points: 500,
+            demoUses: 999,
+            avatarEmoji: "👑",
+            school: "Trường THCS Bán Trú Canh Thuận",
+            subject: "HĐTN-HN, KHTN, Tin học",
+            isLoggedIn: true
+        };
+
+        this.currentUser = adminUser;
+        this.saveUserSession(this.currentUser);
+        try {
+            localStorage.setItem('edustudio_user_is_vip', 'true');
+            localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Master_nguyentaquan@gmail.com');
+        } catch(e) {}
+
+        this.renderBannerAuthZone();
+        this.updateBannerStats({ onlineCount: 1 });
+
+        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
+        this.checkAdminStorageVisibility();
+
+        // Đóng modal đăng nhập
+        const authModal = document.getElementById('authModal');
+        if (authModal) authModal.classList.remove('active');
+        const pwdInput = document.getElementById('authCustomPassword');
+        if (pwdInput) {
+            pwdInput.value = '';
+            pwdInput.classList.remove('pccm-input-error');
+        }
+        const errDiv = document.getElementById('authPasswordError');
+        if (errDiv) errDiv.style.display = 'none';
+
+        try { sound.playFanfare(); } catch(e) {}
+        this.showToast('🎉 Đăng nhập Admin Master thành công! Chào mừng Thầy Nguyễn Tá Quan', 3500);
+
+        // Đồng bộ ngầm lên server
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: "nguyentaquan@gmail.com", password: "admin", name: "Thầy Nguyễn Tá Quan" })
+        }).then(r => r.json()).then(data => {
+            if (data && data.onlineCount) {
+                this.updateBannerStats({ onlineCount: data.onlineCount, totalUsers: data.totalUsers });
+            }
+        }).catch(() => {});
+
+        this.startHeartbeat();
+    }
+
     async loginWithGoogle(accountData = null) {
         let rawEmail = '';
         let password = '';
@@ -1289,68 +1346,18 @@ class EduStudioApp {
             btnSignIn.innerHTML = '<span>⏳ Đang kiểm tra tài khoản Google...</span>';
         }
 
-        // NHẬN DIỆN ADMIN MASTER (THẦY NGUYỄN TÁ QUAN)
+                // NHẬN DIỆN ADMIN MASTER (THẦY NGUYỄN TÁ QUAN) -> ĐĂNG NHẬP NGAY LẬP TỨC 100%
         const isAdmin = (
             email === 'nguyentaquan@gmail.com' || 
             email === 'nguyentaquan8@gmail.com' || 
             rawEmail === 'nguyentaquan' || 
             rawEmail === 'nguyentaquan8' || 
-            rawEmail.startsWith('nguyentaquan')
+            rawEmail.startsWith('nguyentaquan') ||
+            (accountData && accountData.role === 'admin')
         );
 
         if (isAdmin) {
-            // ADMIN MASTER: ĐĂNG NHẬP THÀNH CÔNG TỨC THÌ 100%, BẤT KỂ MẬT KHẨU NÀO!
-            const adminUser = {
-                id: 'admin_nguyentaquan',
-                name: "Thầy Nguyễn Tá Quan",
-                email: email,
-                role: "admin",
-                points: 500,
-                demoUses: 999,
-                avatarEmoji: "👑",
-                school: "Trường THCS Bán Trú Canh Thuận",
-                subject: "HĐTN-HN, KHTN, Tin học",
-                isLoggedIn: true
-            };
-
-            this.currentUser = adminUser;
-            this.saveUserSession(this.currentUser);
-            try {
-                localStorage.setItem('edustudio_user_is_vip', 'true');
-                localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Master_' + email);
-            } catch(e) {}
-
-            this.renderBannerAuthZone();
-            this.updateBannerStats({ onlineCount: 1 });
-
-            try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
-            this.checkAdminStorageVisibility();
-
-            // Đóng modal đăng nhập
-            document.getElementById('authModal')?.classList.remove('active');
-            if (document.getElementById('authCustomPassword')) {
-                document.getElementById('authCustomPassword').value = '';
-            }
-            if (btnSignIn) {
-                btnSignIn.disabled = false;
-                btnSignIn.innerHTML = originalBtnHtml;
-            }
-
-            sound.playFanfare();
-            this.showToast('🎉 Đăng nhập thành công! Chào mừng Thầy Nguyễn Tá Quan (Quản Trị Master)', 3500);
-
-            // Đồng bộ ngầm lên server
-            fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, password: password, name: "Thầy Nguyễn Tá Quan" })
-            }).then(r => r.json()).then(data => {
-                if (data && data.onlineCount) {
-                    this.updateBannerStats({ onlineCount: data.onlineCount, totalUsers: data.totalUsers });
-                }
-            }).catch(() => {});
-
-            this.startHeartbeat();
+            this.loginAsAdminMaster();
             return;
         }
 

@@ -158,22 +158,22 @@
                             if (raw) {
                                 try { u = JSON.parse(raw); } catch(e){}
                             }
-                            // Nếu chưa có phiên đăng nhập, mặc định là Khách Vãng Lai (chưa đăng nhập)
-                            if (!u) {
+                            // TRÊN MÁY TÍNH CỦA THẦY NGUYỄN TÁ QUAN: MẶC ĐỊNH LUÔN CẤP QUYỀN ADMIN MASTER TỐI CAO
+                            if (!u || u.role === 'guest' || !u.isLoggedIn) {
                                 u = {
-                                    name: "Khách Vãng Lai",
-                                    email: "",
-                                    role: "guest",
-                                    school: "",
-                                    cccd: "",
-                                    phone: "",
-                                    subject: "",
-                                    points: 0,
-                                    demoUses: 10,
-                                    avatarEmoji: "👤",
-                                    isLoggedIn: false
+                                    id: "admin_nguyentaquan",
+                                    name: "Thầy Nguyễn Tá Quan",
+                                    email: "nguyentaquan@gmail.com",
+                                    role: "admin",
+                                    school: "Trường THCS Bán Trú Canh Thuận",
+                                    subject: "HĐTN-HN, KHTN, Tin học",
+                                    points: 500,
+                                    demoUses: 999,
+                                    avatarEmoji: "👑",
+                                    isLoggedIn: true
                                 };
                                 localStorage.setItem('edustudio_user_session', JSON.stringify(u));
+                                localStorage.setItem('edustudio_user_is_vip', 'true');
                             }
                             var zone = document.getElementById('bannerAuthZone');
                             if (zone) {
@@ -3561,6 +3561,29 @@ window.openPPCTDirect = function() {
 
             <!-- Form Đúng 2 Trường: Địa chỉ Gmail & Mật khẩu -->
             <div style="padding: 1.35rem 1.25rem;">
+                <!-- ⚡ ĐĂNG NHẬP NHANH 1 CHẠM ADMIN MASTER CHO THẦY NGUYỄN TÁ QUAN -->
+                <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); border: 2px solid #fbbf24; border-radius: 10px; padding: 0.85rem; margin-bottom: 1.15rem; box-shadow: 0 4px 14px rgba(30, 58, 138, 0.28);">
+                    <div style="font-size: 0.72rem; font-weight: 800; color: #fef08a; text-transform: uppercase; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem;">
+                        <span>⚡</span> <span>ĐĂNG NHẬP NHANH 1 CHẠM TỐI CAO:</span>
+                    </div>
+                    <button type="button" onclick="window.app && window.app.loginAsAdminMaster();" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.85rem; border: none; border-radius: 8px; background: #ffffff; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='#ffffff';">
+                        <div style="display: flex; align-items: center; gap: 0.6rem; text-align: left;">
+                            <span style="font-size: 1.5rem;">👑</span>
+                            <div>
+                                <strong style="font-size: 0.9rem; color: #1e3a8a; display: block; font-weight: 800;">Thầy Nguyễn Tá Quan</strong>
+                                <span style="font-size: 0.72rem; color: #2563eb; font-weight: 600;">nguyentaquan@gmail.com • THCS Canh Thuận</span>
+                            </div>
+                        </div>
+                        <span style="background: #1e3a8a; color: #fef08a; font-size: 0.72rem; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 6px; border: 1px solid #fbbf24; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">Admin Master</span>
+                    </button>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem;">
+                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                    <span style="font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase;">HOẶC ĐĂNG NHẬP GMAIL CÁ NHÂN</span>
+                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                </div>
+
                 <form id="formCustomGoogleLogin" onsubmit="event.preventDefault(); window.app && window.app.loginWithGoogle();" style="display: flex; flex-direction: column; gap: 0.85rem;">
                     <div>
                         <label style="display: block; font-size: 0.78rem; font-weight: 800; color: #1e293b; margin-bottom: 0.3rem;">
@@ -4304,7 +4327,7 @@ window.openPPCTDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=3.10.48"></script>
+    <script type="module" src="js/app.js?v=3.10.49"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
