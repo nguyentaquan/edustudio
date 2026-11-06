@@ -5518,6 +5518,266 @@ setPCCMFilter(filterName) {
     /**
      * Khi người dùng chọn một bản TKB thời điểm từ dropdown
      */
+        // =========================================================================
+    // ĐIỀU HÀNH HIỆN DIỆN TUẦN HỌC & TRUNG TÂM ƯU TIÊN SƯ PHẠM ĐẲNG CẤP
+    // =========================================================================
+
+    /**
+     * Chuyển đổi tuần hiện diện (1 đến 35)
+     */
+    onPresenceWeekChange(weekNum) {
+        const w = parseInt(weekNum) || 9;
+        this.engine.currentPresenceWeek = w;
+
+        // Cập nhật thẻ Select
+        const sel = document.getElementById('tkbPresenceWeekSelect');
+        if (sel && sel.value !== String(w)) sel.value = String(w);
+
+        // Cập nhật Badge học kỳ và ngày áp dụng
+        const badge = document.getElementById('tkbPresenceSemesterBadge');
+        const dateRange = document.getElementById('tkbPresenceDateRange');
+        
+        const isHK1 = (w <= 18);
+        if (badge) {
+            badge.textContent = isHK1 ? `🍂 Học Kỳ I (Tuần ${w}/18)` : `🌱 Học Kỳ II (Tuần ${w}/35 • HK2)`;
+            badge.style.background = isHK1 ? '#fef08a' : '#dcfce7';
+            badge.style.color = isHK1 ? '#854d0e' : '#15803d';
+        }
+
+        if (dateRange) {
+            if (w === 9) dateRange.textContent = 'Áp dụng từ: 02/11/2026 (Tuần chuẩn hiện hành)';
+            else if (w === 1) dateRange.textContent = 'Áp dụng từ: 05/09/2026 (Khai giảng)';
+            else if (w === 19) dateRange.textContent = 'Áp dụng từ: 11/01/2027 (Khởi đầu HK2)';
+            else dateRange.textContent = `Tuần học thứ ${w} năm học 2026 - 2027`;
+        }
+
+        // Cập nhật lại giao diện bảng TKB
+        this.renderSchoolTimetable();
+        this.showToast(`📅 Đang hiển thị Thời Khóa Biểu Tuần ${w}!`, 2500);
+    }
+
+    /**
+     * Nút duyệt Tuần Trước (-1) hoặc Tuần Sau (+1)
+     */
+    navigateWeek(step) {
+        let currentW = this.engine.currentPresenceWeek || 9;
+        let targetW = currentW + step;
+        if (targetW < 1) targetW = 35;
+        if (targetW > 35) targetW = 1;
+        this.onPresenceWeekChange(targetW);
+    }
+
+    /**
+     * Mở Modal Cấu Hình Ưu Tiên Sư Phạm Đẳng Cấp (6 Mức Độ)
+     */
+    openPedagogicalPriorityModal() {
+        let modal = document.getElementById('pedagogicalPriorityModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'pedagogicalPriorityModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+                backdrop-filter: blur(8px); z-index: 1000000; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        modal.classList.add('active');
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('visibility', 'visible', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
+        modal.style.setProperty('z-index', '9999999', 'important');
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 14px; max-width: 920px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.45); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; animation: modalPop 0.2s ease-out;">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #4338ca 100%); color: #ffffff; padding: 1rem 1.35rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                        <span style="font-size: 1.6rem;">🎖️</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; text-transform: uppercase; color: #fef08a;">
+                                TRUNG TÂM CẤU HÌNH ƯU TIÊN SƯ PHẠM THỜI KHÓA BIỂU
+                            </h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #e9d5ff;">
+                                Hệ thống ràng buộc sư phạm 6 mức độ tối ưu hóa cho AI CSP Solver • Chuẩn GDMN &amp; GDPT 2018
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="document.getElementById('pedagogicalPriorityModal').style.display='none'; document.getElementById('pedagogicalPriorityModal').classList.remove('active');" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.3rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.15rem 0.5rem;">✕</button>
+                </div>
+
+                <!-- Body Danh Sách 6 Mức Ưu Tiên -->
+                <div style="padding: 1.25rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.85rem;">
+                    
+                    <!-- MỨC 1 -->
+                    <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 0.85rem 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
+                            <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                <span style="font-size: 1.2rem;">👑</span>
+                                <strong style="font-size: 0.88rem; color: #1e3a8a;">MỨC 1: MÔN CỐT LÕI (TOÁN - NGỮ VĂN - TIẾNG ANH)</strong>
+                            </div>
+                            <span style="background: #1d4ed8; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">ĐỘ ƯU TIÊN CAO NHẤT</span>
+                        </div>
+                        <p style="font-size: 0.76rem; color: #1e40af; margin: 0 0 0.5rem 0; line-height: 1.45;">
+                            • Tự động xếp các môn Toán, Ngữ Văn, Tiếng Anh vào các tiết 1, 2, 3 đầu buổi sáng khi khả năng tập trung của học sinh đạt đỉnh cao.<br>
+                            • Tránh dồn quá 2 tiết cùng một môn văn hóa trong một buổi (trừ trường hợp tiết đôi theo phân phối chương trình).
+                        </p>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #1e3a8a; cursor: pointer;">
+                            <input type="checkbox" id="chkPrio1" checked style="width: 16px; height: 16px; accent-color: #2563eb;">
+                            Kích hoạt ưu tiên tiết 1, 2, 3 sáng sớm cho Toán, Văn, Anh
+                        </label>
+                    </div>
+
+                    <!-- MỨC 2 -->
+                    <div style="background: #f5f3ff; border: 1.5px solid #ddd6fe; border-radius: 10px; padding: 0.85rem 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
+                            <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                <span style="font-size: 1.2rem;">🔬</span>
+                                <strong style="font-size: 0.88rem; color: #5b21b6;">MỨC 2: TIẾT ĐÔI &amp; PHÒNG CHỨC NĂNG (KHTN, TIN HỌC)</strong>
+                            </div>
+                            <span style="background: #7c3aed; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">RÀNG BUỘC CỨNG (LAB)</span>
+                        </div>
+                        <p style="font-size: 0.76rem; color: #6d28d9; margin: 0 0 0.5rem 0; line-height: 1.45;">
+                            • Tự động ghép 2 tiết liền nhau cho các bài thực hành KHTN và Tin học để bảo đảm tiến độ thí nghiệm.<br>
+                            • Kiểm soát không để 2 lớp trùng phòng máy tính hoặc phòng thí nghiệm Lý - Hóa - Sinh trong cùng một tiết.
+                        </p>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #5b21b6; cursor: pointer;">
+                            <input type="checkbox" id="chkPrio2" checked style="width: 16px; height: 16px; accent-color: #7c3aed;">
+                            Ưu tiên ghép tiết đôi và khóa cứng chống trùng phòng bộ môn
+                        </label>
+                    </div>
+
+                    <!-- MỨC 3 -->
+                    <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 0.85rem 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
+                            <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                <span style="font-size: 1.2rem;">🏃</span>
+                                <strong style="font-size: 0.88rem; color: #166534;">MỨC 3: THỂ CHẤT HỌC ĐƯỜNG (GIÁO DỤC THỂ CHẤT)</strong>
+                            </div>
+                            <span style="background: #15803d; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">BẢO VỆ SỨC KHỎE</span>
+                        </div>
+                        <p style="font-size: 0.76rem; color: #15803d; margin: 0 0 0.5rem 0; line-height: 1.45;">
+                            • Tuyệt đối CẤM xếp môn Thể dục (GDTC) vào các tiết 4 và tiết 5 buổi sáng khi nắng gắt ngoài sân trường.<br>
+                            • Ưu tiên tối đa vào các tiết 1, 2 sáng sớm khi thời tiết râm mát, nâng cao hiệu quả rèn luyện thể lực.
+                        </p>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #166534; cursor: pointer;">
+                            <input type="checkbox" id="chkPrio3" checked style="width: 16px; height: 16px; accent-color: #15803d;">
+                            Cấm tuyệt đối tiết 4-5 nắng gắt cho môn Giáo Dục Thể Chất
+                        </label>
+                    </div>
+
+                    <!-- MỨC 4 -->
+                    <div style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 10px; padding: 0.85rem 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
+                            <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                <span style="font-size: 1.2rem;">⚖️</span>
+                                <strong style="font-size: 0.88rem; color: #92400e;">MỨC 4: PHÂN MÔN GHÉP (LỊCH SỬ &amp; ĐỊA LÍ)</strong>
+                            </div>
+                            <span style="background: #b45309; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">SO LE NHỊP NHÀNG</span>
+                        </div>
+                        <p style="font-size: 0.76rem; color: #b45309; margin: 0 0 0.5rem 0; line-height: 1.45;">
+                            • Phân bổ nhịp nhàng các tiết Lịch sử và Địa lí so le các ngày trong tuần, không dồn cục trong cùng 1 buổi.<br>
+                            • HK1: Lịch sử 2 tiết - Địa lí 1 tiết. HK2: Tự động hoán đổi Địa lí 2 tiết - Lịch sử 1 tiết (chuẩn CV 1496/BGDĐT).
+                        </p>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #92400e; cursor: pointer;">
+                            <input type="checkbox" id="chkPrio4" checked style="width: 16px; height: 16px; accent-color: #b45309;">
+                            Xếp so le ngày cho phân môn Lịch sử - Địa lí và tự động đảo kỳ
+                        </label>
+                    </div>
+
+                    <!-- MỨC 5 -->
+                    <div style="background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 10px; padding: 0.85rem 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
+                            <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                <span style="font-size: 1.2rem;">🎨</span>
+                                <strong style="font-size: 0.88rem; color: #9d174d;">MỨC 5: NGHỆ THUẬT &amp; GIẢM ÁP LỰC (NHẠC, MĨ THUẬT, GDCD, GDĐP)</strong>
+                            </div>
+                            <span style="background: #be185d; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">GIẢM TẢI TÂM LÝ</span>
+                        </div>
+                        <p style="font-size: 0.76rem; color: #be185d; margin: 0 0 0.5rem 0; line-height: 1.45;">
+                            • Bố trí các môn Âm nhạc, Mĩ thuật, GDCD, Giáo Dục Địa Phương vào các tiết cuối buổi (tiết 4, 5) để giúp học sinh thư giãn tinh thần sau các giờ toán văn căng thẳng.
+                        </p>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #9d174d; cursor: pointer;">
+                            <input type="checkbox" id="chkPrio5" checked style="width: 16px; height: 16px; accent-color: #be185d;">
+                            Ưu tiên môn nghệ thuật &amp; GDĐP vào tiết cuối buổi để giảm áp lực
+                        </label>
+                    </div>
+
+                    <!-- MỨC 6 -->
+                    <div style="background: #ecfeff; border: 1.5px solid #a5f3fc; border-radius: 10px; padding: 0.85rem 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
+                            <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                <span style="font-size: 1.2rem;">🌟</span>
+                                <strong style="font-size: 0.88rem; color: #0e7490;">MỨC 6: HOẠT ĐỘNG TRẢI NGHIỆM &amp; SINH HOẠT LỚP (HĐTN, SHL)</strong>
+                            </div>
+                            <span style="background: #0891b2; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">HOẠT ĐỘNG CHUNG</span>
+                        </div>
+                        <p style="font-size: 0.76rem; color: #0e7490; margin: 0 0 0.5rem 0; line-height: 1.45;">
+                            • Tiết 1 sáng Thứ Hai linh hoạt cho tất cả các môn học (đã bỏ tiết chào cờ).<br>
+                            • Tiết 5 Thứ Bảy cố định cho Sinh Hoạt Lớp cùng Giáo viên chủ nhiệm để tổng kết tuần.
+                        </p>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #0e7490; cursor: pointer;">
+                            <input type="checkbox" id="chkPrio6" checked style="width: 16px; height: 16px; accent-color: #0891b2;">
+                            Khóa cứng Sinh Hoạt Lớp Tiết 5 Thứ Bảy cho GVCN
+                        </label>
+                    </div>
+
+                    <!-- ƯU TIÊN GIÁO VIÊN -->
+                    <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 0.85rem 1rem;">
+                        <strong style="font-size: 0.85rem; color: #0f172a; display: block; margin-bottom: 0.35rem;">
+                            👨‍🏫 CHÍNH SÁCH ƯU TIÊN SƯ PHẠM CHO ĐỘI NGŨ GIÁO VIÊN
+                        </strong>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.4rem; font-size: 0.75rem; color: #334155;">
+                            <label style="display: flex; align-items: center; gap: 0.35rem;">
+                                <input type="checkbox" checked style="accent-color: #059669;"> GVCN được nghỉ tối thiểu 1 - 2 buổi/tuần
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.35rem;">
+                                <input type="checkbox" checked style="accent-color: #059669;"> Tối đa không quá 4 tiết dạy / ngày / giáo viên
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.35rem;">
+                                <input type="checkbox" checked style="accent-color: #059669;"> Tránh tiết 1 sáng cho giáo viên con nhỏ / ở xa
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.35rem;">
+                                <input type="checkbox" checked style="accent-color: #059669;"> Không xếp tiết trống đơn lẻ (lỗ thủng TKB)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div style="padding: 0.85rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <button type="button" onclick="document.getElementById('pedagogicalPriorityModal').style.display='none'; document.getElementById('pedagogicalPriorityModal').classList.remove('active');" style="background: #64748b; color: #ffffff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+                        Đóng
+                    </button>
+                    <button type="button" onclick="window.smartTKBUI.applyPrioritiesAndSolveAI();" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; border: 2px solid #86efac; padding: 0.55rem 1.35rem; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(22,163,74,0.35);">
+                        <span>⚡</span> <span>ÁP DỤNG ƯU TIÊN &amp; XẾP TỰ ĐỘNG BẰNG AI NGAY</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Áp dụng cấu hình ưu tiên và gọi thuật toán AI Xếp TKB
+     */
+    applyPrioritiesAndSolveAI() {
+        const modal = document.getElementById('pedagogicalPriorityModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+        }
+
+        this.showToast('🚀 Đang kích hoạt AI CSP Solver với đầy đủ 6 Mức Độ Ưu Tiên Sư Phạm...', 3000);
+        
+        setTimeout(() => {
+            const btnSolve = document.getElementById('btnTKBAutoSolve');
+            if (btnSolve) btnSolve.click();
+        }, 300);
+    }
+
     onSelectYearlySnapshot(snapshotId) {
         if (!snapshotId) return;
         const res = this.engine.applySnapshot(snapshotId);

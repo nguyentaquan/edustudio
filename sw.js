@@ -1,7 +1,7 @@
-// EduStudio Service Worker (v3.10.51 - GDMN & GDPT)
+// EduStudio Service Worker (v3.10.52 - GDMN & GDPT)
 // Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
 
-const CACHE_NAME = "edustudio-pwa-v3.10.51-yearly-tkb-snapshots";
+const CACHE_NAME = "edustudio-pwa-v3.10.52-week-presence-and-pedagogical-priorities";
 
 self.addEventListener('install', (event) => {
   // Bỏ qua chờ đợi, kích hoạt ngay lập tức

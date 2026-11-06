@@ -124,7 +124,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.51 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.52 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -1991,7 +1991,7 @@
                             </div>
                             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                                 <span class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">
-                                    Phiên bản: v3.10.51 GDMN & GDPT
+                                    Phiên bản: v3.10.52 GDMN & GDPT
                                 </span>
                             </div>
                         </div>
@@ -2747,8 +2747,16 @@ window.openPPCTDirect = function() {
 
                                     <!-- Cụm Nút Thao Tác & Điều Hành TKB Trực Tiếp (ĐÃ LOẠI BỎ NÚT QUYẾT TOÁN 35T) -->
                                     <div style="display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap;">
-                                        <button id="btnTKBAutoSolve" class="btn-tkb-action btn-tkb-primary" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px; box-shadow: 0 1px 3px rgba(37,99,235,0.2);">
+                                        <button id="btnTKBAutoSolve" class="btn-tkb-action btn-tkb-primary" style="padding: 0.28rem 0.65rem; font-size: 0.75rem; border-radius: 6px; font-weight: 800; box-shadow: 0 2px 5px rgba(37,99,235,0.3);">
                                             <span>⚡</span> <span>Xếp AI</span>
+                                        </button>
+                                        <!-- NÚT ƯU TIÊN SƯ PHẠM NỔI BẬT VÀNG KIM SÁNG RÕ -->
+                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openPedagogicalPriorityModal();" 
+                                                style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: #fef08a; border: 2px solid #fbbf24; padding: 0.26rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 2px 6px rgba(124,58,237,0.35); transition: transform 0.15s ease;"
+                                                onmouseover="this.style.transform='scale(1.03)';"
+                                                onmouseout="this.style.transform='scale(1)';"
+                                                title="Bấm để xem và cấu hình 6 Mức Độ Ưu Tiên Sư Phạm Đẳng Cấp khi AI xếp TKB">
+                                            <span style="font-size: 0.95rem;">🎖️</span> <span>ƯU TIÊN SƯ PHẠM (6 MỨC ĐỘ)</span>
                                         </button>
                                         <button id="btnTKBCreateNew" class="btn-tkb-action btn-tkb-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px;" title="Xóa trắng bàn cờ để khởi tạo TKB mới cho trường của bạn">
                                             <span>➕</span> <span>Tạo TKB Mới</span>
@@ -2790,6 +2798,126 @@ window.openPPCTDirect = function() {
                                             <span>💡</span> <span>Xem Cách Sửa TKB</span>
                                         </button>
                                     </div>
+                                </div>
+
+                                <!-- ========================================================================= -->
+                                <!-- 1. THANH ĐIỀU HÀNH HIỆN DIỆN TUẦN HỌC (35 TUẦN GDPT 2018 - ĐẬP VÀO MẮT 100%) -->
+                                <!-- ========================================================================= -->
+                                <div id="tkbWeekPresenceBar" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%); color: #ffffff; border: 2px solid #10b981; border-radius: 10px; padding: 0.55rem 0.95rem; margin-bottom: 0.55rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; box-shadow: 0 4px 12px rgba(6,78,59,0.25);">
+                                    <!-- Nhóm trái: Duyệt tuần trước - sau & Dropdown chọn tuần -->
+                                    <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.navigateWeek(-1);" style="background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.4); padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;" title="Chuyển về tuần liền kề trước">
+                                            <span>◀</span> <span>Tuần Trước</span>
+                                        </button>
+
+                                        <div style="display: flex; align-items: center; gap: 0.35rem; background: #ffffff; padding: 0.18rem 0.5rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+                                            <span style="font-size: 1rem;">📅</span>
+                                            <span style="font-size: 0.74rem; font-weight: 900; color: #065f46; text-transform: uppercase;">HIỆN DIỆN:</span>
+                                            <select id="tkbPresenceWeekSelect" onchange="if(window.smartTKBUI) window.smartTKBUI.onPresenceWeekChange(this.value);" style="padding: 0.22rem 0.5rem; font-size: 0.82rem; font-weight: 900; border: 1.5px solid #059669; border-radius: 5px; color: #064e3b; background: #f0fdf4; cursor: pointer; outline: none;" title="Bấm để chọn trực tiếp bất kỳ tuần nào từ Tuần 1 đến Tuần 35 của năm học">
+                                                <optgroup label="🍂 HỌC KỲ I (18 TUẦN • LỊCH SỬ 2T - ĐỊA LÍ 1T)">
+                                                    <option value="1">Tuần 1 (05/09 - 10/09/2026)</option>
+                                                    <option value="2">Tuần 2 (12/09 - 17/09/2026)</option>
+                                                    <option value="3">Tuần 3 (19/09 - 24/09/2026)</option>
+                                                    <option value="4">Tuần 4 (26/09 - 01/10/2026)</option>
+                                                    <option value="5">Tuần 5 (03/10 - 08/10/2026)</option>
+                                                    <option value="6">Tuần 6 (10/10 - 15/10/2026)</option>
+                                                    <option value="7">Tuần 7 (17/10 - 22/10/2026)</option>
+                                                    <option value="8">Tuần 8 (24/10 - 29/10/2026)</option>
+                                                    <option value="9" selected>⭐ Tuần 9 (02/11 - 07/11/2026 - Đang Áp Dụng)</option>
+                                                    <option value="10">Tuần 10 (09/11 - 14/11/2026)</option>
+                                                    <option value="11">Tuần 11 (16/11 - 21/11/2026)</option>
+                                                    <option value="12">Tuần 12 (23/11 - 28/11/2026)</option>
+                                                    <option value="13">Tuần 13 (30/11 - 05/12/2026)</option>
+                                                    <option value="14">Tuần 14 (07/12 - 12/12/2026)</option>
+                                                    <option value="15">Tuần 15 (14/12 - 19/12/2026)</option>
+                                                    <option value="16">Tuần 16 (21/12 - 26/12/2026)</option>
+                                                    <option value="17">Tuần 17 (28/12 - 02/01/2027)</option>
+                                                    <option value="18">Tuần 18 (04/01 - 09/01/2027)</option>
+                                                </optgroup>
+                                                <optgroup label="🌱 HỌC KỲ II (17 TUẦN • ĐỊA LÍ 2T - LỊCH SỬ 1T)">
+                                                    <option value="19">Tuần 19 (11/01 - 16/01/2027 - Khởi Đầu HK2)</option>
+                                                    <option value="20">Tuần 20 (18/01 - 23/01/2027)</option>
+                                                    <option value="21">Tuần 21 (01/02 - 06/02/2027)</option>
+                                                    <option value="22">Tuần 22 (08/02 - 13/02/2027)</option>
+                                                    <option value="23">Tuần 23 (15/02 - 20/02/2027)</option>
+                                                    <option value="24">Tuần 24 (22/02 - 27/02/2027)</option>
+                                                    <option value="25">Tuần 25 (01/03 - 06/03/2027)</option>
+                                                    <option value="26">Tuần 26 (08/03 - 13/03/2027)</option>
+                                                    <option value="27">Tuần 27 (15/03 - 20/03/2027)</option>
+                                                    <option value="28">Tuần 28 (22/03 - 27/03/2027)</option>
+                                                    <option value="29">Tuần 29 (29/03 - 03/04/2027)</option>
+                                                    <option value="30">Tuần 30 (05/04 - 10/04/2027)</option>
+                                                    <option value="31">Tuần 31 (12/04 - 17/04/2027)</option>
+                                                    <option value="32">Tuần 32 (19/04 - 24/04/2027)</option>
+                                                    <option value="33">Tuần 33 (26/04 - 01/05/2027)</option>
+                                                    <option value="34">Tuần 34 (03/05 - 08/05/2027)</option>
+                                                    <option value="35">Tuần 35 (10/05 - 15/05/2027 - Tổng Kết Năm)</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+
+                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.navigateWeek(1);" style="background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.4); padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;" title="Chuyển sang tuần kế tiếp">
+                                            <span>Tuần Sau</span> <span>▶</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Nhóm giữa: Thông tin đợt áp dụng & Học kỳ -->
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.76rem;">
+                                        <span id="tkbPresenceSemesterBadge" style="background: #fef08a; color: #854d0e; padding: 0.18rem 0.55rem; border-radius: 9999px; font-weight: 800;">
+                                            🍂 Học Kỳ I (Tuần 1 - 18)
+                                        </span>
+                                        <span id="tkbPresenceDateRange" style="color: #d1fae5; font-weight: 700;">
+                                            Áp dụng từ: 02/11/2026
+                                        </span>
+                                    </div>
+
+                                    <!-- Nhóm phải: Nút lưu TKB tuần này & mở Kho TKB Cả Năm -->
+                                    <div style="display: flex; align-items: center; gap: 0.35rem;">
+                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openSaveSnapshotModal();" style="background: #f59e0b; color: #ffffff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Lưu lại TKB tuần hiện tại vào kho">
+                                            <span>💾</span> <span>Lưu Tuần Này</span>
+                                        </button>
+                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openYearlySnapshotsManagerModal();" style="background: #ffffff; color: #065f46; border: 1.5px solid #a7f3d0; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;" title="Mở danh sách tất cả các bản TKB trong năm học">
+                                            <span>🗄️</span> <span>Kho 35 Tuần</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ========================================================================= -->
+                                <!-- 2. BĂNG-RÔN 6 MỨC ĐỘ ƯU TIÊN SƯ PHẠM (HIỂN THỊ TRỰC DIỆN SÁNG RÕ 100%)       -->
+                                <!-- ========================================================================= -->
+                                <div id="tkbPedagogicalPriorityBanner" style="background: #faf5ff; border: 1.5px solid #c084fc; border-radius: 10px; padding: 0.5rem 0.85rem; margin-bottom: 0.65rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; box-shadow: 0 2px 6px rgba(192,132,252,0.15);">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; flex: 1;">
+                                        <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 900; color: #6b21a8; text-transform: uppercase;">
+                                            <span style="font-size: 1.1rem;">🎖️</span>
+                                            <span>Ưu Tiên Sư Phạm Đang Kích Hoạt:</span>
+                                        </div>
+                                        
+                                        <!-- 6 Thẻ Ưu Tiên Màu Sắc Trực Quan Đẳng Cấp -->
+                                        <div style="display: flex; gap: 0.3rem; flex-wrap: wrap; align-items: center;">
+                                            <span style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;" title="Mức 1: Toán, Ngữ Văn, Tiếng Anh ưu tiên các tiết 1-2-3 sáng">
+                                                👑 1. Cốt Lõi (Toán/Văn/Anh Sáng)
+                                            </span>
+                                            <span style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;" title="Mức 2: KHTN, Tin học ghép tiết đôi & phòng Lab">
+                                                🔬 2. Tiết Đôi &amp; Lab (KHTN/Tin)
+                                            </span>
+                                            <span style="background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;" title="Mức 3: GDTC xếp tiết 1-2 mát mẻ, cấm tiết 4-5">
+                                                🏃 3. Thể Chất (Cấm Tiết 4-5 Nắng)
+                                            </span>
+                                            <span style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;" title="Mức 4: Lịch Sử & Địa Lí so le nhịp nhàng">
+                                                ⚖️ 4. Phân Môn Ghép (Sử - Địa So Le)
+                                            </span>
+                                            <span style="background: #fdf2f8; color: #be185d; border: 1px solid #fbcfe8; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;" title="Mức 5: Âm nhạc, Mĩ thuật, GDCD, GDĐP giảm áp lực">
+                                                🎨 5. Giảm Tải (Nhạc/Họa/GDCD/GDĐP)
+                                            </span>
+                                            <span style="background: #ecfeff; color: #0e7490; border: 1px solid #a5f3fc; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;" title="Mức 6: HĐTN và Sinh Hoạt Lớp cuối tuần">
+                                                🌟 6. Hoạt Động (HĐTN/SHL)
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openPedagogicalPriorityModal();" style="background: #7c3aed; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" title="Bấm để cấu hình chuyên sâu từng mức ưu tiên">
+                                        <span>⚙️</span> <span>Cấu Hình Chi Tiết</span>
+                                    </button>
                                 </div>
 
                                 <!-- LƯỚI BẢNG THỜI KHÓA BIỂU XEM TRƯỚC -->
@@ -4027,7 +4155,7 @@ window.openPPCTDirect = function() {
         <span class="footer-dot-sep">•</span>
         <span>Định hướng & Bản quyền chuyên môn: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
         <span class="footer-dot-sep">•</span>
-        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.51 GDMN & GDPT</span>
+        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.52 GDMN & GDPT</span>
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->
