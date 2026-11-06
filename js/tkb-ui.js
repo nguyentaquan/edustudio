@@ -4094,45 +4094,9 @@ setPCCMFilter(filterName) {
                             </div>
                         </div>
 
-                        <!-- 2. CẤU HÌNH LINH HOẠT PHÂN MÔN LỊCH SỬ - ĐỊA LÍ (KHÔNG KHÓA CỐ ĐỊNH 2-1 HAY 1-2) -->
-                        <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #f59e0b; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.85rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.4rem;">
-                                <strong style="color: #92400e; font-size: 0.82rem; display: flex; align-items: center; gap: 0.35rem;">
-                                    <span>🏛️</span> <span>CẤU HÌNH LINH HOẠT PHÂN MÔN LỊCH SỬ &amp; ĐỊA LÍ (KHÔNG KHÓA CỐ ĐỊNH):</span>
-                                </strong>
-                                <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
-                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('canhthuan_9stages')" style="font-size: 0.68rem; font-weight: 900; padding: 0.2rem 0.55rem; background: #fef08a; border: 1.5px solid #d97706; color: #92400e; border-radius: 4px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1);" title="Nạp đúng ma trận 9 Chặng Tuần theo bảng chuẩn của Thầy Nguyễn Tá Quan">
-                                        ⭐ Chuẩn 9 Chặng Tuần (ĐL 52t - LS 53t)
-                                    </button>
-                                    <button type="button" onclick="window.smartTKBUI.openCanhThuanLSDLMatrixModal()" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1.5px solid #0284c7; color: #0369a1; border-radius: 4px; cursor: pointer;" title="Bấm để xem ma trận 9 Chặng Tuần Lịch sử & Địa lí">
-                                        📊 Xem Bảng 9 Chặng
-                                    </button>
-                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('2-1_1-2')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #d97706; color: #b45309; border-radius: 4px; cursor: pointer;">Chuẩn 2-1 / 1-2</button>
-                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('1-2_2-1')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #d97706; color: #b45309; border-radius: 4px; cursor: pointer;">Đảo 1-2 / 2-1</button>
-                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('2-2_2-2')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #059669; color: #047857; border-radius: 4px; cursor: pointer;">Song Song 2-2</button>
-                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('3-0_0-3')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #7c3aed; color: #6d28d9; border-radius: 4px; cursor: pointer;">Cuốn Chiếu (3-0 / 0-3)</button>
-                                </div>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                                <div style="background: #ffffff; border: 1px solid #fed7aa; border-radius: 6px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
-                                    <span style="font-weight: 800; font-size: 0.76rem; color: #c2410c;">🍂 Học Kỳ I:</span>
-                                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                        <span style="font-size: 0.74rem; font-weight: 700;">Lịch Sử:</span>
-                                        <input type="number" id="lsdlHK1Hist" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk1 && this.engine.lsdlConfig.hk1.historyPeriods) !== undefined) ? this.engine.lsdlConfig.hk1.historyPeriods : 2}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #f97316; border-radius: 4px; padding: 0.15rem; color: #9a3412;">
-                                        <span style="font-size: 0.74rem; font-weight: 700; margin-left: 0.25rem;">Địa Lí:</span>
-                                        <input type="number" id="lsdlHK1Geo" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk1 && this.engine.lsdlConfig.hk1.geographyPeriods) !== undefined) ? this.engine.lsdlConfig.hk1.geographyPeriods : 1}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #065f46; border-radius: 4px; padding: 0.15rem; color: #065f46;">
-                                    </div>
-                                </div>
-                                <div style="background: #ffffff; border: 1px solid #fed7aa; border-radius: 6px; padding: 0.45rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
-                                    <span style="font-weight: 800; font-size: 0.76rem; color: #047857;">🌱 Học Kỳ II:</span>
-                                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                        <span style="font-size: 0.74rem; font-weight: 700;">Lịch Sử:</span>
-                                        <input type="number" id="lsdlHK2Hist" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk2 && this.engine.lsdlConfig.hk2.historyPeriods) !== undefined) ? this.engine.lsdlConfig.hk2.historyPeriods : 1}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #f97316; border-radius: 4px; padding: 0.15rem; color: #9a3412;">
-                                        <span style="font-size: 0.74rem; font-weight: 700; margin-left: 0.25rem;">Địa Lí:</span>
-                                        <input type="number" id="lsdlHK2Geo" value="${((this.engine.lsdlConfig && this.engine.lsdlConfig.hk2 && this.engine.lsdlConfig.hk2.geographyPeriods) !== undefined) ? this.engine.lsdlConfig.hk2.geographyPeriods : 2}" min="0" max="6" style="width: 44px; text-align: center; font-weight: 800; border: 1.5px solid #065f46; border-radius: 4px; padding: 0.15rem; color: #065f46;">
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- 2. CẤU HÌNH PHÂN MÔN LỊCH SỬ & ĐỊA LÍ THEO TỪNG KHỐI (K6, K7, K8, K9 KHÁC NHAU) -->
+                        <div id="ppctLSDLGradeConfigContainer">
+                            <!-- Được render động qua renderLSDLGradeConfigBox() -->
                         </div>
 
                         <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
@@ -4200,6 +4164,7 @@ setPCCMFilter(filterName) {
             if (pLessons) pLessons.style.display = 'block';
             if (bLessons) { bLessons.style.borderBottomColor = '#7c3aed'; bLessons.style.color = '#6d28d9'; }
             if (bQuota) { bQuota.style.borderBottomColor = 'transparent'; bQuota.style.color = '#64748b'; }
+            this.renderLSDLGradeConfigBox();
             this.renderPPCTLessonsTable();
         }
     }
@@ -4473,12 +4438,24 @@ setPCCMFilter(filterName) {
         let msg = '';
 
         if (preset === 'canhthuan_9stages') {
-            vH1 = 2; vG1 = 1; vH2 = 1; vG2 = 2;
-            msg = '⭐ Đã nạp thành công Chuẩn 9 Chặng Tuần Sử - Địa Canh Thuận (ĐL 52t - LS 53t)!';
             if (this.engine) {
-                if (!this.engine.lsdlConfig) this.engine.lsdlConfig = {};
-                this.engine.lsdlConfig.mode = 'canhthuan_9stages';
+                if (typeof this.engine.resetLSDLTo9StagesCanhThuan === 'function') {
+                    this.engine.resetLSDLTo9StagesCanhThuan();
+                } else {
+                    if (!this.engine.lsdlConfig) this.engine.lsdlConfig = {};
+                    this.engine.lsdlConfig.mode = 'canhthuan_9stages';
+                }
+                this.engine.saveState();
             }
+            if (typeof this.renderLSDLGradeConfigBox === 'function') {
+                this.renderLSDLGradeConfigBox();
+            }
+            if (typeof this.renderPPCTLessonsTable === 'function') {
+                this.renderPPCTLessonsTable();
+            }
+            this.updateMainLSDLWidget();
+            this.showToast('⭐ Đã nạp thành công chuẩn 9 Chặng Tuần Canh Thuận cho cả 4 khối: K6, K9 (Sử 2 - ĐL 1) và K7, K8 (Sử 1 - ĐL 2)!', 3500);
+            return;
         } else if (preset === '2-1_1-2') {
             vH1 = 2; vG1 = 1; vH2 = 1; vG2 = 2;
             msg = '🏛️ Đã áp dụng tỷ lệ: HK1 (Sử 2 - Địa 1) • HK2 (Sử 1 - Địa 2)';
@@ -4636,7 +4613,199 @@ setPCCMFilter(filterName) {
         const grSel = document.getElementById('ppctLessonGradeSelect');
         if (subSel) this.ppctCurrentSubject = subSel.value;
         if (grSel) this.ppctCurrentGrade = grSel.value;
+        this.renderLSDLGradeConfigBox();
         this.renderPPCTLessonsTable();
+    }
+
+    /**
+     * Render hộp cấu hình phân môn Lịch sử & Địa lí đa khối (K6, K7, K8, K9 khác nhau theo chuẩn 9 chặng)
+     * Thiết kế bám sát 100% bảng phân phối chương trình của Thầy Nguyễn Tá Quan
+     */
+    renderLSDLGradeConfigBox() {
+        const container = document.getElementById('ppctLSDLGradeConfigContainer');
+        if (!container) return;
+
+        const gr = String(this.ppctCurrentGrade || '8').replace(/\D/g, '') || '8';
+        const lsdlCfg = this.engine.lsdlConfig || {};
+        const byGrade = lsdlCfg.byGrade || {
+            '6': { hk1Hist: 2, hk1Geo: 1, hk2Hist: 1, hk2Geo: 2 },
+            '7': { hk1Hist: 1, hk1Geo: 2, hk2Hist: 2, hk2Geo: 1 },
+            '8': { hk1Hist: 1, hk1Geo: 2, hk2Hist: 2, hk2Geo: 1 },
+            '9': { hk1Hist: 2, hk1Geo: 1, hk2Hist: 1, hk2Geo: 2 }
+        };
+
+        const curGrCfg = byGrade[gr] || (gr === '6' || gr === '9' ? { hk1Hist: 2, hk1Geo: 1, hk2Hist: 1, hk2Geo: 2 } : { hk1Hist: 1, hk1Geo: 2, hk2Hist: 2, hk2Geo: 1 });
+        const isGroup1 = (gr === '6' || gr === '9'); // Nhóm 1: Tuần 9-13 Sử 2 - Địa 1
+        const groupDesc = isGroup1 
+            ? "Nhóm 1 (K6, K9): Tuần 9 - 13 học Lịch Sử: 2 tiết • Địa Lí: 1 tiết (HK1: 27t LS - 27t ĐL)" 
+            : "Nhóm 2 (K7, K8): Tuần 9 - 13 học Lịch Sử: 1 tiết • Địa Lí: 2 tiết (HK1: 27t LS - 27t ĐL)";
+
+        container.innerHTML = `
+            <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #f59e0b; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.85rem;">
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.4rem;">
+                    <div>
+                        <strong style="color: #92400e; font-size: 0.84rem; display: flex; align-items: center; gap: 0.35rem;">
+                            <span>🏛️</span> <span>PHÂN PHỐI CHƯƠNG TRÌNH PHÂN MÔN LỊCH SỬ &amp; ĐỊA LÍ 6 - 9 (THEO PHÂN MÔN)</span>
+                        </strong>
+                        <div style="font-size: 0.72rem; color: #b45309; font-weight: 700; margin-top: 0.15rem;">
+                            ⭐ NĂM HỌC 2026 - 2027 • BẢNG CHUẨN 9 CHẶNG TUẦN (ĐỊA LÍ 52T - LỊCH SỬ 53T • TỔNG 105T)
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center;">
+                        <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('canhthuan_9stages')" style="font-size: 0.7rem; font-weight: 900; padding: 0.25rem 0.65rem; background: #fef08a; border: 1.5px solid #d97706; color: #92400e; border-radius: 5px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1);" title="Nạp đúng ma trận 9 Chặng Tuần theo bảng chuẩn của Thầy Nguyễn Tá Quan">
+                            ⭐ Nạp Chuẩn 9 Chặng Cả 4 Khối
+                        </button>
+                        <button type="button" onclick="window.smartTKBUI.openCanhThuanLSDLMatrixModal()" style="font-size: 0.7rem; font-weight: 800; padding: 0.25rem 0.55rem; background: #ffffff; border: 1.5px solid #0284c7; color: #0369a1; border-radius: 5px; cursor: pointer;" title="Bấm để xem ma trận 9 Chặng Tuần Lịch sử & Địa lí đầy đủ">
+                            📊 Xem Bảng Ma Trận Đầy Đủ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BẢNG MA TRẬN 4 KHỐI Y HỆT BẢNG EXCEL CỦA THẦY QUAN -->
+                <div style="overflow-x: auto; background: #ffffff; border: 1.5px solid #fde68a; border-radius: 6px; margin-bottom: 0.65rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: center;" border="1" bordercolor="#e2e8f0">
+                        <thead>
+                            <tr style="background: #f8fafc; font-weight: 800; color: #1e293b;">
+                                <th rowspan="2" style="padding: 0.35rem 0.5rem; text-align: left; width: 120px; background: #f1f5f9;">Tuần / Phân Môn</th>
+                                <th colspan="4" style="background: #eff6ff; color: #1e40af; padding: 0.25rem;">HỌC KÌ I (18 TUẦN)</th>
+                                <th rowspan="2" style="background: #fee2e2; color: #dc2626; width: 48px;">Tổng HK1</th>
+                                <th colspan="5" style="background: #f0fdf4; color: #166534; padding: 0.25rem;">HỌC KÌ II (17 TUẦN)</th>
+                                <th rowspan="2" style="background: #fee2e2; color: #dc2626; width: 48px;">Tổng HK2</th>
+                                <th rowspan="2" style="background: #fefce8; color: #854d0e; width: 55px;">Cả Năm</th>
+                                <th rowspan="2" style="background: #faf5ff; color: #7c3aed; width: 85px;">Trạng Thái</th>
+                            </tr>
+                            <tr style="background: #f8fafc; font-weight: 700; font-size: 0.68rem; color: #475569;">
+                                <th title="Tuần 1-4 (4 tuần)">T 1-4</th>
+                                <th title="Tuần 5-8 (4 tuần)">T 5-8</th>
+                                <th title="Tuần 9-13 (5 tuần)" style="background: #dbeafe; color: #1d4ed8; font-weight: 900;">T 9-13 ⭐</th>
+                                <th title="Tuần 14-18 (5 tuần)">T 14-18</th>
+                                <th title="Tuần 19-22 (4 tuần)">T 19-22</th>
+                                <th title="Tuần 23-26 (4 tuần)">T 23-26</th>
+                                <th title="Tuần 27-31 (4 tuần)">T 27-31</th>
+                                <th title="Tuần 32-34 (4 tuần)">T 32-34</th>
+                                <th title="Tuần 35 (1 tuần)">T 35</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- DÒNG KHỐI 6 -->
+                            <tr style="${gr === '6' ? 'background: #fef9c3; font-weight: 800; outline: 2px solid #ca8a04;' : 'background: #ffffff;'} cursor: pointer;" onclick="window.smartTKBUI.onSelectGradeFromLSDLTable('6')">
+                                <td style="padding: 0.35rem 0.5rem; text-align: left; font-weight: 800; color: #1e3a8a;">
+                                    ${gr === '6' ? '👉 ' : ''}Lịch sử &amp; Địa lí 6
+                                </td>
+                                <td>ĐL 1 - LS 2</td><td>ĐL 2 - LS 1</td>
+                                <td style="background: #eff6ff; font-weight: 900; color: #1d4ed8;">ĐL 1 - LS 2</td>
+                                <td>ĐL 2 - LS 1</td>
+                                <td style="background: #fee2e2; font-weight: 800; color: #dc2626;">27 / 27</td>
+                                <td>ĐL 1 - LS 2</td><td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td><td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td>
+                                <td style="background: #fee2e2; font-weight: 800; color: #dc2626;">25 / 26</td>
+                                <td style="background: #fefce8; font-weight: 900; color: #854d0e;">52 / 53</td>
+                                <td><span style="font-size: 0.65rem; padding: 0.12rem 0.35rem; border-radius: 3px; ${gr === '6' ? 'background: #ca8a04; color: #ffffff;' : 'background: #e2e8f0; color: #475569;'}">${gr === '6' ? 'Đang Chọn' : 'Xem K6'}</span></td>
+                            </tr>
+
+                            <!-- DÒNG KHỐI 7 -->
+                            <tr style="${gr === '7' ? 'background: #fef9c3; font-weight: 800; outline: 2px solid #ca8a04;' : 'background: #f8fafc;'} cursor: pointer;" onclick="window.smartTKBUI.onSelectGradeFromLSDLTable('7')">
+                                <td style="padding: 0.35rem 0.5rem; text-align: left; font-weight: 800; color: #1e3a8a;">
+                                    ${gr === '7' ? '👉 ' : ''}Lịch sử &amp; Địa lí 7
+                                </td>
+                                <td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td>
+                                <td style="background: #eff6ff; font-weight: 900; color: #047857;">ĐL 2 - LS 1</td>
+                                <td>ĐL 1 - LS 2</td>
+                                <td style="background: #fee2e2; font-weight: 800; color: #dc2626;">27 / 27</td>
+                                <td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td><td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td><td>ĐL 1 - LS 2</td>
+                                <td style="background: #fee2e2; font-weight: 800; color: #dc2626;">25 / 26</td>
+                                <td style="background: #fefce8; font-weight: 900; color: #854d0e;">52 / 53</td>
+                                <td><span style="font-size: 0.65rem; padding: 0.12rem 0.35rem; border-radius: 3px; ${gr === '7' ? 'background: #ca8a04; color: #ffffff;' : 'background: #e2e8f0; color: #475569;'}">${gr === '7' ? 'Đang Chọn' : 'Xem K7'}</span></td>
+                            </tr>
+
+                            <!-- DÒNG KHỐI 8 -->
+                            <tr style="${gr === '8' ? 'background: #fef9c3; font-weight: 800; outline: 2px solid #ca8a04;' : 'background: #ffffff;'} cursor: pointer;" onclick="window.smartTKBUI.onSelectGradeFromLSDLTable('8')">
+                                <td style="padding: 0.35rem 0.5rem; text-align: left; font-weight: 800; color: #1e3a8a;">
+                                    ${gr === '8' ? '👉 ' : ''}Lịch sử &amp; Địa lí 8
+                                </td>
+                                <td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td>
+                                <td style="background: #eff6ff; font-weight: 900; color: #047857;">ĐL 2 - LS 1</td>
+                                <td>ĐL 1 - LS 2</td>
+                                <td style="background: #fee2e2; font-weight: 800; color: #dc2626;">27 / 27</td>
+                                <td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td><td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td><td>ĐL 1 - LS 2</td>
+                                <td style="background: #fee2e2; font-weight: 800; color: #dc2626;">25 / 26</td>
+                                <td style="background: #fefce8; font-weight: 900; color: #854d0e;">52 / 53</td>
+                                <td><span style="font-size: 0.65rem; padding: 0.12rem 0.35rem; border-radius: 3px; ${gr === '8' ? 'background: #ca8a04; color: #ffffff;' : 'background: #e2e8f0; color: #475569;'}">${gr === '8' ? 'Đang Chọn' : 'Xem K8'}</span></td>
+                            </tr>
+
+                            <!-- DÒNG KHỐI 9 -->
+                            <tr style="${gr === '9' ? 'background: #fef9c3; font-weight: 800; outline: 2px solid #ca8a04;' : 'background: #f8fafc;'} cursor: pointer;" onclick="window.smartTKBUI.onSelectGradeFromLSDLTable('9')">
+                                <td style="padding: 0.35rem 0.5rem; text-align: left; font-weight: 800; color: #1e3a8a;">
+                                    ${gr === '9' ? '👉 ' : ''}Lịch sử &amp; Địa lí 9
+                                </td>
+                                <td>ĐL 1 - LS 2</td><td>ĐL 2 - LS 1</td>
+                                <td style="background: #eff6ff; font-weight: 900; color: #1d4ed8;">ĐL 1 - LS 2</td>
+                                <td>ĐL 2 - LS 1</td>
+                                <td style="background: #fee2e2; font-weight: 800; color: #dc2626;">27 / 27</td>
+                                <td>ĐL 1 - LS 2</td><td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td><td>ĐL 2 - LS 1</td><td>ĐL 1 - LS 2</td>
+                                <td style="background: #fee2e2; font-weight: 800; color: #dc2626;">25 / 26</td>
+                                <td style="background: #fefce8; font-weight: 900; color: #854d0e;">52 / 53</td>
+                                <td><span style="font-size: 0.65rem; padding: 0.12rem 0.35rem; border-radius: 3px; ${gr === '9' ? 'background: #ca8a04; color: #ffffff;' : 'background: #e2e8f0; color: #475569;'}">${gr === '9' ? 'Đang Chọn' : 'Xem K9'}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- BỘ TINH CHỈNH RIÊNG THEO KHỐI ĐANG CHỌN -->
+                <div style="background: #ffffff; border: 1.5px solid #fed7aa; border-radius: 6px; padding: 0.5rem 0.85rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem;">
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <span style="background: #ca8a04; color: #ffffff; font-size: 0.74rem; font-weight: 900; padding: 0.18rem 0.55rem; border-radius: 4px;">KHỐI ${gr}</span>
+                        <span style="font-size: 0.74rem; font-weight: 800; color: #78350f;">${groupDesc}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="font-size: 0.72rem; font-weight: 800; color: #c2410c;">HK1:</span>
+                            <label style="font-size: 0.72rem; color: #9a3412; font-weight: 700;">Sử <input type="number" id="lsdlCurrentGradeHK1Hist" value="${curGrCfg.hk1Hist ?? (isGroup1 ? 2 : 1)}" min="0" max="5" style="width: 36px; padding: 0.15rem; text-align: center; border: 1.5px solid #f97316; border-radius: 4px; font-weight: 800; color: #9a3412;"></label>
+                            <label style="font-size: 0.72rem; color: #047857; font-weight: 700;">Địa <input type="number" id="lsdlCurrentGradeHK1Geo" value="${curGrCfg.hk1Geo ?? (isGroup1 ? 1 : 2)}" min="0" max="5" style="width: 36px; padding: 0.15rem; text-align: center; border: 1.5px solid #059669; border-radius: 4px; font-weight: 800; color: #047857;"></label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="font-size: 0.72rem; font-weight: 800; color: #047857;">HK2:</span>
+                            <label style="font-size: 0.72rem; color: #9a3412; font-weight: 700;">Sử <input type="number" id="lsdlCurrentGradeHK2Hist" value="${curGrCfg.hk2Hist ?? (isGroup1 ? 1 : 2)}" min="0" max="5" style="width: 36px; padding: 0.15rem; text-align: center; border: 1.5px solid #f97316; border-radius: 4px; font-weight: 800; color: #9a3412;"></label>
+                            <label style="font-size: 0.72rem; color: #047857; font-weight: 700;">Địa <input type="number" id="lsdlCurrentGradeHK2Geo" value="${curGrCfg.hk2Geo ?? (isGroup1 ? 2 : 1)}" min="0" max="5" style="width: 36px; padding: 0.15rem; text-align: center; border: 1.5px solid #059669; border-radius: 4px; font-weight: 800; color: #047857;"></label>
+                        </div>
+                        <button type="button" onclick="window.smartTKBUI.saveLSDLCurrentGradeConfig()" style="background: #d97706; color: #ffffff; border: none; padding: 0.25rem 0.65rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.2rem;">
+                            <span>💾</span> <span>Lưu Cho Khối ${gr}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    onSelectGradeFromLSDLTable(grade) {
+        this.ppctCurrentGrade = grade;
+        const grSel = document.getElementById('ppctLessonGradeSelect');
+        if (grSel) grSel.value = grade;
+        this.renderLSDLGradeConfigBox();
+        this.renderPPCTLessonsTable();
+        this.showToast(`📌 Đang hiển thị kế hoạch bài dạy và phân bổ Sử - Địa cho [Khối ${grade}]!`, 2000);
+    }
+
+    saveLSDLCurrentGradeConfig() {
+        const gr = String(this.ppctCurrentGrade || '8').replace(/\D/g, '') || '8';
+        const h1 = parseInt(document.getElementById('lsdlCurrentGradeHK1Hist')?.value) || 2;
+        const g1 = parseInt(document.getElementById('lsdlCurrentGradeHK1Geo')?.value) || 1;
+        const h2 = parseInt(document.getElementById('lsdlCurrentGradeHK2Hist')?.value) || 1;
+        const g2 = parseInt(document.getElementById('lsdlCurrentGradeHK2Geo')?.value) || 2;
+
+        this.engine.setLSDLGradeConfig(gr, {
+            hk1Hist: h1,
+            hk1Geo: g1,
+            hk2Hist: h2,
+            hk2Geo: g2,
+            currentHist: h1,
+            currentGeo: g1
+        });
+
+        this.renderLSDLGradeConfigBox();
+        this.renderPPCTLessonsTable();
+        this.updateMainLSDLWidget();
+        this.showToast(`💾 Đã lưu cấu hình phân môn Sử - Địa riêng cho [Khối ${gr}]: HK1 (${h1} Sử - ${g1} Địa) • HK2 (${h2} Sử - ${g2} Địa)!`, 3500);
     }
 
     renderPPCTLessonsTable() {
@@ -6358,13 +6527,25 @@ setPCCMFilter(filterName) {
 
     /**
      * Đồng bộ giá trị cấu hình Sử - Địa ngoài cửa sổ chính
+     * Tự động nhận diện Khối của Lớp đang xem (K6, K7, K8, K9) để hiển thị chính xác tỉ lệ
      */
     updateMainLSDLWidget() {
         const cfg = this.engine.lsdlConfig || {};
-        const h1 = cfg.hk1 ? cfg.hk1.historyPeriods : 1;
-        const g1 = cfg.hk1 ? cfg.hk1.geographyPeriods : 2;
-        const h2 = cfg.hk2 ? cfg.hk2.historyPeriods : 2;
-        const g2 = cfg.hk2 ? cfg.hk2.geographyPeriods : 1;
+        const curCls = this.currentClass || '8A';
+        const gr = String(curCls).replace(/\D/g, '') || '8';
+
+        let h1 = 1, g1 = 2, h2 = 2, g2 = 1;
+        if (cfg.byGrade && cfg.byGrade[gr]) {
+            h1 = cfg.byGrade[gr].hk1Hist;
+            g1 = cfg.byGrade[gr].hk1Geo;
+            h2 = cfg.byGrade[gr].hk2Hist;
+            g2 = cfg.byGrade[gr].hk2Geo;
+        } else if (cfg.hk1 && cfg.hk2) {
+            h1 = cfg.hk1.historyPeriods;
+            g1 = cfg.hk1.geographyPeriods;
+            h2 = cfg.hk2.historyPeriods;
+            g2 = cfg.hk2.geographyPeriods;
+        }
 
         const elH1 = document.getElementById('mainLsdlHK1Hist');
         const elG1 = document.getElementById('mainLsdlHK1Geo');
@@ -6375,10 +6556,17 @@ setPCCMFilter(filterName) {
         if (elG1) elG1.value = g1;
         if (elH2) elH2.value = h2;
         if (elG2) elG2.value = g2;
+
+        // Cập nhật nhãn khối nếu có
+        const lblGrade = document.getElementById('mainLsdlTargetGradeLabel');
+        if (lblGrade) {
+            lblGrade.textContent = `(Lớp ${curCls} - Khối ${gr})`;
+        }
     }
 
     /**
      * Xử lý thay đổi số tiết Lịch sử và Địa lí trực tiếp ngoài cửa sổ chính
+     * Lưu cho đúng Khối đang xem và đồng bộ vào hệ thống
      */
     onMainLSDLInputChange() {
         const elH1 = document.getElementById('mainLsdlHK1Hist');
@@ -6390,6 +6578,20 @@ setPCCMFilter(filterName) {
         const g1 = parseInt(elG1?.value) || 2;
         const h2 = parseInt(elH2?.value) || 2;
         const g2 = parseInt(elG2?.value) || 1;
+
+        const curCls = this.currentClass || '8A';
+        const gr = String(curCls).replace(/\D/g, '') || '8';
+
+        if (typeof this.engine.setLSDLGradeConfig === 'function') {
+            this.engine.setLSDLGradeConfig(gr, {
+                hk1Hist: h1,
+                hk1Geo: g1,
+                hk2Hist: h2,
+                hk2Geo: g2,
+                currentHist: h1,
+                currentGeo: g1
+            });
+        }
 
         if (!this.engine.lsdlConfig) this.engine.lsdlConfig = {};
         this.engine.lsdlConfig.mode = 'custom';
@@ -6410,7 +6612,11 @@ setPCCMFilter(filterName) {
         if (mH2) mH2.value = h2;
         if (mG2) mG2.value = g2;
 
-        this.showToast(`🏛️ Đã cập nhật tỉ lệ Sử - Địa: HK1 (${h1} Sử - ${g1} Địa) • HK2 (${h2} Sử - ${g2} Địa)`, 3000);
+        if (typeof this.renderLSDLGradeConfigBox === 'function') {
+            this.renderLSDLGradeConfigBox();
+        }
+
+        this.showToast(`🏛️ Đã cập nhật tỉ lệ Sử - Địa cho [Khối ${gr}]: HK1 (${h1} Sử - ${g1} Địa) • HK2 (${h2} Sử - ${g2} Địa)`, 3000);
     }
 
     /**

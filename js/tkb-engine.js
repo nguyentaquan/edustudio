@@ -61,9 +61,15 @@ export class SmartTKBEngine {
         // Lịch kết quả [classId][dayIndex][periodIndex] = { subject, teacher, room, isFixed }
         this.timetable = {};
         
-        // Cấu hình linh hoạt phân môn Lịch Sử - Địa Lí (Không khóa cứng 2-1 hay 1-2)
+        // Cấu hình linh hoạt phân môn Lịch Sử - Địa Lí theo từng Khối (K6, K7, K8, K9 khác nhau theo bảng 9 chặng)
         this.lsdlConfig = {
-            mode: 'custom', // 'custom' | 'parallel' | 'sem_block'
+            mode: 'canhthuan_9stages', // 'canhthuan_9stages' | 'custom' | 'parallel' | 'sem_block'
+            byGrade: {
+                '6': { hk1Hist: 2, hk1Geo: 1, hk2Hist: 1, hk2Geo: 2, currentHist: 2, currentGeo: 1, hk1TotalHist: 27, hk1TotalGeo: 27, hk2TotalHist: 26, hk2TotalGeo: 25, yearHist: 53, yearGeo: 52 },
+                '7': { hk1Hist: 1, hk1Geo: 2, hk2Hist: 2, hk2Geo: 1, currentHist: 1, currentGeo: 2, hk1TotalHist: 27, hk1TotalGeo: 27, hk2TotalHist: 26, hk2TotalGeo: 25, yearHist: 53, yearGeo: 52 },
+                '8': { hk1Hist: 1, hk1Geo: 2, hk2Hist: 2, hk2Geo: 1, currentHist: 1, currentGeo: 2, hk1TotalHist: 27, hk1TotalGeo: 27, hk2TotalHist: 26, hk2TotalGeo: 25, yearHist: 53, yearGeo: 52 },
+                '9': { hk1Hist: 2, hk1Geo: 1, hk2Hist: 1, hk2Geo: 2, currentHist: 2, currentGeo: 1, hk1TotalHist: 27, hk1TotalGeo: 27, hk2TotalHist: 26, hk2TotalGeo: 25, yearHist: 53, yearGeo: 52 }
+            },
             hk1: { historyPeriods: 2, geographyPeriods: 1 },
             hk2: { historyPeriods: 1, geographyPeriods: 2 },
             hk1Weeks: 18,
@@ -1609,29 +1615,59 @@ export class SmartTKBEngine {
         }
 
         // 6. MÔN LỊCH SỬ & ĐỊA LÍ (105 TIẾT - 35 TUẦN x 3T)
+        // 6. MÔN LỊCH SỬ VÀ ĐỊA LÍ (105 TIẾT - PHÂN THEO KHỐI K6, K7, K8, K9 CHUẨN 9 CHẶNG)
         if (sub.includes('lịch sử') || sub.includes('địa lí') || sub.includes('địa lý')) {
-            const lsdlTopics = [
-                `Phân môn Lịch sử: Khái quát tiến trình lịch sử (${grLabel})`,
-                `Phân môn Địa lí: Vị trí địa lí, phạm vi lãnh thổ và bản đồ (${grLabel})`,
-                `Phân môn Lịch sử: Các cuộc cách mạng và chuyển biến xã hội`,
-                `Phân môn Địa lí: Địa hình, khoáng sản và tài nguyên thiên nhiên`,
-                `Phân môn Lịch sử: Phong trào đấu tranh dựng nước và giữ nước`,
-                `Phân môn Địa lí: Khí hậu, thủy văn và các đới thiên nhiên`,
-                `Phân môn Lịch sử: Văn minh nhân loại và di sản văn hóa thế giới`,
-                `Phân môn Địa lí: Dân cư, đô thị hóa và phát triển kinh tế`,
-                `Chủ đề chung: Khám phá chủ quyền biển đảo Việt Nam (${grLabel})`,
-                `Thực hành: Khai thác lược đồ lịch sử và Atlat Địa lí Việt Nam`
-            ];
             const list = [];
-            for (let i = 1; i <= 105; i++) {
-                const w = Math.ceil(i / 3);
-                const tIdx = (i - 1) % lsdlTopics.length;
-                list.push({
-                    period: i, week: w,
-                    title: `${lsdlTopics[tIdx]} (Tiết ${i})`,
-                    periodsCount: 1, equipment: `SGK Lịch sử & Địa lí ${gr}, Lược đồ, Atlat`,
-                    room: "Lớp học", note: `Sử & Địa ${gr}`
-                });
+            const grNum = gr; // '6', '7', '8', '9'
+            let pCounter = 1;
+            let histCounter = 1;
+            let geoCounter = 1;
+
+            const isPureHist = (sub.includes('lịch sử') || sub.includes('lich su')) && !sub.includes('địa');
+            const isPureGeo = (sub.includes('địa lí') || sub.includes('dia li') || sub.includes('địa lý')) && !sub.includes('sử');
+
+            for (let w = 1; w <= 35; w++) {
+                const alloc = this.getLSDLWeeklyAllocation(grNum, w);
+                const nHist = alloc.historyPeriods; // 1 hoặc 2
+                const nGeo = alloc.geographyPeriods; // 2 hoặc 1
+
+                if (isPureHist) {
+                    for (let p = 1; p <= nHist; p++) {
+                        list.push({
+                            period: histCounter++, week: w,
+                            title: `Lịch sử ${grNum}: Bài học chủ đề tuần ${w} (Tiết ${p}/${nHist})`,
+                            periodsCount: 1, equipment: `SGK Lịch sử ${grNum}, Lược đồ, Bản đồ`,
+                            room: "Lớp học", note: `Lịch sử ${grNum} (Tuần ${w}: ${nHist}t)`
+                        });
+                    }
+                } else if (isPureGeo) {
+                    for (let p = 1; p <= nGeo; p++) {
+                        list.push({
+                            period: geoCounter++, week: w,
+                            title: `Địa lí ${grNum}: Bài học chủ đề tuần ${w} (Tiết ${p}/${nGeo})`,
+                            periodsCount: 1, equipment: `SGK Địa lí ${grNum}, Atlat Địa lí`,
+                            room: "Lớp học", note: `Địa lí ${grNum} (Tuần ${w}: ${nGeo}t)`
+                        });
+                    }
+                } else {
+                    // Môn ghép Lịch sử và Địa lí (Tổng 3 tiết/tuần)
+                    for (let p = 1; p <= nHist; p++) {
+                        list.push({
+                            period: pCounter++, week: w,
+                            title: `Phân môn Lịch sử ${grNum}: Bài dạy tuần ${w} (Tiết ${p}/${nHist})`,
+                            periodsCount: 1, equipment: `SGK Lịch sử & Địa lí ${grNum}, Lược đồ lịch sử`,
+                            room: "Lớp học", note: `LS ${grNum} (Tuần ${w})`
+                        });
+                    }
+                    for (let p = 1; p <= nGeo; p++) {
+                        list.push({
+                            period: pCounter++, week: w,
+                            title: `Phân môn Địa lí ${grNum}: Bài dạy tuần ${w} (Tiết ${p}/${nGeo})`,
+                            periodsCount: 1, equipment: `SGK Lịch sử & Địa lí ${grNum}, Atlat Địa lí`,
+                            room: "Lớp học", note: `ĐL ${grNum} (Tuần ${w})`
+                        });
+                    }
+                }
             }
             return list;
         }
@@ -2112,6 +2148,23 @@ export class SmartTKBEngine {
             const grid = hk2[c];
             if (!grid) continue;
 
+            // Xác định Khối lớp để lấy đúng target số tiết HK2 riêng cho từng khối (K6,9 khác K7,8)
+            const gr = c.replace(/\D/g, '') || '8';
+            let targetHistHK2 = 1;
+            let targetGeoHK2 = 2;
+
+            if (this.lsdlConfig && this.lsdlConfig.byGrade && this.lsdlConfig.byGrade[gr]) {
+                const grCfg = this.lsdlConfig.byGrade[gr];
+                targetHistHK2 = parseInt(grCfg.hk2Hist) || (gr === '7' || gr === '8' ? 2 : 1);
+                targetGeoHK2 = parseInt(grCfg.hk2Geo) || (gr === '7' || gr === '8' ? 1 : 2);
+            } else if (gr === '7' || gr === '8') {
+                targetHistHK2 = 2;
+                targetGeoHK2 = 1;
+            } else {
+                targetHistHK2 = 1;
+                targetGeoHK2 = 2;
+            }
+
             let historySlots = [];
             let geographySlots = [];
 
@@ -2286,6 +2339,85 @@ export class SmartTKBEngine {
     /**
      * CẬP NHẬT CẤU HÌNH LINH HOẠT PHÂN MÔN LỊCH SỬ - ĐỊA LÍ
      */
+    /**
+     * Lấy phân bổ số tiết Lịch sử và Địa lí chuẩn xác theo từng Khối và từng Tuần
+     * (Căn cứ bảng phân phối chương trình 9 chặng tuần Canh Thuận 2026 - 2027)
+     * - Khối 6 & 9: Tuần 1-4 (ĐL 1, LS 2), 5-8 (ĐL 2, LS 1), 9-13 (ĐL 1, LS 2), 14-18 (ĐL 2, LS 1), 19-22 (ĐL 1, LS 2), 23-26 (ĐL 2, LS 1), 27-31 (ĐL 1, LS 2), 32-34 (ĐL 2, LS 1), 35 (ĐL 1, LS 2)
+     * - Khối 7 & 8: Tuần 1-4 (ĐL 2, LS 1), 5-8 (ĐL 1, LS 2), 9-13 (ĐL 2, LS 1), 14-18 (ĐL 1, LS 2), 19-22 (ĐL 2, LS 1), 23-26 (ĐL 1, LS 2), 27-31 (ĐL 2, LS 1), 32-34 (ĐL 1, LS 2), 35 (ĐL 1, LS 2)
+     */
+    getLSDLWeeklyAllocation(grade = '8', weekNumber = 9) {
+        const gr = String(grade).replace(/\D/g, '') || '8';
+        const w = parseInt(weekNumber) || 9;
+
+        // Nếu người dùng có tùy biến riêng trong byGrade
+        if (this.lsdlConfig && this.lsdlConfig.mode === 'custom' && this.lsdlConfig.byGrade && this.lsdlConfig.byGrade[gr]) {
+            const grCfg = this.lsdlConfig.byGrade[gr];
+            const isHK2 = w > ((this.ppctConfig && this.ppctConfig.hk1Weeks) || 18);
+            if (isHK2) {
+                return { historyPeriods: grCfg.hk2Hist ?? 1, geographyPeriods: grCfg.hk2Geo ?? 2 };
+            } else {
+                return { historyPeriods: grCfg.hk1Hist ?? 2, geographyPeriods: grCfg.hk1Geo ?? 1 };
+            }
+        }
+
+        // Mặc định chuẩn Ma Trận 9 Chặng Tuần Canh Thuận 2026 - 2027
+        if (gr === '6' || gr === '9') {
+            if (w <= 4) return { historyPeriods: 2, geographyPeriods: 1 };
+            if (w <= 8) return { historyPeriods: 1, geographyPeriods: 2 };
+            if (w <= 13) return { historyPeriods: 2, geographyPeriods: 1 };
+            if (w <= 18) return { historyPeriods: 1, geographyPeriods: 2 };
+            if (w <= 22) return { historyPeriods: 2, geographyPeriods: 1 };
+            if (w <= 26) return { historyPeriods: 1, geographyPeriods: 2 };
+            if (w <= 30) return { historyPeriods: 2, geographyPeriods: 1 }; // Chặng 27-31 (4 tuần)
+            if (w <= 34) return { historyPeriods: 1, geographyPeriods: 2 }; // Chặng 32-34 (4 tuần)
+            return { historyPeriods: 2, geographyPeriods: 1 }; // Tuần 35 (1 tuần)
+        } else {
+            // Khối 7 và Khối 8
+            if (w <= 4) return { historyPeriods: 1, geographyPeriods: 2 };
+            if (w <= 8) return { historyPeriods: 2, geographyPeriods: 1 };
+            if (w <= 13) return { historyPeriods: 1, geographyPeriods: 2 };
+            if (w <= 18) return { historyPeriods: 2, geographyPeriods: 1 };
+            if (w <= 22) return { historyPeriods: 1, geographyPeriods: 2 };
+            if (w <= 26) return { historyPeriods: 2, geographyPeriods: 1 };
+            if (w <= 30) return { historyPeriods: 1, geographyPeriods: 2 };
+            if (w <= 34) return { historyPeriods: 2, geographyPeriods: 1 };
+            return { historyPeriods: 2, geographyPeriods: 1 }; // Tuần 35 (1 tuần): cả 4 khối đều ĐL 1, LS 2
+        }
+    }
+
+    /**
+     * Cập nhật cấu hình phân môn Sử - Địa riêng cho từng khối (K6, K7, K8, K9)
+     */
+    setLSDLGradeConfig(grade, cfg) {
+        const gr = String(grade).replace(/\D/g, '') || '8';
+        if (!this.lsdlConfig) this.lsdlConfig = {};
+        if (!this.lsdlConfig.byGrade) this.lsdlConfig.byGrade = {};
+        this.lsdlConfig.byGrade[gr] = Object.assign(this.lsdlConfig.byGrade[gr] || {}, cfg);
+        this.lsdlConfig.mode = 'custom';
+        this.timetableHK2 = null;
+        this.saveState();
+        return this.lsdlConfig.byGrade[gr];
+    }
+
+    /**
+     * Khôi phục chuẩn ma trận 9 chặng tuần cho cả 4 khối 6, 7, 8, 9
+     */
+    resetLSDLTo9StagesCanhThuan() {
+        if (!this.lsdlConfig) this.lsdlConfig = {};
+        this.lsdlConfig.mode = 'canhthuan_9stages';
+        this.lsdlConfig.byGrade = {
+            '6': { hk1Hist: 2, hk1Geo: 1, hk2Hist: 1, hk2Geo: 2, currentHist: 2, currentGeo: 1, hk1TotalHist: 27, hk1TotalGeo: 27, hk2TotalHist: 26, hk2TotalGeo: 25, yearHist: 53, yearGeo: 52 },
+            '7': { hk1Hist: 1, hk1Geo: 2, hk2Hist: 2, hk2Geo: 1, currentHist: 1, currentGeo: 2, hk1TotalHist: 27, hk1TotalGeo: 27, hk2TotalHist: 26, hk2TotalGeo: 25, yearHist: 53, yearGeo: 52 },
+            '8': { hk1Hist: 1, hk1Geo: 2, hk2Hist: 2, hk2Geo: 1, currentHist: 1, currentGeo: 2, hk1TotalHist: 27, hk1TotalGeo: 27, hk2TotalHist: 26, hk2TotalGeo: 25, yearHist: 53, yearGeo: 52 },
+            '9': { hk1Hist: 2, hk1Geo: 1, hk2Hist: 1, hk2Geo: 2, currentHist: 2, currentGeo: 1, hk1TotalHist: 27, hk1TotalGeo: 27, hk2TotalHist: 26, hk2TotalGeo: 25, yearHist: 53, yearGeo: 52 }
+        };
+        this.lsdlConfig.hk1 = { historyPeriods: 2, geographyPeriods: 1 };
+        this.lsdlConfig.hk2 = { historyPeriods: 1, geographyPeriods: 2 };
+        this.timetableHK2 = null;
+        this.saveState();
+        return this.lsdlConfig;
+    }
+
     setLSDLConfig(newConfig) {
         if (!this.lsdlConfig) this.lsdlConfig = {};
         this.lsdlConfig = Object.assign(this.lsdlConfig, newConfig);
