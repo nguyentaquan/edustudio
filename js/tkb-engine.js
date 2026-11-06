@@ -80,6 +80,10 @@ export class SmartTKBEngine {
         // Khung Phân Phối Chương Trình & Kế Hoạch Bài Dạy Chi Tiết 35 Tuần (CV 5512)
         this.ppctLessons = {};
 
+        // KHO LƯU TRỮ VÀ QUẢN LÝ TẤT CẢ CÁC BẢN TKB TRONG NĂM THEO THỜI ĐIỂM
+        this.yearlySnapshots = {};
+        this.activeSnapshotId = 'snapshot_week_9_13';
+
         // Ràng buộc Ưu tiên Sư phạm Đẳng cấp (GDMN & GDPT)
         this.pedagogicalPriorities = {
             gvcnOffDays: 2, // GVCN được nghỉ 2 buổi/tuần
@@ -101,6 +105,7 @@ export class SmartTKBEngine {
             this.officialPCCM = CANH_THUAN_TKB_DATA.officialPCCM || [];
             this.assignments = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.assignments));
             this.timetable = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.timetable));
+            this.initDefaultYearlySnapshots();
             this.purgeFlagSalute();
             this.saveState();
             return;
@@ -109,6 +114,196 @@ export class SmartTKBEngine {
     }
 
         // LOẠI BỎ TRIỆT ĐỂ TIẾT CHÀO CỜ & BỔ SUNG MÔN GIÁO DỤC ĐỊA PHƯƠNG
+        // =========================================================================
+    // HỆ THỐNG KHO LƯU TRỮ TẤT CẢ CÁC BẢN TKB CỦA NĂM THEO THỜI ĐIỂM (SNAPSHOTS)
+    // =========================================================================
+
+    /**
+     * Khởi tạo bộ dữ liệu TKB mẫu theo các thời điểm chính trong năm học
+     */
+    initDefaultYearlySnapshots() {
+        if (!this.yearlySnapshots) this.yearlySnapshots = {};
+
+        const baseTimetable = this.timetable ? JSON.parse(JSON.stringify(this.timetable)) : {};
+        const baseAssignments = this.assignments ? JSON.parse(JSON.stringify(this.assignments)) : [];
+
+        // 1. TKB Giai Đoạn 2: Tuần 9 - 13 (Bản chuẩn hiện hành áp dụng từ 02/11/2026)
+        if (!this.yearlySnapshots['snapshot_week_9_13']) {
+            this.yearlySnapshots['snapshot_week_9_13'] = {
+                id: 'snapshot_week_9_13',
+                name: 'TKB Giai Đoạn 2: Tuần 9 - 13 (Từ 02/11/2026 - Chuẩn Hiện Hành)',
+                shortName: 'Tuần 9 - 13',
+                planType: 'WEEK_9_13',
+                semester: 'Học kỳ I',
+                applyFromDate: '02/11/2026',
+                weekRange: 'Tuần 9 đến Tuần 13',
+                savedAt: '02/11/2026',
+                note: 'Bản chính thức trường THCS Bán Trú Canh Thuận',
+                classes: [...this.classes],
+                assignments: JSON.parse(JSON.stringify(baseAssignments)),
+                timetable: JSON.parse(JSON.stringify(baseTimetable)),
+                lsdlConfig: Object.assign({}, this.lsdlConfig)
+            };
+        }
+
+        // 2. TKB Giai Đoạn 1: Tuần 1 - 8 (Giai đoạn đầu năm học từ 05/09/2026)
+        if (!this.yearlySnapshots['snapshot_week_1_8']) {
+            this.yearlySnapshots['snapshot_week_1_8'] = {
+                id: 'snapshot_week_1_8',
+                name: 'TKB Giai Đoạn 1: Tuần 1 - 8 (Từ Khai Giảng 05/09/2026)',
+                shortName: 'Tuần 1 - 8',
+                planType: 'WEEK_1_9',
+                semester: 'Học kỳ I',
+                applyFromDate: '05/09/2026',
+                weekRange: 'Tuần 1 đến Tuần 8',
+                savedAt: '05/09/2026',
+                note: 'Bản TKB giai đoạn đầu năm liền kề trước',
+                classes: [...this.classes],
+                assignments: JSON.parse(JSON.stringify(baseAssignments)),
+                timetable: JSON.parse(JSON.stringify(baseTimetable)),
+                lsdlConfig: Object.assign({}, this.lsdlConfig)
+            };
+        }
+
+        // 3. TKB Giai Đoạn 3: Tuần 14 - 18 (Sau Giữa Kỳ I - Từ 07/12/2026)
+        if (!this.yearlySnapshots['snapshot_week_14_18']) {
+            this.yearlySnapshots['snapshot_week_14_18'] = {
+                id: 'snapshot_week_14_18',
+                name: 'TKB Giai Đoạn 3: Tuần 14 - 18 (Sau Giữa Kỳ I - Từ 07/12/2026)',
+                shortName: 'Tuần 14 - 18',
+                planType: 'WEEK_10_18',
+                semester: 'Học kỳ I',
+                applyFromDate: '07/12/2026',
+                weekRange: 'Tuần 14 đến Tuần 18',
+                savedAt: '07/12/2026',
+                note: 'Bản TKB tăng cường ôn tập cuối Học kỳ I',
+                classes: [...this.classes],
+                assignments: JSON.parse(JSON.stringify(baseAssignments)),
+                timetable: JSON.parse(JSON.stringify(baseTimetable)),
+                lsdlConfig: Object.assign({}, this.lsdlConfig)
+            };
+        }
+
+        // 4. TKB Học Kỳ II: Tuần 19 - 35 (Từ 11/01/2027 - Hoán đổi Lịch sử 1t / Địa lí 2t)
+        if (!this.yearlySnapshots['snapshot_hk2_full']) {
+            // Tự động sinh TKB Học kỳ II nếu có phương thức
+            let sem2Timetable = JSON.parse(JSON.stringify(baseTimetable));
+            try {
+                if (typeof this.generateSemester2Timetable === 'function') {
+                    sem2Timetable = this.generateSemester2Timetable();
+                }
+            } catch(e) {}
+
+            this.yearlySnapshots['snapshot_hk2_full'] = {
+                id: 'snapshot_hk2_full',
+                name: 'TKB Học Kỳ II: Tuần 19 - 35 (Từ 11/01/2027 - Sử 1t / Địa 2t)',
+                shortName: 'Học Kỳ II (19-35)',
+                planType: 'HK2',
+                semester: 'Học kỳ II',
+                applyFromDate: '11/01/2027',
+                weekRange: 'Tuần 19 đến Tuần 35',
+                savedAt: '11/01/2027',
+                note: 'Bản TKB Học kỳ II hoán đổi Lịch sử 1t / Địa lí 2t chuẩn CV 1496/BGDĐT',
+                classes: [...this.classes],
+                assignments: JSON.parse(JSON.stringify(baseAssignments)),
+                timetable: sem2Timetable,
+                lsdlConfig: Object.assign({}, this.lsdlConfig, { hk2: { historyPeriods: 1, geographyPeriods: 2 } })
+            };
+        }
+    }
+
+    /**
+     * Lưu trạng thái TKB hiện tại thành một bản thời điểm mới
+     */
+    saveCurrentAsSnapshot(name, weekRange = '', note = '') {
+        if (!this.yearlySnapshots) this.yearlySnapshots = {};
+
+        const id = 'snapshot_' + Date.now();
+        const autoName = name && name.trim() ? name.trim() : (`TKB Thời Điểm ${new Date().toLocaleDateString('vi-VN')}`);
+        const currentPlan = (this.schoolConfig && this.schoolConfig.schedulePlanType) || 'WEEK_9_13';
+        const currentRange = weekRange || (this.schoolConfig && this.schoolConfig.applyWeekRange) || 'Tuần hiện hành';
+
+        this.yearlySnapshots[id] = {
+            id: id,
+            name: autoName,
+            shortName: autoName.slice(0, 20),
+            planType: currentPlan,
+            semester: (this.schoolConfig && this.schoolConfig.semester) || 'Học kỳ I',
+            applyFromDate: (this.schoolConfig && this.schoolConfig.applyFromDate) || new Date().toLocaleDateString('vi-VN'),
+            weekRange: currentRange,
+            savedAt: new Date().toLocaleDateString('vi-VN') + ' ' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+            note: note || 'Bản lưu cá nhân của Thầy Cô',
+            classes: [...this.classes],
+            assignments: JSON.parse(JSON.stringify(this.assignments || [])),
+            timetable: JSON.parse(JSON.stringify(this.timetable || {})),
+            lsdlConfig: Object.assign({}, this.lsdlConfig || {})
+        };
+
+        this.activeSnapshotId = id;
+        this.saveState();
+        return { success: true, snapshot: this.yearlySnapshots[id] };
+    }
+
+    /**
+     * Kích hoạt / Nạp lại TKB của một thời điểm bất kỳ
+     */
+    applySnapshot(snapshotId) {
+        if (!this.yearlySnapshots || !this.yearlySnapshots[snapshotId]) {
+            return { success: false, reason: "Không tìm thấy bản TKB thời điểm này" };
+        }
+
+        const snap = this.yearlySnapshots[snapshotId];
+        this.timetable = JSON.parse(JSON.stringify(snap.timetable || {}));
+        if (snap.assignments && snap.assignments.length > 0) {
+            this.assignments = JSON.parse(JSON.stringify(snap.assignments));
+        }
+        if (snap.classes && snap.classes.length > 0) {
+            this.classes = [...snap.classes];
+        }
+        if (snap.lsdlConfig) {
+            this.lsdlConfig = Object.assign({}, snap.lsdlConfig);
+        }
+        if (!this.schoolConfig) this.schoolConfig = {};
+        if (snap.planType) this.schoolConfig.schedulePlanType = snap.planType;
+        if (snap.weekRange) this.schoolConfig.applyWeekRange = snap.weekRange;
+        if (snap.semester) this.schoolConfig.semester = snap.semester;
+        if (snap.applyFromDate) this.schoolConfig.applyFromDate = snap.applyFromDate;
+
+        this.activeSnapshotId = snapshotId;
+        this.purgeFlagSalute();
+        this.saveState();
+
+        return { success: true, snapshot: snap };
+    }
+
+    /**
+     * Xóa một bản TKB khỏi kho
+     */
+    deleteSnapshot(snapshotId) {
+        if (!this.yearlySnapshots || !this.yearlySnapshots[snapshotId]) return false;
+        delete this.yearlySnapshots[snapshotId];
+        if (this.activeSnapshotId === snapshotId) {
+            const keys = Object.keys(this.yearlySnapshots);
+            this.activeSnapshotId = keys.length > 0 ? keys[0] : null;
+        }
+        this.saveState();
+        return true;
+    }
+
+    /**
+     * Lấy danh sách tất cả các bản TKB của năm
+     */
+    getYearlySnapshotsList() {
+        if (!this.yearlySnapshots || Object.keys(this.yearlySnapshots).length === 0) {
+            this.initDefaultYearlySnapshots();
+        }
+        const list = Object.values(this.yearlySnapshots);
+        list.forEach(item => {
+            item.isActive = (item.id === this.activeSnapshotId);
+        });
+        return list;
+    }
+
     purgeFlagSalute() {
         if (!this.timetable) return;
         for (const classId in this.timetable) {
@@ -655,6 +850,8 @@ export class SmartTKBEngine {
                 lsdlConfig: this.lsdlConfig,
                 ppctConfig: this.ppctConfig,
                 ppctLessons: this.ppctLessons || {},
+                yearlySnapshots: this.yearlySnapshots || {},
+                activeSnapshotId: this.activeSnapshotId || 'snapshot_week_9_13',
                 savedAt: new Date().toISOString()
             };
             localStorage.setItem(key, JSON.stringify(data));
@@ -710,6 +907,11 @@ export class SmartTKBEngine {
                     if (data.lsdlConfig) this.lsdlConfig = Object.assign({}, this.lsdlConfig, data.lsdlConfig);
                     if (data.ppctConfig) this.ppctConfig = Object.assign({}, this.ppctConfig, data.ppctConfig);
             this.ppctLessons = data.ppctLessons || {};
+            this.yearlySnapshots = data.yearlySnapshots || {};
+            this.activeSnapshotId = data.activeSnapshotId || 'snapshot_week_9_13';
+            if (Object.keys(this.yearlySnapshots).length === 0) {
+                this.initDefaultYearlySnapshots();
+            }
             this.purgeFlagSalute();
             return true;
         } catch(e) {

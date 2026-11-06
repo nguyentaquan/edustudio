@@ -950,6 +950,24 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                     </div>
 
                     <div style="display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;">
+                        <!-- KHỐI QUẢN TRỊ KHO TKB CẢ NĂM THEO THỜI ĐIỂM (CHỌN LẠI DÙNG NGAY BẤT KỲ LÚC NÀO) -->
+                        <div style="display: inline-flex; align-items: center; gap: 0.3rem; background: #f0fdf4; border: 1.5px solid #059669; padding: 0.18rem 0.45rem; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+                            <span style="font-size: 0.73rem; font-weight: 800; color: #047857; display: flex; align-items: center; gap: 0.2rem;">
+                                <span>🗂️</span> <span>TKB Thời Điểm:</span>
+                            </span>
+                            <select id="selectYearlyTKBSnapshot" onchange="window.smartTKBUI.onSelectYearlySnapshot(this.value)" style="padding: 0.2rem 0.45rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #6ee7b7; border-radius: 4px; color: #065f46; background: #ffffff; cursor: pointer; outline: none;" title="Chọn dùng lại TKB của bất kỳ thời điểm nào trong năm mà không mất thời gian biên tập lại">
+                                ${(this.engine.getYearlySnapshotsList ? this.engine.getYearlySnapshotsList() : []).map(s => `
+                                    <option value="${s.id}" ${s.isActive ? 'selected' : ''}>${s.shortName || s.name}</option>
+                                `).join('')}
+                            </select>
+                            <button type="button" onclick="window.smartTKBUI.openSaveSnapshotModal();" style="background: #059669; color: #ffffff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.2rem;" title="Lưu TKB hiện tại thành mốc thời điểm mới vào kho">
+                                <span>💾</span> <span>Lưu Bản Này</span>
+                            </button>
+                            <button type="button" onclick="window.smartTKBUI.openYearlySnapshotsManagerModal();" style="background: #ffffff; color: #047857; border: 1px solid #059669; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.2rem;" title="Mở Kho Quản Lý Toàn Bộ TKB Cả Năm">
+                                <span>🗄️</span> <span>Kho Cả Năm</span>
+                            </button>
+                        </div>
+
                         <button type="button" onclick="window.smartTKBUI.openCumulativePriorModal();" 
                                 style="background: #ffffff; color: #047857; border: 1.5px solid #059669; padding: 0.22rem 0.55rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04);" 
                                 title="Xem đối soát Lũy kế TKB liền kề trước (Tuần 1 - 8)">
@@ -5493,6 +5511,286 @@ setPCCMFilter(filterName) {
      * HỘP THOẠI: BẢNG ĐỐI SOÁT & LŨY KẾ THỜI KHÓA BIỂU LIỀN KỀ TRƯỚC
      * (Theo chỉ đạo trực tiếp của Thầy Nguyễn Tá Quan)
      */
+        // =========================================================================
+    // HỆ THỐNG KHO LƯU TRỮ VÀ QUẢN LÝ TẤT CẢ CÁC BẢN TKB TRONG NĂM (SNAPSHOTS)
+    // =========================================================================
+
+    /**
+     * Khi người dùng chọn một bản TKB thời điểm từ dropdown
+     */
+    onSelectYearlySnapshot(snapshotId) {
+        if (!snapshotId) return;
+        const res = this.engine.applySnapshot(snapshotId);
+        if (res.success) {
+            this.renderSchoolTimetable();
+            this.renderPCCMTable();
+            this.syncHeaderSemesterAndDates();
+            this.showToast(`🎉 Đã tải thành công ${res.snapshot.name}! TKB thời điểm này đã sẵn sàng sử dụng.`, 3500);
+        } else {
+            alert(res.reason || "Không thể tải bản TKB này");
+        }
+    }
+
+    /**
+     * Mở modal lưu TKB hiện tại thành một bản thời điểm mới
+     */
+    openSaveSnapshotModal() {
+        let modal = document.getElementById('saveTKBSnapshotModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'saveTKBSnapshotModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+                backdrop-filter: blur(8px); z-index: 1000000; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        modal.classList.add('active');
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('visibility', 'visible', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
+        modal.style.setProperty('z-index', '9999999', 'important');
+
+        const currentRange = (this.engine.schoolConfig && this.engine.schoolConfig.applyWeekRange) || 'Tuần 9 đến Tuần 13';
+        const defaultName = `TKB Đợt Áp Dụng (${new Date().toLocaleDateString('vi-VN')})`;
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 12px; max-width: 520px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.35); border: 1px solid #cbd5e1; overflow: hidden; animation: modalPop 0.2s ease-out;">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #065f46 0%, #047857 100%); color: #ffffff; padding: 0.9rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <span style="font-size: 1.5rem;">💾</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; text-transform: uppercase;">
+                                LƯU TKB THỜI ĐIỂM HIỆN TẠI VÀO KHO
+                            </h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.72rem; color: #a7f3d0;">
+                                Lưu lại toàn bộ dữ liệu để sau này dùng lại tức thì không cần biên tập lại
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="document.getElementById('saveTKBSnapshotModal').style.display='none'; document.getElementById('saveTKBSnapshotModal').classList.remove('active');" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #ffffff;">✕</button>
+                </div>
+
+                <!-- Form -->
+                <div style="padding: 1.25rem;">
+                    <div style="margin-bottom: 0.85rem;">
+                        <label style="display: block; font-size: 0.78rem; font-weight: 800; color: #1e293b; margin-bottom: 0.35rem;">
+                            🏷️ Tên Bản TKB / Đợt Áp Dụng: <span style="color: #ef4444;">*</span>
+                        </label>
+                        <input type="text" id="inputSnapshotName" value="${defaultName}" style="width: 100%; padding: 0.55rem 0.75rem; font-size: 0.85rem; font-weight: 700; border: 1.5px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; outline: none;" onfocus="this.style.borderColor='#059669';" onblur="this.style.borderColor='#cbd5e1';">
+                    </div>
+
+                    <div style="margin-bottom: 0.85rem;">
+                        <label style="display: block; font-size: 0.78rem; font-weight: 800; color: #1e293b; margin-bottom: 0.35rem;">
+                            📅 Phạm Vi Tuần / Thời Gian Áp Dụng:
+                        </label>
+                        <input type="text" id="inputSnapshotWeekRange" value="${currentRange}" placeholder="Ví dụ: Tuần 9 đến Tuần 13, hoặc Từ 02/11/2026..." style="width: 100%; padding: 0.55rem 0.75rem; font-size: 0.85rem; font-weight: 700; border: 1.5px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; outline: none;">
+                    </div>
+
+                    <div style="margin-bottom: 1.15rem;">
+                        <label style="display: block; font-size: 0.78rem; font-weight: 800; color: #1e293b; margin-bottom: 0.35rem;">
+                            📝 Ghi Chú Đặc Điểm Của Bản TKB Này:
+                        </label>
+                        <textarea id="inputSnapshotNote" rows="2" placeholder="Ví dụ: Thay đổi GVCN 8A1, chuyển tiết KHTN sang chiều..." style="width: 100%; padding: 0.55rem 0.75rem; font-size: 0.82rem; font-weight: 600; border: 1.5px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; outline: none;"></textarea>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                        <button type="button" onclick="document.getElementById('saveTKBSnapshotModal').style.display='none'; document.getElementById('saveTKBSnapshotModal').classList.remove('active');" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 0.55rem 1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; cursor: pointer;">Hủy Bỏ</button>
+                        <button type="button" onclick="window.smartTKBUI.saveCurrentSnapshotFromModal();" style="background: #059669; color: #ffffff; border: none; padding: 0.55rem 1.25rem; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; box-shadow: 0 2px 6px rgba(5,150,105,0.3);">
+                            💾 Lưu Ngay Vào Kho Cả Năm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Thực thi lưu snapshot từ Modal
+     */
+    saveCurrentSnapshotFromModal() {
+        const nameInput = document.getElementById('inputSnapshotName');
+        const weekInput = document.getElementById('inputSnapshotWeekRange');
+        const noteInput = document.getElementById('inputSnapshotNote');
+
+        const name = nameInput ? nameInput.value.trim() : '';
+        const weekRange = weekInput ? weekInput.value.trim() : '';
+        const note = noteInput ? noteInput.value.trim() : '';
+
+        if (!name) {
+            alert('Vui lòng nhập tên cho bản TKB!');
+            return;
+        }
+
+        const res = this.engine.saveCurrentAsSnapshot(name, weekRange, note);
+        if (res.success) {
+            const modal = document.getElementById('saveTKBSnapshotModal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+            }
+            this.renderSchoolTimetable();
+            this.showToast(`🎉 Đã lưu thành công bản: "${name}" vào Kho TKB Cả Năm!`, 3500);
+        }
+    }
+
+    /**
+     * Mở modal Kho Quản Lý Toàn Bộ Các Bản TKB Trong Năm
+     */
+    openYearlySnapshotsManagerModal() {
+        let modal = document.getElementById('yearlySnapshotsManagerModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'yearlySnapshotsManagerModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+                backdrop-filter: blur(8px); z-index: 1000000; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        modal.classList.add('active');
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('visibility', 'visible', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
+        modal.style.setProperty('z-index', '9999999', 'important');
+
+        const snapshots = this.engine.getYearlySnapshotsList ? this.engine.getYearlySnapshotsList() : [];
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 12px; max-width: 900px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.4); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 88vh; animation: modalPop 0.2s ease-out;">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #065f46 0%, #047857 50%, #0f766e 100%); color: #ffffff; padding: 0.9rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <span style="font-size: 1.5rem;">🗄️</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.08rem; font-weight: 800; text-transform: uppercase;">
+                                KHO LƯU TRỮ VÀ QUẢN LÝ TẤT CẢ CÁC BẢN TKB TRONG NĂM HỌC
+                            </h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #a7f3d0;">
+                                Năm học 2026 - 2027 • Chuyển đổi và sử dụng lại TKB từng thời điểm chỉ với 1 click
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="document.getElementById('yearlySnapshotsManagerModal').style.display='none'; document.getElementById('yearlySnapshotsManagerModal').classList.remove('active');" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #ffffff;">✕</button>
+                </div>
+
+                <!-- Thao tác trên thanh đầu -->
+                <div style="padding: 0.75rem 1.25rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #334155;">
+                        Tổng số bản TKB đã lưu trữ: <span style="color: #059669; font-weight: 800;">${snapshots.length} đợt</span>
+                    </div>
+                    <button type="button" onclick="window.smartTKBUI.openSaveSnapshotModal();" style="background: #059669; color: #ffffff; border: none; padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.76rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <span>💾</span> <span>Lưu Thêm Bản TKB Hiện Tại Vào Kho</span>
+                    </button>
+                </div>
+
+                <!-- Danh Sách Các Bản TKB -->
+                <div style="padding: 1rem 1.25rem; overflow-y: auto; flex: 1;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                        <thead>
+                            <tr style="background: #f1f5f9; color: #334155; font-size: 0.74rem; text-transform: uppercase;">
+                                <th style="padding: 0.5rem; text-align: center; width: 45px;">STT</th>
+                                <th style="padding: 0.5rem; text-align: left;">Tên Bản TKB / Đợt Áp Dụng</th>
+                                <th style="padding: 0.5rem; text-align: center; width: 140px;">Phạm Vi Tuần</th>
+                                <th style="padding: 0.5rem; text-align: center; width: 100px;">Học Kỳ</th>
+                                <th style="padding: 0.5rem; text-align: center; width: 120px;">Trạng Thái</th>
+                                <th style="padding: 0.5rem; text-align: center; width: 140px;">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${snapshots.map((s, idx) => `
+                                <tr style="border-bottom: 1px solid #e2e8f0; ${s.isActive ? 'background: #f0fdf4;' : ''}">
+                                    <td style="padding: 0.6rem 0.5rem; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                                    <td style="padding: 0.6rem 0.5rem;">
+                                        <div style="font-weight: 800; color: ${s.isActive ? '#047857' : '#0f172a'}; font-size: 0.84rem;">
+                                            ${s.name}
+                                        </div>
+                                        <div style="font-size: 0.7rem; color: #64748b; margin-top: 0.15rem;">
+                                            ${s.note || 'Lưu lúc: ' + s.savedAt}
+                                        </div>
+                                    </td>
+                                    <td style="padding: 0.6rem 0.5rem; text-align: center; font-weight: 700; color: #334155;">
+                                        ${s.weekRange || 'Tuần ' + (s.planType || 'Hiện hành')}
+                                    </td>
+                                    <td style="padding: 0.6rem 0.5rem; text-align: center; font-weight: 700; color: #0284c7;">
+                                        ${s.semester || 'Học kỳ I'}
+                                    </td>
+                                    <td style="padding: 0.6rem 0.5rem; text-align: center;">
+                                        ${s.isActive ? `
+                                            <span style="background: #10b981; color: #ffffff; padding: 0.2rem 0.55rem; border-radius: 9999px; font-size: 0.68rem; font-weight: 800; display: inline-flex; align-items: center; gap: 0.2rem;">
+                                                <span>🟢</span> <span>ĐANG DÙNG</span>
+                                            </span>
+                                        ` : `
+                                            <span style="background: #f1f5f9; color: #64748b; padding: 0.2rem 0.55rem; border-radius: 9999px; font-size: 0.68rem; font-weight: 700;">
+                                                LƯU TRỮ
+                                            </span>
+                                        `}
+                                    </td>
+                                    <td style="padding: 0.6rem 0.5rem; text-align: center;">
+                                        <div style="display: flex; gap: 0.35rem; justify-content: center;">
+                                            ${s.isActive ? `
+                                                <button type="button" disabled style="background: #cbd5e1; color: #64748b; border: none; padding: 0.25rem 0.55rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: not-allowed;">
+                                                    Đang Chọn
+                                                </button>
+                                            ` : `
+                                                <button type="button" onclick="window.smartTKBUI.applySnapshotAndCloseManager('${s.id}');" style="background: #059669; color: #ffffff; border: none; padding: 0.25rem 0.65rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1);" title="Kích hoạt dùng ngay bản TKB này">
+                                                    ▶️ Dùng Bản Này
+                                                </button>
+                                                <button type="button" onclick="window.smartTKBUI.deleteSnapshotFromManager('${s.id}');" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 0.25rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer;" title="Xóa bản này khỏi kho">
+                                                    🗑️
+                                                </button>
+                                            `}
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer -->
+                <div style="padding: 0.75rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+                    <button type="button" onclick="document.getElementById('yearlySnapshotsManagerModal').style.display='none'; document.getElementById('yearlySnapshotsManagerModal').classList.remove('active');" style="background: #64748b; color: #ffffff; border: none; padding: 0.4rem 1rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+                        Đóng Cửa Sổ
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Kích hoạt snapshot từ màn hình Quản lý và đóng Modal
+     */
+    applySnapshotAndCloseManager(snapshotId) {
+        this.onSelectYearlySnapshot(snapshotId);
+        const modal = document.getElementById('yearlySnapshotsManagerModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+        }
+    }
+
+    /**
+     * Xóa snapshot từ màn hình Quản lý
+     */
+    deleteSnapshotFromManager(snapshotId) {
+        if (!confirm('Thầy có chắc chắn muốn xóa bản TKB này khỏi kho không?')) return;
+        const ok = this.engine.deleteSnapshot(snapshotId);
+        if (ok) {
+            this.openYearlySnapshotsManagerModal(); // Re-render modal
+            this.showToast('🗑️ Đã xóa bản TKB khỏi kho thành công!');
+        }
+    }
+
     openCumulativePriorModal() {
         let modal = document.getElementById('tkbCumulativePriorModal');
         if (!modal) {
