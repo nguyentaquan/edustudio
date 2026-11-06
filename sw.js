@@ -1,7 +1,7 @@
-// EduStudio Service Worker (v3.10.56 - GDMN & GDPT)
+// EduStudio Service Worker (v3.10.57 - GDMN & GDPT)
 // Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
 
-const CACHE_NAME = "edustudio-pwa-v3.10.56-lsdl-multi-grade-matrix";
+const CACHE_NAME = "edustudio-pwa-v3.10.57-pedagogical-priority-sync";
 
 self.addEventListener('install', (event) => {
   // Bỏ qua chờ đợi, kích hoạt ngay lập tức
