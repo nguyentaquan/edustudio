@@ -8,7 +8,7 @@
  * ==============================================================================
  */
 
-import { SmartTKBEngine } from './tkb-engine.js?v=3.10.47';
+import { SmartTKBEngine } from './tkb-engine.js?v=3.10.48';
 
 export class SmartTKBUI {
     constructor(appInstance) {
@@ -3544,26 +3544,104 @@ setPCCMFilter(filterName) {
                         </div>
 
                         <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
-                                <thead>
+                            <!-- THANH CÔNG CỤ CHẾ ĐỘ ƯU TIÊN PHÂN BỔ HỌC KỲ (ĐẲNG CẤP SƯ PHẠM THEO CHỈ ĐẠO CỦA THẦY QUAN) -->
+                        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 0.55rem 0.85rem; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
+                                <span style="font-size: 0.76rem; font-weight: 800; color: #1e293b;">🎖️ CHẾ ĐỘ ƯU TIÊN PHÂN BỔ:</span>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTPriorityDistribution('balanced')" style="font-size: 0.7rem; font-weight: 800; padding: 0.22rem 0.55rem; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; color: #334155; cursor: pointer;" title="Chia đều số tiết 2 kỳ theo đúng số tuần HK1 và HK2">
+                                    ⚖️ Ưu Tiên Đều 2 Kỳ
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTPriorityDistribution('heavy_hk1')" style="font-size: 0.7rem; font-weight: 800; padding: 0.22rem 0.55rem; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 5px; color: #1d4ed8; cursor: pointer;" title="Ưu tiên dồn tiết vào HK1 (cho các môn cần học dồn)">
+                                    🍂 Ưu Tiên Dồn HK1
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTPriorityDistribution('heavy_hk2')" style="font-size: 0.7rem; font-weight: 800; padding: 0.22rem 0.55rem; background: #f0fdf4; border: 1px solid #86efac; border-radius: 5px; color: #15803d; cursor: pointer;" title="Ưu tiên dồn tiết vào HK2">
+                                    🌱 Ưu Tiên Dồn HK2
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTPriorityDistribution('block_sem1')" style="font-size: 0.7rem; font-weight: 800; padding: 0.22rem 0.55rem; background: #faf5ff; border: 1px solid #d8b4fe; border-radius: 5px; color: #7c3aed; cursor: pointer;" title="Cuốn chiếu: học trọn vẹn cả năm môn 1 tiết/tuần trong HK1">
+                                    ⚡ Cuốn Chiếu HK1 (Môn 1t)
+                                </button>
+                            </div>
+                            <div style="font-size: 0.72rem; color: #64748b; font-weight: 700;">
+                                💡 Cho phép sửa số tiết trực tiếp trên từng ô (Cả năm, HK1, HK2), không bị khóa cứng!
+                            </div>
+                        </div>
+
+                        <!-- THANH CÔNG CỤ CHẾ ĐỘ ƯU TIÊN PHÂN BỔ HỌC KỲ (ĐẲNG CẤP SƯ PHẠM THEO CHỈ ĐẠO CỦA THẦY QUAN) -->
+                        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 0.55rem 0.85rem; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
+                                <span style="font-size: 0.76rem; font-weight: 800; color: #1e293b;">🎖️ CHẾ ĐỘ ƯU TIÊN PHÂN BỔ:</span>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTPriorityDistribution('balanced')" style="font-size: 0.7rem; font-weight: 800; padding: 0.22rem 0.55rem; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; color: #334155; cursor: pointer;" title="Chia đều số tiết 2 kỳ theo đúng số tuần HK1 và HK2">
+                                    ⚖️ Ưu Tiên Đều 2 Kỳ
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTPriorityDistribution('heavy_hk1')" style="font-size: 0.7rem; font-weight: 800; padding: 0.22rem 0.55rem; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 5px; color: #1d4ed8; cursor: pointer;" title="Ưu tiên dồn tiết vào HK1 (cho các môn cần học dồn)">
+                                    🍂 Ưu Tiên Dồn HK1
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTPriorityDistribution('heavy_hk2')" style="font-size: 0.7rem; font-weight: 800; padding: 0.22rem 0.55rem; background: #f0fdf4; border: 1px solid #86efac; border-radius: 5px; color: #15803d; cursor: pointer;" title="Ưu tiên dồn tiết vào HK2">
+                                    🌱 Ưu Tiên Dồn HK2
+                                </button>
+                                <button type="button" onclick="window.smartTKBUI.applyPPCTPriorityDistribution('block_sem1')" style="font-size: 0.7rem; font-weight: 800; padding: 0.22rem 0.55rem; background: #faf5ff; border: 1px solid #d8b4fe; border-radius: 5px; color: #7c3aed; cursor: pointer;" title="Cuốn chiếu: học trọn vẹn cả năm môn 1 tiết/tuần trong HK1">
+                                    ⚡ Cuốn Chiếu HK1 (Môn 1t)
+                                </button>
+                            </div>
+                            <div style="font-size: 0.72rem; color: #64748b; font-weight: 700;">
+                                💡 Cho phép sửa số tiết trực tiếp trên từng ô (Cả năm, HK1, HK2), không bị khóa cứng!
+                            </div>
+                        </div>
+
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                                <thead style="position: sticky; top: 0; background: #f8fafc; z-index: 5;">
                                     <tr style="background: #f8fafc; color: #334155; text-align: left; border-bottom: 2px solid #cbd5e1;">
-                                        <th style="padding: 0.55rem 0.6rem; width: 45px; text-align: center;">STT</th>
-                                        <th style="padding: 0.55rem 0.6rem;">Tên Môn Học (Bộ Môn)</th>
-                                        <th style="padding: 0.55rem 0.6rem; width: 100px; text-align: center;">Cả Năm (35T)</th>
-                                        <th style="padding: 0.55rem 0.6rem; width: 95px; text-align: center;">Học Kỳ I (18T)</th>
-                                        <th style="padding: 0.55rem 0.6rem; width: 95px; text-align: center;">Học Kỳ II (17T)</th>
-                                        <th style="padding: 0.55rem 0.6rem; width: 90px; text-align: center;">Tiết/Tuần</th>
-                                        <th style="padding: 0.55rem 0.6rem; width: 85px; text-align: center;">Tiết Kép (2t)</th>
-                                        <th style="padding: 0.55rem 0.6rem;">Phòng Bộ Môn</th>
-                                        <th style="padding: 0.55rem 0.6rem; width: 130px; text-align: center;">Kế Hoạch Bài Dạy</th>
+                                        <th style="padding: 0.55rem 0.4rem; width: 40px; text-align: center;">STT</th>
+                                        <th style="padding: 0.55rem 0.6rem; min-width: 140px;">Tên Môn Học (Bộ Môn)</th>
+                                        <th style="padding: 0.55rem 0.4rem; width: 80px; text-align: center;" title="Tổng số tiết cả năm học (cho phép nhập tự do, không cố định)">
+                                            Cả Năm (<span id="ppctHdrYearWeeks">${((this.engine.ppctConfig && this.engine.ppctConfig.totalWeeks) || 35)}</span>T)
+                                        </th>
+                                        <th style="padding: 0.55rem 0.4rem; width: 80px; text-align: center;" title="Số tiết thực dạy Học kỳ I (cho phép nhập tự do, không cố định)">
+                                            Học Kỳ I (<span id="ppctHdrHK1Weeks">${((this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18)}</span>T)
+                                        </th>
+                                        <th style="padding: 0.55rem 0.4rem; width: 80px; text-align: center;" title="Số tiết thực dạy Học kỳ II (cho phép nhập tự do, không cố định)">
+                                            Học Kỳ II (<span id="ppctHdrHK2Weeks">${((this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17)}</span>T)
+                                        </th>
+                                        <th style="padding: 0.55rem 0.4rem; width: 65px; text-align: center;" title="Định mức số tiết mỗi tuần">Tiết/Tuần</th>
+                                        <th style="padding: 0.55rem 0.5rem; width: 175px; text-align: center;" title="Hệ thống ưu tiên sư phạm đỉnh cao khi AI xếp Thời khóa biểu">
+                                            🎖️ Ưu Tiên Sư Phạm (TKB)
+                                        </th>
+                                        <th style="padding: 0.55rem 0.4rem; width: 65px; text-align: center;" title="Ưu tiên ghép 2 tiết liền nhau">Tiết Đôi</th>
+                                        <th style="padding: 0.55rem 0.5rem; min-width: 110px;">Phòng Bộ Môn</th>
+                                        <th style="padding: 0.55rem 0.5rem; width: 110px; text-align: center;">Kế Hoạch Bài Dạy</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tblMasterPPCTQuotaBody">
                                     ${subjects.map((sub, idx) => {
+                                        const w1 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18);
+                                        const w2 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17);
+                                        const wTotal = w1 + w2;
+
                                         const pw = parseInt(sub.periodsPerWeek) || 1;
-                                        const py = pw * 35;
-                                        const p1 = pw * 18;
-                                        const p2 = pw * 17;
+                                        // Sử dụng giá trị tùy chỉnh nếu có, nếu chưa có thì tính linh hoạt theo số tuần
+                                        const p1 = (sub.periodsSem1 !== undefined) ? sub.periodsSem1 : (pw * w1);
+                                        const p2 = (sub.periodsSem2 !== undefined) ? sub.periodsSem2 : (pw * w2);
+                                        const py = (sub.periodsYear !== undefined) ? sub.periodsYear : (p1 + p2);
+
+                                        // Xác định mức ưu tiên sư phạm chuẩn xác cho từng môn học
+                                        let defaultPrio = sub.priority || 1;
+                                        const sLower = (sub.name || '').toLowerCase();
+                                        if (!sub.priority) {
+                                            if (sLower.includes('toán') || sLower.includes('văn') || sLower.includes('tiếng anh') || sLower.includes('anh')) {
+                                                defaultPrio = 1;
+                                            } else if (sLower.includes('khtn') || sLower.includes('tin') || sLower.includes('công nghệ')) {
+                                                defaultPrio = 2;
+                                            } else if (sLower.includes('thể dục') || sLower.includes('gdtc')) {
+                                                defaultPrio = 3;
+                                            } else if (sLower.includes('lịch sử') || sLower.includes('địa lí') || sLower.includes('ls_dl')) {
+                                                defaultPrio = 4;
+                                            } else if (sLower.includes('nhạc') || sLower.includes('mỹ thuật') || sLower.includes('mĩ thuật') || sLower.includes('gdcd')) {
+                                                defaultPrio = 5;
+                                            } else {
+                                                defaultPrio = 6;
+                                            }
+                                        }
+
                                         let roomOpts = '<option value="">(Không)</option>';
                                         rooms.forEach(r => {
                                             roomOpts += `<option value="${r.id}" ${sub.roomReq === r.id ? 'selected' : ''}>${r.icon} ${r.name}</option>`;
@@ -3571,33 +3649,59 @@ setPCCMFilter(filterName) {
 
                                         return `
                                             <tr data-index="${idx}" style="border-bottom: 1px solid #f1f5f9;">
-                                                <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
-                                                <td style="padding: 0.45rem 0.6rem;">
+                                                <td style="padding: 0.45rem 0.4rem; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                                                <td style="padding: 0.45rem 0.5rem;">
                                                     <input type="text" class="ppct-sub-name" value="${sub.name}" style="width: 100%; padding: 0.25rem 0.45rem; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px; color: #0f172a;">
                                                 </td>
-                                                <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 800; color: #475569;">
-                                                    <span class="ppct-year-label">${py}</span>t
+
+                                                <!-- CỘT 1: CẢ NĂM (MỞ KHÓA HOÀN TOÀN: CHO PHÉP NHẬP / TÙY CHỈNH TỰ DO) -->
+                                                <td style="padding: 0.45rem 0.4rem; text-align: center;">
+                                                    <input type="number" class="ppct-sub-py" value="${py}" min="0" max="600" onchange="window.smartTKBUI.onPPCTCustomPeriodChange(this, 'year')" style="width: 60px; padding: 0.22rem 0.25rem; font-size: 0.8rem; font-weight: 900; text-align: center; border: 1.5px solid #7c3aed; border-radius: 5px; color: #6d28d9; background: #faf5ff;" title="Nhập số tiết cả năm (tự động cân đối 2 kỳ)">
                                                 </td>
-                                                <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; color: #0369a1;">
-                                                    <span class="ppct-sem1-label">${p1}</span>t
+
+                                                <!-- CỘT 2: HỌC KỲ I (MỞ KHÓA HOÀN TOÀN: CHO PHÉP NHẬP / TÙY CHỈNH TỰ DO) -->
+                                                <td style="padding: 0.45rem 0.4rem; text-align: center;">
+                                                    <input type="number" class="ppct-sub-p1" value="${p1}" min="0" max="300" onchange="window.smartTKBUI.onPPCTCustomPeriodChange(this, 'sem1')" style="width: 58px; padding: 0.22rem 0.25rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1.5px solid #0284c7; border-radius: 5px; color: #0369a1; background: #f0f9ff;" title="Nhập số tiết thực dạy Học kỳ I">
                                                 </td>
-                                                <td style="padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; color: #047857;">
-                                                    <span class="ppct-sem2-label">${p2}</span>t
+
+                                                <!-- CỘT 3: HỌC KỲ II (MỞ KHÓA HOÀN TOÀN: CHO PHÉP NHẬP / TÙY CHỈNH TỰ DO) -->
+                                                <td style="padding: 0.45rem 0.4rem; text-align: center;">
+                                                    <input type="number" class="ppct-sub-p2" value="${p2}" min="0" max="300" onchange="window.smartTKBUI.onPPCTCustomPeriodChange(this, 'sem2')" style="width: 58px; padding: 0.22rem 0.25rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1.5px solid #059669; border-radius: 5px; color: #047857; background: #f0fdf4;" title="Nhập số tiết thực dạy Học kỳ II">
                                                 </td>
-                                                <td style="padding: 0.45rem 0.6rem; text-align: center;">
-                                                    <input type="number" class="ppct-sub-pw" onchange="window.smartTKBUI.onPPCTPeriodsChange(this)" value="${pw}" min="1" max="10" style="width: 55px; padding: 0.25rem 0.35rem; font-size: 0.8rem; font-weight: 900; text-align: center; border: 1px solid #93c5fd; border-radius: 4px; color: #1d4ed8; background: #eff6ff;">
+
+                                                <!-- CỘT 4: TIẾT/TUẦN -->
+                                                <td style="padding: 0.45rem 0.4rem; text-align: center;">
+                                                    <input type="number" class="ppct-sub-pw" onchange="window.smartTKBUI.onPPCTPeriodsChange(this)" value="${pw}" min="1" max="10" style="width: 48px; padding: 0.22rem 0.25rem; font-size: 0.8rem; font-weight: 900; text-align: center; border: 1.5px solid #93c5fd; border-radius: 4px; color: #1d4ed8; background: #eff6ff;">
                                                 </td>
-                                                <td style="padding: 0.45rem 0.6rem; text-align: center;">
-                                                    <input type="checkbox" class="ppct-sub-double" ${sub.doublePeriod ? 'checked' : ''} style="cursor: pointer;">
+
+                                                <!-- CỘT 5: MỨC ĐỘ ƯU TIÊN SƯ PHẠM (ĐẲNG CẤP XẾP LỊCH TKB) -->
+                                                <td style="padding: 0.45rem 0.5rem; text-align: center;">
+                                                    <select class="ppct-sub-priority" style="width: 100%; padding: 0.25rem 0.35rem; font-size: 0.73rem; font-weight: 800; border: 1.5px solid #eab308; border-radius: 5px; background: #fefce8; color: #854d0e; cursor: pointer;" title="Chọn mức ưu tiên sư phạm khi AI xếp TKB">
+                                                        <option value="1" ${defaultPrio === 1 ? 'selected' : ''}>🥇 Ưu tiên 1: Cốt Lõi (Toán, Văn, Anh - Tiết Vàng 1-2-3)</option>
+                                                        <option value="2" ${defaultPrio === 2 ? 'selected' : ''}>🔬 Ưu tiên 2: Phòng Lab (KHTN, Tin - Lab &amp; Tiết Đôi)</option>
+                                                        <option value="3" ${defaultPrio === 3 ? 'selected' : ''}>🏃 Ưu tiên 3: Thể Chất (GDTC - Tiết Mát, Cấm Tiết 4-5)</option>
+                                                        <option value="4" ${defaultPrio === 4 ? 'selected' : ''}>⚖️ Ưu tiên 4: Phân Môn Ghép (Sử &amp; Địa - So Le Nhịp Nhàng)</option>
+                                                        <option value="5" ${defaultPrio === 5 ? 'selected' : ''}>🎨 Ưu tiên 5: Nghệ Thuật (Nhạc, Mĩ Thuật - Giảm Áp Lực)</option>
+                                                        <option value="6" ${defaultPrio === 6 ? 'selected' : ''}>🌟 Ưu tiên 6: Hoạt Động (HĐTN, Chào Cờ, SHL - Khóa Cứng)</option>
+                                                    </select>
                                                 </td>
-                                                <td style="padding: 0.45rem 0.6rem;">
-                                                    <select class="ppct-sub-room" style="width: 100%; padding: 0.25rem 0.4rem; font-size: 0.75rem; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff;">
+
+                                                <!-- CỘT 6: TIẾT ĐÔI -->
+                                                <td style="padding: 0.45rem 0.4rem; text-align: center;">
+                                                    <input type="checkbox" class="ppct-sub-double" ${sub.doublePeriod ? 'checked' : ''} style="cursor: pointer;" title="Ưu tiên ghép 2 tiết liền nhau">
+                                                </td>
+
+                                                <!-- CỘT 7: PHÒNG BỘ MÔN -->
+                                                <td style="padding: 0.45rem 0.5rem;">
+                                                    <select class="ppct-sub-room" style="width: 100%; padding: 0.22rem 0.35rem; font-size: 0.74rem; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff;">
                                                         ${roomOpts}
                                                     </select>
                                                 </td>
-                                                <td style="padding: 0.45rem 0.6rem; text-align: center;">
-                                                    <button type="button" onclick="window.smartTKBUI.openPPCTLessonsTab('${sub.id}', '8')" style="background: #ede9fe; color: #6d28d9; border: 1px solid #c4b5fd; padding: 0.22rem 0.55rem; border-radius: 5px; font-size: 0.72rem; font-weight: 800; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#ddd6fe';" onmouseout="this.style.background='#ede9fe';" title="Xem &amp; sửa chi tiết bài dạy từng tiết môn ${sub.name}">
-                                                        📖 Bài Dạy 35T
+
+                                                <!-- CỘT 8: BÀI DẠY -->
+                                                <td style="padding: 0.45rem 0.5rem; text-align: center;">
+                                                    <button type="button" onclick="window.smartTKBUI.openPPCTLessonsTab('${sub.id}', '8')" style="background: #ede9fe; color: #6d28d9; border: 1px solid #c4b5fd; padding: 0.22rem 0.5rem; border-radius: 5px; font-size: 0.72rem; font-weight: 800; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#ddd6fe';" onmouseout="this.style.background='#ede9fe';" title="Xem &amp; sửa chi tiết bài dạy từng tiết môn ${sub.name}">
+                                                        📖 Bài Dạy
                                                     </button>
                                                 </td>
                                             </tr>
@@ -3860,12 +3964,20 @@ setPCCMFilter(filterName) {
         const row = inputElem.closest('tr');
         if (!row) return;
         const pw = parseInt(inputElem.value) || 1;
-        const yLbl = row.querySelector('.ppct-year-label');
-        const s1Lbl = row.querySelector('.ppct-sem1-label');
-        const s2Lbl = row.querySelector('.ppct-sem2-label');
-        if (yLbl) yLbl.textContent = pw * 35;
-        if (s1Lbl) s1Lbl.textContent = pw * 18;
-        if (s2Lbl) s2Lbl.textContent = pw * 17;
+        const w1 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18);
+        const w2 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17);
+
+        const pyInput = row.querySelector('.ppct-sub-py');
+        const p1Input = row.querySelector('.ppct-sub-p1');
+        const p2Input = row.querySelector('.ppct-sub-p2');
+
+        const p1 = pw * w1;
+        const p2 = pw * w2;
+        const py = p1 + p2;
+
+        if (p1Input) p1Input.value = p1;
+        if (p2Input) p2Input.value = p2;
+        if (pyInput) pyInput.value = py;
 
         let total = 0;
         document.querySelectorAll('#tblMasterPPCTQuotaBody .ppct-sub-pw').forEach(inp => {
@@ -3873,6 +3985,176 @@ setPCCMFilter(filterName) {
         });
         const badge = document.getElementById('ppctTotalPeriodsBadge');
         if (badge) badge.textContent = total;
+    }
+
+    // XỬ LÝ KHI NGƯỜI DÙNG TỰ NHẬP SỐ TIẾT HK1, HK2, HOẶC CẢ NĂM (MỞ KHÓA HOÀN TOÀN)
+    onPPCTCustomPeriodChange(inputElem, fieldType) {
+        const tr = inputElem.closest('tr');
+        if (!tr) return;
+
+        const pyInput = tr.querySelector('.ppct-sub-py');
+        const p1Input = tr.querySelector('.ppct-sub-p1');
+        const p2Input = tr.querySelector('.ppct-sub-p2');
+        const pwInput = tr.querySelector('.ppct-sub-pw');
+
+        let p1 = parseInt(p1Input?.value) || 0;
+        let p2 = parseInt(p2Input?.value) || 0;
+        let py = parseInt(pyInput?.value) || 0;
+
+        if (fieldType === 'sem1' || fieldType === 'sem2') {
+            py = p1 + p2;
+            if (pyInput) pyInput.value = py;
+        } else if (fieldType === 'year') {
+            const w1 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18);
+            const w2 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17);
+            const wTotal = w1 + w2;
+            p1 = Math.round((py * w1) / wTotal);
+            p2 = py - p1;
+            if (p1Input) p1Input.value = p1;
+            if (p2Input) p2Input.value = p2;
+        }
+
+        const w1 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18);
+        if (pwInput && w1 > 0) {
+            const calculatedPw = Math.max(1, Math.round(p1 / w1));
+            if (Math.abs(calculatedPw - (parseInt(pwInput.value) || 1)) > 1) {
+                pwInput.value = calculatedPw;
+            }
+        }
+    }
+
+    // ÁP DỤNG CÁC CHẾ ĐỘ ƯU TIÊN PHÂN BỔ HỌC KỲ
+    applyPPCTPriorityDistribution(mode) {
+        const rows = document.querySelectorAll('#tblMasterPPCTQuotaBody tr');
+        const w1 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18);
+        const w2 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17);
+
+        rows.forEach(tr => {
+            const pw = parseInt(tr.querySelector('.ppct-sub-pw')?.value) || 1;
+            const p1Input = tr.querySelector('.ppct-sub-p1');
+            const p2Input = tr.querySelector('.ppct-sub-p2');
+            const pyInput = tr.querySelector('.ppct-sub-py');
+            const sName = (tr.querySelector('.ppct-sub-name')?.value || '').toLowerCase();
+
+            if (mode === 'balanced') {
+                const p1 = pw * w1;
+                const p2 = pw * w2;
+                if (p1Input) p1Input.value = p1;
+                if (p2Input) p2Input.value = p2;
+                if (pyInput) pyInput.value = p1 + p2;
+            } else if (mode === 'heavy_hk1') {
+                const total = pw * (w1 + w2);
+                const p1 = Math.min(total, Math.ceil((pw + 1) * w1));
+                const p2 = Math.max(0, total - p1);
+                if (p1Input) p1Input.value = p1;
+                if (p2Input) p2Input.value = p2;
+                if (pyInput) pyInput.value = total;
+            } else if (mode === 'heavy_hk2') {
+                const total = pw * (w1 + w2);
+                const p2 = Math.min(total, Math.ceil((pw + 1) * w2));
+                const p1 = Math.max(0, total - p2);
+                if (p1Input) p1Input.value = p1;
+                if (p2Input) p2Input.value = p2;
+                if (pyInput) pyInput.value = total;
+            } else if (mode === 'block_sem1') {
+                if (pw === 1 && (sName.includes('nhạc') || sName.includes('thuật') || sName.includes('công nghệ') || sName.includes('gdcd'))) {
+                    const total = 35;
+                    if (p1Input) p1Input.value = total;
+                    if (p2Input) p2Input.value = 0;
+                    if (pyInput) pyInput.value = total;
+                }
+            }
+        });
+
+        if (mode === 'balanced') this.showToast('⚖️ Đã phân bổ đều số tiết 2 học kỳ!');
+        else if (mode === 'heavy_hk1') this.showToast('🍂 Đã áp dụng chế độ ưu tiên dồn tiết vào Học kỳ I!');
+        else if (mode === 'heavy_hk2') this.showToast('🌱 Đã áp dụng chế độ ưu tiên dồn tiết vào Học kỳ II!');
+        else if (mode === 'block_sem1') this.showToast('⚡ Đã áp dụng chế độ cuốn chiếu HK1 cho các môn 1 tiết/tuần!');
+    }
+
+    // XỬ LÝ KHI NGƯỜI DÙNG TỰ NHẬP SỐ TIẾT HK1, HK2, HOẶC CẢ NĂM (MỞ KHÓA HOÀN TOÀN)
+    onPPCTCustomPeriodChange(inputElem, fieldType) {
+        const tr = inputElem.closest('tr');
+        if (!tr) return;
+
+        const pyInput = tr.querySelector('.ppct-sub-py');
+        const p1Input = tr.querySelector('.ppct-sub-p1');
+        const p2Input = tr.querySelector('.ppct-sub-p2');
+        const pwInput = tr.querySelector('.ppct-sub-pw');
+
+        let p1 = parseInt(p1Input?.value) || 0;
+        let p2 = parseInt(p2Input?.value) || 0;
+        let py = parseInt(pyInput?.value) || 0;
+
+        if (fieldType === 'sem1' || fieldType === 'sem2') {
+            py = p1 + p2;
+            if (pyInput) pyInput.value = py;
+        } else if (fieldType === 'year') {
+            const w1 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18);
+            const w2 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17);
+            const wTotal = w1 + w2;
+            p1 = Math.round((py * w1) / wTotal);
+            p2 = py - p1;
+            if (p1Input) p1Input.value = p1;
+            if (p2Input) p2Input.value = p2;
+        }
+
+        const w1 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18);
+        if (pwInput && w1 > 0) {
+            const calculatedPw = Math.max(1, Math.round(p1 / w1));
+            if (Math.abs(calculatedPw - (parseInt(pwInput.value) || 1)) > 1) {
+                pwInput.value = calculatedPw;
+            }
+        }
+    }
+
+    // ÁP DỤNG CÁC CHẾ ĐỘ ƯU TIÊN PHÂN BỔ HỌC KỲ
+    applyPPCTPriorityDistribution(mode) {
+        const rows = document.querySelectorAll('#tblMasterPPCTQuotaBody tr');
+        const w1 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18);
+        const w2 = ((this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17);
+
+        rows.forEach(tr => {
+            const pw = parseInt(tr.querySelector('.ppct-sub-pw')?.value) || 1;
+            const p1Input = tr.querySelector('.ppct-sub-p1');
+            const p2Input = tr.querySelector('.ppct-sub-p2');
+            const pyInput = tr.querySelector('.ppct-sub-py');
+            const sName = (tr.querySelector('.ppct-sub-name')?.value || '').toLowerCase();
+
+            if (mode === 'balanced') {
+                const p1 = pw * w1;
+                const p2 = pw * w2;
+                if (p1Input) p1Input.value = p1;
+                if (p2Input) p2Input.value = p2;
+                if (pyInput) pyInput.value = p1 + p2;
+            } else if (mode === 'heavy_hk1') {
+                const total = pw * (w1 + w2);
+                const p1 = Math.min(total, Math.ceil((pw + 1) * w1));
+                const p2 = Math.max(0, total - p1);
+                if (p1Input) p1Input.value = p1;
+                if (p2Input) p2Input.value = p2;
+                if (pyInput) pyInput.value = total;
+            } else if (mode === 'heavy_hk2') {
+                const total = pw * (w1 + w2);
+                const p2 = Math.min(total, Math.ceil((pw + 1) * w2));
+                const p1 = Math.max(0, total - p2);
+                if (p1Input) p1Input.value = p1;
+                if (p2Input) p2Input.value = p2;
+                if (pyInput) pyInput.value = total;
+            } else if (mode === 'block_sem1') {
+                if (pw === 1 && (sName.includes('nhạc') || sName.includes('thuật') || sName.includes('công nghệ') || sName.includes('gdcd'))) {
+                    const total = 35;
+                    if (p1Input) p1Input.value = total;
+                    if (p2Input) p2Input.value = 0;
+                    if (pyInput) pyInput.value = total;
+                }
+            }
+        });
+
+        if (mode === 'balanced') this.showToast('⚖️ Đã phân bổ đều số tiết 2 học kỳ!');
+        else if (mode === 'heavy_hk1') this.showToast('🍂 Đã áp dụng chế độ ưu tiên dồn tiết vào Học kỳ I!');
+        else if (mode === 'heavy_hk2') this.showToast('🌱 Đã áp dụng chế độ ưu tiên dồn tiết vào Học kỳ II!');
+        else if (mode === 'block_sem1') this.showToast('⚡ Đã áp dụng chế độ cuốn chiếu HK1 cho các môn 1 tiết/tuần!');
     }
 
     
@@ -3886,19 +4168,26 @@ setPCCMFilter(filterName) {
         const badge = document.getElementById('ppctCfgTotalWeeksBadge');
         if (badge) badge.textContent = `${total} Tuần`;
 
+        const hdrYear = document.getElementById('ppctHdrYearWeeks');
+        const hdrHk1 = document.getElementById('ppctHdrHK1Weeks');
+        const hdrHk2 = document.getElementById('ppctHdrHK2Weeks');
+        if (hdrYear) hdrYear.textContent = total;
+        if (hdrHk1) hdrHk1.textContent = w1;
+        if (hdrHk2) hdrHk2.textContent = w2;
+
         if (this.engine.setPPCTWeekConfig) {
             this.engine.setPPCTWeekConfig(w1, w2);
         }
 
-        // Cập nhật lại số tiết từng môn trong bảng Quota
+        // Tự động tính toán lại các ô input số tiết của từng môn theo số tuần mới
         document.querySelectorAll('#tblMasterPPCTQuotaBody tr').forEach(tr => {
             const pw = parseInt(tr.querySelector('.ppct-sub-pw')?.value) || 1;
-            const yLbl = tr.querySelector('.ppct-year-label');
-            const s1Lbl = tr.querySelector('.ppct-sem1-label');
-            const s2Lbl = tr.querySelector('.ppct-sem2-label');
-            if (yLbl) yLbl.textContent = pw * total;
-            if (s1Lbl) s1Lbl.textContent = pw * w1;
-            if (s2Lbl) s2Lbl.textContent = pw * w2;
+            const pyInput = tr.querySelector('.ppct-sub-py');
+            const p1Input = tr.querySelector('.ppct-sub-p1');
+            const p2Input = tr.querySelector('.ppct-sub-p2');
+            if (p1Input) p1Input.value = pw * w1;
+            if (p2Input) p2Input.value = pw * w2;
+            if (pyInput) pyInput.value = pw * total;
         });
     }
 
@@ -4001,7 +4290,11 @@ setPCCMFilter(filterName) {
         rows.forEach(tr => {
             const idx = parseInt(tr.dataset.index);
             const name = tr.querySelector('.ppct-sub-name')?.value || '';
+            const py = parseInt(tr.querySelector('.ppct-sub-py')?.value) || 70;
+            const p1 = parseInt(tr.querySelector('.ppct-sub-p1')?.value) || 35;
+            const p2 = parseInt(tr.querySelector('.ppct-sub-p2')?.value) || 35;
             const pw = parseInt(tr.querySelector('.ppct-sub-pw')?.value) || 1;
+            const priority = parseInt(tr.querySelector('.ppct-sub-priority')?.value) || 1;
             const isDouble = tr.querySelector('.ppct-sub-double')?.checked || false;
             const room = tr.querySelector('.ppct-sub-room')?.value || null;
 
@@ -4010,22 +4303,47 @@ setPCCMFilter(filterName) {
                 ...oldSub,
                 name: name,
                 periodsPerWeek: pw,
-                periodsYear: pw * 35,
-                periodsSem1: pw * 18,
-                periodsSem2: pw * 17,
+                periodsYear: py,
+                periodsSem1: p1,
+                periodsSem2: p2,
+                priority: priority,
                 doublePeriod: isDouble,
                 roomReq: room || null
             });
         });
 
         this.engine.subjects = updatedSubjects;
+
+        // Lưu cấu hình số tuần thực dạy
+        const w1 = parseInt(document.getElementById('ppctCfgHK1Weeks')?.value) || 18;
+        const w2 = parseInt(document.getElementById('ppctCfgHK2Weeks')?.value) || 17;
+        if (this.engine.setPPCTWeekConfig) {
+            this.engine.setPPCTWeekConfig(w1, w2);
+        }
+
+        // Lưu cấu hình linh hoạt Lịch Sử & Địa Lí
+        const h1 = parseInt(document.getElementById('lsdlHK1Hist')?.value);
+        const g1 = parseInt(document.getElementById('lsdlHK1Geo')?.value);
+        const h2 = parseInt(document.getElementById('lsdlHK2Hist')?.value);
+        const g2 = parseInt(document.getElementById('lsdlHK2Geo')?.value);
+
+        if (this.engine.setLSDLConfig && !isNaN(h1) && !isNaN(g1)) {
+            this.engine.setLSDLConfig({
+                mode: 'custom',
+                hk1: { historyPeriods: h1, geographyPeriods: g1 },
+                hk2: { historyPeriods: h2, geographyPeriods: g2 },
+                hk1Weeks: w1,
+                hk2Weeks: w2
+            });
+        }
+
         this.engine.saveState();
 
         this.renderPCCMTable();
         this.renderConfigTab();
         this.renderStats();
 
-        this.showToast('🎉 Đã cập nhật thành công Khung Số Tiết PPCT môn học toàn trường!');
+        this.showToast('🎉 Đã cập nhật thành công Khung Số Tiết Tùy Chỉnh & Mức Độ Ưu Tiên Sư Phạm toàn trường!');
     }
 
     onPPCTSubjectFilterChange() {

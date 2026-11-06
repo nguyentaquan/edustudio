@@ -214,8 +214,19 @@ export class SmartTKBEngine {
 
         let lessonsPool = [];
 
+        // Bản đồ mức ưu tiên sư phạm từ danh mục môn học (Mức 1 đến 6)
+        const subPriorityMap = {};
+        (this.subjects || []).forEach(s => {
+            subPriorityMap[s.name] = s.priority || 1;
+            if (s.id) subPriorityMap[s.id] = s.priority || 1;
+        });
+
         for (const assign of this.assignments) {
             let remainingPeriods = assign.periods;
+            const subPrio = subPriorityMap[assign.subject] || (assign.roomReq ? 2 : 4);
+
+            // Điểm ưu tiên xếp lịch: Mức 1 (Toán, Văn, Anh) -> 35 điểm; Mức 2 (Lab) -> 30 điểm...
+            const basePrioScore = Math.max(10, 40 - (subPrio * 5));
             
             if (assign.doublePeriod && remainingPeriods >= 2) {
                 lessonsPool.push({
@@ -225,13 +236,13 @@ export class SmartTKBEngine {
                     classId: assign.classId,
                     roomReq: assign.roomReq,
                     length: 2,
-                    priority: 10
+                    pedagogicalPriority: subPrio,
+                    priority: basePrioScore + 18 // Tiết kép luôn ưu tiên xếp trước để tìm được 2 tiết trống liền nhau
                 });
                 remainingPeriods -= 2;
             }
 
             while (remainingPeriods > 0) {
-                const prio = assign.roomReq ? 8 : (assign.periods >= 4 ? 6 : 4);
                 lessonsPool.push({
                     assignId: `${assign.teacher}_${assign.subject}_${assign.classId}_single_${remainingPeriods}`,
                     teacher: assign.teacher,
@@ -239,12 +250,14 @@ export class SmartTKBEngine {
                     classId: assign.classId,
                     roomReq: assign.roomReq,
                     length: 1,
-                    priority: prio
+                    pedagogicalPriority: subPrio,
+                    priority: basePrioScore + (assign.roomReq ? 6 : 0) + (remainingPeriods >= 3 ? 3 : 0)
                 });
                 remainingPeriods -= 1;
             }
         }
 
+        // Sắp xếp bài học theo thứ tự ưu tiên sư phạm đỉnh cao
         lessonsPool.sort((a, b) => b.priority - a.priority);
 
         let unassignedLessons = [];
@@ -272,6 +285,7 @@ export class SmartTKBEngine {
     findAndPlaceSlot(lesson) {
         const classId = lesson.classId;
         const length = lesson.length;
+        const prio = lesson.pedagogicalPriority || 1;
 
         let candidateSlots = [];
 
@@ -311,13 +325,54 @@ export class SmartTKBEngine {
                     continue;
                 }
 
+                // =========================================================================
+                // CHẤM ĐIỂM SƯ PHẠM ĐẲNG CẤP (PEDAGOGICAL SCORING ENGINE)
+                // =========================================================================
                 let score = 100;
-                if (subjectCountInDay > 0) score -= 40;
-                if (length === 2 && p >= 4) score -= 100;
-                if (lesson.subject === "Giáo Dục Thể Chất" && (p === 3 || p === 4)) score -= 30;
-                if ((lesson.subject === "Toán" || lesson.subject === "Ngữ Văn" || lesson.subject === "KHTN (Lý-Hóa-Sinh)") && (p === 0 || p === 1 || p === 2)) {
-                    score += 25;
+
+                // 1. Dàn đều môn trong tuần (tránh dồn ép học sinh)
+                if (subjectCountInDay > 0) score -= 45;
+
+                // 2. MỨC 1: CỐT LÕI (Toán, Ngữ Văn, Tiếng Anh) -> ƯU TIÊN TIẾT 1, 2, 3 SÁNG SỚM
+                if (prio === 1 || lesson.subject === "Toán" || lesson.subject === "Ngữ Văn" || lesson.subject === "Tiếng Anh") {
+                    if (p === 0 || p === 1 || p === 2) {
+                        score += 60; // Tiết vàng tư duy cao khi học sinh tập trung nhất
+                    } else if (p === 4) {
+                        score -= 55; // Tuyệt đối tránh tiết 5 cuối buổi mệt mỏi
+                    }
                 }
+
+                // 3. MỨC 2: PHÒNG LAB / THÍ NGHIỆM (KHTN, Tin Học, Công Nghệ)
+                if (prio === 2 || lesson.roomReq) {
+                    if (length === 2) {
+                        if (p === 1 || p === 2) score += 45; // Tiết đôi thực hành lý tưởng
+                        else if (p >= 3) score -= 65;
+                    }
+                }
+
+                // 4. MỨC 3: THỂ CHẤT & KHÍ HẬU (GDTC) -> BẢO VỆ SỨC KHỎE HỌC SINH
+                if (prio === 3 || lesson.subject === "Giáo Dục Thể Chất") {
+                    if (p === 3 || p === 4) {
+                        score -= 280; // TUYỆT ĐỐI CẤM TIẾT 4 - 5 NẮNG GẮT TRƯA HÈ
+                    } else if (p === 0 || p === 1) {
+                        score += 70; // Ưu tiên tiết 1-2 sáng mát mẻ
+                    }
+                }
+
+                // 5. MỨC 4: PHÂN MÔN GHÉP (Lịch Sử & Địa Lí) -> SO LE NGÀY NHỊP NHÀNG
+                if (prio === 4 || lesson.subject.includes("Lịch Sử") || lesson.subject.includes("Địa Lí")) {
+                    const otherSub = lesson.subject.includes("Sử") ? "Địa Lí" : "Lịch Sử";
+                    if (this.countSubjectInDay(classId, otherSub, d) > 0) {
+                        score -= 40; // Giãn cách 2 phân môn sang các ngày khác nhau
+                    }
+                }
+
+                // 6. MỨC 5: NGHỆ THUẬT / GIẢM ÁP LỰC (Âm Nhạc, Mĩ Thuật, GDCD)
+                if (prio === 5 || lesson.subject === "Âm Nhạc" || lesson.subject === "Mĩ Thuật" || lesson.subject === "Giáo Dục Công Dân") {
+                    if (p === 2 || p === 3) score += 35; // Xếp giữa buổi để xả stress, cân bằng bán cầu não
+                }
+
+                // 7. Ưu tiên giáo viên liền tiết (tránh tiết trống lắt nhắt)
                 if (this.isTeacherAdjacent(lesson.teacher, d, p, length)) {
                     score += 35;
                 }

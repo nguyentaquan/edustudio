@@ -1,7 +1,7 @@
 // EduStudio Service Worker (v3.10.46 - GDMN & GDPT)
 // Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
 
-const CACHE_NAME = "edustudio-pwa-v3.10.47-nocache";
+const CACHE_NAME = "edustudio-pwa-v3.10.48-priority";
 
 self.addEventListener('install', (event) => {
   // Bỏ qua chờ đợi, kích hoạt ngay lập tức
