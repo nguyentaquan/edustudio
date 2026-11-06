@@ -754,6 +754,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         if (subject.includes('Công Nghệ')) return { bg: '#fff7ed', border: '#fed7aa', color: '#c2410c' };
         if (subject.includes('GDCD')) return { bg: '#eef2ff', border: '#c7d2fe', color: '#4338ca' };
         if (subject.includes('Nghệ Thuật') || subject.includes('AN-MT') || subject.includes('Âm Nhạc') || subject.includes('Mĩ Thuật')) return { bg: '#fdf2f8', border: '#fbcfe8', color: '#be185d' };
+        if (subject.includes('Địa Phương') || subject.includes('GDĐP') || subject.includes('GDDP')) return { bg: '#ecfdf5', border: '#a7f3d0', color: '#047857' };
         if (subject.includes('Chào Cờ') || subject.includes('Chào cờ')) return { bg: '#fee2e2', border: '#fca5a5', color: '#dc2626' };
         if (subject.includes('HĐCĐ') || subject.includes('SHDC') || subject.includes('SHL') || subject.includes('HĐTN')) return { bg: '#f0f9ff', border: '#bae6fd', color: '#0369a1' };
         return { bg: '#f1f5f9', border: '#cbd5e1', color: '#334155' };
@@ -1628,7 +1629,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                         <select id="tkbModalSubject" style="width: 100%; padding: 0.55rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; font-weight: 600;">
                             <option value="">-- Để Trống (Không có tiết) --</option>
                             ${this.engine.subjects.map(s => `<option value="${s.name}" ${s.name === currentSub ? 'selected' : ''}>${s.name}</option>`).join('')}
-                            <option value="Chào Cờ" ${currentSub === 'Chào Cờ' ? 'selected' : ''}>Chào Cờ</option>
+                            <option value="Giáo Dục Địa Phương" ${currentSub === 'Giáo Dục Địa Phương' ? 'selected' : ''}>Giáo Dục Địa Phương</option>
                             <option value="Sinh Hoạt Lớp" ${currentSub === 'Sinh Hoạt Lớp' ? 'selected' : ''}>Sinh Hoạt Lớp</option>
                         </select>
                     </div>
@@ -1732,7 +1733,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 teacher: teacher || 'Chưa phân công',
                 room: room || null,
                 isDouble: isDouble,
-                isFixed: sub === 'Chào Cờ' || sub === 'Sinh Hoạt Lớp'
+                isFixed: sub === 'Sinh Hoạt Lớp'
             });
 
             if (!res.success) {
@@ -2496,7 +2497,7 @@ setPCCMFilter(filterName) {
                             </div>
                             <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.8rem; color: #15803d; line-height: 1.6;">
                                 ${audit.positives.map(p => `<li>${p}</li>`).join('')}
-                                <li>100% tiết Chào cờ được xếp đồng bộ sáng Thứ Hai Tiết 1 toàn trường.</li>
+                                <li>Tiết 1 sáng Thứ Hai linh hoạt cho tất cả các môn học Tiết 1 toàn trường.</li>
                                 <li>Giáo viên chủ nhiệm (như Thầy Nguyễn Tá Quan 8A1) gắn kết trực tiếp với các tiết SHL và HĐCĐ của lớp.</li>
                             </ul>
                         </div>
@@ -3635,7 +3636,7 @@ setPCCMFilter(filterName) {
                                                 defaultPrio = 3;
                                             } else if (sLower.includes('lịch sử') || sLower.includes('địa lí') || sLower.includes('ls_dl')) {
                                                 defaultPrio = 4;
-                                            } else if (sLower.includes('nhạc') || sLower.includes('mỹ thuật') || sLower.includes('mĩ thuật') || sLower.includes('gdcd')) {
+                                            } else if (sLower.includes('nhạc') || sLower.includes('mỹ thuật') || sLower.includes('mĩ thuật') || sLower.includes('gdcd') || sLower.includes('địa phương') || sLower.includes('gddp')) {
                                                 defaultPrio = 5;
                                             } else {
                                                 defaultPrio = 6;
@@ -3682,7 +3683,7 @@ setPCCMFilter(filterName) {
                                                         <option value="3" ${defaultPrio === 3 ? 'selected' : ''}>🏃 Ưu tiên 3: Thể Chất (GDTC - Tiết Mát, Cấm Tiết 4-5)</option>
                                                         <option value="4" ${defaultPrio === 4 ? 'selected' : ''}>⚖️ Ưu tiên 4: Phân Môn Ghép (Sử &amp; Địa - So Le Nhịp Nhàng)</option>
                                                         <option value="5" ${defaultPrio === 5 ? 'selected' : ''}>🎨 Ưu tiên 5: Nghệ Thuật (Nhạc, Mĩ Thuật - Giảm Áp Lực)</option>
-                                                        <option value="6" ${defaultPrio === 6 ? 'selected' : ''}>🌟 Ưu tiên 6: Hoạt Động (HĐTN, Chào Cờ, SHL - Khóa Cứng)</option>
+                                                        <option value="6" ${defaultPrio === 6 ? 'selected' : ''}>🌟 Ưu tiên 6: Hoạt Động (HĐTN, Sinh Hoạt Lớp - Linh Hoạt)</option>
                                                     </select>
                                                 </td>
 

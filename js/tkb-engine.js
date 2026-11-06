@@ -51,7 +51,8 @@ export class SmartTKBEngine {
             { id: "congnghe", name: "Công Nghệ", periodsPerWeek: 1, doublePeriod: false, roomReq: null, color: "#c2410c" },
             { id: "gdcd", name: "Giáo Dục Công Dân", periodsPerWeek: 1, doublePeriod: false, roomReq: null, color: "#4338ca" },
             { id: "amnhac", name: "Âm Nhạc", periodsPerWeek: 1, doublePeriod: false, roomReq: "room_amnhac", color: "#be185d" },
-            { id: "mythuat", name: "Mĩ Thuật", periodsPerWeek: 1, doublePeriod: false, roomReq: "room_amnhac", color: "#9333ea" }
+            { id: "mythuat", name: "Mĩ Thuật", periodsPerWeek: 1, doublePeriod: false, roomReq: "room_amnhac", color: "#9333ea" },
+            { id: "gddp", name: "Giáo Dục Địa Phương", periodsPerWeek: 1, doublePeriod: false, roomReq: null, color: "#059669", priority: 5, periodsYear: 35, periodsSem1: 18, periodsSem2: 17 }
         ];
 
         // Phân công chuyên môn (PCCM)
@@ -100,10 +101,54 @@ export class SmartTKBEngine {
             this.officialPCCM = CANH_THUAN_TKB_DATA.officialPCCM || [];
             this.assignments = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.assignments));
             this.timetable = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.timetable));
+            this.purgeFlagSalute();
             this.saveState();
             return;
         }
         this.resetTimetableGrid();
+    }
+
+        // LOẠI BỎ TRIỆT ĐỂ TIẾT CHÀO CỜ & BỔ SUNG MÔN GIÁO DỤC ĐỊA PHƯƠNG
+    purgeFlagSalute() {
+        if (!this.timetable) return;
+        for (const classId in this.timetable) {
+            const classSchedule = this.timetable[classId];
+            if (!Array.isArray(classSchedule)) continue;
+            for (let d = 0; d < classSchedule.length; d++) {
+                if (!Array.isArray(classSchedule[d])) continue;
+                for (let p = 0; p < classSchedule[d].length; p++) {
+                    const slot = classSchedule[d][p];
+                    if (slot && (slot.subject === 'Chào Cờ' || slot.subject === 'Chào cờ' || slot.subject === 'SHDC')) {
+                        classSchedule[d][p] = null;
+                    }
+                }
+            }
+        }
+        // Đảm bảo môn Giáo Dục Địa Phương luôn có mặt trong danh sách subjects
+        if (!this.subjects.some(s => s.name === 'Giáo Dục Địa Phương' || s.id === 'gddp' || s.name === 'Giáo dục địa phương')) {
+            this.subjects.push({ id: "gddp", name: "Giáo Dục Địa Phương", periodsPerWeek: 1, doublePeriod: false, roomReq: null, color: "#059669", priority: 5, periodsYear: 35, periodsSem1: 18, periodsSem2: 17 });
+        }
+
+        // Bổ sung phân công môn Giáo Dục Địa Phương nếu chưa có
+        if (Array.isArray(this.assignments) && this.classes && this.classes.length > 0) {
+            const hasGDDP = this.assignments.some(a => (a.subject && (a.subject.includes('Địa Phương') || a.subject.includes('GDĐP') || a.subject.includes('GDDP'))));
+            if (!hasGDDP) {
+                for (const c of this.classes) {
+                    const teacherName = (c.startsWith('6')) ? 'Phạm Thị Nhàn' : 'Lê Thị Anh Thư';
+                    const shortTeacher = (c.startsWith('6')) ? 'Cô Nhàn' : 'Cô Thư';
+                    this.assignments.push({
+                        class: c,
+                        subject: "Giáo Dục Địa Phương",
+                        teacher: teacherName,
+                        shortTeacher: shortTeacher,
+                        periodsPerWeek: 1,
+                        doublePeriod: false,
+                        roomReq: null,
+                        priority: 5
+                    });
+                }
+            }
+        }
     }
 
     resetTimetableGrid() {
@@ -113,15 +158,8 @@ export class SmartTKBEngine {
             for (let d = 0; d < this.DAYS.length; d++) {
                 this.timetable[classId][d] = [];
                 for (let p = 0; p < this.PERIODS.length; p++) {
-                    if (d === 0 && p === 0) {
-                        this.timetable[classId][d][p] = {
-                            subject: "Chào Cờ",
-                            teacher: "Toàn trường",
-                            room: null,
-                            isFixed: true,
-                            color: "#dc2626"
-                        };
-                    } else if (d === 5 && p === 4) {
+                    // BỎ TIẾT CHÀO CỜ: Tiết 1 sáng Thứ Hai (d=0, p=0) giải phóng thành tiết học bình thường, mở cho tất cả môn học
+                    if (d === 5 && p === 4) {
                         this.timetable[classId][d][p] = {
                             subject: "Sinh Hoạt Lớp",
                             teacher: "GVCN",
@@ -672,6 +710,7 @@ export class SmartTKBEngine {
                     if (data.lsdlConfig) this.lsdlConfig = Object.assign({}, this.lsdlConfig, data.lsdlConfig);
                     if (data.ppctConfig) this.ppctConfig = Object.assign({}, this.ppctConfig, data.ppctConfig);
             this.ppctLessons = data.ppctLessons || {};
+            this.purgeFlagSalute();
             return true;
         } catch(e) {
             console.warn("Lỗi đọc dữ liệu TKB:", e);
