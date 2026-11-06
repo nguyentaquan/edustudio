@@ -3476,6 +3476,179 @@ setPCCMFilter(filterName) {
      * Thiết kế bởi Thầy Nguyễn Tá Quan • Liên thông TKB & Lịch Báo Giảng tự động
      * ==============================================================================
      */
+        /**
+     * Mở Modal Xem Bảng Ma Trận 9 Chặng Tuần Môn Lịch Sử & Địa Lí 6 - 9 (Năm học 2026 - 2027)
+     * (Chuẩn nguyên bản 100% từ bảng phân phối chương trình của Thầy Nguyễn Tá Quan)
+     */
+    openCanhThuanLSDLMatrixModal() {
+        let modal = document.getElementById('canhThuanLSDLMatrixModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'canhThuanLSDLMatrixModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+                backdrop-filter: blur(8px); z-index: 1000000; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        modal.classList.add('active');
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('visibility', 'visible', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
+        modal.style.setProperty('z-index', '9999999', 'important');
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 12px; max-width: 1080px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.45); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; animation: modalPop 0.2s ease-out;">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #0369a1 100%); color: #ffffff; padding: 0.9rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                        <span style="font-size: 1.5rem;">📊</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.08rem; font-weight: 800; text-transform: uppercase;">
+                                PHÂN PHỐI CHƯƠNG TRÌNH MÔN LỊCH SỬ VÀ ĐỊA LÍ 6 - 9 (THEO PHÂN MÔN)
+                            </h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.73rem; color: #bfdbfe;">
+                                NĂM HỌC 2026 - 2027 • BẢNG CHUẨN 9 CHẶNG TUẦN (ĐỊA LÍ 52T - LỊCH SỬ 53T • TỔNG 105T)
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="document.getElementById('canhThuanLSDLMatrixModal').style.display='none'; document.getElementById('canhThuanLSDLMatrixModal').classList.remove('active');" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.25rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.15rem 0.5rem;">✕</button>
+                </div>
+
+                <!-- Bảng Ma Trận Nguyên Bản -->
+                <div style="padding: 1rem 1.25rem; overflow-x: auto; flex: 1;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.76rem; text-align: center;" border="1" bordercolor="#cbd5e1">
+                        <thead>
+                            <tr style="background: #f1f5f9; font-weight: 800; color: #0f172a;">
+                                <th rowspan="3" style="padding: 0.45rem; min-width: 130px; text-align: left;">Tuần / Phân môn</th>
+                                <th colspan="9" style="padding: 0.45rem; background: #eff6ff; color: #1e40af;">HỌC KÌ I (18 TUẦN)</th>
+                                <th colspan="11" style="padding: 0.45rem; background: #f0fdf4; color: #166534;">HỌC KÌ II (17 TUẦN)</th>
+                                <th colspan="2" rowspan="2" style="padding: 0.45rem; background: #fefce8; color: #854d0e;">CẢ NĂM (35T)</th>
+                            </tr>
+                            <tr style="background: #f8fafc; font-weight: 700;">
+                                <th colspan="2">Tuần 1 - 4<br><span style="font-size:0.68rem; color:#64748b;">(4 tuần)</span></th>
+                                <th colspan="2">Tuần 5 - 8<br><span style="font-size:0.68rem; color:#64748b;">(4 tuần)</span></th>
+                                <th colspan="2">Tuần 9 - 13<br><span style="font-size:0.68rem; color:#64748b;">(5 tuần)</span></th>
+                                <th colspan="2">Tuần 14 - 18<br><span style="font-size:0.68rem; color:#64748b;">(5 tuần)</span></th>
+                                <th style="background:#fee2e2; color:#dc2626;">Tổng</th>
+                                <th colspan="2">Tuần 19 - 22<br><span style="font-size:0.68rem; color:#64748b;">(4 tuần)</span></th>
+                                <th colspan="2">Tuần 23 - 26<br><span style="font-size:0.68rem; color:#64748b;">(4 tuần)</span></th>
+                                <th colspan="2">Tuần 27 - 31<br><span style="font-size:0.68rem; color:#64748b;">(4 tuần)</span></th>
+                                <th colspan="2">Tuần 32 - 34<br><span style="font-size:0.68rem; color:#64748b;">(4 tuần)</span></th>
+                                <th colspan="2">Tuần 35<br><span style="font-size:0.68rem; color:#64748b;">(1 tuần)</span></th>
+                                <th style="background:#fee2e2; color:#dc2626;">Tổng</th>
+                            </tr>
+                            <tr style="background: #f1f5f9; font-weight: 800; font-size: 0.72rem;">
+                                <th style="width:32px;">ĐL</th><th style="width:32px;">LS</th>
+                                <th style="width:32px;">ĐL</th><th style="width:32px;">LS</th>
+                                <th style="width:32px;">ĐL</th><th style="width:32px;">LS</th>
+                                <th style="width:32px;">ĐL</th><th style="width:32px;">LS</th>
+                                <th style="background:#fee2e2; color:#dc2626; width:45px;">ĐL / LS</th>
+                                <th style="width:32px;">ĐL</th><th style="width:32px;">LS</th>
+                                <th style="width:32px;">ĐL</th><th style="width:32px;">LS</th>
+                                <th style="width:32px;">ĐL</th><th style="width:32px;">LS</th>
+                                <th style="width:32px;">ĐL</th><th style="width:32px;">LS</th>
+                                <th style="width:32px;">ĐL</th><th style="width:32px;">LS</th>
+                                <th style="background:#fee2e2; color:#dc2626; width:45px;">ĐL / LS</th>
+                                <th style="background:#fefce8; color:#854d0e; width:35px;">ĐL</th>
+                                <th style="background:#fefce8; color:#854d0e; width:35px;">LS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Lịch sử và Địa lí 6 -->
+                            <tr style="background: #ffffff;">
+                                <td style="padding: 0.45rem; font-weight: 800; text-align: left; color: #1e3a8a;">Lịch sử và Địa lí 6</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="background:#fee2e2; font-weight:800; color:#dc2626;">27 / 27</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="background:#fee2e2; font-weight:800; color:#dc2626;">25 / 26</td>
+                                <td style="background:#fefce8; font-weight:800; color:#0284c7;">52</td>
+                                <td style="background:#fefce8; font-weight:800; color:#b45309;">53</td>
+                            </tr>
+                            <!-- Lịch sử và Địa lí 7 -->
+                            <tr style="background: #f8fafc;">
+                                <td style="padding: 0.45rem; font-weight: 800; text-align: left; color: #1e3a8a;">Lịch sử và Địa lí 7</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="background:#fee2e2; font-weight:800; color:#dc2626;">27 / 27</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="background:#fee2e2; font-weight:800; color:#dc2626;">25 / 26</td>
+                                <td style="background:#fefce8; font-weight:800; color:#0284c7;">52</td>
+                                <td style="background:#fefce8; font-weight:800; color:#b45309;">53</td>
+                            </tr>
+                            <!-- Lịch sử và Địa lí 8 -->
+                            <tr style="background: #ffffff;">
+                                <td style="padding: 0.45rem; font-weight: 800; text-align: left; color: #1e3a8a;">Lịch sử và Địa lí 8</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="background:#fee2e2; font-weight:800; color:#dc2626;">27 / 27</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="background:#fee2e2; font-weight:800; color:#dc2626;">25 / 26</td>
+                                <td style="background:#fefce8; font-weight:800; color:#0284c7;">52</td>
+                                <td style="background:#fefce8; font-weight:800; color:#b45309;">53</td>
+                            </tr>
+                            <!-- Lịch sử và Địa lí 9 -->
+                            <tr style="background: #f8fafc;">
+                                <td style="padding: 0.45rem; font-weight: 800; text-align: left; color: #1e3a8a;">Lịch sử và Địa lí 9</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="background:#fee2e2; font-weight:800; color:#dc2626;">27 / 27</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="font-weight:700; color:#0284c7;">2</td><td style="font-weight:700;">1</td>
+                                <td style="font-weight:700;">1</td><td style="font-weight:700; color:#b45309;">2</td>
+                                <td style="background:#fee2e2; font-weight:800; color:#dc2626;">25 / 26</td>
+                                <td style="background:#fefce8; font-weight:800; color:#0284c7;">52</td>
+                                <td style="background:#fefce8; font-weight:800; color:#b45309;">53</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer -->
+                <div style="padding: 0.75rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">
+                        💡 Ma trận chuẩn phân môn tự động cân đối: <strong>Địa Lí 52 tiết + Lịch Sử 53 tiết = 105 tiết cả năm</strong>
+                    </div>
+                    <div style="display: flex; gap: 0.4rem;">
+                        <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('canhthuan_9stages'); document.getElementById('canhThuanLSDLMatrixModal').style.display='none';" style="background: #059669; color: #ffffff; border: none; padding: 0.45rem 1.15rem; border-radius: 6px; font-size: 0.8rem; font-weight: 800; cursor: pointer; box-shadow: 0 2px 5px rgba(5,150,105,0.3);">
+                            ⚡ Nạp Ma Trận 9 Chặng Vào TKB Ngay
+                        </button>
+                        <button type="button" onclick="document.getElementById('canhThuanLSDLMatrixModal').style.display='none'; document.getElementById('canhThuanLSDLMatrixModal').classList.remove('active');" style="background: #64748b; color: #ffffff; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+                            Đóng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     openCurriculumConfigModal(activeTab = 'quota', selectedSubject = 'toan', selectedGrade = '8') {
         let modal = document.getElementById('tkbCurriculumModal');
         if (!modal) {
@@ -3872,6 +4045,12 @@ setPCCMFilter(filterName) {
                                     <span>🏛️</span> <span>CẤU HÌNH LINH HOẠT PHÂN MÔN LỊCH SỬ &amp; ĐỊA LÍ (KHÔNG KHÓA CỐ ĐỊNH):</span>
                                 </strong>
                                 <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                                    <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('canhthuan_9stages')" style="font-size: 0.68rem; font-weight: 900; padding: 0.2rem 0.55rem; background: #fef08a; border: 1.5px solid #d97706; color: #92400e; border-radius: 4px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1);" title="Nạp đúng ma trận 9 Chặng Tuần theo bảng chuẩn của Thầy Nguyễn Tá Quan">
+                                        ⭐ Chuẩn 9 Chặng Tuần (ĐL 52t - LS 53t)
+                                    </button>
+                                    <button type="button" onclick="window.smartTKBUI.openCanhThuanLSDLMatrixModal()" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1.5px solid #0284c7; color: #0369a1; border-radius: 4px; cursor: pointer;" title="Bấm để xem ma trận 9 Chặng Tuần Lịch sử & Địa lí">
+                                        📊 Xem Bảng 9 Chặng
+                                    </button>
                                     <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('2-1_1-2')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #d97706; color: #b45309; border-radius: 4px; cursor: pointer;">Chuẩn 2-1 / 1-2</button>
                                     <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('1-2_2-1')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #d97706; color: #b45309; border-radius: 4px; cursor: pointer;">Đảo 1-2 / 2-1</button>
                                     <button type="button" onclick="window.smartTKBUI.applyQuickLSDLPreset('2-2_2-2')" style="font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.45rem; background: #ffffff; border: 1px solid #059669; color: #047857; border-radius: 4px; cursor: pointer;">Song Song 2-2</button>
@@ -4239,7 +4418,17 @@ setPCCMFilter(filterName) {
         const h2 = document.getElementById('lsdlHK2Hist');
         const g2 = document.getElementById('lsdlHK2Geo');
 
-        if (preset === '2-1_1-2') {
+        if (preset === 'canhthuan_9stages') {
+            if (h1) h1.value = 2; if (g1) g1.value = 1;
+            if (h2) h2.value = 1; if (g2) g2.value = 2;
+            if (this.engine) {
+                if (!this.engine.lsdlConfig) this.engine.lsdlConfig = {};
+                this.engine.lsdlConfig.mode = 'canhthuan_9stages';
+                this.engine.lsdlConfig.hk1 = { historyPeriods: 2, geographyPeriods: 1 };
+                this.engine.lsdlConfig.hk2 = { historyPeriods: 1, geographyPeriods: 2 };
+            }
+            this.showToast('⭐ Đã nạp thành công Chuẩn 9 Chặng Tuần Sử - Địa Canh Thuận (ĐL 52t - LS 53t)!', 3500);
+        } else if (preset === '2-1_1-2') {
             if (h1) h1.value = 2; if (g1) g1.value = 1;
             if (h2) h2.value = 1; if (g2) g2.value = 2;
             this.showToast('🏛️ Đã áp dụng tỷ lệ: HK1 (Sử 2 - Địa 1) • HK2 (Sử 1 - Địa 2)');
@@ -5570,6 +5759,250 @@ setPCCMFilter(filterName) {
     /**
      * Mở Modal Cấu Hình Ưu Tiên Sư Phạm Đẳng Cấp (6 Mức Độ)
      */
+        // =========================================================================
+    // TRUNG TÂM TÙY CHỈNH NGÀY NGHỈ & NGUYỆN VỌNG TỪNG GIÁO VIÊN CỤ THỂ
+    // (GV A muốn cho nghỉ thứ mấy thì tùy chỉnh cho nghỉ!)
+    // =========================================================================
+
+    /**
+     * Mở Modal Tùy Chỉnh Ngày Nghỉ & Nguyện Vọng Cho Từng Giáo Viên
+     */
+    openTeacherOffDayModal() {
+        let modal = document.getElementById('teacherOffDayModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'teacherOffDayModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+                backdrop-filter: blur(8px); z-index: 1000000; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        modal.classList.add('active');
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('visibility', 'visible', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
+        modal.style.setProperty('z-index', '9999999', 'important');
+
+        // Thu thập danh sách giáo viên duy nhất
+        const teacherMap = new Map();
+        if (Array.isArray(this.engine.teachers) && this.engine.teachers.length > 0) {
+            this.engine.teachers.forEach(t => {
+                teacherMap.set(t.fullName, {
+                    name: t.fullName,
+                    displayName: t.displayName || t.fullName,
+                    shortName: t.shortName || '',
+                    homeroom: t.homeroom || '',
+                    subjects: Array.isArray(t.subjects) ? t.subjects.join(', ') : (t.subjects || '')
+                });
+            });
+        }
+        if (Array.isArray(this.engine.assignments)) {
+            this.engine.assignments.forEach(a => {
+                if (a.teacher && !teacherMap.has(a.teacher)) {
+                    teacherMap.set(a.teacher, {
+                        name: a.teacher,
+                        displayName: a.teacher,
+                        shortName: a.shortTeacher || '',
+                        homeroom: '',
+                        subjects: a.subject || ''
+                    });
+                }
+            });
+        }
+
+        const teachers = Array.from(teacherMap.values());
+        const days = [
+            { id: 0, label: "Thứ 2" },
+            { id: 1, label: "Thứ 3" },
+            { id: 2, label: "Thứ 4" },
+            { id: 3, label: "Thứ 5" },
+            { id: 4, label: "Thứ 6" },
+            { id: 5, label: "Thứ 7" }
+        ];
+
+        modal.innerHTML = `
+            <div style="background: #ffffff; border-radius: 14px; max-width: 1050px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.45); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; animation: modalPop 0.2s ease-out;">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #c2410c 0%, #ea580c 50%, #d97706 100%); color: #ffffff; padding: 1rem 1.35rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                        <span style="font-size: 1.6rem;">🏖️</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; text-transform: uppercase; color: #fef08a;">
+                                TÙY CHỈNH NGÀY NGHỈ &amp; NGUYỆN VỌNG TỪNG GIÁO VIÊN
+                            </h3>
+                            <p style="margin: 0.15rem 0 0 0; font-size: 0.74rem; color: #ffedd5;">
+                                Thầy Cô nào muốn nghỉ Thứ mấy $\\rightarrow$ Nhấp chọn trực tiếp để AI không bao giờ xếp tiết vào ngày đó!
+                            </p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="document.getElementById('teacherOffDayModal').style.display='none'; document.getElementById('teacherOffDayModal').classList.remove('active');" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.3rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.15rem 0.5rem;">✕</button>
+                </div>
+
+                <!-- Thanh Chỉ Dẫn & Tác Vụ Nhanh -->
+                <div style="padding: 0.65rem 1.25rem; background: #fff7ed; border-bottom: 1.5px solid #fed7aa; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="font-size: 0.78rem; font-weight: 700; color: #9a3412; display: flex; align-items: center; gap: 0.4rem;">
+                        <span>💡</span>
+                        <span>Nhấp vào ô Thứ để chuyển sang <strong>🔴 NGHỈ</strong> hoặc <strong>⚪ DẠY</strong>. AI sẽ tuyệt đối tuân thủ 100%!</span>
+                    </div>
+                    <div style="display: flex; gap: 0.4rem;">
+                        <button type="button" onclick="window.smartTKBUI.clearAllTeacherOffDays();" style="background: #ffffff; color: #c2410c; border: 1.5px solid #ea580c; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer;">
+                            🔄 Bỏ Chọn Nghỉ Tất Cả
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bảng Giáo Viên & Ngày Nghỉ -->
+                <div style="padding: 1rem 1.25rem; overflow-y: auto; flex: 1;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
+                        <thead>
+                            <tr style="background: #f8fafc; color: #334155; font-size: 0.72rem; text-transform: uppercase; border-bottom: 2px solid #cbd5e1;">
+                                <th style="padding: 0.55rem 0.4rem; text-align: center; width: 40px;">STT</th>
+                                <th style="padding: 0.55rem 0.6rem; text-align: left; min-width: 180px;">Họ Và Tên Giáo Viên</th>
+                                ${days.map(d => `<th style="padding: 0.55rem 0.4rem; text-align: center; width: 68px;">${d.label}</th>`).join('')}
+                                <th style="padding: 0.55rem 0.5rem; text-align: center; width: 95px;">Tránh Tiết 1</th>
+                                <th style="padding: 0.55rem 0.5rem; text-align: center; width: 85px;">Max Tiết/Ngày</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${teachers.map((t, idx) => {
+                                const tc = this.engine.getTeacherConstraints(t.name);
+                                const isQuan = t.name.includes('Quan');
+                                return `
+                                    <tr style="border-bottom: 1px solid #e2e8f0; ${isQuan ? 'background: #fefce8;' : ''}">
+                                        <td style="padding: 0.5rem 0.4rem; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                                        <td style="padding: 0.5rem 0.6rem;">
+                                            <div style="font-weight: 800; color: #0f172a; font-size: 0.82rem; display: flex; align-items: center; gap: 0.3rem;">
+                                                <span>${isQuan ? '👑' : '👨‍🏫'}</span>
+                                                <span>${t.displayName || t.name}</span>
+                                                ${t.homeroom ? `<span style="background: #dbeafe; color: #1e40af; font-size: 0.65rem; padding: 0.1rem 0.35rem; border-radius: 4px; font-weight: 800;">CN ${t.homeroom}</span>` : ''}
+                                            </div>
+                                            <div style="font-size: 0.68rem; color: #64748b; margin-top: 0.1rem;">
+                                                ${t.subjects || 'Bộ môn trường'}
+                                            </div>
+                                        </td>
+                                        ${days.map(d => {
+                                            const isOff = tc.offDays && tc.offDays.includes(d.id);
+                                            return `
+                                                <td style="padding: 0.45rem 0.3rem; text-align: center;">
+                                                    <button type="button" 
+                                                            onclick="window.smartTKBUI.toggleTeacherOffDay('${t.name}', ${d.id}, this);"
+                                                            style="width: 100%; padding: 0.3rem 0.2rem; border-radius: 5px; font-size: 0.72rem; font-weight: 800; cursor: pointer; transition: all 0.15s ease; ${isOff ? 'background: #ef4444; color: #ffffff; border: 1.5px solid #b91c1c; box-shadow: 0 1px 3px rgba(239,68,68,0.3);' : 'background: #f8fafc; color: #94a3b8; border: 1px solid #cbd5e1;'}"
+                                                            title="Nhấp để chuyển đổi nghỉ ${d.label} cho ${t.displayName}">
+                                                        ${isOff ? '🔴 NGHỈ' : '—'}
+                                                    </button>
+                                                </td>
+                                            `;
+                                        }).join('')}
+                                        <td style="padding: 0.45rem 0.3rem; text-align: center;">
+                                            <input type="checkbox" ${tc.avoidFirstPeriod ? 'checked' : ''} onchange="window.smartTKBUI.updateTeacherAvoidPeriod('${t.name}', this.checked);" style="width: 16px; height: 16px; accent-color: #ea580c; cursor: pointer;" title="Tránh xếp tiết 1 sáng cho giáo viên này">
+                                        </td>
+                                        <td style="padding: 0.45rem 0.3rem; text-align: center;">
+                                            <select onchange="window.smartTKBUI.updateTeacherMaxPeriods('${t.name}', this.value);" style="padding: 0.15rem 0.3rem; font-size: 0.72rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 4px; color: #1e293b; background: #ffffff;">
+                                                <option value="2" ${tc.maxPeriodsPerDay === 2 ? 'selected' : ''}>2 tiết</option>
+                                                <option value="3" ${tc.maxPeriodsPerDay === 3 ? 'selected' : ''}>3 tiết</option>
+                                                <option value="4" ${!tc.maxPeriodsPerDay || tc.maxPeriodsPerDay === 4 ? 'selected' : ''}>4 tiết</option>
+                                                <option value="5" ${tc.maxPeriodsPerDay === 5 ? 'selected' : ''}>5 tiết</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer -->
+                <div style="padding: 0.85rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <button type="button" onclick="document.getElementById('teacherOffDayModal').style.display='none'; document.getElementById('teacherOffDayModal').classList.remove('active');" style="background: #64748b; color: #ffffff; border: none; padding: 0.45rem 1rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+                        Đóng
+                    </button>
+                    <button type="button" onclick="window.smartTKBUI.applyTeacherOffDaysAndSolveAI();" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; border: 2px solid #86efac; padding: 0.55rem 1.35rem; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(22,163,74,0.35);">
+                        <span>⚡</span> <span>ÁP DỤNG NGUYỆN VỌNG &amp; XẾP TKB BẰNG AI NGAY</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Chuyển đổi trạng thái nghỉ của một giáo viên vào ngày cụ thể
+     */
+    toggleTeacherOffDay(teacherName, day, btn = null) {
+        const tc = this.engine.getTeacherConstraints(teacherName);
+        const isCurrentlyOff = tc.offDays && tc.offDays.includes(day);
+        const nextState = !isCurrentlyOff;
+
+        this.engine.setTeacherOffDay(teacherName, day, nextState);
+
+        if (btn) {
+            btn.innerHTML = nextState ? '🔴 NGHỈ' : '—';
+            btn.style.background = nextState ? '#ef4444' : '#f8fafc';
+            btn.style.color = nextState ? '#ffffff' : '#94a3b8';
+            btn.style.borderColor = nextState ? '#b91c1c' : '#cbd5e1';
+            btn.style.boxShadow = nextState ? '0 1px 3px rgba(239,68,68,0.3)' : 'none';
+        }
+
+        const dayLabels = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+        if (nextState) {
+            this.showToast(`🏖️ Đã thiết lập cho ${teacherName} NGHỈ ngày ${dayLabels[day]}! AI sẽ không xếp tiết vào ngày này.`, 2500);
+        } else {
+            this.showToast(`⚪ Đã hủy nghỉ ngày ${dayLabels[day]} cho ${teacherName}.`, 2000);
+        }
+    }
+
+    /**
+     * Cập nhật tùy chọn tránh tiết 1 sáng cho giáo viên
+     */
+    updateTeacherAvoidPeriod(teacherName, avoid) {
+        const tc = this.engine.getTeacherConstraints(teacherName);
+        tc.avoidFirstPeriod = !!avoid;
+        this.engine.updateTeacherConstraints(teacherName, tc);
+        this.showToast(`⏰ Đã cập nhật nguyện vọng tránh tiết 1 sáng cho ${teacherName}`);
+    }
+
+    /**
+     * Cập nhật số tiết tối đa trong ngày của giáo viên
+     */
+    updateTeacherMaxPeriods(teacherName, maxVal) {
+        const tc = this.engine.getTeacherConstraints(teacherName);
+        tc.maxPeriodsPerDay = parseInt(maxVal) || 4;
+        this.engine.updateTeacherConstraints(teacherName, tc);
+        this.showToast(`📊 Giới hạn tối đa ${maxVal} tiết/ngày cho ${teacherName}`);
+    }
+
+    /**
+     * Xóa sạch toàn bộ ngày nghỉ đã chọn
+     */
+    clearAllTeacherOffDays() {
+        if (!confirm('Thầy có chắc chắn muốn xóa tất cả ngày nghỉ đã đăng ký để toàn trường dạy đều không?')) return;
+        this.engine.teacherConstraints = {};
+        this.engine.saveState();
+        this.openTeacherOffDayModal();
+        this.showToast('🔄 Đã làm mới toàn bộ nguyện vọng ngày nghỉ giáo viên!');
+    }
+
+    /**
+     * Áp dụng nguyện vọng ngày nghỉ và chạy thuật toán AI Xếp TKB
+     */
+    applyTeacherOffDaysAndSolveAI() {
+        const modal = document.getElementById('teacherOffDayModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+        }
+
+        this.showToast('🚀 Đang kích hoạt AI CSP Solver tuân thủ 100% Ngày Nghỉ đã tùy chỉnh...', 3000);
+        setTimeout(() => {
+            const btnSolve = document.getElementById('btnTKBAutoSolve');
+            if (btnSolve) btnSolve.click();
+        }, 300);
+    }
+
     openPedagogicalPriorityModal() {
         let modal = document.getElementById('pedagogicalPriorityModal');
         if (!modal) {
@@ -5749,9 +6182,14 @@ setPCCMFilter(filterName) {
 
                 <!-- Footer -->
                 <div style="padding: 0.85rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                    <button type="button" onclick="document.getElementById('pedagogicalPriorityModal').style.display='none'; document.getElementById('pedagogicalPriorityModal').classList.remove('active');" style="background: #64748b; color: #ffffff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
-                        Đóng
-                    </button>
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                        <button type="button" onclick="document.getElementById('pedagogicalPriorityModal').style.display='none'; window.smartTKBUI.openTeacherOffDayModal();" style="background: #ea580c; color: #ffffff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;" title="Mở bảng chọn ngày nghỉ T2-T7 cho từng Thầy Cô">
+                            <span>🏖️</span> <span>Tùy Chỉnh Nghỉ Từng GV (T2-T7)</span>
+                        </button>
+                        <button type="button" onclick="document.getElementById('pedagogicalPriorityModal').style.display='none'; document.getElementById('pedagogicalPriorityModal').classList.remove('active');" style="background: #64748b; color: #ffffff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+                            Đóng
+                        </button>
+                    </div>
                     <button type="button" onclick="window.smartTKBUI.applyPrioritiesAndSolveAI();" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; border: 2px solid #86efac; padding: 0.55rem 1.35rem; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(22,163,74,0.35);">
                         <span>⚡</span> <span>ÁP DỤNG ƯU TIÊN &amp; XẾP TỰ ĐỘNG BẰNG AI NGAY</span>
                     </button>

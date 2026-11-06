@@ -84,6 +84,10 @@ export class SmartTKBEngine {
         this.yearlySnapshots = {};
         this.activeSnapshotId = 'snapshot_week_9_13';
 
+        // TÙY CHỌN RÀNG BUỘC & NGÀY NGHỈ THEO TỪNG GIÁO VIÊN CỤ THỂ (CODE RỘNG CHO PHÉP LỰA CHỌN)
+        // Cấu trúc: { "Tên GV": { offDays: [0, 1...], avoidFirstPeriod: boolean, maxPeriodsPerDay: number, note: string } }
+        this.teacherConstraints = {};
+
         // Ràng buộc Ưu tiên Sư phạm Đẳng cấp (GDMN & GDPT)
         this.pedagogicalPriorities = {
             gvcnOffDays: 2, // GVCN được nghỉ 2 buổi/tuần
@@ -634,10 +638,129 @@ export class SmartTKBEngine {
         return true;
     }
 
+    // =========================================================================
+    // HỆ THỐNG TÙY CHỈNH NGÀY NGHỈ & RÀNG BUỘC CHO TỪNG GIÁO VIÊN CỤ THỂ
+    // =========================================================================
+
+    /**
+     * Đếm số tiết dạy thực tế của một giáo viên trong ngày
+     */
+    countTeacherPeriodsInDay(teacherName, day) {
+        if (!teacherName || !this.timetable) return 0;
+        const cleanName = teacherName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+        let count = 0;
+        for (const c of this.classes) {
+            if (!this.timetable[c] || !this.timetable[c][day]) continue;
+            for (let p = 0; p < this.timetable[c][day].length; p++) {
+                const cell = this.timetable[c][day][p];
+                if (cell && (cell.teacher === teacherName || cell.shortTeacher === teacherName || cell.teacher === cleanName)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Kiểm tra xem giáo viên có đăng ký nghỉ ngày này hay không
+     */
+    isTeacherOff(teacherName, day) {
+        if (!teacherName) return false;
+        const cleanName = teacherName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+        const tc = this.teacherConstraints[teacherName] || this.teacherConstraints[cleanName];
+        if (tc && Array.isArray(tc.offDays) && tc.offDays.includes(day)) {
+            return true;
+        }
+        const tObj = (this.teachers || []).find(t => t.fullName === teacherName || t.displayName === teacherName || t.shortName === teacherName || t.fullName === cleanName);
+        if (tObj && Array.isArray(tObj.offDays) && tObj.offDays.includes(day)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Kiểm tra xem giáo viên có đăng ký tránh tiết 1 sáng hay không
+     */
+    isTeacherAvoidFirstPeriod(teacherName) {
+        if (!teacherName) return false;
+        const cleanName = teacherName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+        const tc = this.teacherConstraints[teacherName] || this.teacherConstraints[cleanName];
+        return !!(tc && tc.avoidFirstPeriod);
+    }
+
+    /**
+     * Lấy cấu hình ràng buộc của một giáo viên
+     */
+    getTeacherConstraints(teacherName) {
+        if (!teacherName) return { offDays: [], avoidFirstPeriod: false, maxPeriodsPerDay: 4 };
+        const cleanName = teacherName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+        return this.teacherConstraints[teacherName] || this.teacherConstraints[cleanName] || {
+            offDays: [],
+            avoidFirstPeriod: false,
+            maxPeriodsPerDay: 4
+        };
+    }
+
+    /**
+     * Thiết lập ngày nghỉ cho một giáo viên (Thứ 2=0, Thứ 3=1, Thứ 4=2, Thứ 5=3, Thứ 6=4, Thứ 7=5)
+     */
+    setTeacherOffDay(teacherName, day, isOff) {
+        if (!teacherName) return;
+        const cleanName = teacherName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+        if (!this.teacherConstraints[teacherName]) {
+            this.teacherConstraints[teacherName] = { offDays: [], avoidFirstPeriod: false, maxPeriodsPerDay: 4 };
+        }
+        const tc = this.teacherConstraints[teacherName];
+        if (!Array.isArray(tc.offDays)) tc.offDays = [];
+
+        if (isOff) {
+            if (!tc.offDays.includes(day)) tc.offDays.push(day);
+        } else {
+            tc.offDays = tc.offDays.filter(d => d !== day);
+        }
+        this.teacherConstraints[cleanName] = Object.assign({}, tc);
+        this.saveState();
+    }
+
+    /**
+     * Cập nhật toàn bộ ràng buộc của giáo viên
+     */
+    updateTeacherConstraints(teacherName, newConstraints) {
+        if (!teacherName) return;
+        const cleanName = teacherName.replace(/^(Thầy|Cô)\s+/i, '').trim();
+        this.teacherConstraints[teacherName] = Object.assign({}, newConstraints);
+        this.teacherConstraints[cleanName] = Object.assign({}, newConstraints);
+        this.saveState();
+    }
+
+    /**
+     * KIỂM TRA GIÁO VIÊN CÓ BẬN TIẾT NÀY KHÔNG (TUÂN THỦ 100% NGÀY NGHỈ TÙY CHỌN)
+     */
     isTeacherBusy(teacherName, day, period) {
+        // 1. RÀNG BUỘC TỐI CAO: NẾU GIÁO VIÊN ĐÃ ĐƯỢC CHỌN CHO NGHỈ NGÀY NÀY THÌ TUYỆT ĐỐI BẬN 100%!
+        if (this.isTeacherOff(teacherName, day)) {
+            return true;
+        }
+
+        // 2. Tránh tiết 1 sáng cho giáo viên đăng ký
+        if (period === 0 && this.isTeacherAvoidFirstPeriod(teacherName)) {
+            return true;
+        }
+
+        // 3. Giới hạn số tiết tối đa trong ngày
+        const tc = this.getTeacherConstraints(teacherName);
+        const maxDaily = tc.maxPeriodsPerDay || 4;
+        if (this.countTeacherPeriodsInDay(teacherName, day) >= maxDaily) {
+            return true;
+        }
+
+        // 4. Trùng tiết với lớp khác
+        const cleanName = teacherName.replace(/^(Thầy|Cô)\s+/i, '').trim();
         for (const c of this.classes) {
             const cell = this.timetable[c][day][period];
-            if (cell && cell.teacher === teacherName) return true;
+            if (cell && (cell.teacher === teacherName || cell.shortTeacher === teacherName || cell.teacher === cleanName)) {
+                return true;
+            }
         }
         return false;
     }
@@ -852,6 +975,7 @@ export class SmartTKBEngine {
                 ppctLessons: this.ppctLessons || {},
                 yearlySnapshots: this.yearlySnapshots || {},
                 activeSnapshotId: this.activeSnapshotId || 'snapshot_week_9_13',
+                teacherConstraints: this.teacherConstraints || {},
                 savedAt: new Date().toISOString()
             };
             localStorage.setItem(key, JSON.stringify(data));
@@ -909,6 +1033,7 @@ export class SmartTKBEngine {
             this.ppctLessons = data.ppctLessons || {};
             this.yearlySnapshots = data.yearlySnapshots || {};
             this.activeSnapshotId = data.activeSnapshotId || 'snapshot_week_9_13';
+            this.teacherConstraints = data.teacherConstraints || {};
             if (Object.keys(this.yearlySnapshots).length === 0) {
                 this.initDefaultYearlySnapshots();
             }
