@@ -1,7 +1,7 @@
 // EduStudio Service Worker (v3.10.54 - GDMN & GDPT)
 // Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
 
-const CACHE_NAME = "edustudio-pwa-v3.10.54-pccm-teachers-sync";
+const CACHE_NAME = "edustudio-pwa-v3.10.55-universal-pedagogical-tkb";
 
 self.addEventListener('install', (event) => {
   // Bỏ qua chờ đợi, kích hoạt ngay lập tức

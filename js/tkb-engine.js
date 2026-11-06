@@ -88,13 +88,30 @@ export class SmartTKBEngine {
         // Cấu trúc: { "Tên GV": { offDays: [0, 1...], avoidFirstPeriod: boolean, maxPeriodsPerDay: number, note: string } }
         this.teacherConstraints = {};
 
-        // Ràng buộc Ưu tiên Sư phạm Đẳng cấp (GDMN & GDPT)
+        // RÀNG BUỘC CỐ ĐỊNH TINH CHỈNH ĐƯỢC (KHÔNG KHÓA CỐ ĐỊNH THEO CHỈ ĐẠO CỦA THẦY QUAN)
+        this.fixedConstraints = {
+            lockFlagSalute: false, // Mặc định không khóa cứng chào cờ (cho phép trường tự chọn)
+            flagSaluteDay: 0,      // Thứ Hai
+            flagSalutePeriod: 0,   // Tiết 1
+            lockClassMeeting: true, // Khóa sinh hoạt lớp cùng GVCN
+            classMeetingDay: 5,     // Thứ Bảy
+            classMeetingPeriod: 4,  // Tiết 5
+            enableDoublePeriods: true, // Ưu tiên tiết đôi
+            doublePeriodSubjects: ['Toán', 'Ngữ Văn', 'Tiếng Anh', 'Khoa học Tự nhiên', 'KHTN', 'Tin học']
+        };
+
+        // RÀNG BUỘC ƯU TIÊN SƯ PHẠM ĐẲNG CẤP (GDMN & GDPT)
         this.pedagogicalPriorities = {
-            gvcnOffDays: 2, // GVCN được nghỉ 2 buổi/tuần
-            noPEPeriod45: true, // Không xếp Thể dục tiết 4-5 nắng gắt
-            maxPeriodsPerDay: 4, // Tối đa 4 tiết/ngày/GV tránh quá tải
-            preferDoublePeriods: true, // Ưu tiên tiết đôi cho KHTN / Văn
-            avoidFirstPeriodForYoungKids: true // Tránh tiết 1 sáng cho GV con nhỏ
+            coreSubjectsGoldenPeriods: true, // Mức 1: Toán, Văn, Anh tiết vàng 1, 2, 3
+            enableDoublePeriodsCore: true,   // Mức 2: Ưu tiên tiết đôi cho: Toán, Văn, Anh, KHTN
+            doublePeriodSubjects: ['Toán', 'Ngữ Văn', 'Tiếng Anh', 'Khoa học Tự nhiên', 'KHTN'],
+            pePeriods1to4: true,             // Mức 3: Ưu tiên GDTC từ tiết 1 đến tiết 4, tránh tiết 5
+            noPEPeriod45: true,              // Tương thích ngược
+            lsdlAlternating: true,           // Mức 4: So le Sử - Địa
+            artsEndPeriods: true,            // Mức 5: Nghệ thuật tiết cuối buổi
+            activitiesFlexible: true,        // Mức 6: Hoạt động linh hoạt
+            gvcnOffDays: 2,                  // GVCN được nghỉ 1-2 buổi/tuần
+            maxPeriodsPerDay: 4              // Tối đa 4 tiết/ngày/GV
         };
 
         // Tự động khôi phục dữ liệu TKB theo tài khoản người dùng đang đăng nhập
@@ -302,9 +319,32 @@ export class SmartTKBEngine {
             this.initDefaultYearlySnapshots();
         }
         const list = Object.values(this.yearlySnapshots);
-        list.forEach(item => {
-            item.isActive = (item.id === this.activeSnapshotId);
-        });
+
+        // Hàm phân tích ngày định dạng DD/MM/YYYY
+        const parseD = (s) => {
+            if (!s) return 0;
+            const parts = s.split('/');
+            if (parts.length === 3) return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])).getTime();
+            const t = new Date(s).getTime();
+            return isNaN(t) ? 0 : t;
+        };
+
+        // Sắp xếp các bản TKB theo thứ tự ngày áp dụng tăng dần
+        list.sort((a, b) => parseD(a.applyFromDate) - parseD(b.applyFromDate));
+
+        // Tự động gán nhãn khoảng thời gian: Từ ngày D_i đến ngày D_{i+1}
+        // (Ngày sau là ngày Áp dụng của TKB mới liền kề theo đúng chỉ đạo của Thầy Quan)
+        for (let i = 0; i < list.length; i++) {
+            const start = list[i].applyFromDate || '02/11/2026';
+            if (i + 1 < list.length && list[i + 1].applyFromDate) {
+                const nextDate = list[i + 1].applyFromDate;
+                list[i].dateRangeLabel = `Từ ngày ${start} đến ngày ${nextDate}`;
+            } else {
+                list[i].dateRangeLabel = `Từ ngày ${start} đến nay`;
+            }
+            list[i].isActive = (list[i].id === this.activeSnapshotId);
+        }
+
         return list;
     }
 
@@ -562,6 +602,32 @@ export class SmartTKBEngine {
                     continue;
                 }
 
+                // KIỂM TRA RÀNG BUỘC CỐ ĐỊNH TINH CHỈNH (KHÔNG KHÓA CỨNG THEO CHỈ ĐẠO CỦA THẦY QUAN)
+                if (this.fixedConstraints) {
+                    if (this.fixedConstraints.lockFlagSalute) {
+                        const fd = (this.fixedConstraints.flagSaluteDay !== undefined) ? parseInt(this.fixedConstraints.flagSaluteDay) : 0;
+                        const fp = (this.fixedConstraints.flagSalutePeriod !== undefined) ? parseInt(this.fixedConstraints.flagSalutePeriod) : 0;
+                        let hitFlag = false;
+                        for (let k = 0; k < length; k++) {
+                            if (d === fd && (p + k) === fp && lesson.subject !== 'Chào Cờ') {
+                                hitFlag = true; break;
+                            }
+                        }
+                        if (hitFlag) continue;
+                    }
+                    if (this.fixedConstraints.lockClassMeeting) {
+                        const md = (this.fixedConstraints.classMeetingDay !== undefined) ? parseInt(this.fixedConstraints.classMeetingDay) : 5;
+                        const mp = (this.fixedConstraints.classMeetingPeriod !== undefined) ? parseInt(this.fixedConstraints.classMeetingPeriod) : 4;
+                        let hitMeeting = false;
+                        for (let k = 0; k < length; k++) {
+                            if (d === md && (p + k) === mp && !lesson.subject.includes('Sinh hoạt') && !lesson.subject.includes('SHL')) {
+                                hitMeeting = true; break;
+                            }
+                        }
+                        if (hitMeeting) continue;
+                    }
+                }
+
                 // =========================================================================
                 // CHẤM ĐIỂM SƯ PHẠM ĐẲNG CẤP (PEDAGOGICAL SCORING ENGINE)
                 // =========================================================================
@@ -579,20 +645,21 @@ export class SmartTKBEngine {
                     }
                 }
 
-                // 3. MỨC 2: PHÒNG LAB / THÍ NGHIỆM (KHTN, Tin Học, Công Nghệ)
-                if (prio === 2 || lesson.roomReq) {
+                // 3. MỨC 2: TIẾT ĐÔI CHO MÔN: TOÁN, VĂN, ANH, KHTN (THEO CHỈ ĐẠO CỦA THẦY QUAN)
+                const isDoubleCandidate = ['toán', 'toan', 'ngữ văn', 'ngu van', 'tiếng anh', 'tieng anh', 'khtn', 'khoa học tự nhiên', 'tin học'].some(s => (lesson.subject || '').toLowerCase().includes(s));
+                if (prio === 2 || isDoubleCandidate || lesson.roomReq) {
                     if (length === 2) {
-                        if (p === 1 || p === 2) score += 45; // Tiết đôi thực hành lý tưởng
-                        else if (p >= 3) score -= 65;
+                        if (p === 0 || p === 1 || p === 2) score += 55; // Tiết đôi buổi sáng lý tưởng
+                        else if (p >= 3) score -= 45;
                     }
                 }
 
-                // 4. MỨC 3: THỂ CHẤT & KHÍ HẬU (GDTC) -> BẢO VỆ SỨC KHỎE HỌC SINH
-                if (prio === 3 || lesson.subject === "Giáo Dục Thể Chất") {
-                    if (p === 3 || p === 4) {
-                        score -= 280; // TUYỆT ĐỐI CẤM TIẾT 4 - 5 NẮNG GẮT TRƯA HÈ
-                    } else if (p === 0 || p === 1) {
-                        score += 70; // Ưu tiên tiết 1-2 sáng mát mẻ
+                // 4. MỨC 3: THỂ CHẤT (GDTC) -> ƯU TIÊN TỪ TIẾT 1 ĐẾN TIẾT 4, TRÁNH TIẾT 5 (THEO CHỈ ĐẠO THẦY QUAN)
+                if (prio === 3 || (lesson.subject && (lesson.subject === "Giáo Dục Thể Chất" || lesson.subject === "GDTC" || lesson.subject.includes("Thể dục")))) {
+                    if (p === 4) {
+                        score -= 280; // Tránh tiết 5 cuối buổi nắng gắt mệt mỏi
+                    } else if (p >= 0 && p <= 3) {
+                        score += 65; // Ưu tiên từ Tiết 1 đến Tiết 4 sáng
                     }
                 }
 
@@ -1154,6 +1221,8 @@ export class SmartTKBEngine {
                 yearlySnapshots: this.yearlySnapshots || {},
                 activeSnapshotId: this.activeSnapshotId || 'snapshot_week_9_13',
                 teacherConstraints: this.teacherConstraints || {},
+                fixedConstraints: this.fixedConstraints || {},
+                pedagogicalPriorities: this.pedagogicalPriorities || {},
                 savedAt: new Date().toISOString()
             };
             localStorage.setItem(key, JSON.stringify(data));
@@ -1212,6 +1281,8 @@ export class SmartTKBEngine {
             this.yearlySnapshots = data.yearlySnapshots || {};
             this.activeSnapshotId = data.activeSnapshotId || 'snapshot_week_9_13';
             this.teacherConstraints = data.teacherConstraints || {};
+            if (data.fixedConstraints) this.fixedConstraints = Object.assign({}, this.fixedConstraints, data.fixedConstraints);
+            if (data.pedagogicalPriorities) this.pedagogicalPriorities = Object.assign({}, this.pedagogicalPriorities, data.pedagogicalPriorities);
             if (Object.keys(this.yearlySnapshots).length === 0) {
                 this.initDefaultYearlySnapshots();
             }
@@ -1348,256 +1419,294 @@ export class SmartTKBEngine {
 
     getDefaultPPCTSample(subjectName, grade = '8') {
         const sub = (subjectName || '').toLowerCase().trim();
-        
+        const gr = (grade || '8').toString().replace(/\D/g, '') || '8';
+        const grLabel = `Lớp ${gr}`;
+
         // 1. MÔN HOẠT ĐỘNG TRẢI NGHIỆM, HƯỚNG NGHIỆP (105 TIẾT - 35 TUẦN x 3T)
-        if (sub.includes('hđtn') || sub.includes('hdtn')) {
-            const topics = [
-                { w: 1, p: 1, t: "Sinh hoạt dưới cờ: Khám phá truyền thống nhà trường", type: "SHDC", eq: "Cờ, Loa, Khung kịch bản" },
-                { w: 1, p: 2, t: "Hoạt động giáo dục theo chủ đề: Nhận diện cảm xúc & Bản thân", type: "HĐGD", eq: "Phiếu học tập, Tranh ảnh" },
-                { w: 1, p: 3, t: "Sinh hoạt lớp: Bầu ban cán sự lớp & Xây dựng quy ước lớp", type: "SHL", eq: "Biên bản, Sổ tay cờ đỏ" },
-                { w: 2, p: 4, t: "Sinh hoạt dưới cờ: Tự hào người học sinh Đội viên", type: "SHDC", eq: "Cờ Đội, Loa" },
-                { w: 2, p: 5, t: "Hoạt động giáo dục theo chủ đề: Kỹ năng quản lý cảm xúc bản thân", type: "HĐGD", eq: "Phiếu bài tập rèn luyện" },
-                { w: 2, p: 6, t: "Sinh hoạt lớp: Rèn luyện nền nếp học tập & Vệ sinh bán trú", type: "SHL", eq: "Kế hoạch tuần" },
-                { w: 3, p: 7, t: "Sinh hoạt dưới cờ: Văn hóa ứng xử trong nhà trường", type: "SHDC", eq: "Tiểu phẩm" },
-                { w: 3, p: 8, t: "Hoạt động giáo dục theo chủ đề: Xác định mục tiêu năm học", type: "HĐGD", eq: "Bảng mục tiêu cá nhân" },
-                { w: 3, p: 9, t: "Sinh hoạt lớp: Sơ kết phong trào thi đua học tốt", type: "SHL", eq: "Sổ theo dõi thi đua" },
-                { w: 4, p: 10, t: "Sinh hoạt dưới cờ: An toàn giao thông & Cổng trường bình yên", type: "SHDC", eq: "Mô hình biển báo" },
-                { w: 4, p: 11, t: "Hoạt động giáo dục: Phòng chống bạo lực học đường & Kỹ năng ứng phó", type: "HĐGD", eq: "Video tình huống" },
-                { w: 4, p: 12, t: "Sinh hoạt lớp: Rà soát nhiệm vụ tuần 4 & Đánh giá tháng 9", type: "SHL", eq: "Sổ tay chủ nhiệm" },
-                { w: 5, p: 13, t: "Sinh hoạt dưới cờ: Phát động phong trào Đọc sách & Học tập suốt đời", type: "SHDC", eq: "Tủ sách măng non" },
-                { w: 5, p: 14, t: "Hoạt động giáo dục: Khám phá khả năng tranh biện và tư duy logic", type: "HĐGD", eq: "Bảng tranh biện nhóm" },
-                { w: 5, p: 15, t: "Sinh hoạt lớp: Tuyên dương cá nhân tích cực tuần 5", type: "SHL", eq: "Bảng vinh danh" },
-                { w: 6, p: 16, t: "Sinh hoạt dưới cờ: Tôn vinh vẻ đẹp gia đình và lòng hiếu thảo", type: "SHDC", eq: "Bài hát gia đình" },
-                { w: 6, p: 17, t: "Hoạt động giáo dục: Kỹ năng lắng nghe & Chia sẻ với cha mẹ", type: "HĐGD", eq: "Thiệp tri ân" },
-                { w: 6, p: 18, t: "Sinh hoạt lớp: Kế hoạch phối hợp gia đình học sinh bán trú", type: "SHL", eq: "Phiếu liên lạc" },
-                { w: 7, p: 19, t: "Sinh hoạt dưới cờ: Giao lưu tìm hiểu phong tục truyền thống địa phương", type: "SHDC", eq: "Trang phục dân tộc" },
-                { w: 7, p: 20, t: "Hoạt động giáo dục: Xây dựng mối quan hệ bạn bè trong sáng, lành mạnh", type: "HĐGD", eq: "Bài tập tình huống" },
-                { w: 7, p: 21, t: "Sinh hoạt lớp: Đánh giá nếp sống bán trú tháng 10", type: "SHL", eq: "Sổ chấm điểm phòng ở" },
-                { w: 8, p: 22, t: "Sinh hoạt dưới cờ: Hưởng ứng phong trào Xanh - Sạch - Đẹp", type: "SHDC", eq: "Cây xanh mini" },
-                { w: 8, p: 23, t: "Hoạt động giáo dục: Phân loại rác thải & Bảo vệ môi trường bán trú", type: "HĐGD", eq: "Túi phân loại rác" },
-                { w: 8, p: 24, t: "Sinh hoạt lớp: Chuẩn bị nội dung kiểm tra giữa kỳ I", type: "SHL", eq: "Ma trận ôn tập" },
-                { w: 9, p: 25, t: "Sinh hoạt dưới cờ: Tự tin bước vào kỳ kiểm tra giữa học kỳ I", type: "SHDC", eq: "Khẩu hiệu quyết tâm" },
-                { w: 9, p: 26, t: "Hoạt động giáo dục: Kỹ năng giải tỏa căng thẳng mùa thi", type: "HĐGD", eq: "Bản đồ tư duy cảm xúc" },
-                { w: 9, p: 27, t: "Sinh hoạt lớp: Đánh giá nền nếp sau tuần kiểm tra giữa kỳ", type: "SHL", eq: "Báo cáo tổng kết tuần 9" }
-            ];
-            
-            // Tự động bổ sung các tuần còn lại đến tuần 35
-            for (let w = 10; w <= 35; w++) {
+        if (sub.includes('hđtn') || sub.includes('hdtn') || sub.includes('trải nghiệm')) {
+            const topics = [];
+            for (let w = 1; w <= 35; w++) {
                 const p1 = (w - 1) * 3 + 1;
                 const p2 = p1 + 1;
                 const p3 = p1 + 2;
-                topics.push({ w: w, p: p1, t: `Sinh hoạt dưới cờ: Chủ đề rèn luyện tuần ${w}`, type: "SHDC", eq: "Cờ, Loa, Thiết bị âm thanh" });
-                topics.push({ w: w, p: p2, t: `Hoạt động giáo dục theo chủ đề tuần ${w}: Phát triển năng lực cá nhân`, type: "HĐGD", eq: "SGK HĐTN, Phiếu học tập" });
-                topics.push({ w: w, p: p3, t: `Sinh hoạt lớp: Đánh giá kết quả tuần ${w} & Kế hoạch tuần tiếp theo`, type: "SHL", eq: "Sổ tay GVCN" });
-            }
-            return topics.map(item => ({
-                period: item.p,
-                week: item.w,
-                title: item.t,
-                periodsCount: 1,
-                equipment: item.eq,
-                room: item.type === 'SHDC' ? 'Sân trường' : 'Lớp học',
-                note: item.type
-            }));
-        }
-
-        // 2. MÔN TIN HỌC (70 TIẾT - 35 TUẦN x 2T)
-        if (sub.includes('tin')) {
-            let tinLessons = [];
-            const titles = [
-                "Chủ đề A: Máy tính và cộng đồng - Lịch sử phát triển thiết bị số",
-                "Chủ đề A: Thông tin trong môi trường số và khả năng xử lý",
-                "Chủ đề B: Mạng máy tính và Internet - Khái niệm dịch vụ đám mây",
-                "Chủ đề B: Thực hành chia sẻ tài nguyên an toàn trên Google Drive",
-                "Chủ đề D: Đạo đức, pháp luật và văn hóa trong môi trường số",
-                "Chủ đề D: Phòng tránh lừa đảo và bảo vệ thông tin cá nhân trên mạng",
-                "Chủ đề E: Ứng dụng tin học - Định dạng văn bản nâng cao với bảng biểu",
-                "Chủ đề E: Thực hành thiết kế tài liệu học tập chuẩn GDPT",
-                "Chủ đề E: Sử dụng phần mềm bảng tính Excel xử lý số liệu khảo sát",
-                "Chủ đề E: Các hàm thống kê cơ bản trong phân tích dữ liệu học tập",
-                "Chủ đề E: Vẽ biểu đồ trực quan hóa số liệu bảng tính",
-                "Chủ đề E: Thực hành tổng hợp số liệu và in ấn báo cáo",
-                "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính - Thuật toán",
-                "Chủ đề F: Cấu trúc tuần tự và cấu trúc rẽ nhánh trong lập trình trực quan",
-                "Chủ đề F: Cấu trúc lặp và biến nhớ trong Scratch / Python",
-                "Chủ đề F: Thực hành lập trình trò chơi học tập tương tác"
-            ];
-            for (let i = 1; i <= 70; i++) {
-                const w = Math.ceil(i / 2);
-                const titleIdx = (i - 1) % titles.length;
-                tinLessons.push({
-                    period: i,
-                    week: w,
-                    title: `${titles[titleIdx]} (Tiết ${i})`,
-                    periodsCount: 1,
-                    equipment: "Phòng máy tính, Máy chiếu, Phần mềm",
-                    room: "room_tin",
-                    note: "Thực hành phòng máy"
+                topics.push({
+                    period: p1, week: w,
+                    title: `Sinh hoạt dưới cờ: Chủ đề rèn luyện tuần ${w} (${grLabel})`,
+                    periodsCount: 1, equipment: "Cờ Đội, Loa, Thiết bị âm thanh",
+                    room: "Sân trường", note: "SHDC"
+                });
+                topics.push({
+                    period: p2, week: w,
+                    title: `HĐGD theo chủ đề tuần ${w}: Rèn luyện bản thân & Hướng nghiệp (${grLabel})`,
+                    periodsCount: 1, equipment: `SGK HĐTN ${gr}, Phiếu học tập`,
+                    room: "Lớp học", note: "HĐGD"
+                });
+                topics.push({
+                    period: p3, week: w,
+                    title: `Sinh hoạt lớp: Sơ kết tuần ${w} & Kế hoạch tuần tiếp theo (${grLabel})`,
+                    periodsCount: 1, equipment: "Sổ tay GVCN, Biên bản",
+                    room: "Lớp học", note: "SHL"
                 });
             }
-            return tinLessons;
+            return topics;
         }
 
-        // 3. MÔN TOÁN (140 TIẾT - 35 TUẦN x 4T)
+        // 2. MÔN TOÁN (140 TIẾT - 35 TUẦN x 4T)
         if (sub.includes('toán') || sub.includes('toan')) {
-            let mathLessons = [];
-            const sampleTitles = [
-                "Bài 1: Đơn thức nhiều biến (Khái niệm & Bậc đơn thức)",
-                "Bài 1: Đơn thức đồng dạng & Cộng trừ đơn thức",
-                "Bài 2: Đa thức nhiều biến (Khái niệm & Thu gọn đa thức)",
-                "Bài 2: Tính giá trị của đa thức tại các giá trị cho trước",
-                "Bài 3: Phép cộng và phép trừ đa thức",
-                "Luyện tập chung: Các phép tính trên đa thức nhiều biến",
-                "Bài 4: Phép nhân đơn thức với đa thức & Đa thức với đa thức",
-                "Bài 5: Phép chia đa thức cho đơn thức",
-                "Bài 6: Hiệu hai bình phương. Bình phương của một tổng hay một hiệu",
-                "Luyện tập hằng đẳng thức đáng nhớ số 1, 2, 3",
-                "Bài 7: Lập phương của một tổng. Lập phương của một hiệu",
-                "Bài 8: Tổng và hiệu của hai lập phương",
-                "Bài 9: Phân tích đa thức thành nhân tử bằng phương pháp đặt nhân tử chung",
-                "Bài 9: Phân tích đa thức thành nhân tử bằng phương pháp dùng hằng đẳng thức",
-                "Bài 10: Tứ giác. Định lí về tổng các góc của một tứ giác",
-                "Bài 11: Hình thang cân. Dấu hiệu nhận biết hình thang cân"
-            ];
+            let mathTopics = [];
+            if (gr === '6') {
+                mathTopics = [
+                    "Tập hợp. Phần tử của tập hợp", "Tập hợp các số tự nhiên", "Các phép tính trong tập hợp số tự nhiên",
+                    "Lũy thừa với số mũ tự nhiên", "Thứ tự thực hiện các phép tính", "Dấu hiệu chia hết cho 2, cho 5, cho 3, cho 9",
+                    "Số nguyên tố. Hợp số. Phân tích ra thừa số nguyên tố", "Ước chung và Bội chung. ƯCLN & BCNN",
+                    "Số nguyên âm và tập hợp các số nguyên", "Thứ tự trong tập hợp các số nguyên",
+                    "Các phép tính cộng, trừ, nhân, chia số nguyên", "Hình tam giác đều, hình vuông, hình lục giác đều",
+                    "Hình chữ nhật, hình thoi, hình bình hành, hình thang cân", "Chu vi và diện tích một số tứ giác",
+                    "Phân số. Phân số bằng nhau. Tính chất cơ bản", "So sánh phân số và các phép tính phân số",
+                    "Số thập phân và các phép tính số thập phân", "Tỉ số và tỉ số phần trăm. Bài toán thực tế",
+                    "Điểm, đường thẳng, tia, đoạn thẳng", "Góc và số đo góc. Thống kê và xác suất thực nghiệm"
+                ];
+            } else if (gr === '7') {
+                mathTopics = [
+                    "Tập hợp các số hữu tỉ và các phép tính số hữu tỉ", "Số thập phân vô hạn tuần hoàn. Số thực",
+                    "Căn bậc hai số học và giá trị tuyệt đối", "Góc ở vị trí đặc biệt. Tia phân giác của một góc",
+                    "Hai đường thẳng song song và dấu hiệu nhận biết", "Định lí và chứng minh một định lí",
+                    "Hình hộp chữ nhật và hình lập phương", "Hình lăng trụ đứng tam giác và tứ giác",
+                    "Tổng các góc trong một tam giác", "Hai tam giác bằng nhau. Các trường hợp bằng nhau",
+                    "Tam giác cân. Đường trung trực của đoạn thẳng", "Quan hệ giữa góc và cạnh đối diện trong tam giác",
+                    "Các đường đồng quy trong tam giác (trung tuyến, phân giác, trung trực, cao)",
+                    "Thu thập và phân loại dữ liệu", "Biểu đồ hình quạt tròn và biểu đồ đoạn thẳng",
+                    "Biến cố và xác suất của biến cố trong trò chơi đơn giản"
+                ];
+            } else if (gr === '9') {
+                mathTopics = [
+                    "Căn bậc hai và căn thức bậc hai", "Liên hệ giữa phép nhân, phép chia và phép khai phương",
+                    "Biến đổi đơn giản biểu thức chứa căn bậc hai", "Căn bậc ba và ứng dụng",
+                    "Khái niệm hệ hai phương trình bậc nhất hai ẩn", "Giải hệ phương trình bằng phương pháp thế và cộng đại số",
+                    "Giải bài toán bằng cách lập hệ phương trình", "Hàm số y = ax^2 (a khác 0) và đồ thị",
+                    "Phương trình bậc hai một ẩn và công thức nghiệm", "Định lí Vi-ét và ứng dụng",
+                    "Một số hệ thức về cạnh và đường cao trong tam giác vuông", "Tỉ số lượng giác của góc nhọn",
+                    "Một số hệ thức về cạnh và góc trong tam giác vuông", "Sự xác định đường tròn. Tính chất đối xứng",
+                    "Đường kính và dây của đường tròn. Tiếp tuyến của đường tròn", "Góc ở tâm. Số đo cung. Góc nội tiếp",
+                    "Góc tạo bởi tia tiếp tuyến và dây cung. Tứ giác nội tiếp", "Độ dài đường tròn, cung tròn. Diện tích hình tròn",
+                    "Hình trụ - Hình nón - Hình cầu (Diện tích và thể tích)", "Một số yếu tố xác suất và thống kê thực nghiệm"
+                ];
+            } else {
+                // Khối 8 chuẩn
+                mathTopics = [
+                    "Bài 1: Đơn thức nhiều biến (Khái niệm & Bậc đơn thức)", "Bài 1: Đơn thức đồng dạng & Cộng trừ đơn thức",
+                    "Bài 2: Đa thức nhiều biến (Khái niệm & Thu gọn đa thức)", "Bài 2: Tính giá trị của đa thức tại các giá trị cho trước",
+                    "Bài 3: Phép cộng và phép trừ đa thức", "Luyện tập chung: Các phép tính trên đa thức nhiều biến",
+                    "Bài 4: Phép nhân đơn thức với đa thức & Đa thức với đa thức", "Bài 5: Phép chia đa thức cho đơn thức",
+                    "Bài 6: Hiệu hai bình phương. Bình phương của một tổng hay một hiệu", "Luyện tập hằng đẳng thức đáng nhớ số 1, 2, 3",
+                    "Bài 7: Lập phương của một tổng. Lập phương của một hiệu", "Bài 8: Tổng và hiệu của hai lập phương",
+                    "Bài 9: Phân tích đa thức thành nhân tử bằng phương pháp đặt nhân tử chung",
+                    "Bài 9: Phân tích đa thức thành nhân tử bằng phương pháp dùng hằng đẳng thức",
+                    "Bài 10: Tứ giác. Định lí về tổng các góc của một tứ giác", "Bài 11: Hình thang cân. Dấu hiệu nhận biết hình thang cân",
+                    "Bài 12: Hình bình hành và hình thoi", "Bài 13: Hình chữ nhật và hình vuông",
+                    "Định lí Thalès trong tam giác", "Đường trung bình của tam giác", "Tính chất đường phân giác của tam giác",
+                    "Tam giác đồng dạng. Các trường hợp đồng dạng của tam giác", "Khái niệm hàm số và đồ thị của hàm số y = ax + b",
+                    "Hệ số góc của đường thẳng y = ax + b", "Phương trình bậc nhất một ẩn và cách giải"
+                ];
+            }
+
+            const list = [];
             for (let i = 1; i <= 140; i++) {
                 const w = Math.ceil(i / 4);
-                const tIdx = (i - 1) % sampleTitles.length;
-                mathLessons.push({
-                    period: i,
-                    week: w,
-                    title: `${sampleTitles[tIdx]} (Tiết ${i})`,
-                    periodsCount: 1,
-                    equipment: "SGK Toán 8, Thước thẳng, Máy tính bỏ túi",
-                    room: "Lớp học",
-                    note: "Đại số & Hình học"
+                const tIdx = (i - 1) % mathTopics.length;
+                list.push({
+                    period: i, week: w,
+                    title: `${mathTopics[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1, equipment: `SGK Toán ${gr}, Thước thẳng, Máy tính bỏ túi`,
+                    room: "Lớp học", note: `Đại số & Hình học ${gr}`
                 });
             }
-            return mathLessons;
+            return list;
         }
 
-        // 4. MÔN KHTN (140 TIẾT - 35 TUẦN x 4T)
-        if (sub.includes('khtn')) {
-            let khtnLessons = [];
-            const khtnTitles = [
-                "Mở đầu: Sử dụng hóa chất, dụng cụ và an toàn trong phòng thực hành",
-                "Mở đầu: Viết báo cáo thực hành thí nghiệm KHTN",
-                "Bài 1: Biến đổi vật lí và biến đổi hóa học",
-                "Bài 2: Phản ứng hóa học và năng lượng trong phản ứng hóa học",
-                "Bài 3: Định luật bảo toàn khối lượng và phương trình hóa học",
-                "Luyện tập: Lập phương trình hóa học của phản ứng",
-                "Bài 4: Khối lượng mol và tỉ khối của chất khí",
-                "Bài 5: Dung dịch và nồng độ dung dịch (Nồng độ C% và CM)",
-                "Bài 6: Tốc độ phản ứng và các yếu tố ảnh hưởng đến tốc độ phản ứng",
-                "Bài 13: Khối lượng riêng và đơn vị đo khối lượng riêng",
-                "Bài 14: Thực hành đo khối lượng riêng của vật rắn",
-                "Bài 15: Tác dụng của áp suất lên chất lỏng và chất khí",
-                "Bài 16: Lực đẩy Ác-si-mét và điều kiện vật nổi",
-                "Bài 17: Áp suất khí quyển và ứng dụng trong đời sống"
+        // 3. MÔN NGỮ VĂN (140 TIẾT - 35 TUẦN x 4T)
+        if (sub.includes('văn') || sub.includes('van')) {
+            const vanTopics = [
+                `Bài 1: Đọc hiểu văn bản truyện (${grLabel})`, `Bài 1: Thực hành tiếng Việt`,
+                `Bài 1: Viết bài văn tự sự / biểu cảm`, `Bài 1: Nói và nghe: Trình bày ý kiến`,
+                `Bài 2: Đọc hiểu văn bản thơ (${grLabel})`, `Bài 2: Thực hành tiếng Việt - Biện pháp tu từ`,
+                `Bài 2: Viết đoạn văn ghi lại cảm xúc về bài thơ`, `Bài 2: Nói và nghe: Trao đổi về một bài thơ`,
+                `Bài 3: Đọc hiểu văn bản nghị luận xã hội`, `Bài 3: Thực hành tiếng Việt - Liên kết câu & đoạn văn`,
+                `Bài 3: Viết bài văn nghị luận về một vấn đề đời sống`, `Bài 3: Nói và nghe: Thảo luận về vấn đề xã hội`,
+                `Bài 4: Đọc hiểu văn bản thông tin`, `Bài 4: Thực hành tiếng Việt - Thuật ngữ & Nghĩa của từ`,
+                `Bài 4: Viết biên bản hoặc văn bản thuyết minh`, `Bài 4: Nói và nghe: Báo cáo kết quả nghiên cứu`,
+                `Ôn tập giữa học kỳ: Hệ thống hóa kiến thức đọc hiểu & tiếng Việt`, `Kiểm tra đánh giá giữa học kỳ`,
+                `Bài 5: Đọc hiểu truyện ký / kịch bản văn học`, `Bài 5: Thực hành tiếng Việt - Câu rút gọn & câu đặc biệt`,
+                `Bài 6: Vẻ đẹp quê hương đất nước qua tác phẩm văn học`, `Bài 6: Viết bài văn cảm thụ văn học`,
+                `Ôn tập cuối học kỳ: Rèn luyện kỹ năng đọc hiểu - viết - nói nghe`, `Kiểm tra đánh giá cuối học kỳ`
             ];
+            const list = [];
             for (let i = 1; i <= 140; i++) {
                 const w = Math.ceil(i / 4);
-                const tIdx = (i - 1) % khtnTitles.length;
-                khtnLessons.push({
-                    period: i,
-                    week: w,
-                    title: `${khtnTitles[tIdx]} (Tiết ${i})`,
-                    periodsCount: 1,
-                    equipment: "Dụng cụ, Hóa chất, Mô hình phòng Lab",
-                    room: "room_khtn",
-                    note: "Vật lí - Hóa học - Sinh học"
+                const tIdx = (i - 1) % vanTopics.length;
+                list.push({
+                    period: i, week: w,
+                    title: `${vanTopics[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1, equipment: `SGK Ngữ Văn ${gr}, Phiếu học tập, Tranh ảnh`,
+                    room: "Lớp học", note: `Ngữ Văn ${gr}`
                 });
             }
-            return khtnLessons;
+            return list;
         }
 
-        // 5. MÔN LỊCH SỬ RIÊNG (52-70 TIẾT - CHUẨN GDPT 2018)
-        if (sub === 'lịch sử' || (sub.includes('lịch sử') && !sub.includes('địa'))) {
-            let histLessons = [];
-            const histTitles = [
-                "Bài 1: Nước Đại Việt thời Lê sơ - Tình hình chính trị, quân sự, luật pháp",
-                "Bài 2: Tình hình kinh tế, xã hội nước Đại Việt thời Lê sơ",
-                "Bài 3: Khởi nghĩa Lam Sơn (1418 - 1427) bùng nổ và toàn thắng",
-                "Bài 4: Phong trào Tây Sơn - Lật đổ chính quyền chúa Nguyễn & chúa Trịnh",
-                "Bài 5: Quang Trung đại phá quân Thanh & Chiến thắng Rạch Gầm - Xoài Mút",
-                "Bài 6: Các cuộc cách mạng tư sản thời cận đại ở Châu Âu và Bắc Mỹ",
-                "Bài 7: Phong trào công nhân quốc tế và sự ra đời của chủ nghĩa Mác",
-                "Bài 8: Sự xâm lược của thực dân phương Tây vào các nước Đông Nam Á",
-                "Bài 9: Phong trào Cần Vương và phong trào yêu nước chống thực dân Pháp",
-                "Bài 10: Xã hội Việt Nam trong cuộc khai thác thuộc địa lần thứ nhất"
+        // 4. MÔN TIẾNG ANH (105 TIẾT - 35 TUẦN x 3T)
+        if (sub.includes('anh')) {
+            const engUnits = [
+                `Unit 1: Getting Started (${grLabel})`, `Unit 1: A Closer Look 1 (Vocabulary & Pronunciation)`,
+                `Unit 1: A Closer Look 2 (Grammar)`, `Unit 1: Communication`, `Unit 1: Skills 1 (Reading & Speaking)`,
+                `Unit 1: Skills 2 (Listening & Writing)`, `Unit 1: Looking Back & Project`,
+                `Unit 2: Getting Started`, `Unit 2: A Closer Look 1`, `Unit 2: A Closer Look 2`,
+                `Unit 2: Communication`, `Unit 2: Skills 1`, `Unit 2: Skills 2`, `Unit 2: Looking Back & Project`,
+                `Unit 3: Getting Started`, `Unit 3: A Closer Look 1`, `Unit 3: A Closer Look 2`,
+                `Review 1: Language & Skills`, `Mid-term Test`,
+                `Unit 4: Getting Started`, `Unit 4: A Closer Look 1`, `Unit 4: A Closer Look 2`,
+                `Unit 5: Getting Started`, `Unit 5: Skills 1 & 2`,
+                `Review 2: Language & Skills`, `End-of-term Test`
             ];
+            const list = [];
+            for (let i = 1; i <= 105; i++) {
+                const w = Math.ceil(i / 3);
+                const tIdx = (i - 1) % engUnits.length;
+                list.push({
+                    period: i, week: w,
+                    title: `${engUnits[tIdx]} (Period ${i})`,
+                    periodsCount: 1, equipment: `English ${gr} Student's Book, Audio CD, Flashcards`,
+                    room: "Lớp học", note: `Tiếng Anh ${gr}`
+                });
+            }
+            return list;
+        }
+
+        // 5. MÔN KHOA HỌC TỰ NHIÊN (140 TIẾT - 35 TUẦN x 4T)
+        if (sub.includes('khtn') || sub.includes('tự nhiên')) {
+            const khtnTopics = [
+                `Mở đầu: Phương pháp và kỹ năng học tập KHTN ${gr}`, `An toàn và sử dụng thiết bị phòng thí nghiệm`,
+                `Chủ đề 1: Chất và sự biến đổi của chất (${grLabel})`, `Thực hành quan sát hiện tượng và biến đổi chất`,
+                `Chủ đề 2: Khối lượng, áp suất và lực trong đời sống`, `Thực hành đo đạc và khảo sát lực`,
+                `Chủ đề 3: Năng lượng, công và công suất`, `Thực hành sử dụng đồng hồ đo điện & mạch điện cơ bản`,
+                `Chủ đề 4: Tế bào và cơ thể sống (${grLabel})`, `Thực hành quan sát tiêu bản hiển vi`,
+                `Chủ đề 5: Trao đổi chất và chuyển hóa năng lượng ở sinh vật`, `Thực hành thí nghiệm quang hợp và hô hấp`,
+                `Chủ đề 6: Cảm ứng và điều hòa hoạt động cơ thể`, `Chủ đề 7: Sinh sản và phát triển ở sinh vật`,
+                `Chủ đề 8: Trái đất và bầu trời (${grLabel})`, `Thực hành khám phá hiện tượng thiên văn học`
+            ];
+            const list = [];
+            for (let i = 1; i <= 140; i++) {
+                const w = Math.ceil(i / 4);
+                const tIdx = (i - 1) % khtnTopics.length;
+                list.push({
+                    period: i, week: w,
+                    title: `${khtnTopics[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1, equipment: `Dụng cụ, Hóa chất, Mô hình phòng Lab KHTN ${gr}`,
+                    room: "room_khtn", note: `KHTN ${gr} (Lý - Hóa - Sinh)`
+                });
+            }
+            return list;
+        }
+
+        // 6. MÔN LỊCH SỬ & ĐỊA LÍ (105 TIẾT - 35 TUẦN x 3T)
+        if (sub.includes('lịch sử') || sub.includes('địa lí') || sub.includes('địa lý')) {
+            const lsdlTopics = [
+                `Phân môn Lịch sử: Khái quát tiến trình lịch sử (${grLabel})`,
+                `Phân môn Địa lí: Vị trí địa lí, phạm vi lãnh thổ và bản đồ (${grLabel})`,
+                `Phân môn Lịch sử: Các cuộc cách mạng và chuyển biến xã hội`,
+                `Phân môn Địa lí: Địa hình, khoáng sản và tài nguyên thiên nhiên`,
+                `Phân môn Lịch sử: Phong trào đấu tranh dựng nước và giữ nước`,
+                `Phân môn Địa lí: Khí hậu, thủy văn và các đới thiên nhiên`,
+                `Phân môn Lịch sử: Văn minh nhân loại và di sản văn hóa thế giới`,
+                `Phân môn Địa lí: Dân cư, đô thị hóa và phát triển kinh tế`,
+                `Chủ đề chung: Khám phá chủ quyền biển đảo Việt Nam (${grLabel})`,
+                `Thực hành: Khai thác lược đồ lịch sử và Atlat Địa lí Việt Nam`
+            ];
+            const list = [];
+            for (let i = 1; i <= 105; i++) {
+                const w = Math.ceil(i / 3);
+                const tIdx = (i - 1) % lsdlTopics.length;
+                list.push({
+                    period: i, week: w,
+                    title: `${lsdlTopics[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1, equipment: `SGK Lịch sử & Địa lí ${gr}, Lược đồ, Atlat`,
+                    room: "Lớp học", note: `Sử & Địa ${gr}`
+                });
+            }
+            return list;
+        }
+
+        // 7. MÔN GIÁO DỤC THỂ CHẤT (70 TIẾT - 35 TUẦN x 2T)
+        if (sub.includes('thể chất') || sub.includes('gdtc') || sub.includes('thể dục')) {
+            const peTopics = [
+                `Đội hình đội ngũ: Biến đổi đội hình và các động tác quay tại chỗ (${grLabel})`,
+                `Bài thể dục phát triển chung / Thể dục liên hoàn (Động tác 1 - 8)`,
+                `Chạy cự li ngắn: Kỹ thuật xuất phát thấp và chạy lao sau xuất phát`,
+                `Chạy cự li ngắn: Kỹ thuật chạy giữa quãng và về đích`,
+                `Chạy bền: Rèn luyện sức bền trên địa hình tự nhiên`,
+                `Nhảy cao / Nhảy xa: Kỹ thuật chạy đà và giậm nhảy`,
+                `Thể thao tự chọn: Kỹ thuật chuyền bóng và di chuyển cơ bản`,
+                `Thể thao tự chọn: Kỹ thuật đập bóng / ném bóng / sút bóng cầu môn`,
+                `Trò chơi vận động rèn luyện tố chất nhanh - mạnh - bền - khéo léo`,
+                `Kiểm tra đánh giá thể lực theo tiêu chuẩn rèn luyện thân thể Bộ GD&ĐT`
+            ];
+            const list = [];
             for (let i = 1; i <= 70; i++) {
                 const w = Math.ceil(i / 2);
-                const tIdx = (i - 1) % histTitles.length;
-                histLessons.push({
-                    period: i,
-                    week: w,
-                    title: `${histTitles[tIdx]} (Tiết ${i})`,
-                    periodsCount: 1,
-                    equipment: "SGK Lịch sử, Bản đồ lịch sử, Tư liệu hình ảnh",
-                    room: "Lớp học",
-                    note: `Phân môn Lịch sử - Tuần ${w}`
+                const tIdx = (i - 1) % peTopics.length;
+                list.push({
+                    period: i, week: w,
+                    title: `${peTopics[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1, equipment: "Còi, Đồng hồ bấm giây, Bóng, Dây nhảy, Đệm",
+                    room: "Sân đa năng / Thể chất", note: `GDTC ${gr}`
                 });
             }
-            return histLessons;
+            return list;
         }
 
-        // 6. MÔN ĐỊA LÍ RIÊNG (52-70 TIẾT - CHUẨN GDPT 2018)
-        if (sub === 'địa lí' || sub === 'địa lý' || ((sub.includes('địa lí') || sub.includes('địa lý')) && !sub.includes('sử'))) {
-            let geoLessons = [];
-            const geoTitles = [
-                "Bài 1: Vị trí địa lí và phạm vi lãnh thổ Việt Nam",
-                "Bài 2: Địa hình Việt Nam - Đồi núi, đồng bằng và bờ biển",
-                "Bài 3: Khoáng sản Việt Nam và vấn đề sử dụng hợp lí tài nguyên",
-                "Bài 4: Khí hậu Việt Nam - Tính chất nhiệt đới gió mùa ẩm",
-                "Bài 5: Thủy văn Việt Nam - Hệ thống sông ngòi và hồ đầm",
-                "Bài 6: Thổ nhưỡng Việt Nam - Nhóm đất feralit và đất phù sa",
-                "Bài 7: Sinh vật Việt Nam - Đa dạng sinh học và bảo tồn thiên nhiên",
-                "Bài 8: Vùng biển đảo Việt Nam - Chủ quyền Hoàng Sa, Trường Sa & Kinh tế biển",
-                "Bài 9: Các vùng kinh tế trọng điểm và phát triển bền vững",
-                "Bài 10: Thực hành: Đọc bản đồ địa lí và phân tích biểu đồ khí hậu"
+        // 8. MÔN TIN HỌC (35 - 70 TIẾT)
+        if (sub.includes('tin')) {
+            const tinTopics = [
+                `Chủ đề A: Máy tính và cộng đồng (${grLabel})`,
+                `Chủ đề B: Mạng máy tính và Internet - Dịch vụ đám mây an toàn`,
+                `Chủ đề C: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin`,
+                `Chủ đề D: Đạo đức, pháp luật và văn hóa ứng xử trong môi trường số`,
+                `Chủ đề E: Ứng dụng tin học - Soạn thảo văn bản và bảng tính nâng cao`,
+                `Chủ đề E: Xử lý số liệu, thống kê và vẽ biểu đồ trực quan`,
+                `Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính - Thuật toán`,
+                `Chủ đề F: Thực hành lập trình trực quan Scratch / Python (${grLabel})`
             ];
+            const list = [];
             for (let i = 1; i <= 70; i++) {
                 const w = Math.ceil(i / 2);
-                const tIdx = (i - 1) % geoTitles.length;
-                geoLessons.push({
-                    period: i,
-                    week: w,
-                    title: `${geoTitles[tIdx]} (Tiết ${i})`,
-                    periodsCount: 1,
-                    equipment: "SGK Địa lí, Atlat Địa lí Việt Nam, Quả địa cầu",
-                    room: "Lớp học",
-                    note: `Phân môn Địa lí - Tuần ${w}`
+                const tIdx = (i - 1) % tinTopics.length;
+                list.push({
+                    period: i, week: w,
+                    title: `${tinTopics[tIdx]} (Tiết ${i})`,
+                    periodsCount: 1, equipment: "Phòng máy tính, Máy chiếu, Phần mềm chuyên dụng",
+                    room: "room_tin", note: `Tin học ${gr}`
                 });
             }
-            return geoLessons;
+            return list;
         }
 
-        // 7. CÁC MÔN HỌC KHÁC: TỰ ĐỘNG SINH KHUNG CHUẨN ĐẦU ĐỦ THEO SỐ TIẾT
-        const periodsPerWeekMap = {
-            'ngữ văn': 4, 'tiếng anh': 3, 'lịch sử & địa lí': 3, 'lịch sử và địa lí': 3,
-            'lịch sử': 2, 'địa lí': 2, 'địa lý': 2,
-            'giáo dục thể chất': 2, 'công nghệ': 1, 'giáo dục công dân': 1,
-            'âm nhạc': 1, 'mĩ thuật': 1
-        };
-        let pPerWeek = 2;
-        for (const [k, v] of Object.entries(periodsPerWeekMap)) {
-            if (sub.includes(k)) { pPerWeek = v; break; }
-        }
-        const totalPeriods = pPerWeek * 35;
-        let genericLessons = [];
-        for (let i = 1; i <= totalPeriods; i++) {
-            const w = Math.ceil(i / pPerWeek);
-            genericLessons.push({
-                period: i,
-                week: w,
-                title: `Bài học môn ${subjectName}: Nội dung chuẩn chương trình GDPT (Tiết ${i})`,
-                periodsCount: 1,
-                equipment: "SGK, Máy chiếu, Thiết bị dạy học bộ môn",
-                room: "Lớp học",
-                note: `Tuần ${w}`
+        // 9. MÔN CÔNG NGHỆ, GDCD, NGHỆ THUẬT, GDĐP
+        const defaultPeriods = sub.includes('công nghệ') ? 35 :
+                               sub.includes('công dân') || sub.includes('gdcd') ? 35 :
+                               sub.includes('địa phương') || sub.includes('gdđp') ? 35 :
+                               sub.includes('nghệ thuật') || sub.includes('nhạc') || sub.includes('mĩ thuật') ? 70 : 35;
+
+        const genericList = [];
+        for (let i = 1; i <= defaultPeriods; i++) {
+            const w = Math.ceil(i / (defaultPeriods / 35));
+            genericList.push({
+                period: i, week: w,
+                title: `Bài ${Math.ceil(i/2)}: Kế hoạch bài dạy môn ${subjectName} (${grLabel} - Tiết ${i})`,
+                periodsCount: 1, equipment: `SGK ${subjectName} ${gr}, Thiết bị dạy học bộ môn`,
+                room: "Lớp học", note: `Chuẩn GDPT 2018 - Tuần ${w}`
             });
         }
-        return genericLessons;
+        return genericList;
     }
 
     generateTeachingSchedule(teacherName, weekNumber = 9) {

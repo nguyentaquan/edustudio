@@ -249,6 +249,8 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         this.renderPCCMTable();
         this.renderConfigTab();
         this.renderStats();
+        this.updateMainLSDLWidget();
+        this.initFixedConstraintsControls();
     }
 
     /**
@@ -945,7 +947,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                             </h2>
                         </div>
                         <p style="margin: 0.15rem 0 0 0; font-size: 0.78rem; color: #64748b;">
-                            ${(this.engine.schoolConfig && this.engine.schoolConfig.schoolName) || 'Trường THCS Bán Trú Canh Thuận'} • Áp dụng ${(this.engine.schoolConfig && this.engine.schoolConfig.applyWeekRange) || 'Tuần 9 đến Tuần 13'}
+                            ${(this.engine.schoolConfig && this.engine.schoolConfig.schoolName) || 'Trường THCS'} • Áp dụng từ ngày ${(this.engine.schoolConfig && this.engine.schoolConfig.applyFromDate) || '02/11/2026'}
                         </p>
                     </div>
 
@@ -957,7 +959,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                             </span>
                             <select id="selectYearlyTKBSnapshot" onchange="window.smartTKBUI.onSelectYearlySnapshot(this.value)" style="padding: 0.2rem 0.45rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #6ee7b7; border-radius: 4px; color: #065f46; background: #ffffff; cursor: pointer; outline: none;" title="Chọn dùng lại TKB của bất kỳ thời điểm nào trong năm mà không mất thời gian biên tập lại">
                                 ${(this.engine.getYearlySnapshotsList ? this.engine.getYearlySnapshotsList() : []).map(s => `
-                                    <option value="${s.id}" ${s.isActive ? 'selected' : ''}>${s.shortName || s.name}</option>
+                                    <option value="${s.id}" ${s.isActive ? 'selected' : ''}>${s.dateRangeLabel ? `${s.name} (${s.dateRangeLabel})` : (s.shortName || s.name)}</option>
                                 `).join('')}
                             </select>
                             <button type="button" onclick="window.smartTKBUI.openSaveSnapshotModal();" style="background: #059669; color: #ffffff; border: none; padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.2rem;" title="Lưu TKB hiện tại thành mốc thời điểm mới vào kho">
@@ -970,21 +972,12 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
 
                         <button type="button" onclick="window.smartTKBUI.openCumulativePriorModal();" 
                                 style="background: #ffffff; color: #047857; border: 1.5px solid #059669; padding: 0.22rem 0.55rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04);" 
-                                title="Xem đối soát Lũy kế TKB liền kề trước (Tuần 1 - 8)">
+                                title="Xem đối soát Lũy kế TKB liền kề trước">
                             <span>📊</span> <span>Lũy Kế TKB Liền Kề Trước</span>
                         </button>
-                        <div style="display: flex; align-items: center; gap: 0.25rem;">
-                            <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">📅 Áp Dụng:</span>
-                            <select id="tkbSchoolViewSemSelect" onchange="window.smartTKBUI.setSchedulePlan(this.value)" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;" title="Chọn Tuần hoặc Học kỳ áp dụng (đáp ứng đơn vị đổi theo Tuần)">
-                                <option value="WEEK_9_13" ${(this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_9_13') || (!this.engine.schoolConfig?.schedulePlanType && this.engine.currentSemester === 'HK1') ? 'selected' : ''}>📅 Tuần 9 - 13</option>
-                                <option value="WEEK_1_9" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_1_9' ? 'selected' : ''}>📅 Tuần 1 - 9</option>
-                                <option value="WEEK_10_18" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_10_18' ? 'selected' : ''}>📅 Tuần 10 - 18</option>
-                                <option value="HK1" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'HK1' ? 'selected' : ''}>🍂 Học kỳ I (18T)</option>
-                                <option value="WEEK_19_27" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_19_27' ? 'selected' : ''}>📅 Tuần 19 - 27</option>
-                                <option value="WEEK_28_35" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'WEEK_28_35' ? 'selected' : ''}>📅 Tuần 28 - 35</option>
-                                <option value="HK2" ${(this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'HK2') || this.engine.currentSemester === 'HK2' ? 'selected' : ''}>🌱 Học kỳ II (17T)</option>
-                                <option value="YEAR" ${this.engine.schoolConfig && this.engine.schoolConfig.schedulePlanType === 'YEAR' ? 'selected' : ''}>🗓️ Cả năm (35T)</option>
-                            </select>
+                        <div style="display: flex; align-items: center; gap: 0.25rem; background: #eff6ff; border: 1.5px solid #93c5fd; padding: 0.18rem 0.5rem; border-radius: 6px;">
+                            <span style="font-size: 0.72rem; font-weight: 800; color: #1e40af; text-transform: uppercase;">📅 Áp Dụng Từ Ngày:</span>
+                            <input type="text" id="tkbSchoolViewApplyDateInput" value="${(this.engine.schoolConfig && this.engine.schoolConfig.applyFromDate) || '02/11/2026'}" placeholder="dd/mm/yyyy" onchange="window.smartTKBUI.onApplyFromDateChange(this.value)" style="width: 86px; padding: 0.18rem 0.35rem; font-size: 0.75rem; font-weight: 800; border: 1px solid #3b82f6; border-radius: 4px; text-align: center; color: #1d4ed8; background: #ffffff;" title="Nhập ngày bắt đầu áp dụng bản TKB này (định dạng ngày/tháng/năm)">
                         </div>
                         <button onclick="window.smartTKBUI.printTimetable()" style="background: #1e293b; color: #fff; border: none; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
                             <span>🖨️</span> <span>In A4</span>
@@ -2370,14 +2363,76 @@ setPCCMFilter(filterName) {
                     </ul>
                 </div>
 
-                <!-- RÀNG BUỘC KHÓA -->
-                <div class="tkb-box-setting">
-                    <h3><span>🔒</span> Ràng Buộc Khóa Cố Định</h3>
-                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.82rem; color: #334155; line-height: 1.6;">
-                        <li>🚩 <strong>Chào cờ:</strong> Tiết 1 sáng Thứ Hai (Toàn trường).</li>
-                        <li>👥 <strong>Sinh hoạt lớp:</strong> Tiết 5 sáng Thứ Bảy (Toàn trường).</li>
-                        <li>⚖️ <strong>Tiết kép:</strong> Môn Tin học, KHTN, GDTC ưu tiên 2 tiết liền.</li>
-                    </ul>
+                <!-- RÀNG BUỘC SƯ PHẠM (CHO PHÉP TINH CHỈNH, KHÔNG KHÓA CỐ ĐỊNH) -->
+                <div class="tkb-box-setting" style="grid-column: 1 / -1; background: #ffffff; border: 1.5px solid #93c5fd; border-radius: 10px; padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                        <h3 style="margin: 0; font-size: 0.92rem; color: #1e3a8a; display: flex; align-items: center; gap: 0.35rem;">
+                            <span>⚙️</span> <span>TINH CHỈNH RÀNG BUỘC SƯ PHẠM (KHÔNG KHÓA CỐ ĐỊNH)</span>
+                        </h3>
+                        <span style="font-size: 0.7rem; background: #eff6ff; color: #1d4ed8; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700;">Tùy biến linh hoạt</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.55rem; font-size: 0.78rem;">
+                        <!-- Ràng buộc Chào cờ -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem; padding: 0.45rem 0.65rem; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                            <label style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: #334155; cursor: pointer;">
+                                <input type="checkbox" id="chkLockFlagSalute" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.lockFlagSalute) ? 'checked' : ''} onchange="window.smartTKBUI.onFixedConstraintsChange()" style="accent-color: #2563eb; width: 16px; height: 16px;">
+                                <span>🚩 <strong>Chào cờ:</strong> Khóa tiết Chào Cờ toàn trường (Bỏ chọn để xếp tiết học bình thường)</span>
+                            </label>
+                            <div style="display: flex; align-items: center; gap: 0.3rem;">
+                                <select id="selFlagSaluteDay" onchange="window.smartTKBUI.onFixedConstraintsChange()" style="padding: 0.2rem 0.4rem; font-size: 0.75rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                    <option value="0" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSaluteDay === 0) ? 'selected' : ''}>Thứ Hai</option>
+                                    <option value="1" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSaluteDay === 1) ? 'selected' : ''}>Thứ Ba</option>
+                                    <option value="2" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSaluteDay === 2) ? 'selected' : ''}>Thứ Tư</option>
+                                    <option value="3" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSaluteDay === 3) ? 'selected' : ''}>Thứ Năm</option>
+                                    <option value="4" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSaluteDay === 4) ? 'selected' : ''}>Thứ Sáu</option>
+                                    <option value="5" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSaluteDay === 5) ? 'selected' : ''}>Thứ Bảy</option>
+                                </select>
+                                <select id="selFlagSalutePeriod" onchange="window.smartTKBUI.onFixedConstraintsChange()" style="padding: 0.2rem 0.4rem; font-size: 0.75rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                    <option value="0" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSalutePeriod === 0) ? 'selected' : ''}>Tiết 1</option>
+                                    <option value="1" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSalutePeriod === 1) ? 'selected' : ''}>Tiết 2</option>
+                                    <option value="2" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSalutePeriod === 2) ? 'selected' : ''}>Tiết 3</option>
+                                    <option value="3" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSalutePeriod === 3) ? 'selected' : ''}>Tiết 4</option>
+                                    <option value="4" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.flagSalutePeriod === 4) ? 'selected' : ''}>Tiết 5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Ràng buộc Sinh hoạt lớp -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem; padding: 0.45rem 0.65rem; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                            <label style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: #334155; cursor: pointer;">
+                                <input type="checkbox" id="chkLockClassMeeting" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.lockClassMeeting !== false) ? 'checked' : ''} onchange="window.smartTKBUI.onFixedConstraintsChange()" style="accent-color: #7c3aed; width: 16px; height: 16px;">
+                                <span>👥 <strong>Sinh hoạt lớp:</strong> Khóa tiết Sinh hoạt toàn trường cho GVCN</span>
+                            </label>
+                            <div style="display: flex; align-items: center; gap: 0.3rem;">
+                                <select id="selClassMeetingDay" onchange="window.smartTKBUI.onFixedConstraintsChange()" style="padding: 0.2rem 0.4rem; font-size: 0.75rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                    <option value="0" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingDay === 0) ? 'selected' : ''}>Thứ Hai</option>
+                                    <option value="1" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingDay === 1) ? 'selected' : ''}>Thứ Ba</option>
+                                    <option value="2" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingDay === 2) ? 'selected' : ''}>Thứ Tư</option>
+                                    <option value="3" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingDay === 3) ? 'selected' : ''}>Thứ Năm</option>
+                                    <option value="4" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingDay === 4) ? 'selected' : ''}>Thứ Sáu</option>
+                                    <option value="5" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingDay !== undefined ? this.engine.fixedConstraints.classMeetingDay === 5 : true) ? 'selected' : ''}>Thứ Bảy</option>
+                                </select>
+                                <select id="selClassMeetingPeriod" onchange="window.smartTKBUI.onFixedConstraintsChange()" style="padding: 0.2rem 0.4rem; font-size: 0.75rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                    <option value="0" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingPeriod === 0) ? 'selected' : ''}>Tiết 1</option>
+                                    <option value="1" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingPeriod === 1) ? 'selected' : ''}>Tiết 2</option>
+                                    <option value="2" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingPeriod === 2) ? 'selected' : ''}>Tiết 3</option>
+                                    <option value="3" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingPeriod === 3) ? 'selected' : ''}>Tiết 4</option>
+                                    <option value="4" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.classMeetingPeriod !== undefined ? this.engine.fixedConstraints.classMeetingPeriod === 4 : true) ? 'selected' : ''}>Tiết 5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Ràng buộc Tiết đôi / Tiết kép -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem; padding: 0.45rem 0.65rem; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                            <label style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: #334155; cursor: pointer;">
+                                <input type="checkbox" id="chkEnableDoublePeriods" ${(this.engine.fixedConstraints && this.engine.fixedConstraints.enableDoublePeriods !== false) ? 'checked' : ''} onchange="window.smartTKBUI.onFixedConstraintsChange()" style="accent-color: #059669; width: 16px; height: 16px;">
+                                <span>⚖️ <strong>Tiết đôi:</strong> Ưu tiên ghép 2 tiết liền nhau cho các môn: <em>Toán, Văn, Anh, KHTN, Tin học</em></span>
+                            </label>
+                            <button type="button" onclick="window.smartTKBUI.onFixedConstraintsChange(true)" style="background: #2563eb; color: #ffffff; border: none; padding: 0.25rem 0.65rem; border-radius: 5px; font-size: 0.74rem; font-weight: 800; cursor: pointer;">
+                                💾 Lưu Tinh Chỉnh
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -3869,6 +3924,7 @@ setPCCMFilter(filterName) {
                                                 <!-- CỘT 5: MỨC ĐỘ ƯU TIÊN SƯ PHẠM (ĐẲNG CẤP XẾP LỊCH TKB) -->
                                                 <td style="padding: 0.45rem 0.5rem; text-align: center;">
                                                     <select class="ppct-sub-priority" style="width: 100%; padding: 0.25rem 0.35rem; font-size: 0.73rem; font-weight: 800; border: 1.5px solid #eab308; border-radius: 5px; background: #fefce8; color: #854d0e; cursor: pointer;" title="Chọn mức ưu tiên sư phạm khi AI xếp TKB">
+                                                        <option value="0" ${defaultPrio === 0 ? 'selected' : ''}>⚪ (Không / Bỏ trống)</option>
                                                         <option value="1" ${defaultPrio === 1 ? 'selected' : ''}>🥇 Ưu tiên 1: Cốt Lõi (Toán, Văn, Anh - Tiết Vàng 1-2-3)</option>
                                                         <option value="2" ${defaultPrio === 2 ? 'selected' : ''}>🔬 Ưu tiên 2: Phòng Lab (KHTN, Tin - Lab &amp; Tiết Đôi)</option>
                                                         <option value="3" ${defaultPrio === 3 ? 'selected' : ''}>🏃 Ưu tiên 3: Thể Chất (GDTC - Tiết Mát, Cấm Tiết 4-5)</option>
@@ -3890,9 +3946,9 @@ setPCCMFilter(filterName) {
                                                     </select>
                                                 </td>
 
-                                                <!-- CỘT 8: BÀI DẠY -->
+                                                <!-- CỘT 8: BÀI DẠY (ĐA KHỐI ĐA MÔN) -->
                                                 <td style="padding: 0.45rem 0.5rem; text-align: center;">
-                                                    <button type="button" onclick="window.smartTKBUI.openPPCTLessonsTab('${sub.id}', '8')" style="background: #ede9fe; color: #6d28d9; border: 1px solid #c4b5fd; padding: 0.22rem 0.5rem; border-radius: 5px; font-size: 0.72rem; font-weight: 800; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#ddd6fe';" onmouseout="this.style.background='#ede9fe';" title="Xem &amp; sửa chi tiết bài dạy từng tiết môn ${sub.name}">
+                                                    <button type="button" onclick="window.smartTKBUI.openPPCTLessonsTab('${sub.id}', window.smartTKBUI.ppctCurrentGrade || '8')" style="background: #ede9fe; color: #6d28d9; border: 1px solid #c4b5fd; padding: 0.22rem 0.5rem; border-radius: 5px; font-size: 0.72rem; font-weight: 800; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#ddd6fe';" onmouseout="this.style.background='#ede9fe';" title="Xem &amp; sửa chi tiết bài dạy từng tiết môn ${sub.name}">
                                                         📖 Bài Dạy
                                                     </button>
                                                 </td>
@@ -4413,38 +4469,58 @@ setPCCMFilter(filterName) {
     }
 
     applyQuickLSDLPreset(preset) {
+        let vH1 = 2, vG1 = 1, vH2 = 1, vG2 = 2;
+        let msg = '';
+
+        if (preset === 'canhthuan_9stages') {
+            vH1 = 2; vG1 = 1; vH2 = 1; vG2 = 2;
+            msg = '⭐ Đã nạp thành công Chuẩn 9 Chặng Tuần Sử - Địa Canh Thuận (ĐL 52t - LS 53t)!';
+            if (this.engine) {
+                if (!this.engine.lsdlConfig) this.engine.lsdlConfig = {};
+                this.engine.lsdlConfig.mode = 'canhthuan_9stages';
+            }
+        } else if (preset === '2-1_1-2') {
+            vH1 = 2; vG1 = 1; vH2 = 1; vG2 = 2;
+            msg = '🏛️ Đã áp dụng tỷ lệ: HK1 (Sử 2 - Địa 1) • HK2 (Sử 1 - Địa 2)';
+        } else if (preset === '1-2_2-1') {
+            vH1 = 1; vG1 = 2; vH2 = 2; vG2 = 1;
+            msg = '🏛️ Đã áp dụng tỷ lệ đảo: HK1 (Sử 1 - Địa 2) • HK2 (Sử 2 - Địa 1)';
+        } else if (preset === '2-2_2-2') {
+            vH1 = 2; vG1 = 2; vH2 = 2; vG2 = 2;
+            msg = '🏛️ Đã áp dụng tỷ lệ song song: Cả năm (Sử 2 - Địa 2)';
+        } else if (preset === '3-0_0-3') {
+            vH1 = 3; vG1 = 0; vH2 = 0; vG2 = 3;
+            msg = '🏛️ Đã áp dụng tỷ lệ cuốn chiếu: HK1 (Sử 3 - Địa 0) • HK2 (Sử 0 - Địa 3)';
+        }
+
+        // Cập nhật các ô input trong Modal (nếu đang mở)
         const h1 = document.getElementById('lsdlHK1Hist');
         const g1 = document.getElementById('lsdlHK1Geo');
         const h2 = document.getElementById('lsdlHK2Hist');
         const g2 = document.getElementById('lsdlHK2Geo');
+        if (h1) h1.value = vH1;
+        if (g1) g1.value = vG1;
+        if (h2) h2.value = vH2;
+        if (g2) g2.value = vG2;
 
-        if (preset === 'canhthuan_9stages') {
-            if (h1) h1.value = 2; if (g1) g1.value = 1;
-            if (h2) h2.value = 1; if (g2) g2.value = 2;
-            if (this.engine) {
-                if (!this.engine.lsdlConfig) this.engine.lsdlConfig = {};
-                this.engine.lsdlConfig.mode = 'canhthuan_9stages';
-                this.engine.lsdlConfig.hk1 = { historyPeriods: 2, geographyPeriods: 1 };
-                this.engine.lsdlConfig.hk2 = { historyPeriods: 1, geographyPeriods: 2 };
-            }
-            this.showToast('⭐ Đã nạp thành công Chuẩn 9 Chặng Tuần Sử - Địa Canh Thuận (ĐL 52t - LS 53t)!', 3500);
-        } else if (preset === '2-1_1-2') {
-            if (h1) h1.value = 2; if (g1) g1.value = 1;
-            if (h2) h2.value = 1; if (g2) g2.value = 2;
-            this.showToast('🏛️ Đã áp dụng tỷ lệ: HK1 (Sử 2 - Địa 1) • HK2 (Sử 1 - Địa 2)');
-        } else if (preset === '1-2_2-1') {
-            if (h1) h1.value = 1; if (g1) g1.value = 2;
-            if (h2) h2.value = 2; if (g2) g2.value = 1;
-            this.showToast('🏛️ Đã áp dụng tỷ lệ đảo: HK1 (Sử 1 - Địa 2) • HK2 (Sử 2 - Địa 1)');
-        } else if (preset === '2-2_2-2') {
-            if (h1) h1.value = 2; if (g1) g1.value = 2;
-            if (h2) h2.value = 2; if (g2) g2.value = 2;
-            this.showToast('🏛️ Đã áp dụng tỷ lệ song song: Cả năm (Sử 2 - Địa 2)');
-        } else if (preset === '3-0_0-3') {
-            if (h1) h1.value = 3; if (g1) g1.value = 0;
-            if (h2) h2.value = 0; if (g2) g2.value = 3;
-            this.showToast('🏛️ Đã áp dụng tỷ lệ cuốn chiếu: HK1 (Sử 3 - Địa 0) • HK2 (Sử 0 - Địa 3)');
+        // Cập nhật trực tiếp ra thanh công cụ ngoài cửa sổ chính
+        const mh1 = document.getElementById('mainLsdlHK1Hist');
+        const mg1 = document.getElementById('mainLsdlHK1Geo');
+        const mh2 = document.getElementById('mainLsdlHK2Hist');
+        const mg2 = document.getElementById('mainLsdlHK2Geo');
+        if (mh1) mh1.value = vH1;
+        if (mg1) mg1.value = vG1;
+        if (mh2) mh2.value = vH2;
+        if (mg2) mg2.value = vG2;
+
+        if (this.engine) {
+            if (!this.engine.lsdlConfig) this.engine.lsdlConfig = {};
+            this.engine.lsdlConfig.hk1 = { historyPeriods: vH1, geographyPeriods: vG1 };
+            this.engine.lsdlConfig.hk2 = { historyPeriods: vH2, geographyPeriods: vG2 };
+            this.engine.saveState();
         }
+
+        if (msg) this.showToast(msg, 3200);
     }
 
     onPPCTWeekFilterChange(selectedWeek = 'all') {
@@ -4502,7 +4578,8 @@ setPCCMFilter(filterName) {
             const p1 = parseInt(tr.querySelector('.ppct-sub-p1')?.value) || 35;
             const p2 = parseInt(tr.querySelector('.ppct-sub-p2')?.value) || 35;
             const pw = parseInt(tr.querySelector('.ppct-sub-pw')?.value) || 1;
-            const priority = parseInt(tr.querySelector('.ppct-sub-priority')?.value) || 1;
+            const pSel = tr.querySelector('.ppct-sub-priority')?.value;
+            const priority = (pSel !== undefined && pSel !== '') ? parseInt(pSel) : 0;
             const isDouble = tr.querySelector('.ppct-sub-double')?.checked || false;
             const room = tr.querySelector('.ppct-sub-room')?.value || null;
 
@@ -6012,6 +6089,8 @@ setPCCMFilter(filterName) {
         modal.style.setProperty('pointer-events', 'auto', 'important');
         modal.style.setProperty('z-index', '9999999', 'important');
 
+        const prio = this.engine.pedagogicalPriorities || {};
+
         modal.innerHTML = `
             <div style="background: #ffffff; border-radius: 14px; max-width: 920px; width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.45); border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; animation: modalPop 0.2s ease-out;">
                 <!-- Header -->
@@ -6047,46 +6126,46 @@ setPCCMFilter(filterName) {
                             • Tránh dồn quá 2 tiết cùng một môn văn hóa trong một buổi (trừ trường hợp tiết đôi theo phân phối chương trình).
                         </p>
                         <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #1e3a8a; cursor: pointer;">
-                            <input type="checkbox" id="chkPrio1" checked style="width: 16px; height: 16px; accent-color: #2563eb;">
+                            <input type="checkbox" id="chkPrio1" ${prio.coreSubjectsGoldenPeriods !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: #2563eb;">
                             Kích hoạt ưu tiên tiết 1, 2, 3 sáng sớm cho Toán, Văn, Anh
                         </label>
                     </div>
 
-                    <!-- MỨC 2 -->
+                    <!-- MỨC 2: ƯU TIÊN TIẾT ĐÔI ĐỐI VỚI: TOÁN, VĂN, ANH, KHTN -->
                     <div style="background: #f5f3ff; border: 1.5px solid #ddd6fe; border-radius: 10px; padding: 0.85rem 1rem;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
                             <div style="display: flex; align-items: center; gap: 0.45rem;">
                                 <span style="font-size: 1.2rem;">🔬</span>
-                                <strong style="font-size: 0.88rem; color: #5b21b6;">MỨC 2: TIẾT ĐÔI &amp; PHÒNG CHỨC NĂNG (KHTN, TIN HỌC)</strong>
+                                <strong style="font-size: 0.88rem; color: #5b21b6;">MỨC 2: TIẾT ĐÔI (TOÁN, VĂN, ANH, KHTN)</strong>
                             </div>
-                            <span style="background: #7c3aed; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">RÀNG BUỘC CỨNG (LAB)</span>
+                            <span style="background: #7c3aed; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">TIẾT ĐÔI SƯ PHẠM</span>
                         </div>
                         <p style="font-size: 0.76rem; color: #6d28d9; margin: 0 0 0.5rem 0; line-height: 1.45;">
-                            • Tự động ghép 2 tiết liền nhau cho các bài thực hành KHTN và Tin học để bảo đảm tiến độ thí nghiệm.<br>
-                            • Kiểm soát không để 2 lớp trùng phòng máy tính hoặc phòng thí nghiệm Lý - Hóa - Sinh trong cùng một tiết.
+                            • Ưu tiên xếp tiết đôi đối với các môn: <strong>Toán, Ngữ Văn, Tiếng Anh, Khoa học Tự nhiên (KHTN)</strong> để thuận tiện dạy học thực hành, chuyên sâu.<br>
+                            • Kiểm soát không để trùng phòng máy tính hoặc phòng thí nghiệm Lý - Hóa - Sinh trong cùng một tiết.
                         </p>
                         <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #5b21b6; cursor: pointer;">
-                            <input type="checkbox" id="chkPrio2" checked style="width: 16px; height: 16px; accent-color: #7c3aed;">
-                            Ưu tiên ghép tiết đôi và khóa cứng chống trùng phòng bộ môn
+                            <input type="checkbox" id="chkPrio2" ${prio.enableDoublePeriodsCore !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: #7c3aed;">
+                            Ưu tiên tiết đôi đối với: Toán, Văn, Anh, KHTN
                         </label>
                     </div>
 
-                    <!-- MỨC 3 -->
+                    <!-- MỨC 3: ƯU TIÊN GDTC TỪ TIẾT 1 ĐẾN TIẾT 4 -->
                     <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 0.85rem 1rem;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
                             <div style="display: flex; align-items: center; gap: 0.45rem;">
                                 <span style="font-size: 1.2rem;">🏃</span>
-                                <strong style="font-size: 0.88rem; color: #166534;">MỨC 3: THỂ CHẤT HỌC ĐƯỜNG (GIÁO DỤC THỂ CHẤT)</strong>
+                                <strong style="font-size: 0.88rem; color: #166534;">MỨC 3: THỂ CHẤT HỌC ĐƯỜNG (GIÁO DỤC THỂ CHẤT - TIẾT 1 ĐẾN 4)</strong>
                             </div>
                             <span style="background: #15803d; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px;">BẢO VỆ SỨC KHỎE</span>
                         </div>
                         <p style="font-size: 0.76rem; color: #15803d; margin: 0 0 0.5rem 0; line-height: 1.45;">
-                            • Tuyệt đối CẤM xếp môn Thể dục (GDTC) vào các tiết 4 và tiết 5 buổi sáng khi nắng gắt ngoài sân trường.<br>
-                            • Ưu tiên tối đa vào các tiết 1, 2 sáng sớm khi thời tiết râm mát, nâng cao hiệu quả rèn luyện thể lực.
+                            • Ưu tiên xếp môn Giáo Dục Thể Chất (GDTC) vào <strong>từ Tiết 1 đến Tiết 4</strong> sáng sớm khi thời tiết râm mát, giúp học sinh rèn luyện thể lực tối ưu.<br>
+                            • Tuyệt đối tránh xếp Thể dục vào tiết 5 (tiết cuối trưa nắng gắt ngoài sân trường).
                         </p>
                         <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #166534; cursor: pointer;">
-                            <input type="checkbox" id="chkPrio3" checked style="width: 16px; height: 16px; accent-color: #15803d;">
-                            Cấm tuyệt đối tiết 4-5 nắng gắt cho môn Giáo Dục Thể Chất
+                            <input type="checkbox" id="chkPrio3" ${prio.pePeriods1to4 !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: #15803d;">
+                            Ưu tiên GDTC từ tiết 1 đến tiết 4 (tránh tiết 5 nắng gắt)
                         </label>
                     </div>
 
@@ -6101,10 +6180,10 @@ setPCCMFilter(filterName) {
                         </div>
                         <p style="font-size: 0.76rem; color: #b45309; margin: 0 0 0.5rem 0; line-height: 1.45;">
                             • Phân bổ nhịp nhàng các tiết Lịch sử và Địa lí so le các ngày trong tuần, không dồn cục trong cùng 1 buổi.<br>
-                            • HK1: Lịch sử 2 tiết - Địa lí 1 tiết. HK2: Tự động hoán đổi Địa lí 2 tiết - Lịch sử 1 tiết (chuẩn CV 1496/BGDĐT).
+                            • Cho phép tùy chỉnh tỉ lệ tiết từng kỳ hoặc nạp chuẩn 9 chặng tuần linh hoạt.
                         </p>
                         <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #92400e; cursor: pointer;">
-                            <input type="checkbox" id="chkPrio4" checked style="width: 16px; height: 16px; accent-color: #b45309;">
+                            <input type="checkbox" id="chkPrio4" ${prio.lsdlAlternating !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: #b45309;">
                             Xếp so le ngày cho phân môn Lịch sử - Địa lí và tự động đảo kỳ
                         </label>
                     </div>
@@ -6122,7 +6201,7 @@ setPCCMFilter(filterName) {
                             • Bố trí các môn Âm nhạc, Mĩ thuật, GDCD, Giáo Dục Địa Phương vào các tiết cuối buổi (tiết 4, 5) để giúp học sinh thư giãn tinh thần sau các giờ toán văn căng thẳng.
                         </p>
                         <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #9d174d; cursor: pointer;">
-                            <input type="checkbox" id="chkPrio5" checked style="width: 16px; height: 16px; accent-color: #be185d;">
+                            <input type="checkbox" id="chkPrio5" ${prio.artsEndPeriods !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: #be185d;">
                             Ưu tiên môn nghệ thuật &amp; GDĐP vào tiết cuối buổi để giảm áp lực
                         </label>
                     </div>
@@ -6141,8 +6220,8 @@ setPCCMFilter(filterName) {
                             • Tiết 5 Thứ Bảy cố định cho Sinh Hoạt Lớp cùng Giáo viên chủ nhiệm để tổng kết tuần.
                         </p>
                         <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 800; color: #0e7490; cursor: pointer;">
-                            <input type="checkbox" id="chkPrio6" checked style="width: 16px; height: 16px; accent-color: #0891b2;">
-                            Khóa cứng Sinh Hoạt Lớp Tiết 5 Thứ Bảy cho GVCN
+                            <input type="checkbox" id="chkPrio6" ${prio.activitiesFlexible !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: #0891b2;">
+                            Tiết 1 thứ Hai linh hoạt bỏ chào cờ, tiết 5 thứ Bảy sinh hoạt lớp
                         </label>
                     </div>
 
@@ -6174,6 +6253,9 @@ setPCCMFilter(filterName) {
                         <button type="button" onclick="document.getElementById('pedagogicalPriorityModal').style.display='none'; window.smartTKBUI.openTeacherOffDayModal();" style="background: #ea580c; color: #ffffff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;" title="Mở bảng chọn ngày nghỉ T2-T7 cho từng Thầy Cô">
                             <span>🏖️</span> <span>Tùy Chỉnh Nghỉ Từng GV (T2-T7)</span>
                         </button>
+                        <button type="button" onclick="window.smartTKBUI.savePedagogicalPriorities(true);" style="background: #7c3aed; color: #ffffff; border: none; padding: 0.5rem 1.05rem; border-radius: 6px; font-size: 0.8rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;" title="Lưu cấu hình ưu tiên sư phạm vào hệ thống">
+                            <span>💾</span> <span>Lưu Cấu Hình</span>
+                        </button>
                         <button type="button" onclick="document.getElementById('pedagogicalPriorityModal').style.display='none'; document.getElementById('pedagogicalPriorityModal').classList.remove('active');" style="background: #64748b; color: #ffffff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
                             Đóng
                         </button>
@@ -6187,16 +6269,44 @@ setPCCMFilter(filterName) {
     }
 
     /**
+     * Lưu cấu hình Ưu Tiên Sư Phạm vào Engine và lưu bền vững vào localStorage
+     */
+    savePedagogicalPriorities(showToast = true) {
+        const p1 = document.getElementById('chkPrio1')?.checked ?? true;
+        const p2 = document.getElementById('chkPrio2')?.checked ?? true;
+        const p3 = document.getElementById('chkPrio3')?.checked ?? true;
+        const p4 = document.getElementById('chkPrio4')?.checked ?? true;
+        const p5 = document.getElementById('chkPrio5')?.checked ?? true;
+        const p6 = document.getElementById('chkPrio6')?.checked ?? true;
+
+        if (!this.engine.pedagogicalPriorities) this.engine.pedagogicalPriorities = {};
+        this.engine.pedagogicalPriorities.coreSubjectsGoldenPeriods = p1;
+        this.engine.pedagogicalPriorities.enableDoublePeriodsCore = p2;
+        this.engine.pedagogicalPriorities.doublePeriodSubjects = ['Toán', 'Ngữ Văn', 'Tiếng Anh', 'Khoa học Tự nhiên', 'KHTN'];
+        this.engine.pedagogicalPriorities.pePeriods1to4 = p3;
+        this.engine.pedagogicalPriorities.lsdlAlternating = p4;
+        this.engine.pedagogicalPriorities.artsEndPeriods = p5;
+        this.engine.pedagogicalPriorities.activitiesFlexible = p6;
+
+        this.engine.saveState();
+        if (showToast) {
+            this.showToast('💾 Đã lưu thành công Cấu hình Ưu Tiên Sư Phạm vào hệ thống!', 3000);
+        }
+    }
+
+    /**
      * Áp dụng cấu hình ưu tiên và gọi thuật toán AI Xếp TKB
      */
     applyPrioritiesAndSolveAI() {
+        this.savePedagogicalPriorities(false);
+
         const modal = document.getElementById('pedagogicalPriorityModal');
         if (modal) {
             modal.style.display = 'none';
             modal.classList.remove('active');
         }
 
-        this.showToast('🚀 Đang kích hoạt AI CSP Solver với đầy đủ 6 Mức Độ Ưu Tiên Sư Phạm...', 3000);
+        this.showToast('🚀 Đang kích hoạt AI CSP Solver với đầy đủ các Mức Độ Ưu Tiên Sư Phạm...', 3000);
         
         setTimeout(() => {
             const btnSolve = document.getElementById('btnTKBAutoSolve');
@@ -6215,6 +6325,140 @@ setPCCMFilter(filterName) {
         } else {
             alert(res.reason || "Không thể tải bản TKB này");
         }
+    }
+
+    renderSchoolTimetable() {
+        this.renderCurrentView();
+        this.updateMainLSDLWidget();
+    }
+
+    /**
+     * Cập nhật ngày bắt đầu áp dụng bản TKB hiện tại (Không cố định theo Tuần)
+     * Đồng thời tự động cập nhật lịch sử Từ ngày ... đến ngày ... trong Snapshots
+     */
+    onApplyFromDateChange(newDate) {
+        if (!newDate) return;
+        const cleanDate = newDate.trim();
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.applyFromDate = cleanDate;
+
+        // Cập nhật snapshot hiện hành nếu có
+        if (this.engine.currentSnapshotId && this.engine.yearlySnapshots) {
+            const snap = this.engine.yearlySnapshots.find(s => s.id === this.engine.currentSnapshotId);
+            if (snap) {
+                snap.applyFromDate = cleanDate;
+                snap.name = `TKB Áp dụng từ ${cleanDate}`;
+            }
+        }
+        this.engine.saveState();
+        this.renderCurrentView();
+        this.updateMainLSDLWidget();
+        this.showToast(`📅 Đã lưu TKB áp dụng từ ngày: ${cleanDate}`, 2500);
+    }
+
+    /**
+     * Đồng bộ giá trị cấu hình Sử - Địa ngoài cửa sổ chính
+     */
+    updateMainLSDLWidget() {
+        const cfg = this.engine.lsdlConfig || {};
+        const h1 = cfg.hk1 ? cfg.hk1.historyPeriods : 1;
+        const g1 = cfg.hk1 ? cfg.hk1.geographyPeriods : 2;
+        const h2 = cfg.hk2 ? cfg.hk2.historyPeriods : 2;
+        const g2 = cfg.hk2 ? cfg.hk2.geographyPeriods : 1;
+
+        const elH1 = document.getElementById('mainLsdlHK1Hist');
+        const elG1 = document.getElementById('mainLsdlHK1Geo');
+        const elH2 = document.getElementById('mainLsdlHK2Hist');
+        const elG2 = document.getElementById('mainLsdlHK2Geo');
+
+        if (elH1) elH1.value = h1;
+        if (elG1) elG1.value = g1;
+        if (elH2) elH2.value = h2;
+        if (elG2) elG2.value = g2;
+    }
+
+    /**
+     * Xử lý thay đổi số tiết Lịch sử và Địa lí trực tiếp ngoài cửa sổ chính
+     */
+    onMainLSDLInputChange() {
+        const elH1 = document.getElementById('mainLsdlHK1Hist');
+        const elG1 = document.getElementById('mainLsdlHK1Geo');
+        const elH2 = document.getElementById('mainLsdlHK2Hist');
+        const elG2 = document.getElementById('mainLsdlHK2Geo');
+
+        const h1 = parseInt(elH1?.value) || 1;
+        const g1 = parseInt(elG1?.value) || 2;
+        const h2 = parseInt(elH2?.value) || 2;
+        const g2 = parseInt(elG2?.value) || 1;
+
+        if (!this.engine.lsdlConfig) this.engine.lsdlConfig = {};
+        this.engine.lsdlConfig.mode = 'custom';
+        this.engine.lsdlConfig.hk1 = { historyPeriods: h1, geographyPeriods: g1 };
+        this.engine.lsdlConfig.hk2 = { historyPeriods: h2, geographyPeriods: g2 };
+        this.engine.lsdlConfig.hk1Weeks = (this.engine.ppctConfig && this.engine.ppctConfig.hk1Weeks) || 18;
+        this.engine.lsdlConfig.hk2Weeks = (this.engine.ppctConfig && this.engine.ppctConfig.hk2Weeks) || 17;
+
+        this.engine.saveState();
+
+        // Đồng bộ vào modal nếu modal đang mở
+        const mH1 = document.getElementById('lsdlHK1Hist');
+        const mG1 = document.getElementById('lsdlHK1Geo');
+        const mH2 = document.getElementById('lsdlHK2Hist');
+        const mG2 = document.getElementById('lsdlHK2Geo');
+        if (mH1) mH1.value = h1;
+        if (mG1) mG1.value = g1;
+        if (mH2) mH2.value = h2;
+        if (mG2) mG2.value = g2;
+
+        this.showToast(`🏛️ Đã cập nhật tỉ lệ Sử - Địa: HK1 (${h1} Sử - ${g1} Địa) • HK2 (${h2} Sử - ${g2} Địa)`, 3000);
+    }
+
+    /**
+     * Tinh chỉnh ràng buộc khóa cố định (không khóa cứng, cho phép tùy chỉnh)
+     */
+    onFixedConstraintsChange(showToast = true) {
+        const elFlag = document.getElementById('chkLockFlagSalute');
+        const elFDay = document.getElementById('selFlagSaluteDay');
+        const elFPer = document.getElementById('selFlagSalutePeriod');
+        const elMeet = document.getElementById('chkLockClassMeeting');
+        const elMDay = document.getElementById('selClassMeetingDay');
+        const elMPer = document.getElementById('selClassMeetingPeriod');
+        const elDbl = document.getElementById('chkEnableDoublePeriods');
+
+        this.engine.fixedConstraints = {
+            lockFlagSalute: elFlag ? elFlag.checked : false,
+            flagSaluteDay: elFDay ? parseInt(elFDay.value) : 0,
+            flagSalutePeriod: elFPer ? parseInt(elFPer.value) : 0,
+            lockClassMeeting: elMeet ? elMeet.checked : true,
+            classMeetingDay: elMDay ? parseInt(elMDay.value) : 5,
+            classMeetingPeriod: elMPer ? parseInt(elMPer.value) : 4,
+            enableDoublePeriods: elDbl ? elDbl.checked : true,
+            doublePeriodSubjects: (this.engine.fixedConstraints && this.engine.fixedConstraints.doublePeriodSubjects) || ['Toán', 'Ngữ Văn', 'Tiếng Anh', 'Khoa học Tự nhiên', 'KHTN', 'Tin học']
+        };
+
+        this.engine.saveState();
+        if (showToast) {
+            this.showToast('⚙️ Đã lưu tinh chỉnh Ràng buộc sư phạm (không khóa cố định)!', 2500);
+        }
+    }
+
+    initFixedConstraintsControls() {
+        const fc = this.engine.fixedConstraints || {};
+        const elFlag = document.getElementById('chkLockFlagSalute');
+        const elFDay = document.getElementById('selFlagSaluteDay');
+        const elFPer = document.getElementById('selFlagSalutePeriod');
+        const elMeet = document.getElementById('chkLockClassMeeting');
+        const elMDay = document.getElementById('selClassMeetingDay');
+        const elMPer = document.getElementById('selClassMeetingPeriod');
+        const elDbl = document.getElementById('chkEnableDoublePeriods');
+
+        if (elFlag) elFlag.checked = !!fc.lockFlagSalute;
+        if (elFDay) elFDay.value = (fc.flagSaluteDay !== undefined) ? fc.flagSaluteDay : 0;
+        if (elFPer) elFPer.value = (fc.flagSalutePeriod !== undefined) ? fc.flagSalutePeriod : 0;
+        if (elMeet) elMeet.checked = (fc.lockClassMeeting !== undefined) ? !!fc.lockClassMeeting : true;
+        if (elMDay) elMDay.value = (fc.classMeetingDay !== undefined) ? fc.classMeetingDay : 5;
+        if (elMPer) elMPer.value = (fc.classMeetingPeriod !== undefined) ? fc.classMeetingPeriod : 4;
+        if (elDbl) elDbl.checked = (fc.enableDoublePeriods !== undefined) ? !!fc.enableDoublePeriods : true;
     }
 
     /**

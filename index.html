@@ -124,7 +124,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.54 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.55 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -1991,7 +1991,7 @@
                             </div>
                             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                                 <span class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">
-                                    Phiên bản: v3.10.54 GDMN & GDPT
+                                    Phiên bản: v3.10.55 GDMN & GDPT
                                 </span>
                             </div>
                         </div>
@@ -2677,19 +2677,15 @@ window.openPPCTDirect = function() {
                                     </div>
 <div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
 
-                                    <!-- Nhóm 2: Kế Hoạch Áp Dụng (Theo Tuần / Học Kỳ) -->
-                                    <div style="display: flex; align-items: center; gap: 0.3rem;">
-                                        <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">📅 Áp Dụng:</span>
-                                        <select id="tkbSemesterSelect" onchange="if(window.smartTKBUI) window.smartTKBUI.setSchedulePlan(this.value);" style="padding: 0.22rem 0.5rem; font-size: 0.74rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;" title="Chọn Tuần hoặc Học kỳ áp dụng (đáp ứng đơn vị đổi theo Tuần)">
-                                            <option value="WEEK_9_13" selected>📅 Tuần 9 - 13</option>
-                                            <option value="WEEK_1_9">📅 Tuần 1 - 9</option>
-                                            <option value="WEEK_10_18">📅 Tuần 10 - 18</option>
-                                            <option value="HK1">🍂 Học kỳ I (18T)</option>
-                                            <option value="WEEK_19_27">📅 Tuần 19 - 27</option>
-                                            <option value="WEEK_28_35">📅 Tuần 28 - 35</option>
-                                            <option value="HK2">🌱 Học kỳ II (17T)</option>
-                                            <option value="YEAR">🗓️ Cả năm (35T)</option>
-                                        </select>
+                                    <!-- Nhóm 2: Ngày Áp Dụng (Theo chỉ đạo Thầy Quan: Áp dụng từ ngày ... không cố định tuần) -->
+                                    <div style="display: flex; align-items: center; gap: 0.35rem; background: #eff6ff; border: 1.5px solid #93c5fd; padding: 0.15rem 0.55rem; border-radius: 6px;">
+                                        <span style="font-size: 0.73rem; font-weight: 800; color: #1e40af; text-transform: uppercase; display: flex; align-items: center; gap: 0.2rem;">
+                                            <span>📅</span> <span>Áp Dụng Từ Ngày:</span>
+                                        </span>
+                                        <input type="text" id="tkbApplyFromDateInput" value="02/11/2026" placeholder="DD/MM/YYYY" 
+                                               onchange="if(window.smartTKBUI) window.smartTKBUI.onApplyFromDateChange(this.value);" 
+                                               style="width: 100px; padding: 0.2rem 0.4rem; font-size: 0.75rem; font-weight: 800; border: 1px solid #3b82f6; border-radius: 4px; color: #1e3a8a; background: #ffffff; text-align: center; outline: none;" 
+                                               title="Nhập ngày bắt đầu áp dụng bảng TKB này (Ví dụ: 02/11/2026). Khi lưu bản TKB mới, lịch sử sẽ tự động ghi nhận 'Từ ngày ... đến ngày ...'">
                                     </div>
 
                                     <div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
@@ -2747,8 +2743,8 @@ window.openPPCTDirect = function() {
 
                                     <!-- Cụm Nút Thao Tác & Điều Hành TKB Trực Tiếp (ĐÃ LOẠI BỎ NÚT QUYẾT TOÁN 35T) -->
                                     <div style="display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap;">
-                                        <button id="btnTKBAutoSolve" class="btn-tkb-action btn-tkb-primary" style="padding: 0.28rem 0.65rem; font-size: 0.75rem; border-radius: 6px; font-weight: 800; box-shadow: 0 2px 5px rgba(37,99,235,0.3);">
-                                            <span>⚡</span> <span>Xếp AI</span>
+                                        <button id="btnTKBAutoSolve" class="btn-tkb-action btn-tkb-primary" style="padding: 0.28rem 0.75rem; font-size: 0.76rem; border-radius: 6px; font-weight: 800; box-shadow: 0 2px 5px rgba(37,99,235,0.3); display: inline-flex; align-items: center; gap: 0.3rem;" title="Kích hoạt thuật toán AI CSP Solver tự động xếp Thời Khóa Biểu thông minh">
+                                            <span>⚡</span> <span>AI Xếp TKB</span>
                                         </button>
                                         <!-- NÚT ƯU TIÊN SƯ PHẠM NỔI BẬT VÀNG KIM SÁNG RÕ -->
                                         <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openPedagogicalPriorityModal();" 
@@ -2766,6 +2762,29 @@ window.openPPCTDirect = function() {
                                                 title="Tùy chỉnh chọn ngày nghỉ (Thứ 2 đến Thứ 7) cho từng Giáo viên cụ thể: GV A muốn nghỉ thứ mấy thì tùy chỉnh cho nghỉ!">
                                             <span style="font-size: 0.95rem;">🏖️</span> <span>TÙY CHỈNH NGHỈ GV (T2 - T7)</span>
                                         </button>
+                                        <!-- TIỆN ÍCH TÙY CHỌN SỐ TIẾT SỬ - ĐỊA TRỰC TIẾP TRÊN CỬA SỔ CHÍNH (THEO YÊU CẦU THẦY QUAN) -->
+                                        <div id="mainLSDLToolbarWidget" style="background: linear-gradient(135deg, #fefce8 0%, #fffbeb 100%); border: 1.5px solid #fde047; padding: 0.2rem 0.55rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                                            <span style="font-size: 0.74rem; font-weight: 800; color: #92400e; display: flex; align-items: center; gap: 0.25rem;">
+                                                <span>🏛️</span> <span>Sử - Địa:</span>
+                                            </span>
+                                            <span style="font-size: 0.72rem; font-weight: 700; color: #78350f;">HK1:</span>
+                                            <label style="font-size: 0.7rem; color: #b45309; font-weight: 700; display: flex; align-items: center; gap: 0.15rem;">
+                                                Sử <input type="number" id="mainLsdlHK1Hist" value="1" min="0" max="5" style="width: 32px; padding: 0.1rem; text-align: center; border: 1px solid #d97706; border-radius: 4px; font-weight: 800;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
+                                            </label>
+                                            <label style="font-size: 0.7rem; color: #0284c7; font-weight: 700; display: flex; align-items: center; gap: 0.15rem;">
+                                                Địa <input type="number" id="mainLsdlHK1Geo" value="2" min="0" max="5" style="width: 32px; padding: 0.1rem; text-align: center; border: 1px solid #0284c7; border-radius: 4px; font-weight: 800;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
+                                            </label>
+                                            <span style="color: #cbd5e1; font-weight: 300;">|</span>
+                                            <span style="font-size: 0.72rem; font-weight: 700; color: #78350f;">HK2:</span>
+                                            <label style="font-size: 0.7rem; color: #b45309; font-weight: 700; display: flex; align-items: center; gap: 0.15rem;">
+                                                Sử <input type="number" id="mainLsdlHK2Hist" value="2" min="0" max="5" style="width: 32px; padding: 0.1rem; text-align: center; border: 1px solid #d97706; border-radius: 4px; font-weight: 800;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
+                                            </label>
+                                            <label style="font-size: 0.7rem; color: #0284c7; font-weight: 700; display: flex; align-items: center; gap: 0.15rem;">
+                                                Địa <input type="number" id="mainLsdlHK2Geo" value="1" min="0" max="5" style="width: 32px; padding: 0.1rem; text-align: center; border: 1px solid #0284c7; border-radius: 4px; font-weight: 800;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
+                                            </label>
+                                            <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.applyQuickLSDLPreset('canhthuan_9stages')" style="padding: 0.18rem 0.45rem; font-size: 0.68rem; font-weight: 800; background: #fef08a; border: 1px solid #d97706; color: #92400e; border-radius: 4px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.08);" title="Nạp nhanh chuẩn 9 chặng tuần Canh Thuận (ĐL 52t - LS 53t)">⭐ 9 Chặng</button>
+                                            <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openCanhThuanLSDLMatrixModal()" style="padding: 0.18rem 0.45rem; font-size: 0.68rem; font-weight: 800; background: #ffffff; border: 1px solid #0284c7; color: #0369a1; border-radius: 4px; cursor: pointer;" title="Xem bảng ma trận 9 chặng tuần chi tiết">📊 Xem Bảng</button>
+                                        </div>
                                         <button id="btnTKBCreateNew" class="btn-tkb-action btn-tkb-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px;" title="Xóa trắng bàn cờ để khởi tạo TKB mới cho trường của bạn">
                                             <span>➕</span> <span>Tạo TKB Mới</span>
                                         </button>
@@ -2996,13 +3015,76 @@ window.openPPCTDirect = function() {
                                 </ul>
                             </div>
 
-                            <div class="tkb-box-setting">
-                                <h3><span>🔒</span> Ràng Buộc Khóa Cố Định</h3>
-                                <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.82rem; color: #334155; line-height: 1.6;">
-                                    <li>🚩 <strong>Chào cờ:</strong> Tiết 1 sáng Thứ Hai (Toàn trường).</li>
-                                    <li>👥 <strong>Sinh hoạt lớp:</strong> Tiết 5 sáng Thứ Bảy (Toàn trường).</li>
-                                    <li>⚖️ <strong>Tiết kép:</strong> Môn Tin học, KHTN, GDTC ưu tiên học 2 tiết liền nhau.</li>
-                                </ul>
+                            <div class="tkb-box-setting" style="border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.85rem 1rem; background: #ffffff;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                                    <h3 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 0.35rem;">
+                                        <span>⚙️</span> <span>TINH CHỈNH RÀNG BUỘC SƯ PHẠM (KHÔNG KHÓA CỐ ĐỊNH)</span>
+                                    </h3>
+                                    <span style="font-size: 0.68rem; background: #eff6ff; color: #1d4ed8; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700;">Tùy biến linh hoạt</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 0.55rem; font-size: 0.78rem;">
+                                    <!-- Ràng buộc Chào cờ -->
+                                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem; padding: 0.35rem 0.5rem; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                        <label style="display: flex; align-items: center; gap: 0.35rem; font-weight: 700; color: #334155; cursor: pointer;">
+                                            <input type="checkbox" id="chkLockFlagSalute" onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()" style="accent-color: #2563eb; width: 16px; height: 16px;">
+                                            <span>🚩 <strong>Chào cờ:</strong> Khóa tiết Chào Cờ toàn trường</span>
+                                        </label>
+                                        <div style="display: flex; align-items: center; gap: 0.3rem;">
+                                            <select id="selFlagSaluteDay" onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()" style="padding: 0.15rem 0.35rem; font-size: 0.72rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                                <option value="0">Thứ Hai</option><option value="1">Thứ Ba</option><option value="2">Thứ Tư</option><option value="3">Thứ Năm</option><option value="4">Thứ Sáu</option><option value="5">Thứ Bảy</option>
+                                            </select>
+                                            <select id="selFlagSalutePeriod" onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()" style="padding: 0.15rem 0.35rem; font-size: 0.72rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                                <option value="0">Tiết 1</option><option value="1">Tiết 2</option><option value="2">Tiết 3</option><option value="3">Tiết 4</option><option value="4">Tiết 5</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Ràng buộc Sinh hoạt lớp -->
+                                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem; padding: 0.35rem 0.5rem; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                        <label style="display: flex; align-items: center; gap: 0.35rem; font-weight: 700; color: #334155; cursor: pointer;">
+                                            <input type="checkbox" id="chkLockClassMeeting" checked onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()" style="accent-color: #2563eb; width: 16px; height: 16px;">
+                                            <span>👥 <strong>Sinh hoạt lớp:</strong> Khóa tiết cùng GVCN</span>
+                                        </label>
+                                        <div style="display: flex; align-items: center; gap: 0.3rem;">
+                                            <select id="selClassMeetingDay" onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()" style="padding: 0.15rem 0.35rem; font-size: 0.72rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                                <option value="5" selected>Thứ Bảy</option><option value="4">Thứ Sáu</option><option value="0">Thứ Hai</option>
+                                            </select>
+                                            <select id="selClassMeetingPeriod" onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()" style="padding: 0.15rem 0.35rem; font-size: 0.72rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                                <option value="4" selected>Tiết 5</option><option value="3">Tiết 4</option><option value="0">Tiết 1</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Ràng buộc Tiết kép / Tiết đôi -->
+                                    <div style="padding: 0.45rem 0.5rem; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                                            <label style="display: flex; align-items: center; gap: 0.35rem; font-weight: 700; color: #334155; cursor: pointer;">
+                                                <input type="checkbox" id="chkEnableDoublePeriods" checked onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()" style="accent-color: #2563eb; width: 16px; height: 16px;">
+                                                <span>⚖️ <strong>Tiết đôi / Tiết kép:</strong> Ưu tiên ghép 2 tiết liền cho các môn</span>
+                                            </label>
+                                        </div>
+                                        <div id="doublePeriodSubjectTags" style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-left: 1.45rem;">
+                                            <label style="font-size: 0.72rem; background: #eff6ff; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid #bfdbfe; color: #1e40af; cursor: pointer;">
+                                                <input type="checkbox" class="chk-double-sub" value="Toán" checked onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()"> Toán
+                                            </label>
+                                            <label style="font-size: 0.72rem; background: #eff6ff; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid #bfdbfe; color: #1e40af; cursor: pointer;">
+                                                <input type="checkbox" class="chk-double-sub" value="Ngữ Văn" checked onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()"> Văn
+                                            </label>
+                                            <label style="font-size: 0.72rem; background: #eff6ff; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid #bfdbfe; color: #1e40af; cursor: pointer;">
+                                                <input type="checkbox" class="chk-double-sub" value="Tiếng Anh" checked onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()"> Anh
+                                            </label>
+                                            <label style="font-size: 0.72rem; background: #eff6ff; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid #bfdbfe; color: #1e40af; cursor: pointer;">
+                                                <input type="checkbox" class="chk-double-sub" value="KHTN" checked onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()"> KHTN
+                                            </label>
+                                            <label style="font-size: 0.72rem; background: #eff6ff; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid #bfdbfe; color: #1e40af; cursor: pointer;">
+                                                <input type="checkbox" class="chk-double-sub" value="Tin học" checked onchange="if(window.smartTKBUI) window.smartTKBUI.onFixedConstraintsChange()"> Tin học
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; justify-content: flex-end; margin-top: 0.2rem;">
+                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.saveFixedConstraints();" style="background: #2563eb; color: #ffffff; border: none; padding: 0.3rem 0.75rem; border-radius: 5px; font-size: 0.73rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                            <span>💾</span> <span>Lưu Tinh Chỉnh Ràng Buộc</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -4163,7 +4245,7 @@ window.openPPCTDirect = function() {
         <span class="footer-dot-sep">•</span>
         <span>Định hướng & Bản quyền chuyên môn: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
         <span class="footer-dot-sep">•</span>
-        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.54 GDMN & GDPT</span>
+        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.55 GDMN & GDPT</span>
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->
