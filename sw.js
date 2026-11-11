@@ -1,42 +1,28 @@
-// EduStudio Service Worker (v3.10.57 - GDMN & GDPT)
-// Bản quyền & Định hướng chuyên môn: Thầy Nguyễn Tá Quan
-
-const CACHE_NAME = "edustudio-pwa-v3.10.57-pedagogical-priority-sync";
-
+// EduStudio PWA Cache Killer & Network First Engine (v3.10.65)
 self.addEventListener('install', (event) => {
-  // Bỏ qua chờ đợi, kích hoạt ngay lập tức
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  // Xóa toàn bộ cache cũ ngay lập tức
   event.waitUntil(
     caches.keys().then((keyList) => {
       return Promise.all(
         keyList.map((key) => {
-          console.log('[PWA] Purging cache:', key);
+          console.log('[PWA] Deleting cache:', key);
           return caches.delete(key);
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => {
+      return self.clients.claim();
+    })
   );
 });
 
-// Luôn lấy tài nguyên mới nhất từ Network cho HTML & JS
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
-
-  // Với API, HTML và JS chính: Luôn luôn tải mới từ server (Network Only)
-  const url = new URL(event.request.url);
-  if (url.pathname.startsWith('/api/') || url.pathname.endsWith('.html') || url.pathname.endsWith('.js') || url.pathname === '/') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
-    return;
-  }
-
-  // Các tài nguyên khác (icon, font)
+  // Bỏ qua cache hoàn toàn đối với tài nguyên code để tránh kẹt phiên bản cũ
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
   );
 });

@@ -6,11 +6,11 @@ echo =========================================================================
 echo.
 
 cd /d "%~dp0"
-start "" http://127.0.0.1:8050/#tkb
+start "" http://127.0.0.1:8000/#tkb
 
-netstat -ano | findstr :8050 | findstr LISTENING >nul
+netstat -ano | findstr :8000 | findstr LISTENING >nul
 if %errorlevel% equ 0 (
-    echo [EduStudio] May chu dang hoat dong tot tren cong 8050 va 8000.
+    echo [EduStudio] May chu dang hoat dong tot tren cong 8000 va 8050.
     echo Da mo trinh duyet thanh cong!
     timeout /t 2 >nul
     exit /b

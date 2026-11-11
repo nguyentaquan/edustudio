@@ -1,6 +1,40 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- TỰ ĐỘNG ÉP DỌN SẠCH CACHE VÀ RESET SESSION CŨ -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script>
+        (function() {
+            try {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                        for (var r of regs) r.unregister();
+                    });
+                }
+                if ('caches' in window) {
+                    caches.keys().then(function(keys) {
+                        for (var k of keys) caches.delete(k);
+                    });
+                }
+                var rawSess = localStorage.getItem('edustudio_user_session');
+                if (rawSess) {
+                    try {
+                        var sObj = JSON.parse(rawSess);
+                        if (!sObj.authVersion || sObj.authVersion < 20261111) {
+                            localStorage.removeItem('edustudio_user_session');
+                            localStorage.removeItem('edustudio_user_is_vip');
+                            localStorage.removeItem('user_gemini_api_key');
+                        }
+                    } catch(e) {
+                        localStorage.removeItem('edustudio_user_session');
+                    }
+                }
+            } catch(e) {}
+        })();
+    </script>
+
     <!-- CHỐNG KẸT CACHE PWA / SERVICE WORKER: Tự động dọn sạch cache để luôn nạp mã nguồn mới nhất -->
     <script>
         (function() {
@@ -28,8 +62,8 @@
     <meta name="description" content="Kho bài giảng PPT, Kho trò chơi, Kho đề và Kho video phục vụ cộng đồng giáo viên Việt Nam.">
     <!-- Xóa sạch Cache cũ & Hủy Service Worker ngay lập tức -->
     
-    <link rel="stylesheet" href="css/style.css?v=3.5.12">
-    <link rel="stylesheet" href="css/tkb-styles.css?v=3.10.24">
+    <link rel="stylesheet" href="css/style.css?v=3.10.65_auth_final_20261111">
+    <link rel="stylesheet" href="css/tkb-styles.css?v=3.10.65_auth_final_20261111">
     <meta name="theme-color" content="#1d4ed8">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1d4ed8">
@@ -158,22 +192,9 @@
                             if (raw) {
                                 try { u = JSON.parse(raw); } catch(e){}
                             }
-                            // TRÊN MÁY TÍNH CỦA THẦY NGUYỄN TÁ QUAN: MẶC ĐỊNH LUÔN CẤP QUYỀN ADMIN MASTER TỐI CAO
-                            if (!u || u.role === 'guest' || !u.isLoggedIn) {
-                                u = {
-                                    id: "admin_nguyentaquan",
-                                    name: "Thầy Nguyễn Tá Quan",
-                                    email: "nguyentaquan@gmail.com",
-                                    role: "admin",
-                                    school: "Trường THCS Bán Trú Canh Thuận",
-                                    subject: "HĐTN-HN, KHTN, Tin học",
-                                    points: 500,
-                                    demoUses: 999,
-                                    avatarEmoji: "👑",
-                                    isLoggedIn: true
-                                };
-                                localStorage.setItem('edustudio_user_session', JSON.stringify(u));
-                                localStorage.setItem('edustudio_user_is_vip', 'true');
+                            // CHỈ HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP XÁC THỰC THÀNH CÔNG (KHÔNG TỰ ĐỘNG GÁN ADMIN NẾU CHƯA ĐĂNG NHẬP)
+                            if (u && (!u.isLoggedIn || u.role === 'guest')) {
+                                u = null;
                             }
                             var zone = document.getElementById('bannerAuthZone');
                             if (zone) {
@@ -3759,151 +3780,204 @@ window.openPPCTDirect = function() {
          - Phí vi mô siêu thấp: 500 VNĐ / file Documents (.DOCX), 10.000 VNĐ / gói Trò chơi
          ====================================================================== -->
         <div id="authModal" class="modal-overlay">
-        <div class="modal-box-center" style="max-width: 400px; width: 92%; border-radius: 14px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.35); padding: 0; background: #ffffff;">
-            <!-- Header Modal Tối Giản Chuẩn Google -->
+        <div class="modal-box-center" style="max-width: 440px; width: 94%; border-radius: 14px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.35); padding: 0; background: #ffffff;">
+            <!-- Header Modal Chuẩn Google -->
             <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 1.1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 0.6rem;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" style="background:#fff; border-radius:50%; padding:2px;">
+                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" style="background:#fff; border-radius:50%; padding:2px; flex-shrink:0;">
                         <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.14z"/>
                         <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
                         <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
                         <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
                     </svg>
                     <div>
-                        <h3 style="font-size: 1.05rem; font-weight: 800; margin: 0; color: #ffffff;">Đăng Nhập Với TK Google</h3>
-                        <p style="font-size: 0.72rem; margin: 0.1rem 0 0 0; color: #bfdbfe;">Hệ Thống Sư Phạm EduStudio</p>
+                        <h3 style="font-size: 1.05rem; font-weight: 800; margin: 0; color: #ffffff;">Đăng Nhập Hệ Thống EduStudio</h3>
+                        <p style="font-size: 0.72rem; margin: 0.15rem 0 0 0; color: #bfdbfe;">Cổng Giáo Dục Số & Sư Phạm Chuẩn Hóa</p>
                     </div>
                 </div>
-                <button id="btnCloseAuthModal" onclick="window.closeModal('authModal')" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.2rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.15rem 0.5rem; line-height: 1;">✕</button>
+                <button id="btnCloseAuthModal" onclick="window.closeModal('authModal')" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.25rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.2rem 0.55rem; line-height: 1;" title="Đóng">✕</button>
             </div>
 
-            <!-- Form Đúng 2 Trường: Địa chỉ Gmail & Mật khẩu -->
-            <div style="padding: 1.35rem 1.25rem;">
-                <!-- ⚡ ĐĂNG NHẬP NHANH 1 CHẠM ADMIN MASTER CHO THẦY NGUYỄN TÁ QUAN -->
-                <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); border: 2px solid #fbbf24; border-radius: 10px; padding: 0.85rem; margin-bottom: 1.15rem; box-shadow: 0 4px 14px rgba(30, 58, 138, 0.28);">
-                    <div style="font-size: 0.72rem; font-weight: 800; color: #fef08a; text-transform: uppercase; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem;">
-                        <span>⚡</span> <span>ĐĂNG NHẬP NHANH 1 CHẠM TỐI CAO:</span>
-                    </div>
-                    <button type="button" onclick="window.app && window.app.loginAsAdminMaster();" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.85rem; border: none; border-radius: 8px; background: #ffffff; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='#ffffff';">
-                        <div style="display: flex; align-items: center; gap: 0.6rem; text-align: left;">
-                            <span style="font-size: 1.5rem;">👑</span>
+            <!-- Nội Dung Thân Cửa Sổ Đăng Nhập -->
+            <div style="padding: 1.25rem;">
+                <!-- DÒNG 1 (TRÊN CÙNG): ĐĂNG NHẬP BẰNG TK GOOGLE CỦA BẠN -->
+                <div id="authOptionGoogle" onclick="window.app && window.app.selectAuthMethod('google');" style="cursor: pointer; border: 2px solid #2563eb; background: #eff6ff; border-radius: 10px; padding: 0.85rem; margin-bottom: 0.75rem; transition: all 0.2s ease;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.3rem;">🔹</span>
                             <div>
-                                <strong style="font-size: 0.9rem; color: #1e3a8a; display: block; font-weight: 800;">Thầy Nguyễn Tá Quan</strong>
-                                <span style="font-size: 0.72rem; color: #2563eb; font-weight: 600;">nguyentaquan@gmail.com • THCS Canh Thuận</span>
+                                <strong style="font-size: 0.92rem; color: #1e3a8a; display: block; font-weight: 800;">Đăng nhập bằng TK Google của bạn</strong>
+                                <span style="font-size: 0.72rem; color: #3b82f6;">Xác thực tài khoản cá nhân & phân nhóm thành viên</span>
                             </div>
                         </div>
-                        <span style="background: #1e3a8a; color: #fef08a; font-size: 0.72rem; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 6px; border: 1px solid #fbbf24; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">Admin Master</span>
-                    </button>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem;">
-                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
-                    <span style="font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase;">HOẶC ĐĂNG NHẬP GMAIL CÁ NHÂN</span>
-                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
-                </div>
-
-                <form id="formCustomGoogleLogin" onsubmit="event.preventDefault(); window.app && window.app.loginWithGoogle();" style="display: flex; flex-direction: column; gap: 0.85rem;">
-                    <div>
-                        <label style="display: block; font-size: 0.78rem; font-weight: 800; color: #1e293b; margin-bottom: 0.3rem;">
-                            📧 Địa chỉ Gmail:
-                        </label>
-                        <input type="email" id="authCustomEmail" placeholder="Nhập địa chỉ Gmail..." required autocomplete="username" style="width: 100%; padding: 0.6rem 0.8rem; font-size: 0.88rem; font-weight: 600; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; box-sizing: border-box; transition: border-color 0.15s;" onfocus="this.style.borderColor='#2563eb';" onblur="this.style.borderColor='#cbd5e1';">
+                        <input type="radio" name="authMethodRadio" id="radioMethodGoogle" checked style="accent-color: #2563eb; width: 18px; height: 18px; cursor: pointer;">
                     </div>
 
-                    <div>
-                        <label style="display: block; font-size: 0.78rem; font-weight: 800; color: #1e293b; margin-bottom: 0.3rem;">
-                            🔑 Mật khẩu Gmail:
-                        </label>
-                        <div style="position: relative;">
-                            <input type="password" id="authCustomPassword" placeholder="Nhập mật khẩu..." required autocomplete="current-password" style="width: 100%; padding: 0.6rem 2.4rem 0.6rem 0.8rem; font-size: 0.88rem; font-weight: 600; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; box-sizing: border-box; transition: border-color 0.15s;" onfocus="this.style.borderColor='#2563eb';" onblur="this.style.borderColor='#cbd5e1';" onkeydown="if(event.key==='Enter'){event.preventDefault(); window.app && window.app.loginWithGoogle();}">
-                            <button type="button" onclick="const p = document.getElementById('authCustomPassword'); const isP = p.type === 'password'; p.type = isP ? 'text' : 'password'; this.textContent = isP ? '🙈' : '👁️';" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.05rem; color: #64748b; padding: 2px;" title="Hiện / Ẩn mật khẩu">👁️</button>
+                    <!-- 2 Ô NHẬP GMAIL VÀ MẬT KHẨU (HIỆN NGAY PHÍA DƯỚI DÒNG NÀY) -->
+                    <div id="authGoogleInputsZone" style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed #bfdbfe;">
+                        <div style="margin-bottom: 0.65rem;">
+                            <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.3rem;">
+                                <span>📧</span> <span>Địa chỉ Gmail:</span>
+                            </label>
+                            <input type="email" id="authCustomEmail" placeholder="Nhập địa chỉ Gmail..." style="width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'">
+                        </div>
+
+                        <div style="margin-bottom: 0.45rem;">
+                            <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.3rem;">
+                                <span>🔑</span> <span>Mật khẩu Gmail:</span>
+                            </label>
+                            <div style="position: relative;">
+                                <input type="password" id="authCustomPassword" placeholder="Nhập mật khẩu..." style="width: 100%; box-sizing: border-box; padding: 0.6rem 2.4rem 0.6rem 0.8rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" onkeydown="if(event.key==='Enter') window.app && window.app.executeAuthLogin();">
+                                <button type="button" onclick="window.app && window.app.toggleAuthPasswordVisibility();" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.1rem; color: #64748b; padding: 0;" title="Ẩn/Hiện mật khẩu">👁️</button>
+                            </div>
+                        </div>
+
+                        <!-- THÔNG BÁO NHỎ SÁT DƯỚI -->
+                        <div style="display: flex; align-items: center; gap: 0.4rem; margin: 0.45rem 0 0.4rem 0; font-size: 0.73rem; color: #0284c7; line-height: 1.35; font-style: italic;">
+                            <span>ℹ️</span>
+                            <span>Khi đăng nhập thành công, mặc định bạn đã đăng ký là Thành viên của trang (Nhóm 4).</span>
+                        </div>
+
+                        <!-- VÙNG BÁO LỖI THÔNG TIN KHÔNG CHÍNH XÁC (MÀU ĐỎ) -->
+                        <div id="authPasswordError" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; line-height: 1.4; margin-top: 0.5rem;">
                         </div>
                     </div>
+                </div>
 
-                    <!-- Vùng Báo Lỗi Thông Tin Không Chính Xác -->
-                    <div id="authPasswordError" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 0.55rem 0.75rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700; line-height: 1.4;"></div>
+                <!-- DÒNG THỨ 2 (TIẾP THEO PHÍA DƯỚI): ĐĂNG NHẬP NGOÀI TK GMAIL -->
+                <div id="authOptionGuest" onclick="window.app && window.app.selectAuthMethod('guest');" style="cursor: pointer; border: 1.5px solid #e2e8f0; background: #f8fafc; border-radius: 10px; padding: 0.85rem; margin-bottom: 1.15rem; transition: all 0.2s ease;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.3rem;">🔸</span>
+                            <div>
+                                <strong style="font-size: 0.92rem; color: #334155; display: block; font-weight: 800;">Đăng nhập ngoài TK Gmail</strong>
+                                <span style="font-size: 0.72rem; color: #64748b;">(Mặc định chưa thuộc Nhóm 4 — Vào Hệ thống với tư cách Khách Vãng Lai Nhóm 5)</span>
+                            </div>
+                        </div>
+                        <input type="radio" name="authMethodRadio" id="radioMethodGuest" style="accent-color: #2563eb; width: 18px; height: 18px; cursor: pointer;">
+                    </div>
+                    <!-- THÔNG BÁO KHI CHỌN KHÁCH VÃNG LAI -->
+                    <div id="authGuestInfoZone" style="display: none; margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px dashed #cbd5e1; font-size: 0.75rem; color: #475569; line-height: 1.4;">
+                        👤 Bạn sẽ vào trải nghiệm hệ thống với tư cách <strong>Khách Vãng Lai (Nhóm 5)</strong>, không cần nhập tài khoản Google. Các tính năng nâng cao có thể bị giới hạn.
+                    </div>
+                </div>
 
-                    <!-- Nút Đăng Nhập Duy Nhất -->
-                    <button type="button" id="btnGoogleSignIn" onclick="window.app && window.app.loginWithGoogle();" style="width: 100%; justify-content: center; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 800; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); border: none; background: #2563eb; color: #ffffff; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem; transition: all 0.15s ease;" onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#2563eb';">
-                        <span>Đăng Nhập</span>
-                    </button>
-                </form>
+                <!-- DƯỚI CÙNG LUÔN LÀ NÚT TO: [ ĐĂNG NHẬP ] -->
+                <button type="button" id="btnExecuteAuthLogin" onclick="window.app && window.app.executeAuthLogin();" style="width: 100%; justify-content: center; padding: 0.82rem 1rem; font-size: 1rem; font-weight: 800; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35); border: none; background: #2563eb; color: #ffffff; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.15s ease;" onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#2563eb';">
+                    <span>ĐĂNG NHẬP</span>
+                </button>
             </div>
         </div>
     </div>
 
     <div id="userProfileModal" class="modal-overlay">
-        <div class="modal-box-center" style="max-width: 520px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.65rem; margin-bottom: 1rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-size: 1.4rem;">👤</span>
+        <div class="modal-box-center" style="max-width: 540px; width: 94%; border-radius: 14px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.35); padding: 0; background: #ffffff;">
+            <!-- Header Modal Hồ Sơ -->
+            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 1.1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                    <span style="font-size: 1.5rem;">👤</span>
                     <div>
-                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">Hồ Sơ Tài Khoản Thành Viên</h3>
-                        <p style="font-size: 0.72rem; color: #64748b;">Quản lý thông tin cá nhân & Điểm cống hiến sư phạm</p>
+                        <h3 style="font-size: 1.05rem; font-weight: 800; margin: 0; color: #ffffff;">Thông Tin Tài Khoản Thành Viên</h3>
+                        <p style="font-size: 0.72rem; margin: 0.15rem 0 0 0; color: #bfdbfe;">Cập nhật hồ sơ cá nhân & mật khẩu đăng nhập</p>
                     </div>
                 </div>
-                <button id="btnCloseProfileModal" onclick="window.closeModal('userProfileModal')" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #94a3b8;">✕</button>
+                <button id="btnCloseProfileModal" onclick="window.closeModal('userProfileModal')" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.25rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.2rem 0.55rem; line-height: 1;" title="Đóng">✕</button>
             </div>
 
-            <!-- THẺ TỔNG QUAN TÀI KHOẢN & ĐIỂM SỐ -->
-            <div style="display: flex; align-items: center; gap: 1rem; background: linear-gradient(135deg, #eff6ff, #f8fafc); border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem;">
-                <div style="width: 54px; height: 54px; border-radius: 50%; background: #1d4ed8; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; border: 2px solid #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    👨‍🏫
-                </div>
-                <div style="flex: 1;">
-                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <strong id="profDisplayName" style="font-size: 0.95rem; color: #0f172a;">Thành Viên</strong>
-                        <span class="badge-tag-tiny" id="profRoleBadge" style="background: #059669; color: #ffffff;">Thành Viên</span>
+            <div style="padding: 1.25rem;">
+                <!-- THẺ TỔNG QUAN TÀI KHOẢN & ĐIỂM SỐ -->
+                <div style="display: flex; align-items: center; gap: 1rem; background: linear-gradient(135deg, #eff6ff, #f8fafc); border: 1px solid #bfdbfe; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1rem;">
+                    <div id="profAvatarEmoji" style="width: 54px; height: 54px; border-radius: 50%; background: #1d4ed8; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; font-weight: 700; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.15); flex-shrink: 0;">
+                        👨‍🏫
                     </div>
-                    <div id="profEmailDisplay" style="font-size: 0.75rem; color: #64748b;">nguyentaquan@gmail.com</div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.35rem;">
-                        <span class="badge-tag-tiny" style="background: #ecfdf5; color: #047857; font-weight: 700;" id="profPointsDisplay">
-                            🪙 Điểm tích lũy: 0 điểm
-                        </span>
-                        <span style="font-size: 0.7rem; color: #059669; font-weight: 600;">(+5 điểm khi được duyệt / -5 điểm khi tải về)</span>
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 0.45rem;">
+                            <strong id="profDisplayName" style="font-size: 1rem; color: #0f172a; font-weight: 800;">Thành Viên</strong>
+                            <span class="badge-tag-tiny" id="profRoleBadge" style="background: #059669; color: #ffffff; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700;">Thành Viên</span>
+                        </div>
+                        <div id="profEmailDisplay" style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">nguyentaquan@gmail.com</div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.35rem;">
+                            <span class="badge-tag-tiny" style="background: #ecfdf5; color: #047857; font-weight: 700; font-size: 0.75rem;" id="profPointsDisplay">
+                                🪙 Điểm tích lũy: 0 điểm
+                            </span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- FORM CẬP NHẬT THÔNG TIN CHI TIẾT -->
+                <form id="formUserProfile" onsubmit="window.app && window.app.handleSaveUserProfile(event);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.65rem;">
+                        <div class="form-group-clean">
+                            <label style="display: block; font-size: 0.76rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem;">Họ và Tên Thành Viên (*):</label>
+                            <input type="text" id="profFullName" class="input-clean" required placeholder="Họ và tên..." style="width: 100%; box-sizing: border-box; padding: 0.55rem 0.75rem; border: 1.5px solid #cbd5e1; border-radius: 7px; font-size: 0.85rem;">
+                        </div>
+                        <div class="form-group-clean">
+                            <label style="display: block; font-size: 0.76rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem;">Địa chỉ Email (*):</label>
+                            <input type="email" id="profEmail" class="input-clean" readonly style="width: 100%; box-sizing: border-box; padding: 0.55rem 0.75rem; border: 1.5px solid #e2e8f0; border-radius: 7px; font-size: 0.85rem; background: #f8fafc; color: #64748b; cursor: not-allowed;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.65rem;">
+                        <div class="form-group-clean">
+                            <label style="display: block; font-size: 0.76rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem;">Đơn Vị / Trường Học Công Tác:</label>
+                            <input type="text" id="profSchool" class="input-clean" placeholder="Ví dụ: Trường THCS Bán Trú Canh Thuận..." style="width: 100%; box-sizing: border-box; padding: 0.55rem 0.75rem; border: 1.5px solid #cbd5e1; border-radius: 7px; font-size: 0.85rem;">
+                        </div>
+                        <div class="form-group-clean">
+                            <label style="display: block; font-size: 0.76rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem;">Cấp Học Giảng Dạy:</label>
+                            <select id="profGrade" class="input-clean" style="width: 100%; box-sizing: border-box; padding: 0.55rem 0.75rem; border: 1.5px solid #cbd5e1; border-radius: 7px; font-size: 0.85rem; background: #fff;">
+                                <option value="thcs">Trung Học Cơ Sở (THCS)</option>
+                                <option value="thpt">Trung Học Phổ Thông (THPT)</option>
+                                <option value="tieuhoc">Tiểu Học</option>
+                                <option value="mamnon">Mầm Non</option>
+                                <option value="daihoc">CĐ - Đại Học / Sau ĐH</option>
+                                <option value="khac">Khác / Quản Lý GD</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.65rem;">
+                        <div class="form-group-clean">
+                            <label style="display: block; font-size: 0.76rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem;">Số Điện Thoại:</label>
+                            <input type="text" id="profPhone" class="input-clean" placeholder="Số điện thoại liên hệ..." style="width: 100%; box-sizing: border-box; padding: 0.55rem 0.75rem; border: 1.5px solid #cbd5e1; border-radius: 7px; font-size: 0.85rem;">
+                        </div>
+                        <div class="form-group-clean">
+                            <label style="display: block; font-size: 0.76rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem;">Số CCCD / Mã Định Danh:</label>
+                            <input type="text" id="profCCCD" class="input-clean" placeholder="Số CCCD định danh cá nhân..." style="width: 100%; box-sizing: border-box; padding: 0.55rem 0.75rem; border: 1.5px solid #cbd5e1; border-radius: 7px; font-size: 0.85rem;">
+                        </div>
+                    </div>
+
+                    <div class="form-group-clean" style="margin-bottom: 0.85rem;">
+                        <label style="display: block; font-size: 0.76rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem;">Chuyên Môn / Môn Giảng Dạy Chính:</label>
+                        <input type="text" id="profSubject" class="input-clean" placeholder="Ví dụ: HĐTN-HN, KHTN, Toán, Tin học, Ngữ văn..." style="width: 100%; box-sizing: border-box; padding: 0.55rem 0.75rem; border: 1.5px solid #cbd5e1; border-radius: 7px; font-size: 0.85rem;">
+                    </div>
+
+                    <!-- VÙNG ĐỔI MẬT KHẨU MỚI (TÙY CHỌN) -->
+                    <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem;">
+                        <div style="font-size: 0.76rem; font-weight: 800; color: #1e3a8a; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.35rem;">
+                            <span>🔐</span> <span>ĐỔI MẬT KHẨU ĐĂNG NHẬP MỚI (Để trống nếu không muốn đổi):</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                            <div>
+                                <input type="password" id="profNewPassword" placeholder="Mật khẩu mới..." style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.7rem; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; outline: none;">
+                            </div>
+                            <div>
+                                <input type="password" id="profConfirmPassword" placeholder="Xác nhận MK mới..." style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.7rem; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; outline: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NÚT HÀNH ĐỘNG -->
+                    <div style="display: flex; justify-content: flex-end; gap: 0.65rem; border-top: 1px solid #e2e8f0; padding-top: 0.85rem;">
+                        <button type="button" onclick="window.closeModal('userProfileModal')" class="btn-mini-action" style="padding: 0.55rem 1.15rem; border: 1px solid #cbd5e1; background: #ffffff; border-radius: 6px; cursor: pointer; font-weight: 700; color: #64748b;">Đóng</button>
+                        <button type="submit" id="btnSaveUserProfile" class="btn-mini-action" style="background: #2563eb; color: #ffffff; border: none; font-weight: 800; padding: 0.55rem 1.45rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 2px 8px rgba(37,99,235,0.3);">
+                            <span>💾</span> <span>Lưu Cập Nhật Thông Tin</span>
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <!-- FORM BỔ SUNG THÔNG TIN CHI TIẾT -->
-            <form id="formUserProfile">
-                <div class="form-group-clean">
-                    <label>Họ và Tên Thành Viên:</label>
-                    <input type="text" id="profFullName" class="input-clean" required placeholder="Họ và tên đầy đủ...">
-                </div>
-
-                <div class="form-group-clean">
-                    <label>Đơn Vị / Trường Học Công Tác:</label>
-                    <input type="text" id="profSchool" class="input-clean" placeholder="Ví dụ: Trường THCS Chu Văn An...">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                    <div class="form-group-clean">
-                        <label>Số CCCD / Mã Định Danh:</label>
-                        <input type="text" id="profCCCD" class="input-clean" placeholder="Số CCCD định danh...">
-                    </div>
-                    <div class="form-group-clean">
-                        <label>Số Điện Thoại Liên Hệ:</label>
-                        <input type="text" id="profPhone" class="input-clean" placeholder="Số điện thoại...">
-                    </div>
-                </div>
-
-                <div class="form-group-clean">
-                    <label>Chuyên Môn / Môn Giảng Dạy Chính:</label>
-                    <input type="text" id="profSubject" class="input-clean" placeholder="Ví dụ: HĐTN-HN, KHTN, Toán, Mầm non...">
-                </div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 0.6rem; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; margin-top: 1rem;">
-                    <button type="button" id="btnCancelProfileModal" class="btn-mini-action">Đóng</button>
-                    <button type="submit" class="btn-mini-action" style="background: #1d4ed8; color: #ffffff; border-color: #1d4ed8; font-weight: 700; padding: 0.45rem 1.25rem;">
-                        <span>💾</span> <span>Lưu Cập Nhật Thông Tin</span>
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <!-- MODAL HIỂN THỊ CÂU HỎI TRONG GAME -->
     <div id="questionModal" class="modal-overlay">
         <div class="modal-box-center" style="max-width: 580px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.65rem; margin-bottom: 1rem;">
@@ -4545,13 +4619,13 @@ window.openPPCTDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=3.10.49"></script>
+    <script type="module" src="js/app.js?v=3.10.65_auth_final_20261111"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=3.10.46').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=3.10.65_auth_final_20261111').then(function(reg) {
                     console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
                 }).catch(function(err) {
                     console.warn('Lỗi đăng ký PWA Service Worker:', err);

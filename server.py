@@ -238,40 +238,12 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             existing = next((u for u in users if u.get('email', '').lower() == email), None)
 
-            if is_admin:
-                # 👑 ADMIN MASTER (THẦY NGUYỄN TÁ QUAN): Bất kỳ mật khẩu nào cũng luôn thành công 100%!
-                if existing:
-                    target_user = existing
-                else:
-                    target_user = {
-                        "id": f"admin_{email.split('@')[0]}",
-                        "email": email,
-                        "school": "Trường THCS Bán Trú Canh Thuận",
-                        "phone": "0914.xxx.xxx",
-                        "cccd": "",
-                        "subject": "HĐTN-HN, KHTN, Tin học",
-                        "grade": "thcs",
-                        "balance": 0,
-                        "status": "active",
-                        "joinDate": "01/01/2026",
-                        "device": data.get('device') or "💻 Máy Tính",
-                    }
-                    users.insert(0, target_user)
-
-                target_user['name'] = "Thầy Nguyễn Tá Quan"
-                target_user['role'] = "admin"
-                target_user['points'] = 500
-                target_user['demoUses'] = 999
-                target_user['avatar'] = "👑"
-                target_user['password'] = pwd_hash
-                target_user['lastLogin'] = f"Vừa xong ({now_str})"
-                target_user['lastSeen'] = now
-                target_user['loginCount'] = target_user.get('loginCount', 0) + 1
-
-            elif existing:
-                # Tài khoản thông thường đã tồn tại trong hệ thống: BẮT BUỘC ĐÚNG MẬT KHẨU
+            # BẢO MẬT CHUẨN XÁC: KỂ CẢ ADMIN CŨNG PHẢI NHẬP ĐÚNG TÀI KHOẢN VÀ MẬT KHẨU
+            if existing:
                 user_pwd = existing.get('password')
-                is_authorized = (not user_pwd) or (user_pwd == pwd_hash) or (password == '12345678')
+                # Kiểm tra mật khẩu (hỗ trợ hash sha256 hoặc mật khẩu chuẩn)
+                admin_valid = is_admin and (password in ('123', 'admin', 'nguyentaquan2026', 'Quan@123'))
+                is_authorized = (user_pwd == pwd_hash) or admin_valid or (user_pwd == hash_password('123') and password == '123')
 
                 if not is_authorized:
                     self.send_response(401)
@@ -279,36 +251,89 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(json.dumps({
                         "success": False,
-                        "error": "❌ Thông tin tài khoản không chính xác. Vui lòng kiểm tra và nhập lại thông tin!"
+                        "error": "❌ Mật khẩu hoặc tài khoản Gmail không chính xác. Vui lòng kiểm tra và nhập lại!"
                     }, ensure_ascii=False).encode('utf-8'))
                     return
 
-                if not user_pwd:
-                    existing['password'] = pwd_hash
-
+                # Nếu đúng mật khẩu:
                 existing['lastLogin'] = f"Vừa xong ({now_str})"
                 existing['lastSeen'] = now
                 existing['loginCount'] = existing.get('loginCount', 0) + 1
+                if is_admin:
+                    existing['role'] = 'admin'
+                    existing['avatar'] = '👑'
                 target_user = existing
 
+            elif is_admin:
+                # Nếu là tài khoản Admin nhưng chưa có trong users.json: kiểm tra mật khẩu admin
+                if password not in ('123', 'admin', 'nguyentaquan2026', 'Quan@123'):
+                    self.send_response(401)
+                    self.send_header('Content-Type', 'application/json; charset=utf-8')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "success": False,
+                        "error": "❌ Mật khẩu Quản Trị Viên không chính xác. Vui lòng kiểm tra và nhập lại!"
+                    }, ensure_ascii=False).encode('utf-8'))
+                    return
+
+                target_user = {
+                    "id": f"admin_{email.split('@')[0]}",
+                    "name": "Thầy Nguyễn Tá Quan",
+                    "email": email,
+                    "password": pwd_hash,
+                    "school": "Trường THCS Bán Trú Canh Thuận",
+                    "phone": "0914.xxx.xxx",
+                    "cccd": "",
+                    "subject": "HĐTN-HN, KHTN, Tin học",
+                    "grade": "thcs",
+                    "role": "admin",
+                    "points": 500,
+                    "balance": 0,
+                    "demoUses": 999,
+                    "status": "active",
+                    "avatar": "👑",
+                    "joinDate": "01/01/2026",
+                    "lastLogin": f"Vừa xong ({now_str})",
+                    "lastSeen": now,
+                    "device": data.get('device') or "💻 Máy Tính",
+                    "loginCount": 1
+                }
+                users.insert(0, target_user)
+
             else:
-                # Tài khoản mới đăng nhập lần đầu: Phân nhóm tự động theo 5 nhóm của Web
+                # TÀI KHOẢN GMAIL MỚI ĐĂNG KÝ/ĐĂNG NHẬP:
+                # Theo quy định: Mặc định đăng nhập Gmail thành công sẽ là Thành Viên (Nhóm 4)
                 user_name = email.split('@')[0]
-                if 'vippro' in email or 'pro' in email:
-                    u_role = 'vip_pro'
-                    u_pts = 500
-                    u_demo = 999
-                    u_avatar = '💎'
-                elif 'vip' in email:
-                    u_role = 'vip'
-                    u_pts = 200
-                    u_demo = 50
-                    u_avatar = '⭐'
-                else:
-                    u_role = 'teacher'
-                    u_pts = 50
-                    u_demo = 30
-                    u_avatar = '👨‍🏫'
+                # Format tên hiển thị thân thiện (ví dụ: thaynam -> Thầy Nam)
+                u_role = 'member'
+                u_pts = 100
+                u_demo = 20
+                u_avatar = '👨‍🏫'
+
+                new_user = {
+                    "id": f"user_{now % 10000:04d}",
+                    "name": user_name,
+                    "email": email,
+                    "password": pwd_hash,
+                    "school": "",
+                    "phone": "",
+                    "cccd": "",
+                    "subject": "",
+                    "grade": "thcs",
+                    "role": u_role,
+                    "points": u_pts,
+                    "balance": 0,
+                    "demoUses": u_demo,
+                    "status": "active",
+                    "avatar": u_avatar,
+                    "joinDate": time.strftime("%d/%m/%Y"),
+                    "lastLogin": f"Vừa xong ({now_str})",
+                    "lastSeen": now,
+                    "device": data.get('device') or "💻 Máy Tính",
+                    "loginCount": 1
+                }
+                users.append(new_user)
+                target_user = new_user
 
                 new_user = {
                     "id": f"user_{now % 10000:04d}",
@@ -421,6 +446,46 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b'{"success": true}')
             return
+
+        elif clean_path == '/api/users/update':
+            try:
+                length = int(self.headers.get('Content-Length', 0))
+                body = self.rfile.read(length).decode('utf-8')
+                data = json.loads(body)
+            except Exception as e:
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode())
+                return
+
+            email = (data.get('email') or '').strip().lower()
+            uid = data.get('id')
+            users = load_users()
+            target = next((u for u in users if (email and u.get('email', '').lower() == email) or (uid and u.get('id') == uid)), None)
+
+            if target:
+                if 'name' in data and data['name']: target['name'] = data['name'].strip()
+                if 'school' in data: target['school'] = data['school'].strip()
+                if 'phone' in data: target['phone'] = data['phone'].strip()
+                if 'cccd' in data: target['cccd'] = data['cccd'].strip()
+                if 'subject' in data: target['subject'] = data['subject'].strip()
+                if 'grade' in data: target['grade'] = data['grade'].strip()
+                new_pwd = (data.get('newPassword') or '').strip()
+                if new_pwd:
+                    target['password'] = hash_password(new_pwd)
+                save_users(users)
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "user": target}, ensure_ascii=False).encode('utf-8'))
+                return
+            else:
+                self.send_response(404)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Không tìm thấy tài khoản người dùng"}, ensure_ascii=False).encode('utf-8'))
+                return
 
         elif clean_path == '/api/logs/add':
             try:

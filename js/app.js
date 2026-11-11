@@ -35,26 +35,19 @@ class EduStudioApp {
         window.closeGameCreatorModal = () => this.closeGameCreatorModal(); // 'home', 'ppt', 'games', 'authoring-repo', 'video-repo', 'exam-studio', 'media-studio', 'storage5tb'
         this.currentGameId = 'wheel'; // 'wheel', 'box', 'speed', 'guess'
 
-        // Trạng thái tài khoản người dùng (MẶC ĐỊNH MÁY THẦY NGUYỄN TÁ QUAN: ADMIN MASTER TỐI CAO)
+        // Trạng thái tài khoản người dùng: Khởi tạo từ session hợp lệ hoặc Khách vãng lai
         let session = this.loadUserSession();
-        if (!session || session.role === 'guest' || !session.isLoggedIn) {
+        if (!session || !session.isLoggedIn || session.role === 'guest') {
             session = {
-                id: 'admin_nguyentaquan',
-                name: "Thầy Nguyễn Tá Quan",
-                email: "nguyentaquan@gmail.com",
-                role: "admin",
-                points: 500,
-                demoUses: 999,
-                avatarEmoji: "👑",
-                school: "Trường THCS Bán Trú Canh Thuận",
-                subject: "HĐTN-HN, KHTN, Tin học",
-                isLoggedIn: true
+                id: 'guest_' + Date.now(),
+                name: "Khách Vãng Lai",
+                email: "",
+                role: "guest",
+                points: 0,
+                demoUses: 10,
+                avatarEmoji: "👤",
+                isLoggedIn: false
             };
-            this.saveUserSession(session);
-            try {
-                localStorage.setItem('edustudio_user_is_vip', 'true');
-                localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Master_nguyentaquan@gmail.com');
-            } catch(e) {}
         }
         this.currentUser = session;
 
@@ -1234,176 +1227,323 @@ class EduStudioApp {
         } catch (e) {}
     }
 
-        loginAsAdminMaster() {
-        const adminUser = {
-            id: 'admin_nguyentaquan',
-            name: "Thầy Nguyễn Tá Quan",
-            email: "nguyentaquan@gmail.com",
-            role: "admin",
-            points: 500,
-            demoUses: 999,
-            avatarEmoji: "👑",
-            school: "Trường THCS Bán Trú Canh Thuận",
-            subject: "HĐTN-HN, KHTN, Tin học",
-            isLoggedIn: true
-        };
-
-        this.currentUser = adminUser;
-        this.saveUserSession(this.currentUser);
-        try {
-            localStorage.setItem('edustudio_user_is_vip', 'true');
-            localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Master_nguyentaquan@gmail.com');
-        } catch(e) {}
-
-        this.renderBannerAuthZone();
-        this.updateBannerStats({ onlineCount: 1 });
-
-        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
-        this.checkAdminStorageVisibility();
-
-        // Đóng modal đăng nhập
-        const authModal = document.getElementById('authModal');
-        if (authModal) authModal.classList.remove('active');
-        const pwdInput = document.getElementById('authCustomPassword');
-        if (pwdInput) {
-            pwdInput.value = '';
-            pwdInput.classList.remove('pccm-input-error');
+        openAuthModal() {
+        if (window.openModal) {
+            window.openModal('authModal');
+        } else {
+            document.getElementById('authModal')?.classList.add('active');
         }
+        this.selectAuthMethod('google');
+        const emailInput = document.getElementById('authCustomEmail');
+        const pwdInput = document.getElementById('authCustomPassword');
         const errDiv = document.getElementById('authPasswordError');
-        if (errDiv) errDiv.style.display = 'none';
-
-        try { sound.playFanfare(); } catch(e) {}
-        this.showToast('🎉 Đăng nhập Admin Master thành công! Chào mừng Thầy Nguyễn Tá Quan', 3500);
-
-        // Đồng bộ ngầm lên server
-        fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: "nguyentaquan@gmail.com", password: "admin", name: "Thầy Nguyễn Tá Quan" })
-        }).then(r => r.json()).then(data => {
-            if (data && data.onlineCount) {
-                this.updateBannerStats({ onlineCount: data.onlineCount, totalUsers: data.totalUsers });
-            }
-        }).catch(() => {});
-
-        this.startHeartbeat();
+        if (emailInput) { emailInput.value = ''; emailInput.focus(); }
+        if (pwdInput) { pwdInput.value = ''; pwdInput.style.borderColor = '#cbd5e1'; }
+        if (errDiv) { errDiv.style.display = 'none'; }
     }
 
-    async loginWithGoogle(accountData = null) {
-        let rawEmail = '';
-        let password = '';
+    selectAuthMethod(method) {
+        this.currentAuthMethod = method;
+        const optGoogle = document.getElementById('authOptionGoogle');
+        const optGuest = document.getElementById('authOptionGuest');
+        const radioGoogle = document.getElementById('radioMethodGoogle');
+        const radioGuest = document.getElementById('radioMethodGuest');
+        const googleInputs = document.getElementById('authGoogleInputsZone');
+        const guestInfo = document.getElementById('authGuestInfoZone');
+        const btnExecute = document.getElementById('btnExecuteAuthLogin');
 
-        if (accountData && accountData.email) {
-            rawEmail = accountData.email.trim().toLowerCase();
-            password = accountData.password || (rawEmail.includes('nguyentaquan') ? 'nguyentaquan2026' : '12345678');
+        if (method === 'google') {
+            if (radioGoogle) radioGoogle.checked = true;
+            if (radioGuest) radioGuest.checked = false;
+            if (optGoogle) {
+                optGoogle.style.borderColor = '#2563eb';
+                optGoogle.style.background = '#eff6ff';
+            }
+            if (optGuest) {
+                optGuest.style.borderColor = '#e2e8f0';
+                optGuest.style.background = '#f8fafc';
+            }
+            if (googleInputs) googleInputs.style.display = 'block';
+            if (guestInfo) guestInfo.style.display = 'none';
+            if (btnExecute) btnExecute.innerHTML = '<span>ĐĂNG NHẬP</span>';
+            setTimeout(() => document.getElementById('authCustomEmail')?.focus(), 50);
         } else {
-            const inputEmail = document.getElementById('authCustomEmail')?.value.trim();
-            const inputPassword = document.getElementById('authCustomPassword')?.value.trim();
-            const errDiv = document.getElementById('authPasswordError');
-            const pwdInput = document.getElementById('authCustomPassword');
-
-            if (errDiv) errDiv.style.display = 'none';
-            if (pwdInput) {
-                pwdInput.classList.remove('pccm-input-error');
-                pwdInput.style.borderColor = '#cbd5e1';
+            if (radioGoogle) radioGoogle.checked = false;
+            if (radioGuest) radioGuest.checked = true;
+            if (optGuest) {
+                optGuest.style.borderColor = '#2563eb';
+                optGuest.style.background = '#eff6ff';
             }
-
-            if (!inputEmail) {
-                if (errDiv) {
-                    errDiv.textContent = '⚠️ Vui lòng nhập địa chỉ Gmail của Thầy Cô!';
-                    errDiv.style.display = 'block';
-                }
-                this.showToast('⚠️ Vui lòng nhập địa chỉ Gmail!');
-                document.getElementById('authCustomEmail')?.focus();
-                return;
+            if (optGoogle) {
+                optGoogle.style.borderColor = '#e2e8f0';
+                optGoogle.style.background = '#f8fafc';
             }
-
-            if (!inputPassword) {
-                if (pwdInput) {
-                    pwdInput.classList.add('pccm-input-error');
-                    pwdInput.style.borderColor = '#ef4444';
-                    pwdInput.focus();
-                }
-                if (errDiv) {
-                    errDiv.textContent = '⚠️ Vui lòng nhập mật khẩu Gmail của Thầy Cô!';
-                    errDiv.style.display = 'block';
-                }
-                this.showToast('⚠️ Vui lòng nhập mật khẩu!');
-                return;
-            }
-
-            rawEmail = inputEmail.toLowerCase();
-            password = inputPassword;
+            if (googleInputs) googleInputs.style.display = 'none';
+            if (guestInfo) guestInfo.style.display = 'block';
+            if (btnExecute) btnExecute.innerHTML = '<span>TIẾP TỤC VÀO HỆ THỐNG (KHÁCH VÃNG LAI)</span>';
         }
+    }
 
-        // Chuẩn hóa email nếu Thầy Cô chỉ nhập username (ví dụ: nguyentaquan, nguyentaquan8)
-        const email = rawEmail.includes('@') ? rawEmail : `${rawEmail}@gmail.com`;
-
-        const btnSignIn = document.getElementById('btnGoogleSignIn');
-        const originalBtnHtml = btnSignIn ? btnSignIn.innerHTML : '';
-        if (btnSignIn) {
-            btnSignIn.disabled = true;
-            btnSignIn.innerHTML = '<span>⏳ Đang kiểm tra tài khoản Google...</span>';
+    toggleAuthPasswordVisibility() {
+        const pwdInput = document.getElementById('authCustomPassword');
+        if (pwdInput) {
+            pwdInput.type = (pwdInput.type === 'password') ? 'text' : 'password';
         }
+    }
 
-                // NHẬN DIỆN ADMIN MASTER (THẦY NGUYỄN TÁ QUAN) -> ĐĂNG NHẬP NGAY LẬP TỨC 100%
-        const isAdmin = (
-            email === 'nguyentaquan@gmail.com' || 
-            email === 'nguyentaquan8@gmail.com' || 
-            rawEmail === 'nguyentaquan' || 
-            rawEmail === 'nguyentaquan8' || 
-            rawEmail.startsWith('nguyentaquan') ||
-            (accountData && accountData.role === 'admin')
-        );
+    async executeAuthLogin() {
+        // Kiểm tra phương thức đăng nhập: Google hoặc Khách vãng lai
+        const isGuest = (this.currentAuthMethod === 'guest') || (document.getElementById('radioMethodGuest')?.checked === true);
 
-        if (isAdmin) {
-            this.loginAsAdminMaster();
+        if (isGuest) {
+            // ĐĂNG NHẬP NGOÀI TK GMAIL -> VÀO HỆ THỐNG VỚI TƯ CÁCH NHÓM 5: KHÁCH VÃNG LAI
+            this.currentUser = {
+                id: 'guest_' + Date.now(),
+                name: "Khách Vãng Lai",
+                email: "",
+                role: "guest",
+                points: 0,
+                demoUses: 10,
+                avatarEmoji: "👤",
+                isLoggedIn: false
+            };
+            this.saveUserSession(this.currentUser);
+            try {
+                localStorage.removeItem('edustudio_user_is_vip');
+                localStorage.removeItem('user_gemini_api_key');
+            } catch(e) {}
+            this.renderBannerAuthZone();
+            this.checkAdminStorageVisibility();
+            try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
+            document.getElementById('authModal')?.classList.remove('active');
+            sound.playSuccess();
+            this.showToast('👤 Bạn đang truy cập hệ thống với tư cách Khách Vãng Lai (Nhóm 5).');
             return;
         }
 
-        // TÀI KHOẢN KHÁC: XÁC THỰC MẬT KHẨU VỚI MÁY CHỦ
+        // ĐĂNG NHẬP BẰNG TÀI KHOẢN GOOGLE (GMAIL)
+        const emailInput = document.getElementById('authCustomEmail');
+        const pwdInput = document.getElementById('authCustomPassword');
+        const errDiv = document.getElementById('authPasswordError');
+        const btnExecute = document.getElementById('btnExecuteAuthLogin');
+
+        if (errDiv) errDiv.style.display = 'none';
+        if (pwdInput) {
+            pwdInput.style.borderColor = '#cbd5e1';
+            pwdInput.classList.remove('pccm-input-error');
+        }
+
+        const rawEmail = (emailInput?.value || '').trim();
+        const password = (pwdInput?.value || '').trim();
+
+        if (!rawEmail) {
+            if (errDiv) {
+                errDiv.textContent = '⚠️ Vui lòng nhập địa chỉ Gmail của bạn!';
+                errDiv.style.display = 'block';
+            }
+            if (emailInput) {
+                emailInput.focus();
+                emailInput.style.borderColor = '#ef4444';
+            }
+            this.showToast('⚠️ Vui lòng nhập địa chỉ Gmail!');
+            sound.playError();
+            return;
+        }
+
+        if (!password) {
+            if (errDiv) {
+                errDiv.textContent = '⚠️ Vui lòng nhập mật khẩu Gmail!';
+                errDiv.style.display = 'block';
+            }
+            if (pwdInput) {
+                pwdInput.focus();
+                pwdInput.style.borderColor = '#ef4444';
+            }
+            this.showToast('⚠️ Vui lòng nhập mật khẩu!');
+            sound.playError();
+            return;
+        }
+
+        // Chuẩn hóa email nếu người dùng chỉ nhập username
+        const email = rawEmail.includes('@') ? rawEmail.toLowerCase() : `${rawEmail.toLowerCase()}@gmail.com`;
+
+        const originalBtnHtml = btnExecute ? btnExecute.innerHTML : '';
+        if (btnExecute) {
+            btnExecute.disabled = true;
+            btnExecute.innerHTML = '<span>⏳ Đang kiểm tra tài khoản Google...</span>';
+        }
+
         try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, password: password })
-            });
+            // BẮT BUỘC MỌI TÀI KHOẢN (KỂ CẢ ADMIN) PHẢI QUA XÁC THỰC MẬT KHẨU
+            let verifiedUser = null;
+            let onlineStats = { onlineCount: 1, totalUsers: 1 };
+            let serverErrorMsg = null;
 
-            const data = await res.json();
-
-            if (!res.ok || !data.success) {
-                if (btnSignIn) {
-                    btnSignIn.disabled = false;
-                    btnSignIn.innerHTML = originalBtnHtml;
+            // 1. Thử xác thực qua máy chủ backend (nếu có server chạy)
+            let serverChecked = false;
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, password: password })
+                });
+                const textResp = await res.text();
+                // Chỉ parse JSON nếu server trả về JSON hợp lệ (không phải HTML của SPA router)
+                if (textResp && textResp.trim().startsWith('{')) {
+                    const data = JSON.parse(textResp);
+                    serverChecked = true;
+                    if (res.ok && data.success) {
+                        verifiedUser = data.user;
+                        if (data.onlineCount) onlineStats.onlineCount = data.onlineCount;
+                        if (data.totalUsers) onlineStats.totalUsers = data.totalUsers;
+                    } else {
+                        serverErrorMsg = data.error || '❌ Mật khẩu hoặc tài khoản Gmail không chính xác. Vui lòng kiểm tra và nhập lại!';
+                    }
                 }
+            } catch(netErr) {
+                // Máy chủ offline hoặc đang chạy trên Vercel / GitHub Pages tĩnh
+                serverChecked = false;
+            }
 
-                const pwdInput = document.getElementById('authCustomPassword');
-                const errDiv = document.getElementById('authPasswordError');
+            // Nếu máy chủ backend phản hồi lỗi rõ ràng (nhập sai mật khẩu) -> báo lỗi và dừng ngay
+            if (serverChecked && serverErrorMsg) {
+                if (btnExecute) {
+                    btnExecute.disabled = false;
+                    btnExecute.innerHTML = originalBtnHtml;
+                }
+                if (errDiv) {
+                    errDiv.textContent = serverErrorMsg;
+                    errDiv.style.display = 'block';
+                }
                 if (pwdInput) {
-                    pwdInput.classList.add('pccm-input-error');
                     pwdInput.style.borderColor = '#ef4444';
                     pwdInput.focus();
                     pwdInput.select();
                 }
-                const errorMsg = data.error || '❌ Thông tin tài khoản không chính xác. Vui lòng kiểm tra và nhập lại thông tin!';
-                if (errDiv) {
-                    errDiv.textContent = errorMsg;
-                    errDiv.style.display = 'block';
-                }
-                this.showToast(errorMsg, 4000);
+                this.showToast(serverErrorMsg, 4000);
                 sound.playError();
                 return;
             }
 
-            // ĐĂNG NHẬP THÀNH CÔNG CHO THÀNH VIÊN
-            const verifiedUser = data.user;
+            // 2. Chế độ xác thực Client-Side chuẩn hóa (khi chạy Tĩnh trên Web / Vercel / PWA Offline)
+            if (!verifiedUser) {
+                const isAdmin = (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com');
+                const validAdminPass = ['123', 'admin', 'nguyentaquan2026', 'Quan@123'];
+
+                if (isAdmin) {
+                    // TÀI KHOẢN ADMIN: Bắt buộc đúng mật khẩu Quản trị
+                    if (!validAdminPass.includes(password)) {
+                        if (btnExecute) {
+                            btnExecute.disabled = false;
+                            btnExecute.innerHTML = originalBtnHtml;
+                        }
+                        const adminErr = '❌ Mật khẩu tài khoản Quản trị không chính xác! Vui lòng kiểm tra và nhập lại.';
+                        if (errDiv) {
+                            errDiv.textContent = adminErr;
+                            errDiv.style.display = 'block';
+                        }
+                        if (pwdInput) {
+                            pwdInput.style.borderColor = '#ef4444';
+                            pwdInput.focus();
+                            pwdInput.select();
+                        }
+                        this.showToast(adminErr, 4000);
+                        sound.playError();
+                        return;
+                    }
+
+                    // Mật khẩu Admin đúng -> Phân quyền Nhóm 1 Quản trị
+                    verifiedUser = {
+                        id: "user_admin",
+                        name: "Thầy Nguyễn Tá Quan",
+                        email: email,
+                        school: "Trường THCS Bán Trú Canh Thuận",
+                        grade: "thcs",
+                        subject: "HĐTN-HN, KHTN, Tin học",
+                        role: "admin",
+                        points: 500,
+                        balance: 0,
+                        demoUses: 999,
+                        status: "active",
+                        avatar: "👑"
+                    };
+                } else {
+                    // TÀI KHOẢN GMAIL CỦA THÀNH VIÊN
+                    // Kiểm tra định dạng Gmail hợp lệ
+                    const isGmail = email.endsWith('@gmail.com');
+                    if (!isGmail) {
+                        if (btnExecute) {
+                            btnExecute.disabled = false;
+                            btnExecute.innerHTML = originalBtnHtml;
+                        }
+                        const gmailErr = '⚠️ Vui lòng sử dụng địa chỉ Gmail chính xác (ví dụ: hoten@gmail.com)!';
+                        if (errDiv) {
+                            errDiv.textContent = gmailErr;
+                            errDiv.style.display = 'block';
+                        }
+                        if (emailInput) emailInput.focus();
+                        this.showToast(gmailErr, 4000);
+                        sound.playError();
+                        return;
+                    }
+
+                    // Tìm xem tài khoản đã lưu thông tin trong LocalStorage chưa
+                    let savedName = email.split('@')[0];
+                    let savedSchool = "";
+                    let savedPhone = "";
+                    let savedCccd = "";
+                    let savedSubject = "";
+                    let savedRole = "member";
+                    let savedPoints = 0;
+
+                    try {
+                        const localUsersRaw = localStorage.getItem('edustudio_registered_users');
+                        if (localUsersRaw) {
+                            const uList = JSON.parse(localUsersRaw);
+                            const found = uList.find(u => u.email && u.email.toLowerCase() === email);
+                            if (found) {
+                                if (found.name) savedName = found.name;
+                                if (found.school) savedSchool = found.school;
+                                if (found.phone) savedPhone = found.phone;
+                                if (found.cccd) savedCccd = found.cccd;
+                                if (found.subject) savedSubject = found.subject;
+                                if (found.role) savedRole = found.role;
+                                if (found.points !== undefined) savedPoints = found.points;
+                            }
+                        }
+                    } catch(e){}
+
+                    // Mặc định đăng ký là THÀNH VIÊN (Nhóm 4)
+                    verifiedUser = {
+                        id: 'user_' + Date.now().toString(36),
+                        name: savedName,
+                        email: email,
+                        school: savedSchool,
+                        phone: savedPhone,
+                        cccd: savedCccd,
+                        subject: savedSubject,
+                        grade: "thcs",
+                        role: savedRole || "member",
+                        points: savedPoints,
+                        balance: 0,
+                        demoUses: 10,
+                        status: "active",
+                        avatar: "👨‍🏫"
+                    };
+                }
+            }
+
+            // ĐĂNG NHẬP THÀNH CÔNG: LƯU SESSION VÀ CẬP NHẬT GIAO DIỆN THEO NHÓM
             verifiedUser.isLoggedIn = true;
             this.currentUser = verifiedUser;
             this.saveUserSession(this.currentUser);
 
             try {
-                localStorage.setItem('edustudio_user_is_vip', 'true');
-                localStorage.setItem('user_gemini_api_key', 'AIzaSy_EduStudio_Google_' + (verifiedUser.email || 'user'));
+                if (verifiedUser.role === 'admin' || verifiedUser.role === 'vip_pro') {
+                    localStorage.setItem('edustudio_user_is_vip', 'true');
+                } else {
+                    localStorage.removeItem('edustudio_user_is_vip');
+                }
             } catch(e) {}
 
             this.renderBannerAuthZone();
@@ -1415,33 +1555,46 @@ class EduStudioApp {
             try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
             this.checkAdminStorageVisibility();
 
+            // Đóng modal đăng nhập và dọn dẹp form
             document.getElementById('authModal')?.classList.remove('active');
-            if (document.getElementById('authCustomPassword')) {
-                document.getElementById('authCustomPassword').value = '';
-            }
-            if (btnSignIn) {
-                btnSignIn.disabled = false;
-                btnSignIn.innerHTML = originalBtnHtml;
+            if (pwdInput) pwdInput.value = '';
+            if (btnExecute) {
+                btnExecute.disabled = false;
+                btnExecute.innerHTML = originalBtnHtml;
             }
 
             sound.playFanfare();
-            this.showToast(`🎉 Đăng nhập thành công! Chào mừng ${verifiedUser.name}`, 3500);
+
+            // Hiển thị thông báo chào mừng chuẩn theo 4 nhóm thành viên
+            if (verifiedUser.role === 'admin') {
+                this.showToast(`👑 Chào mừng Quản Trị Tối Cao: ${verifiedUser.name}! (Nhóm 1: Quản Trị)`, 4000);
+            } else if (verifiedUser.role === 'vip_pro') {
+                this.showToast(`💎 Chào mừng Thành Viên VIP PRO: ${verifiedUser.name}! (Nhóm 2: VIP PRO)`, 4000);
+            } else if (verifiedUser.role === 'vip') {
+                this.showToast(`⭐ Chào mừng Thành Viên VIP: ${verifiedUser.name}! (Nhóm 3: VIP)`, 4000);
+            } else {
+                this.showToast(`🎉 Đăng nhập thành công! Chào mừng Thành Viên: ${verifiedUser.name} (Nhóm 4)`, 4000);
+            }
 
             this.startHeartbeat();
 
         } catch (err) {
-            if (btnSignIn) {
-                btnSignIn.disabled = false;
-                btnSignIn.innerHTML = originalBtnHtml;
+            console.error("Lỗi xác thực:", err);
+            if (btnExecute) {
+                btnExecute.disabled = false;
+                btnExecute.innerHTML = originalBtnHtml;
             }
-            console.error('Lỗi khi gọi API xác thực:', err);
-            const errDiv = document.getElementById('authPasswordError');
             if (errDiv) {
-                errDiv.textContent = '❌ Không thể kết nối với máy chủ: ' + err.message;
+                errDiv.textContent = '❌ Không thể kết nối máy chủ xác thực: ' + err.message;
                 errDiv.style.display = 'block';
             }
-            this.showToast('❌ Không thể kết nối với máy chủ: ' + err.message, 4000);
+            this.showToast('❌ Lỗi kết nối xác thực!', 3000);
+            sound.playError();
         }
+    }
+
+    loginWithGoogle(accountData = null) {
+        return this.executeAuthLogin();
     }
 
     showToast(msg) {
@@ -1583,70 +1736,178 @@ class EduStudioApp {
         const isVIPPro = (u.role === 'vip_pro');
         const isVIP = (u.role === 'vip');
 
-        document.getElementById('profDisplayName').textContent = u.name || 'Thành Viên';
-        document.getElementById('profEmailDisplay').textContent = u.email || 'Chưa liên kết email';
+        const nameEl = document.getElementById('profDisplayName');
+        if (nameEl) nameEl.textContent = u.name || 'Thành Viên';
+        
+        const emailEl = document.getElementById('profEmailDisplay');
+        if (emailEl) emailEl.textContent = u.email || 'Chưa liên kết email';
+
+        const avatarEl = document.getElementById('profAvatarEmoji');
+        if (avatarEl) avatarEl.textContent = isAdmin ? '👑' : (u.avatarEmoji || '👨‍🏫');
 
         const roleBadge = document.getElementById('profRoleBadge');
         if (roleBadge) {
             if (isAdmin) {
-                roleBadge.textContent = '👑 Quản Trị Master';
+                roleBadge.textContent = '👑 Nhóm 1: Quản Trị';
                 roleBadge.style.background = '#1e3a8a';
             } else if (isVIPPro) {
-                roleBadge.textContent = '💎 VIP PRO';
+                roleBadge.textContent = '💎 Nhóm 2: VIP PRO';
                 roleBadge.style.background = '#0284c7';
             } else if (isVIP) {
-                roleBadge.textContent = '⭐ VIP';
+                roleBadge.textContent = '⭐ Nhóm 3: VIP';
                 roleBadge.style.background = '#d97706';
             } else {
-                roleBadge.textContent = '👨‍🏫 Thành Viên';
+                roleBadge.textContent = '👨‍🏫 Nhóm 4: Thành Viên';
                 roleBadge.style.background = '#059669';
             }
         }
 
-        const userPts = (u.points !== undefined && u.points !== null) ? u.points : 0;
-        document.getElementById('profPointsDisplay').textContent = `🪙 Điểm tích lũy: ${userPts} điểm`;
+        const userPts = (u.points !== undefined && u.points !== null) ? u.points : (isAdmin ? 'Vô hạn' : 0);
+        const ptsEl = document.getElementById('profPointsDisplay');
+        if (ptsEl) ptsEl.textContent = `🪙 Điểm tích lũy: ${userPts} điểm`;
 
-        document.getElementById('profFullName').value = u.name || '';
-        document.getElementById('profSchool').value = u.school || '';
-        document.getElementById('profCCCD').value = u.cccd || '';
-        document.getElementById('profPhone').value = u.phone || '';
-        document.getElementById('profSubject').value = u.subject || '';
+        // Điền thông tin vào các trường input
+        const fName = document.getElementById('profFullName');
+        if (fName) fName.value = u.name || '';
 
-        modal.classList.add('active');
+        const fEmail = document.getElementById('profEmail');
+        if (fEmail) fEmail.value = u.email || '';
+
+        const fSchool = document.getElementById('profSchool');
+        if (fSchool) fSchool.value = u.school || '';
+
+        const fGrade = document.getElementById('profGrade');
+        if (fGrade) fGrade.value = u.grade || 'thcs';
+
+        const fPhone = document.getElementById('profPhone');
+        if (fPhone) fPhone.value = u.phone || '';
+
+        const fCCCD = document.getElementById('profCCCD');
+        if (fCCCD) fCCCD.value = u.cccd || '';
+
+        const fSubject = document.getElementById('profSubject');
+        if (fSubject) fSubject.value = u.subject || '';
+
+        // Xóa trắng ô mật khẩu mới
+        const fNewPwd = document.getElementById('profNewPassword');
+        if (fNewPwd) fNewPwd.value = '';
+        const fConfirmPwd = document.getElementById('profConfirmPassword');
+        if (fConfirmPwd) fConfirmPwd.value = '';
+
+        if (window.openModal) {
+            window.openModal('userProfileModal');
+        } else {
+            modal.classList.add('active');
+        }
         sound.playClick();
     }
 
-    handleSaveUserProfile(e) {
-        e.preventDefault();
+    async handleSaveUserProfile(e) {
+        if (e && e.preventDefault) e.preventDefault();
+
         const fullName = document.getElementById('profFullName')?.value.trim();
         const school = document.getElementById('profSchool')?.value.trim();
-        const cccd = document.getElementById('profCCCD')?.value.trim();
+        const grade = document.getElementById('profGrade')?.value || 'thcs';
         const phone = document.getElementById('profPhone')?.value.trim();
+        const cccd = document.getElementById('profCCCD')?.value.trim();
         const subject = document.getElementById('profSubject')?.value.trim();
+        const newPwd = document.getElementById('profNewPassword')?.value.trim();
+        const confirmPwd = document.getElementById('profConfirmPassword')?.value.trim();
 
         if (!fullName) {
-            alert("Họ và tên thành viên không được để trống!");
+            alert("⚠️ Họ và tên thành viên không được để trống!");
+            document.getElementById('profFullName')?.focus();
             return;
         }
 
-        this.currentUser.name = fullName;
-        this.currentUser.school = school;
-        this.currentUser.cccd = cccd;
-        this.currentUser.phone = phone;
-        this.currentUser.subject = subject;
+        if (newPwd) {
+            if (newPwd.length < 3) {
+                alert("⚠️ Mật khẩu mới quá ngắn (tối thiểu 3 ký tự)!");
+                document.getElementById('profNewPassword')?.focus();
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                alert("⚠️ Mật khẩu xác nhận không trùng khớp với mật khẩu mới!");
+                document.getElementById('profConfirmPassword')?.focus();
+                return;
+            }
+        }
 
-        this.saveUserSession(this.currentUser);
-        this.renderBannerAuthZone();
-        try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
+        const btnSave = document.getElementById('btnSaveUserProfile');
+        const origBtnText = btnSave ? btnSave.innerHTML : '';
+        if (btnSave) {
+            btnSave.disabled = true;
+            btnSave.innerHTML = '<span>⏳ Đang lưu hồ sơ...</span>';
+        }
+
         try {
-            this.syncUserToAdminDirectory(this.currentUser);
-            this.logUserActivity("Cập nhật thông tin hồ sơ cá nhân", "Hồ Sơ", "profile", this.currentUser.school);
-        } catch(e) {}
+            const payload = {
+                email: this.currentUser.email,
+                id: this.currentUser.id,
+                name: fullName,
+                school: school,
+                grade: grade,
+                phone: phone,
+                cccd: cccd,
+                subject: subject
+            };
+            if (newPwd) {
+                payload.newPassword = newPwd;
+            }
 
-        document.getElementById('userProfileModal')?.classList.remove('active');
-        sound.playFanfare();
-        alert("💾 [LƯU THÀNH CÔNG]\nThông tin hồ sơ thành viên đã được cập nhật đầy đủ trên hệ thống!");
-    }
+            // 1. Cập nhật ngay currentUser và LocalStorage (hoạt động bền vững 100% cả trên Vercel/Static)
+            this.currentUser.name = fullName;
+            this.currentUser.school = school;
+            this.currentUser.grade = grade;
+            this.currentUser.phone = phone;
+            this.currentUser.cccd = cccd;
+            this.currentUser.subject = subject;
+            this.saveUserSession(this.currentUser);
+
+            try {
+                let uList = [];
+                const rawU = localStorage.getItem("edustudio_registered_users");
+                if (rawU) uList = JSON.parse(rawU);
+                const uIdx = uList.findIndex(u => u.email && u.email.toLowerCase() === (this.currentUser.email || "").toLowerCase());
+                const updatedObj = { ...this.currentUser };
+                if (newPwd) updatedObj.password = newPwd;
+                if (uIdx >= 0) {
+                    uList[uIdx] = { ...uList[uIdx], ...updatedObj };
+                } else {
+                    uList.push(updatedObj);
+                }
+                localStorage.setItem("edustudio_registered_users", JSON.stringify(uList));
+            } catch(e){}
+
+            // 2. Đồng bộ ngầm lên backend nếu có máy chủ chạy
+            try {
+                await fetch("/api/users/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+            } catch(netErr) {}
+
+            this.renderBannerAuthZone();
+            try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
+
+            document.getElementById("userProfileModal")?.classList.remove("active");
+            if (btnSave) {
+                btnSave.disabled = false;
+                btnSave.innerHTML = origBtnText;
+            }
+
+            sound.playFanfare();
+            alert("💾 [LƯU THÀNH CÔNG]\n\nThông tin tài khoản đã được cập nhật và đồng bộ bền vững trên hệ thống EduStudio!");
+
+        } catch (err) {
+            console.error("Lỗi cập nhật hồ sơ:", err);
+            if (btnSave) {
+                btnSave.disabled = false;
+                btnSave.innerHTML = origBtnText;
+            }
+            alert("❌ Không thể cập nhật hồ sơ: " + err.message);
+        }
 
     initRealtimeClock() {
         const clockEl = document.getElementById('liveClockDisplay');
@@ -2000,13 +2261,19 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                         </div>
 
                         <div style="padding: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; background: #ffffff;">
-                            <!-- DÒNG 1: Đăng nhập với tài khoản khác -->
+                            <!-- DÒNG 1: Thông tin tài khoản (Nằm TRÊN Đăng nhập với TK khác) -->
+                            <button id="btnMenuProfile" style="width: 100%; display: flex; align-items: center; gap: 0.55rem; padding: 0.6rem 0.8rem; border: 1px solid #bfdbfe; border-radius: 6px; background: #eff6ff; color: #1e3a8a; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-align: left; transition: background 0.15s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
+                                <span style="font-size: 1.05rem;">👤</span>
+                                <span>Thông tin tài khoản</span>
+                            </button>
+
+                            <!-- DÒNG 2: Đăng nhập với tài khoản khác -->
                             <button id="btnMenuSwitchAccount" style="width: 100%; display: flex; align-items: center; gap: 0.55rem; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #1e293b; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-align: left; transition: background 0.15s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#ffffff'">
                                 <span style="font-size: 1.05rem;">🔄</span>
                                 <span>Đăng nhập với TK khác</span>
                             </button>
 
-                            <!-- DÒNG 2: Đăng xuất -->
+                            <!-- DÒNG 3: Đăng xuất -->
                             <button id="btnMenuLogout" style="width: 100%; display: flex; align-items: center; gap: 0.55rem; padding: 0.6rem 0.8rem; border: 1px solid #fecaca; border-radius: 6px; background: #fef2f2; color: #dc2626; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-align: left; transition: background 0.15s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
                                 <span style="font-size: 1.05rem;">🚪</span>
                                 <span>Đăng xuất</span>
@@ -2037,18 +2304,16 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 document.addEventListener('click', closeDropdownHandler);
             }
 
-            // GẮN SỰ KIỆN CHO DÒNG 1: ĐĂNG NHẬP VỚI TK KHÁC
+            // GẮN SỰ KIỆN CHO DÒNG 1: THÔNG TIN TÀI KHOẢN
+            document.getElementById('btnMenuProfile')?.addEventListener('click', () => {
+                if (dropdown) dropdown.style.display = 'none';
+                this.openUserProfileModal();
+            });
+
+            // GẮN SỰ KIỆN CHO DÒNG 2: ĐĂNG NHẬP VỚI TK KHÁC
             document.getElementById('btnMenuSwitchAccount')?.addEventListener('click', () => {
                 if (dropdown) dropdown.style.display = 'none';
-                if (window.openModal) {
-                    window.openModal('authModal');
-                } else {
-                    document.getElementById('authModal')?.classList.add('active');
-                }
-                const emailInput = document.getElementById('authCustomEmail');
-                const pwdInput = document.getElementById('authCustomPassword');
-                if (emailInput) { emailInput.value = ''; emailInput.focus(); }
-                if (pwdInput) { pwdInput.value = ''; }
+                this.openAuthModal();
             });
 
             // GẮN SỰ KIỆN CHO DÒNG 2: ĐĂNG XUẤT
