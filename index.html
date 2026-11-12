@@ -4090,6 +4090,38 @@ window.openPPCTDirect = function() {
     </div>
 
     <!-- ======================================================================
+         MODAL 2D: HỘP THOẠI XÁC NHẬN SỬ DỤNG TÀI NGUYÊN SƯ PHẠM CHUẨN (CHUẨN CHỈ ĐẠO THẦY QUAN)
+         ====================================================================== -->
+    <div id="aiStandardResourceConfirmModal" class="modal-overlay" style="z-index: 9999999 !important;">
+        <div class="modal-box-center" style="max-width: 540px; background: #ffffff; border-radius: 14px; box-shadow: 0 20px 45px rgba(15, 23, 42, 0.3); border: 1px solid #e2e8f0; overflow: hidden; padding: 0;">
+            <div style="background: linear-gradient(135deg, #1e3a8a, #2563eb); color: #ffffff; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="font-size: 1.5rem;">💎</span>
+                    <h3 style="font-size: 1.05rem; font-weight: 800; margin: 0; color: #ffffff;">Thông Báo Điều Phối Sư Phạm Chuẩn</h3>
+                </div>
+                <button type="button" id="btnCancelAIStandardModalCross" onclick="window.closeModal('aiStandardResourceConfirmModal')" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.2rem; cursor: pointer; color: #ffffff; border-radius: 6px; padding: 0.15rem 0.5rem; line-height: 1;">✕</button>
+            </div>
+            <div style="padding: 1.25rem 1.35rem; font-size: 0.88rem; color: #1e293b; line-height: 1.6;">
+                <p style="margin: 0 0 0.85rem 0; color: #475569;">
+                    Đường truyền AI trực tuyến lúc này đang có lượng truy cập lớn hoặc tạm nghẽn.
+                </p>
+                <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 0.85rem 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1.15rem;">
+                    <strong style="color: #1e40af; display: block; margin-bottom: 0.25rem;">👉 Để bảo đảm đúng mục tiêu của Thầy/Cô:</strong>
+                    <span>Hệ thống đã tự động kích hoạt <strong>TÀI NGUYÊN SƯ PHẠM CHUẨN</strong> (Bộ câu hỏi chuẩn hóa do AI biên soạn sẵn và đã qua kiểm duyệt đúng chuyên môn).</span>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.65rem; border-top: 1px solid #e2e8f0; padding-top: 0.85rem;">
+                    <button type="button" id="btnIgnoreAIStandard" class="btn-mini-action" style="padding: 0.55rem 1.25rem; background: #f1f5f9; color: #475569; border-color: #cbd5e1; font-weight: 700;">
+                        BỎ QUA
+                    </button>
+                    <button type="button" id="btnAcceptAIStandard" class="btn-mini-action" style="padding: 0.55rem 1.45rem; background: linear-gradient(135deg, #1d4ed8, #2563eb); color: #ffffff; border: none; font-weight: 800; box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);">
+                        ✓ ĐỒNG Ý
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
          MODAL 2C: ĐĂNG KÝ THÀNH VIÊN NÂNG CAO (VIP / PRO)
          ====================================================================== -->
     <div id="membershipUpgradeModal" class="modal-overlay">

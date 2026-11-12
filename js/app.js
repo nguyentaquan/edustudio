@@ -6449,6 +6449,43 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     }
 
     
+    promptAIStandardResourceConfirmation() {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('aiStandardResourceConfirmModal');
+            const btnAccept = document.getElementById('btnAcceptAIStandard');
+            const btnIgnore = document.getElementById('btnIgnoreAIStandard');
+            const btnCross = document.getElementById('btnCancelAIStandardModalCross');
+
+            const cleanup = () => {
+                if (btnAccept) btnAccept.onclick = null;
+                if (btnIgnore) btnIgnore.onclick = null;
+                if (btnCross) btnCross.onclick = null;
+                modal?.classList.remove('active');
+            };
+
+            if (btnAccept) {
+                btnAccept.onclick = () => {
+                    cleanup();
+                    resolve(true);
+                };
+            }
+            if (btnIgnore) {
+                btnIgnore.onclick = () => {
+                    cleanup();
+                    resolve(false);
+                };
+            }
+            if (btnCross) {
+                btnCross.onclick = () => {
+                    cleanup();
+                    resolve(false);
+                };
+            }
+
+            modal?.classList.add('active');
+        });
+    }
+
     openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -6760,9 +6797,16 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 }
                 console.warn('AI Exam Gen Network/Quota Notice:', err);
 
-                // TỰ ĐỘNG CHUYỂN SANG DÙNG KHO ĐỀ CHUẨN HÓA (NGĂN 1) KÈM THÔNG BÁO TẾ NHỊ
-                alert(`💎 [THÔNG BÁO TỐI ƯU HÓA HỆ THỐNG EDUSTUDIO]\n\nĐường truyền AI trực tuyến lúc này đang có lượng truy cập lớn hoặc tạm nghẽn nhịp.\n\n👉 Để bảo đảm tiến độ của Thầy/Cô, Hệ thống đã tự động chuyển sang trích xuất và lắp ghép ĐỀ KIỂM TRA TỪ KHO CHUẨN HÓA NGĂN 1 (Đã được Ban Biên Tập & AI đối soát ma trận ${ratio} theo chuẩn Công văn Bộ GD&ĐT).\n\n✓ Đề kiểm tra đã được khởi tạo hoàn tất trên màn hình!`);
+                // HỘP THOẠI XÁC NHẬN SỬ DỤNG TÀI NGUYÊN SƯ PHẠM CHUẨN (ĐỒNG Ý / BỎ QUA THEO CHỈ ĐẠO CỦA THẦY QUAN)
+                const accepted = await this.promptAIStandardResourceConfirmation();
+                if (!accepted) {
+                    this.showToast('ℹ️ Đã hủy nạp đề kiểm tra.', 3000);
+                    return;
+                }
+
                 this.generateExamByStructure('internal', hybridRatio);
+                alert('✓ Đã nạp thành công đề kiểm tra theo đúng yêu cầu.');
+                this.showToast('✓ Đã nạp thành công đề kiểm tra theo đúng yêu cầu.', 4000);
                 return;
             }
             return;
@@ -10916,7 +10960,13 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
             }
             console.warn('AI Game Gen Network/Quota Notice:', err);
 
-            // BẬT CƠ CHẾ SƯ PHẠM THẦY NGUYỄN TÁ QUAN: TỰ ĐỘNG CHUYỂN SANG DÙNG TÀI NGUYÊN NGĂN 1
+            // BẬT HỘP THOẠI XÁC NHẬN SỬ DỤNG TÀI NGUYÊN SƯ PHẠM CHUẨN (ĐỒNG Ý / BỎ QUA THEO CHỈ ĐẠO CỦA THẦY QUAN)
+            const accepted = await this.promptAIStandardResourceConfirmation();
+            if (!accepted) {
+                this.showToast('ℹ️ Đã hủy nạp câu hỏi.', 3000);
+                return;
+            }
+
             let fallbackPool = (this.questionBank || []).filter(q => (q.compartment || 1) === 1);
             if (grade && grade !== 'MN') {
                 const gradeMatched = fallbackPool.filter(q => !q.grade || q.grade === grade);
@@ -10942,8 +10992,8 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
             this.updateSelectedCounter();
             sound.playFanfare();
 
-            alert(`💎 [THÔNG BÁO TỐI ƯU HÓA HỆ THỐNG EDUSTUDIO]\n\nĐường truyền AI trực tuyến lúc này đang có lượng truy cập lớn hoặc tạm nghẽn nhịp.\n\n👉 Để bảo đảm tiết dạy của Thầy/Cô diễn ra liền mạch và hoàn thành đúng mục tiêu bài học, Hệ thống đã tự động kích hoạt TÀI NGUYÊN SƯ PHẠM CAO CẤP TRONG NGĂN 1 (Bộ câu hỏi chuẩn hóa do Admin & AI biên soạn sẵn theo đúng ma trận ${grade} - ${subject}).\n\n✓ Đã nạp thành công ${this.selectedQuestions.length} câu hỏi vào trò chơi! Thầy/Cô có thể sử dụng ngay mà không bị gián đoạn.`);
-            this.showToast(`✓ Đã nạp ${this.selectedQuestions.length} câu hỏi chuẩn hóa từ Ngăn 1 vào bài học!`, 4500);
+            alert('✓ Đã nạp thành công câu hỏi theo đúng yêu cầu.');
+            this.showToast('✓ Đã nạp thành công câu hỏi theo đúng yêu cầu.', 4000);
         } finally {
             if (btn) {
                 btn.disabled = false;
