@@ -1171,6 +1171,25 @@
                  TAB 3: KHO TRÒ CHƠI SƯ PHẠM (4 DẠNG TRÒ CHƠI: CÓ THÊM MẦM NON)
                  -------------------------------------------------------------- -->
             <section id="pane-games" class="tab-pane-content">
+                <!-- KHO TRÒ CHƠI TỰ THIẾT KẾ CỦA GIÁO VIÊN -->
+                <div id="customGamesRepoSection" class="card-white" style="margin-top: 1rem; border-left: 4px solid #2563eb;">
+                    <div class="card-white-header">
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.4rem;">🌟</span>
+                            <div>
+                                <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a;">Trò Chơi Tự Thiết Kế (Của Tôi)</h3>
+                                <p style="font-size: 0.74rem; color: #64748b;">Bộ trò chơi bạn tự soạn hoặc tạo bằng Gemini AI — lưu sẵn để dùng lại trong mọi tiết dạy</p>
+                            </div>
+                        </div>
+                        <button type="button" id="btnOpenCreatorFromGames" onclick="window.openGameCreatorModal && window.openGameCreatorModal();" class="btn-mini-action" style="background: #2563eb; color: #ffffff; border-color: #2563eb; font-weight: 700;">
+                            <span>➕</span> <span>Tạo Trò Chơi Mới</span>
+                        </button>
+                    </div>
+                    <div id="customGamesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 1rem; margin-top: 0.75rem;">
+                        <!-- Render tự động qua app.js -->
+                    </div>
+                </div>
+
                 <!-- ==============================================================
                      KHO BÀI ĐĂNG TRÒ CHƠI HỌC TẬP SƯ PHẠM (ĐƯỢC ƯU TIÊN HIỂN THỊ HÀNG ĐẦU)
                      Phổ Thông Chuẩn GDPT 2018 (8 Môn) & Mầm Non (12 Bộ Đặc Sắc)
@@ -3535,11 +3554,14 @@ window.openPPCTDirect = function() {
                     </div>
 
                     <!-- BỘ NÚT CHỌN CÂU HỎI VÀO BỘ TRÒ CHƠI -->
-                    <div style="display: flex; gap: 0.4rem; margin-top: 0.6rem;">
-                        <button id="btnRandomPickQuestions" class="btn-mini-action" style="flex: 1; justify-content: center; background:#eff6ff; color:#1d4ed8; padding:0.5rem;">
+                    <div style="display: flex; gap: 0.4rem; margin-top: 0.6rem; flex-wrap: wrap;">
+                        <button type="button" id="btnAIGenerateGameQuestions" class="btn-mini-action" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); color: #ffffff; border: none; padding: 0.55rem; font-weight: 800; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);">
+                            <span>✨</span> <span>Tạo Bộ Câu Hỏi Bằng AI Gemini</span>
+                        </button>
+                        <button type="button" id="btnRandomPickQuestions" class="btn-mini-action" style="flex: 1; justify-content: center; background:#eff6ff; color:#1d4ed8; padding:0.5rem;">
                             <span>🎲</span> <span>Chọn Ngẫu Nhiên</span>
                         </button>
-                        <button id="btnClearSelectedQuestions" class="btn-mini-action" style="padding: 0.5rem 0.75rem; color:#dc2626; border-color:#fecaca;" title="Xóa toàn bộ câu đã chọn">
+                        <button type="button" id="btnClearSelectedQuestions" class="btn-mini-action" style="padding: 0.5rem 0.75rem; color:#dc2626; border-color:#fecaca;" title="Xóa toàn bộ câu đã chọn">
                             <span>🗑️</span>
                         </button>
                     </div>
@@ -4961,13 +4983,13 @@ window.openPPCTDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=20261112_oauth_only"></script>
+    <script type="module" src="js/app.js?v=20261112_gemini_game"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=3.10.71_oauth_only_20261112').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=3.10.72_gemini_game_20261112').then(function(reg) {
                     console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
                 }).catch(function(err) {
                     console.warn('Lỗi đăng ký PWA Service Worker:', err);

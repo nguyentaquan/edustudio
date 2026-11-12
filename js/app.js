@@ -1450,6 +1450,52 @@ class EduStudioApp {
         return !!activeKey;
     }
 
+    async callGeminiPersonal(prompt, options = {}) {
+        const featureName = options.featureName || 'Tính năng AI Gemini';
+        if (!this.requireGeminiAccess(featureName)) {
+            throw new Error('AUTH_OR_KEY_REQUIRED');
+        }
+        const apiKey = this.getActiveGeminiKey();
+        if (!apiKey || !apiKey.startsWith('AIza')) {
+            throw new Error('INVALID_PERSONAL_API_KEY');
+        }
+        const model = options.model || this.systemAIConfig?.defaultModel || 'gemini-2.5-flash';
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const generationConfig = {
+            temperature: options.temperature ?? 0.7
+        };
+        if (options.json) {
+            generationConfig.responseMimeType = 'application/json';
+        }
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig
+            })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            const msg = data?.error?.message || `HTTP ${res.status}`;
+            if (res.status === 400 || res.status === 403) {
+                throw new Error(`Gemini API Key không hợp lệ hoặc bị khóa (${msg}). Vui lòng kiểm tra lại Key cá nhân!`);
+            }
+            if (res.status === 429) {
+                throw new Error(`API Key cá nhân đã chạm hạn mức miễn phí tạm thời (HTTP 429). Vui lòng đợi 1 phút rồi thử lại!`);
+            }
+            throw new Error(`Lỗi Gemini API: ${msg}`);
+        }
+        const rawText = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
+        if (!rawText) {
+            throw new Error('Gemini không trả về nội dung văn bản.');
+        }
+        if (!options.json) return rawText;
+        const cleaned = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+        return JSON.parse(cleaned);
+    }
+
     async saveUserGeminiKey(keyInput = null) {
         const key = (keyInput || document.getElementById('userGeminiApiKeyInput')?.value || '').trim();
         if (!key) {
@@ -6025,6 +6071,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             if (this.tkbUI) this.tkbUI.renderCurrentView();
         } else if (tabId === 'games') {
             this.switchGame(this.currentGameId);
+            try { this.renderCustomGamesRepo(); } catch(e) { console.warn(e); }
             try { this.renderSecondaryGamesRepo(); } catch(e) { console.warn(e); }
             try { this.renderPreschoolGamesRepo(); } catch(e) { console.warn(e); }
         } else if (tabId === 'lesson-plan') {
@@ -6078,8 +6125,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.mysteryBox.setupBoxes(this.activeQuiz.questions);
             this.gameEngine.start((ctx, w, h) => this.mysteryBox.render(ctx, w, h));
         } else if (gameId === 'speed') {
+            const tl = parseInt(this.activeQuiz?.timeLimit) || 15;
             btnAction.innerHTML = '<span>⛵</span> <span>Bắt Đầu Đua</span>';
-            this.speedQuiz.setQuestions(this.activeQuiz.questions, 15);
+            this.speedQuiz.setQuestions(this.activeQuiz.questions, tl);
             this.gameEngine.start((ctx, w, h) => this.speedQuiz.render(ctx, w, h));
         } else if (gameId === 'guess') {
             btnAction.innerHTML = '<span>🐶</span> <span>Bắt Đầu Đoán</span>';
@@ -7199,6 +7247,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.updateSelectedCounter();
         });
 
+        document.getElementById('btnAIGenerateGameQuestions')?.addEventListener('click', () => {
+            this.generateGameQuestionsWithAI();
+        });
+
         document.getElementById('btnRandomPickQuestions')?.addEventListener('click', () => {
             this.pickRandomQuestionsFromBank();
         });
@@ -7390,24 +7442,45 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 return;
             }
 
+            const gameType = document.getElementById('creatorGameType').value;
+            const timeLimit = parseInt(document.getElementById('creatorTimeLimit')?.value) || 15;
+            const subject = document.getElementById('creatorSubjectSelect')?.value || '';
+            const grade = document.getElementById('creatorGrade')?.value || '';
+            const competency = document.getElementById('creatorCompetency')?.value || '';
+
             this.activeQuiz.title = title;
+            this.activeQuiz.timeLimit = timeLimit;
             this.activeQuiz.questions = JSON.parse(JSON.stringify(this.selectedQuestions));
+
+            this.saveCustomGame({
+                id: this.editingCustomGameId || ('custom_' + Date.now()),
+                title,
+                gameType,
+                subject,
+                grade,
+                timeLimit,
+                competency,
+                questions: this.selectedQuestions
+            });
+            this.editingCustomGameId = null;
+
             document.getElementById('gameCreatorModal').classList.remove('active');
+            document.body.classList.remove('modal-open');
             sound.playFanfare();
-            alert(`🎉 Đã áp dụng thành công bộ trò chơi "${this.activeQuiz.title}" gồm ${this.activeQuiz.questions.length} câu hỏi vào tiết dạy!`);
+            alert(`🎉 Đã lưu vào Kho & áp dụng bộ trò chơi "${this.activeQuiz.title}" (${this.activeQuiz.questions.length} câu, ${timeLimit}s/câu) vào tiết dạy!`);
             this.switchTab('games');
-            this.switchGame(document.getElementById('creatorGameType').value);
+            this.switchGame(gameType);
         });
 
-        // 6. SỰ KIỆN LƯU VÀ XUẤT GÓI TRÒ CHƠI (TÍCH HỢP NÂNG CẤP VIP PRO THEO CHỈ ĐẠO CỦA THẦY NGUYỄN TÁ QUAN)
+        // 6. SỰ KIỆN LƯU VÀ XUẤT GÓI TRÒ CHƠI (CHUẨN HÓA CHO MỌI THÀNH VIÊN ĐÃ ĐĂNG NHẬP GOOGLE)
         document.getElementById('btnCreatorExportPackage')?.addEventListener('click', () => {
-            const isMember = this.currentUser && this.currentUser.isLoggedIn && (this.currentUser.role === 'admin' || this.currentUser.role === 'teacher');
+            const isMember = !this.isGuest() && !!(this.currentUser && this.currentUser.isLoggedIn);
 
             if (!isMember) {
                 sound.playWrong();
-                alert("⚠️ THÔNG BÁO SƯ PHẠM:\nChức năng Lưu và Xuất Gói Trò Chơi yêu cầu Thầy Cô đăng nhập Thành Viên hoặc Admin!\n\nVui lòng đăng nhập để kích hoạt tính năng này.");
+                alert("⚠️ THÔNG BÁO SƯ PHẠM:\nChức năng Lưu và Xuất Gói Trò Chơi yêu cầu Thầy Cô đăng nhập bằng tài khoản Google!\n\nVui lòng đăng nhập để kích hoạt tính năng này.");
                 document.getElementById('gameCreatorModal')?.classList.remove('active');
-                document.getElementById('authModal')?.classList.add('active');
+                this.openAuthModal();
                 return;
             }
 
@@ -7419,15 +7492,22 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
             sound.playFanfare();
             const exportData = {
+                id: this.editingCustomGameId || ('custom_' + Date.now()),
                 title: title,
+                gameType: document.getElementById('creatorGameType').value,
                 type: document.getElementById('creatorGameType').value,
                 subject: document.getElementById('creatorSubjectSelect').value,
                 grade: document.getElementById('creatorGrade').value,
-                timeLimit: parseInt(document.getElementById('creatorTimeLimit').value),
+                timeLimit: parseInt(document.getElementById('creatorTimeLimit').value) || 15,
+                competency: document.getElementById('creatorCompetency')?.value || '',
                 author: this.currentUser.name,
                 exportedAt: new Date().toISOString(),
                 questions: this.selectedQuestions
             };
+
+            this.saveCustomGame(exportData);
+            this.renderCustomGamesRepo();
+            this.editingCustomGameId = null;
 
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
             const dlAnchor = document.createElement('a');
@@ -7435,18 +7515,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             dlAnchor.setAttribute("download", `${title.replace(/\s+/g, '_')}_Goi_Tro_Choi.json`);
             dlAnchor.click();
 
-            const isVip = localStorage.getItem('edustudio_user_is_vip') === 'true';
-            if (!isVip) {
-                setTimeout(() => {
-                    const goVip = confirm(`🎉 CHÚC MỪNG THÀNH VIÊN ${this.currentUser.name}!\nĐã lưu & xuất thành công gói trò chơi "${title}".\n\n💡 Quyền lợi VIP Pro: Tự động đồng bộ lên Đám Mây 5TB và xuất bản ứng dụng PWA độc lập chạy trên điện thoại/máy tính bảng!\n\nThầy/Cô có muốn mở Hộp Thoại Đăng Ký Nâng Cấp VIP Pro ngay bây giờ không?`);
-                    if (goVip) {
-                        document.getElementById('gameCreatorModal')?.classList.remove('active');
-                        document.getElementById('membershipUpgradeModal')?.classList.add('active');
-                    }
-                }, 600);
-            } else {
-                alert(`🎉 ĐÃ LƯU & XUẤT GÓI TRÒ CHƠI THÀNH CÔNG!\n\n• Tên trò chơi: ${title}\n• Trạng thái VIP Pro: Đã đồng bộ lên Đám Mây 5TB EduStudio!`);
-            }
+            this.showToast(`🎉 Đã lưu "${title}" vào Kho Trò Chơi và tải xuống gói JSON!`, 4000);
         });
 
         // 7. SỰ KIỆN LỌC KHO ĐỀ VÀ KHO VIDEO
@@ -10215,6 +10284,229 @@ Chào mừng Thầy Cô và Học Sinh đến với: "${game.title}"!
 • Môn học: ${game.subject} (${game.grade})
 • Bàn đấu: Đã kích hoạt chế độ ${game.gameType === 'speed' ? 'ĐUA THUYỀN' : (game.gameType === 'wheel' ? 'VÒNG QUAY' : 'HỘP QUÀ')}.
 Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
+    }
+
+    // =========================================================================
+    // TRÒ CHƠI TỰ THIẾT KẾ & TẠO BỘ CÂU HỎI BẰNG GEMINI AI THẬT (BYOK)
+    // =========================================================================
+    async generateGameQuestionsWithAI() {
+        const btn = document.getElementById('btnAIGenerateGameQuestions');
+        const titleInput = document.getElementById('creatorGameTitle');
+        const grade = document.getElementById('creatorGrade')?.value || 'Lớp 8';
+        const subject = document.getElementById('creatorSubjectSelect')?.value || 'Khoa học tự nhiên';
+        const targetCountRaw = parseInt(document.getElementById('creatorTargetCount')?.value) || 4;
+        const count = Math.min(25, Math.max(1, targetCountRaw));
+        const compSel = document.getElementById('creatorCompetency');
+        const compText = compSel?.options?.[compSel.selectedIndex]?.text || 'Chuẩn kiến thức';
+
+        let topic = (titleInput?.value || '').trim();
+        if (!topic) {
+            const entered = prompt(`✨ NHẬP CHỦ ĐỀ / BÀI HỌC ĐỂ GEMINI AI TẠO ${count} CÂU HỎI (${grade} - ${subject}):`, '');
+            if (!entered || !entered.trim()) return;
+            topic = entered.trim();
+            if (titleInput) titleInput.value = topic;
+        }
+
+        const origHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳</span> <span>Gemini đang soạn ${count} câu hỏi...</span>`;
+        }
+
+        try {
+            const promptText =
+                `Bạn là chuyên gia giáo dục Việt Nam. Hãy tạo đúng ${count} câu hỏi trắc nghiệm 4 lựa chọn cho trò chơi học tập.\n` +
+                `- Chủ đề / Tên trò chơi: "${topic}"\n` +
+                `- Lớp / Bậc học: ${grade}\n` +
+                `- Môn học / Lĩnh vực: ${subject}\n` +
+                `- Mức độ / Năng lực: ${compText}\n` +
+                `Yêu cầu: Ngôn ngữ tiếng Việt chuẩn xác, rõ ràng, phù hợp lứa tuổi, 4 đáp án A/B/C/D hợp lý và chỉ có 1 đáp án đúng.\n` +
+                `Trả về DUY NHẤT một mảng JSON gồm đúng ${count} đối tượng theo cấu trúc:\n` +
+                `[{"stem":"Nội dung câu hỏi","options":["Đáp án A","Đáp án B","Đáp án C","Đáp án D"],"correctIndex":0,"explanation":"Giải thích ngắn gọn"}]`;
+
+            const items = await this.callGeminiPersonal(promptText, {
+                featureName: 'Tạo Bộ Câu Hỏi Trò Chơi bằng Gemini AI',
+                json: true,
+                temperature: 0.65
+            });
+
+            if (!Array.isArray(items) || items.length === 0) {
+                throw new Error('Dữ liệu AI trả về không phải danh sách câu hỏi hợp lệ.');
+            }
+
+            const normalized = items.slice(0, count).map((q, idx) => ({
+                id: 'ai_q_' + Date.now() + '_' + idx,
+                stem: String(q.stem || `Câu hỏi ${idx + 1}`).trim(),
+                options: Array.isArray(q.options) && q.options.length >= 4
+                    ? q.options.slice(0, 4).map(o => String(o || '').trim())
+                    : ['Đáp án A', 'Đáp án B', 'Đáp án C', 'Đáp án D'],
+                correctIndex: (Number.isInteger(q.correctIndex) && q.correctIndex >= 0 && q.correctIndex <= 3) ? q.correctIndex : 0,
+                explanation: String(q.explanation || '').trim(),
+                competency: compSel?.value || 'pt_nhan_biet'
+            }));
+
+            if (!Array.isArray(this.questionBank)) this.questionBank = [];
+            this.questionBank = [...normalized, ...this.questionBank];
+            this.selectedQuestions = [...normalized];
+
+            this.renderBankQuestions();
+            this.updateSelectedCounter();
+            sound.playFanfare();
+            this.showToast(`✨ Gemini AI đã tạo xong ${normalized.length} câu hỏi cho "${topic}"!`, 4000);
+        } catch (err) {
+            if (err.message !== 'AUTH_OR_KEY_REQUIRED') {
+                console.error('AI Game Gen Error:', err);
+                alert('❌ Không thể tạo câu hỏi bằng Gemini AI:\n' + err.message);
+            }
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        }
+    }
+
+    loadCustomGames() {
+        try {
+            const raw = localStorage.getItem('edustudio_custom_games');
+            const list = raw ? JSON.parse(raw) : [];
+            return Array.isArray(list) ? list : [];
+        } catch(e) {
+            return [];
+        }
+    }
+
+    saveCustomGame(gameObj) {
+        if (!gameObj || !gameObj.title) return;
+        const list = this.loadCustomGames();
+        const record = {
+            id: gameObj.id || ('custom_' + Date.now()),
+            title: gameObj.title,
+            gameType: gameObj.gameType || 'speed',
+            subject: gameObj.subject || 'Tổng hợp',
+            grade: gameObj.grade || 'Lớp 8',
+            timeLimit: parseInt(gameObj.timeLimit) || 15,
+            competency: gameObj.competency || '',
+            questions: JSON.parse(JSON.stringify(gameObj.questions || [])),
+            author: this.currentUser?.name || gameObj.author || 'Giáo viên',
+            updatedAt: new Date().toISOString()
+        };
+        const idx = list.findIndex(g => g.id === record.id);
+        if (idx >= 0) list[idx] = record;
+        else list.unshift(record);
+        try {
+            localStorage.setItem('edustudio_custom_games', JSON.stringify(list.slice(0, 50)));
+        } catch(e) {
+            console.warn('Không lưu được custom games:', e);
+        }
+    }
+
+    deleteCustomGame(gameId) {
+        const list = this.loadCustomGames().filter(g => g.id !== gameId);
+        try {
+            localStorage.setItem('edustudio_custom_games', JSON.stringify(list));
+        } catch(e) {}
+        this.renderCustomGamesRepo();
+    }
+
+    renderCustomGamesRepo() {
+        const grid = document.getElementById('customGamesGrid');
+        if (!grid) return;
+        const list = this.loadCustomGames();
+        if (list.length === 0) {
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 1.25rem; text-align: center; color: #64748b; font-size: 0.84rem;">
+                    Chưa có trò chơi tự thiết kế nào được lưu. Thầy/Cô bấm <strong>"➕ Tạo Trò Chơi Mới"</strong> để soạn thủ công hoặc dùng <strong>✨ Gemini AI</strong> tạo bộ câu hỏi tự động!
+                </div>
+            `;
+            return;
+        }
+        const typeLabel = { speed: '⛵ Đua Thuyền', wheel: '🎡 Vòng Quay', box: '🎁 Hộp Quà', guess: '🐶 Đoán Hình' };
+        grid.innerHTML = list.map((g, idx) => `
+            <div class="card-white" style="border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; background: #ffffff;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.45rem;">
+                        <span class="badge-tag-tiny" style="background: #eff6ff; color: #1d4ed8; font-weight: 800;">${typeLabel[g.gameType] || '🎮 Trò Chơi'}</span>
+                        <span style="font-size: 0.7rem; color: #64748b;">${(g.questions || []).length} câu • ${g.timeLimit || 15}s/câu</span>
+                    </div>
+                    <h4 style="font-size: 0.94rem; font-weight: 800; color: #0f172a; margin-bottom: 0.35rem; line-height: 1.35;">${idx + 1}. ${g.title}</h4>
+                    <div style="display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.65rem;">
+                        <span class="badge-tag-tiny" style="background:#f1f5f9; color:#475569;">${g.grade || ''}</span>
+                        <span class="badge-tag-tiny" style="background:#fef3c7; color:#b45309;">${g.subject || ''}</span>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid #f1f5f9; padding-top: 0.6rem; display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                    <button type="button" class="btn-mini-action btn-play-custom-game" data-id="${g.id}" style="flex: 1.4; justify-content: center; background: #1d4ed8; color: #ffffff; font-weight: 700;">▶ Chơi Ngay</button>
+                    <button type="button" class="btn-mini-action btn-edit-custom-game" data-id="${g.id}" title="Sửa trò chơi">✏️</button>
+                    <button type="button" class="btn-mini-action btn-export-custom-game" data-id="${g.id}" title="Xuất tệp JSON">📥</button>
+                    <button type="button" class="btn-mini-action btn-del-custom-game" data-id="${g.id}" style="color: #dc2626;" title="Xóa trò chơi">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+
+        grid.querySelectorAll('.btn-play-custom-game').forEach(btn => {
+            btn.addEventListener('click', (e) => this.playCustomGame(e.currentTarget.dataset.id));
+        });
+        grid.querySelectorAll('.btn-edit-custom-game').forEach(btn => {
+            btn.addEventListener('click', (e) => this.editCustomGame(e.currentTarget.dataset.id));
+        });
+        grid.querySelectorAll('.btn-export-custom-game').forEach(btn => {
+            btn.addEventListener('click', (e) => this.exportCustomGameJson(e.currentTarget.dataset.id));
+        });
+        grid.querySelectorAll('.btn-del-custom-game').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (confirm('Bạn có chắc muốn xóa trò chơi tự thiết kế này khỏi Kho?')) {
+                    this.deleteCustomGame(e.currentTarget.dataset.id);
+                }
+            });
+        });
+    }
+
+    playCustomGame(gameId) {
+        const game = this.loadCustomGames().find(g => g.id === gameId);
+        if (!game) return;
+        this.activeQuiz.title = game.title;
+        this.activeQuiz.timeLimit = parseInt(game.timeLimit) || 15;
+        this.activeQuiz.questions = JSON.parse(JSON.stringify(game.questions || []));
+        this.switchTab('games');
+        this.switchGame(game.gameType || 'speed');
+        document.querySelector('.arena-board')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        sound.playFanfare();
+        this.showToast(`🎮 Đã nạp "${game.title}" (${this.activeQuiz.questions.length} câu) vào Bàn đấu!`, 3500);
+    }
+
+    editCustomGame(gameId) {
+        const game = this.loadCustomGames().find(g => g.id === gameId);
+        if (!game) return;
+        this.editingCustomGameId = game.id;
+        this.openGameCreatorModal();
+        const titleEl = document.getElementById('creatorGameTitle');
+        const typeEl = document.getElementById('creatorGameType');
+        const gradeEl = document.getElementById('creatorGrade');
+        const timeEl = document.getElementById('creatorTimeLimit');
+        const countEl = document.getElementById('creatorTargetCount');
+        if (titleEl) titleEl.value = game.title || '';
+        if (typeEl && game.gameType) typeEl.value = game.gameType;
+        if (gradeEl && game.grade) {
+            gradeEl.value = game.grade;
+            this.populateSubjectSelect('creatorSubjectSelect', game.grade, game.subject);
+            this.updateCompetencyDropdownByGrade(game.grade);
+        }
+        if (timeEl && game.timeLimit) timeEl.value = String(game.timeLimit);
+        this.selectedQuestions = JSON.parse(JSON.stringify(game.questions || []));
+        if (countEl) countEl.value = String(this.selectedQuestions.length || 4);
+        this.renderBankQuestions();
+        this.updateSelectedCounter();
+    }
+
+    exportCustomGameJson(gameId) {
+        const game = this.loadCustomGames().find(g => g.id === gameId);
+        if (!game) return;
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(game, null, 2));
+        const a = document.createElement('a');
+        a.setAttribute("href", dataStr);
+        a.setAttribute("download", `${(game.title || 'Tro_Choi').replace(/\s+/g, '_')}_EduStudio.json`);
+        a.click();
     }
 
     
