@@ -1532,11 +1532,17 @@ class EduStudioApp {
             lastErrorMsg = msg;
             const isModelDeprecated = res.status === 404 || /no longer available|not found for API version|is not supported/i.test(msg);
             const isHighDemand = res.status === 503 || res.status === 500 || /high demand|overloaded|unavailable|try again later/i.test(msg);
+            const isRateLimit = res.status === 429 || /RESOURCE_EXHAUSTED|quota|rate limit/i.test(msg);
             if (isModelDeprecated) {
                 continue;
             }
             if (isHighDemand) {
                 await new Promise(r => setTimeout(r, 900));
+                continue;
+            }
+            if (isRateLimit) {
+                // Nếu một model bị nghẽn hạn mức tạm thời (429), thử ngay model khả dụng tiếp theo trong danh sách trước khi báo lỗi
+                await new Promise(r => setTimeout(r, 600));
                 continue;
             }
             if (res.status === 400 || res.status === 403) {
