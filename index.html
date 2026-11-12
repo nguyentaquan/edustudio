@@ -2648,7 +2648,7 @@
                                 <div class="form-group-clean">
                                     <label style="font-weight: 600; font-size: 0.8rem; color: #334155;">Gemini API Key (Hệ Thống Master):</label>
                                     <div style="display: flex; gap: 0.35rem;">
-                                        <input type="password" id="adminSystemGeminiKey" class="input-clean" value="AIzaSyEduStudioMasterKeySecret999" placeholder="Nhập API Key Gemini..." style="font-family: monospace;">
+                                        <input type="password" id="adminSystemGeminiKey" class="input-clean" value="" placeholder="Nhập API Key Gemini (AIza...)..." style="font-family: monospace;">
                                         <button type="button" id="btnToggleSystemKeyVisibility" class="btn-mini-action" style="background:#f1f5f9;">👁️</button>
                                     </div>
                                     <span style="font-size: 0.7rem; color: #94a3b8;">Chỉ dùng riêng cho Quản trị; Thành viên dùng gói Free từ Gmail cá nhân.</span>
@@ -5040,14 +5040,14 @@ window.openPPCTDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script src="js/cloud-sync.js?v=20261112_ai_ppt_exam"></script>
-    <script type="module" src="js/app.js?v=20261112_ai_ppt_exam"></script>
+    <script src="js/cloud-sync.js?v=20261112_key_fix"></script>
+    <script type="module" src="js/app.js?v=20261112_key_fix"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=3.10.76_ai_ppt_exam_20261112').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=3.10.77_key_fix_20261112').then(function(reg) {
                     console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
                 }).catch(function(err) {
                     console.warn('Lỗi đăng ký PWA Service Worker:', err);

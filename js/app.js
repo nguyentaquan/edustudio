@@ -1398,17 +1398,21 @@ class EduStudioApp {
     getActiveGeminiKey() {
         // BẢO VỆ TUYỆT ĐỐI TOKEN ADMIN: Khách và Thành viên KHÔNG BAO GIỜ dùng key của Admin
         if (this.isGuest() || !this.currentUser?.isLoggedIn) return '';
+        const isFake = (k) => !k || k === 'AIzaSyEduStudioMasterKeySecret999' || !k.startsWith('AIza');
         const email = (this.currentUser?.email || '').toLowerCase();
-        const personalKey = (
-            this.currentUser?.geminiApiKey ||
-            this.getGeminiKeyForEmail(email) ||
-            localStorage.getItem('user_gemini_api_key') ||
-            ''
-        ).trim();
+        const candidates = [
+            this.currentUser?.geminiApiKey,
+            this.getGeminiKeyForEmail(email),
+            localStorage.getItem('user_gemini_api_key')
+        ];
         if (this.isAdmin()) {
-            return personalKey || (this.systemAIConfig?.geminiApiKey || '').trim();
+            candidates.push(this.systemAIConfig?.geminiApiKey);
         }
-        return personalKey;
+        for (const c of candidates) {
+            const clean = (c || '').trim();
+            if (!isFake(clean)) return clean;
+        }
+        return '';
     }
 
     requireGeminiAccess(featureName = 'Tính năng AI nâng cao') {
@@ -1417,30 +1421,28 @@ class EduStudioApp {
                 `🔒 YÊU CẦU ĐĂNG NHẬP BẰNG TÀI KHOẢN GMAIL\n\n` +
                 `Tính năng "${featureName}" cần sự can thiệp của trí tuệ Google Gemini.\n` +
                 `Để bảo toàn Token của Quản trị, hệ thống bắt buộc sử dụng gói Gemini Free theo chính tài khoản Gmail cá nhân của bạn.\n\n` +
-                `Vui lòng đăng nhập/đăng ký bằng địa chỉ @gmail.com để tiếp tục!`
+                `Vui lòng đăng nhập bằng nút "Đăng nhập bằng Google" để tiếp tục!`
             );
             this.openAuthModal();
             if (typeof window.setAuthMethod === 'function') window.setAuthMethod('google');
             return false;
         }
 
-        if (this.isAdmin()) return true;
-
         let activeKey = this.getActiveGeminiKey();
         if (!activeKey || !activeKey.startsWith('AIza')) {
             const entered = prompt(
                 `🔑 KÍCH HOẠT GÓI GEMINI FREE CỦA TÀI KHOẢN GMAIL (${this.currentUser.email})\n\n` +
-                `Tính năng "${featureName}" sử dụng hạn mức Gemini API miễn phí do Google cấp cho tài khoản Gmail của bạn (không dùng Token của Quản trị).\n\n` +
+                `Tính năng "${featureName}" sử dụng hạn mức Gemini API miễn phí do Google cấp cho tài khoản Gmail của bạn.\n\n` +
                 `👉 Lấy key miễn phí tại: https://aistudio.google.com/apikey\n` +
-                `Vui lòng dán mã Gemini API Key cá nhân (bắt đầu bằng AIzaSy...) vào bên dưới:`,
-                activeKey || ''
+                `Vui lòng dán mã Gemini API Key thật (bắt đầu bằng AIzaSy...) vào bên dưới (chỉ cần nhập 1 lần cho mọi tính năng):`,
+                ''
             );
             if (!entered || !entered.trim()) {
                 this.showToast('⚠️ Cần gắn Gemini API Key cá nhân của Gmail để dùng tính năng AI này!');
                 return false;
             }
             const cleanKey = entered.trim();
-            if (!cleanKey.startsWith('AIza')) {
+            if (!cleanKey.startsWith('AIza') || cleanKey === 'AIzaSyEduStudioMasterKeySecret999') {
                 alert('⚠️ Mã Gemini API Key hợp lệ phải bắt đầu bằng "AIza..." (lấy từ Google AI Studio). Vui lòng kiểm tra lại!');
                 return false;
             }
@@ -1480,7 +1482,18 @@ class EduStudioApp {
         if (!res.ok) {
             const msg = data?.error?.message || `HTTP ${res.status}`;
             if (res.status === 400 || res.status === 403) {
-                throw new Error(`Gemini API Key không hợp lệ hoặc bị khóa (${msg}). Vui lòng kiểm tra lại Key cá nhân!`);
+                try {
+                    if (this.currentUser?.email) this.saveGeminiKeyForEmail(this.currentUser.email, '');
+                    if (this.currentUser) {
+                        this.currentUser.geminiApiKey = '';
+                        this.saveUserSession(this.currentUser);
+                    }
+                    localStorage.removeItem('user_gemini_api_key');
+                } catch(e) {}
+                setTimeout(() => {
+                    try { this.openUserProfileModal(); document.getElementById('profGeminiApiKey')?.focus(); } catch(e) {}
+                }, 150);
+                throw new Error(`Gemini API Key hiện tại không hợp lệ (${msg}). Em đã mở sẵn ô "Thông tin tài khoản" để Thầy/Cô dán lại đúng mã AIza... lấy từ aistudio.google.com/apikey!`);
             }
             if (res.status === 429) {
                 throw new Error(`API Key cá nhân đã chạm hạn mức miễn phí tạm thời (HTTP 429). Vui lòng đợi 1 phút rồi thử lại!`);
@@ -8692,7 +8705,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         // Xử lý cảnh báo điều kiện mạng & tài khoản Gmail + Gemini API Key cá nhân
         const updateSourceWarning = (choice) => {
             const isOnline = navigator.onLine;
-            const hasKey = this.isAdmin() || (!this.isGuest() && !!this.getActiveGeminiKey());
+            const hasKey = !this.isGuest() && !!this.getActiveGeminiKey();
 
             if (choice === 'internal') {
                 sourceWarningBox.style.display = 'none';
@@ -9334,10 +9347,17 @@ D. Nói xấu sau lưng bạn với những người khác
     initSystemAIConfig() {
         try {
             const saved = localStorage.getItem('edustudio_system_ai_config');
-            if (saved) return JSON.parse(saved);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed.geminiApiKey === 'AIzaSyEduStudioMasterKeySecret999') {
+                    parsed.geminiApiKey = '';
+                    localStorage.setItem('edustudio_system_ai_config', JSON.stringify(parsed));
+                }
+                return parsed;
+            }
         } catch(e) {}
         return {
-            geminiApiKey: "AIzaSyEduStudioMasterKeySecret999",
+            geminiApiKey: "",
             defaultModel: "gemini-2.5-flash",
             enableGoogleAIDelegation: true,
             hfToken: "hf_EduStudioDedicatedH200ClusterToken",
