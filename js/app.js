@@ -1464,15 +1464,17 @@ class EduStudioApp {
             const list = (payload.models || [])
                 .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
                 .map(m => String(m.name || '').replace(/^models\//, ''))
-                .filter(name => /gemini/i.test(name) && !/embedding|aqa|imagen|veo|tts|audio|robotics/i.test(name));
-            // Ưu tiên flash mới nhất -> flash khác -> pro mới nhất
+                .filter(name => /gemini/i.test(name) && !/embedding|aqa|imagen|veo|tts|audio|robotics/i.test(name))
+                .filter(name => !/gemini-2\.5-flash$|gemini-2\.5-pro$|gemini-1\./i.test(name));
+            // Ưu tiên flash khả dụng mới nhất -> flash khác -> pro mới nhất
             list.sort((a, b) => {
                 const score = (n) => {
                     let s = 0;
+                    if (n === 'gemini-3-flash-preview') s += 200;
+                    if (/flash-latest/i.test(n)) s += 150;
                     if (/flash/i.test(n)) s += 100;
                     if (/3\.8|3\.5|3\.1|3\.0/i.test(n)) s += 50;
                     if (/lite/i.test(n)) s -= 10;
-                    if (/exp|preview/i.test(n)) s -= 5;
                     return s;
                 };
                 return score(b) - score(a);
@@ -1496,14 +1498,16 @@ class EduStudioApp {
         if (!apiKey || !apiKey.startsWith('AIza')) {
             throw new Error('INVALID_PERSONAL_API_KEY');
         }
-        let primaryModel = options.model || this.systemAIConfig?.defaultModel || 'gemini-3.8-flash';
-        if (primaryModel === 'gemini-2.5-flash' || primaryModel === 'gemini-1.5-pro' || primaryModel === 'gemini-2.5-pro') {
-            primaryModel = 'gemini-3.8-flash';
+        let primaryModel = options.model || this.systemAIConfig?.defaultModel || 'gemini-3-flash-preview';
+        if (primaryModel === 'gemini-2.5-flash' || primaryModel === 'gemini-1.5-pro' || primaryModel === 'gemini-2.5-pro' || primaryModel === 'gemini-3.8-flash') {
+            primaryModel = 'gemini-3-flash-preview';
         }
         const discovered = await this.discoverAvailableGeminiModels(apiKey);
-        const candidates = [primaryModel, ...discovered, 'gemini-3.8-flash', 'gemini-3.1-pro-preview']
+        const filteredDiscovered = (discovered || []).filter(m => !/gemini-2\.5-flash$|gemini-2\.5-pro$|gemini-1\./i.test(m));
+        const candidates = [primaryModel, 'gemini-3-flash-preview', ...filteredDiscovered, 'gemini-flash-latest', 'gemini-3.1-pro-preview']
             .filter((m, idx, arr) => m && arr.indexOf(m) === idx)
-            .slice(0, 6);
+            .filter(m => !/gemini-2\.5-flash$|gemini-2\.5-pro$|gemini-1\./i.test(m))
+            .slice(0, 5);
         const generationConfig = {
             temperature: options.temperature ?? 0.7
         };
@@ -6456,11 +6460,20 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             const btnIgnore = document.getElementById('btnIgnoreAIStandard');
             const btnCross = document.getElementById('btnCancelAIStandardModalCross');
 
+            if (!modal) {
+                const ok = confirm("Đường truyền AI trực tuyến lúc này đang có lượng truy cập lớn hoặc tạm nghẽn.\n\n👉 Để bảo đảm đúng mục tiêu của Thầy/Cô, Hệ thống đã tự động kích hoạt TÀI NGUYÊN SƯ PHẠM CHUẨN (Bộ câu hỏi chuẩn hóa do AI biên soạn sẵn và đã qua kiểm duyệt đúng chuyên môn).");
+                resolve(ok);
+                return;
+            }
+
+            modal.classList.add('active');
+            try { sound.playNotice?.(); } catch(e) {}
+
             const cleanup = () => {
                 if (btnAccept) btnAccept.onclick = null;
                 if (btnIgnore) btnIgnore.onclick = null;
                 if (btnCross) btnCross.onclick = null;
-                modal?.classList.remove('active');
+                modal.classList.remove('active');
             };
 
             if (btnAccept) {
@@ -6481,9 +6494,11 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                     resolve(false);
                 };
             }
-
-            modal?.classList.add('active');
         });
+    }
+
+    updateBankCompartmentButtons() {
+        // Tương thích ngược hệ thống, ngầm phân loại dữ liệu nhưng không hiển thị nhãn ngăn trên giao diện người dùng
     }
 
     openModal(modalId) {
@@ -6504,22 +6519,6 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         const activeModals = document.querySelectorAll('.modal-overlay.active');
         if (!activeModals || activeModals.length === 0) {
             document.body.classList.remove('modal-open');
-        }
-    }
-
-    updateBankCompartmentButtons() {
-        const b1 = document.getElementById('btnBankCompartment1');
-        const b2 = document.getElementById('btnBankCompartment2');
-        const comp = this.activeBankCompartment || 1;
-        if (b1) {
-            b1.style.background = comp === 1 ? '#1d4ed8' : 'transparent';
-            b1.style.color = comp === 1 ? '#ffffff' : '#475569';
-            b1.classList.toggle('active', comp === 1);
-        }
-        if (b2) {
-            b2.style.background = comp === 2 ? '#059669' : 'transparent';
-            b2.style.color = comp === 2 ? '#ffffff' : '#475569';
-            b2.classList.toggle('active', comp === 2);
         }
     }
 
@@ -6550,7 +6549,6 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         }
 
         // Render ngân hàng câu hỏi an toàn và cập nhật bộ đếm
-        this.updateBankCompartmentButtons();
         this.renderBankQuestions();
         this.updateSelectedCounter();
 
@@ -6593,20 +6591,16 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 this.selectedQuestions = [];
             }
 
-            const currentComp = this.activeBankCompartment || 1;
-            const compList = this.questionBank.map((q, origIdx) => ({ ...q, _origIndex: origIdx }))
-                .filter(q => (q.compartment || 1) === currentComp);
+            const compList = this.questionBank;
 
             if (totalBadge) {
-                totalBadge.textContent = `${compList.length} câu (${currentComp === 1 ? 'Ngăn 1' : 'Ngăn 2'})`;
+                totalBadge.textContent = `${compList.length} câu`;
             }
 
             if (compList.length === 0) {
                 container.innerHTML = `
                     <div style="text-align:center; padding: 2rem; color: #94a3b8; font-size: 0.85rem;">
-                        ${currentComp === 1 
-                            ? 'Ngăn 1 (Kho Chuẩn Admin/AI) chưa có câu hỏi nào. Admin hãy nạp đề mẫu hoặc dùng AI tạo thêm!' 
-                            : 'Ngăn 2 (Câu hỏi Người dùng) hiện chưa có dữ liệu. Bạn có thể tự soạn thêm câu mới hoặc nạp từ file!'}
+                        Ngân hàng chưa có câu hỏi nào. Hãy bấm "Thêm Câu Hỏi" để tạo câu hỏi mới!
                     </div>
                 `;
                 return;
@@ -6615,9 +6609,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             const prefix = ['A', 'B', 'C', 'D'];
             let html = '';
 
-            compList.forEach((q, displayIdx) => {
+            compList.forEach((q, bIdx) => {
                 if (!q) return;
-                const bIdx = q._origIndex;
                 const isAlreadyAdded = Array.isArray(this.selectedQuestions) && this.selectedQuestions.some(sq => sq && sq.stem && q.stem && sq.stem.trim() === q.stem.trim());
 
                 let optsHtml = '';
@@ -6637,15 +6630,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                     `;
                 });
 
-                const compBadge = q.compartment === 2 
-                    ? `<span class="badge-tag-tiny" style="background:#fef3c7; color:#b45309; font-weight:700;">👨‍🏫 Ngăn 2: Người Dùng Tạo</span>`
-                    : `<span class="badge-tag-tiny" style="background:#dbeafe; color:#1d4ed8; font-weight:700;">👑 Ngăn 1: Chuẩn Hóa Admin/AI</span>`;
-
                 html += `
                     <div class="bank-card-item ${isAlreadyAdded ? 'is-selected-card' : ''}" id="bankCard_${bIdx}">
                         <div class="bank-card-header">
                             <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
-                                ${compBadge}
                                 <span class="badge-tag-tiny" style="background:#f1f5f9; color:#475569;">${q.grade || 'Lớp 8'}</span>
                                 <span class="badge-tag-tiny" style="background:#e0f2fe; color:#0369a1;">${q.subject || 'KHTN'}</span>
                                 <span class="badge-tag-tiny badge-competency">${q.competencyText || 'Nhận biết'}</span>
@@ -6656,7 +6644,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                         </div>
 
                         <div class="bank-card-stem">
-                            <strong>Câu ${displayIdx + 1}:</strong> ${q.stem || 'Nội dung câu hỏi...'}
+                            <strong>Câu ${bIdx + 1}:</strong> ${q.stem || 'Nội dung câu hỏi...'}
                             ${q.stemImage ? `<div style="margin-top:0.35rem;"><img src="${q.stemImage}" style="max-height:65px; border-radius:6px; border:1px solid #cbd5e1;"></div>` : ''}
                         </div>
 
@@ -6805,8 +6793,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 }
 
                 this.generateExamByStructure('internal', hybridRatio);
-                alert('✓ Đã nạp thành công đề kiểm tra theo đúng yêu cầu.');
-                this.showToast('✓ Đã nạp thành công đề kiểm tra theo đúng yêu cầu.', 4000);
+                alert('✓ Đã nạp thành công câu hỏi theo đúng yêu cầu.');
+                this.showToast('✓ Đã nạp thành công câu hỏi theo đúng yêu cầu.', 4000);
                 return;
             }
             return;
@@ -7623,21 +7611,6 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.closeGameCreatorModal();
         });
 
-        // Chuyển ngăn ngân hàng câu hỏi (Ngăn 1: Chuẩn Hóa Admin/AI vs Ngăn 2: Người Dùng Tạo)
-        document.getElementById('btnBankCompartment1')?.addEventListener('click', () => {
-            this.activeBankCompartment = 1;
-            this.updateBankCompartmentButtons();
-            this.renderBankQuestions();
-            sound.playTick();
-        });
-
-        document.getElementById('btnBankCompartment2')?.addEventListener('click', () => {
-            this.activeBankCompartment = 2;
-            this.updateBankCompartmentButtons();
-            this.renderBankQuestions();
-            sound.playTick();
-        });
-
         document.getElementById('btnTabBankList')?.addEventListener('click', () => {
             document.getElementById('btnTabBankList').classList.add('active');
             document.getElementById('btnTabAddNewQ').classList.remove('active');
@@ -7815,8 +7788,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
             this.questionBank.unshift(newQ);
             this.selectedQuestions.push(newQ);
-            this.activeBankCompartment = 2; // Tự chuyển sang tab Ngăn 2 để người dùng thấy ngay câu vừa tạo
-            this.updateBankCompartmentButtons();
+            this.activeBankCompartment = 2; // Lưu trữ phân loại nội bộ (Người dùng tạo)
 
             sound.playFanfare();
             alert("🎉 Đã lưu câu hỏi mới thành công vào Ngân hàng và Trò chơi!");
@@ -8850,10 +8822,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             }
 
             sound.playFanfare();
-            this.updateBankCompartmentButtons();
             this.renderBankQuestions();
             closeIOModal();
-            alert(`🎉 Nạp thành công ${stagedQuestions.length} câu hỏi vào ${this.activeBankCompartment === 1 ? 'Ngăn 1 (Kho Chuẩn Admin/AI)' : 'Ngăn 2 (Người Dùng Tạo)'}!`);
+            alert(`🎉 Nạp thành công ${stagedQuestions.length} câu hỏi vào Ngân hàng câu hỏi!`);
         });
 
         // =========================================================================
@@ -9560,8 +9531,8 @@ D. Nói xấu sau lưng bạn với những người khác
                 if (parsed.geminiApiKey === 'AIzaSyEduStudioMasterKeySecret999') {
                     parsed.geminiApiKey = '';
                 }
-                if (!parsed.defaultModel || parsed.defaultModel === 'gemini-2.5-flash' || parsed.defaultModel === 'gemini-1.5-pro') {
-                    parsed.defaultModel = 'gemini-3.8-flash';
+                if (!parsed.defaultModel || parsed.defaultModel === 'gemini-2.5-flash' || parsed.defaultModel === 'gemini-1.5-pro' || parsed.defaultModel === 'gemini-2.5-pro' || parsed.defaultModel === 'gemini-3.8-flash') {
+                    parsed.defaultModel = 'gemini-3-flash-preview';
                 }
                 localStorage.setItem('edustudio_system_ai_config', JSON.stringify(parsed));
                 return parsed;
@@ -9569,7 +9540,7 @@ D. Nói xấu sau lưng bạn với những người khác
         } catch(e) {}
         return {
             geminiApiKey: "",
-            defaultModel: "gemini-3.8-flash",
+            defaultModel: "gemini-3-flash-preview",
             enableGoogleAIDelegation: true,
             hfToken: "hf_EduStudioDedicatedH200ClusterToken",
             docsPrice: 500,
@@ -10948,13 +10919,16 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
             this.selectedQuestions = [...normalized];
             this.activeBankCompartment = 1;
 
-            this.updateBankCompartmentButtons();
             this.renderBankQuestions();
             this.updateSelectedCounter();
             sound.playFanfare();
-            alert(`🎉 [THÀNH CÔNG RỰC RỠ!]\nGemini AI đã khởi tạo thành công trọn bộ ${normalized.length} câu hỏi đạt chuẩn cho chủ đề: "${topic}"!\n- Dữ liệu đã tự động nạp vào Trò Chơi và lưu vào Ngăn 1 (Kho Chuẩn Admin/AI).\n- Bạn có thể bấm [Xem Trước Trò Chơi] hoặc [Áp Dụng Vào Tiết Dạy] ngay.`);
+            alert(`🎉 [THÀNH CÔNG RỰC RỠ!]\nGemini AI đã khởi tạo thành công trọn bộ ${normalized.length} câu hỏi đạt chuẩn cho chủ đề: "${topic}"!\n- Dữ liệu đã tự động nạp vào Trò Chơi và Ngân Hàng Câu Hỏi.\n- Bạn có thể bấm [Xem Trước Trò Chơi] hoặc [Áp Dụng Vào Tiết Dạy] ngay.`);
             this.showToast(`✨ Gemini AI đã tạo xong ${normalized.length} câu hỏi cho "${topic}"!`, 4000);
         } catch (err) {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
             if (err.message === 'AUTH_OR_KEY_REQUIRED') {
                 return;
             }
@@ -10967,7 +10941,7 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
                 return;
             }
 
-            let fallbackPool = (this.questionBank || []).filter(q => (q.compartment || 1) === 1);
+            let fallbackPool = (this.questionBank || []).filter(q => (q.compartment || 1) === 1 || q.auditVerified || !q.compartment);
             if (grade && grade !== 'MN') {
                 const gradeMatched = fallbackPool.filter(q => !q.grade || q.grade === grade);
                 if (gradeMatched.length >= count) fallbackPool = gradeMatched;
@@ -10987,7 +10961,6 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
             }));
 
             this.activeBankCompartment = 1;
-            this.updateBankCompartmentButtons();
             this.renderBankQuestions();
             this.updateSelectedCounter();
             sound.playFanfare();

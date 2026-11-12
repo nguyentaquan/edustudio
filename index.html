@@ -3627,21 +3627,13 @@ window.openPPCTDirect = function() {
                 <div class="creator-panel-right">
                     <!-- THANH CHUYỂN TAB BÊN PHẢI -->
                     <div class="creator-right-tabs-bar">
-                        <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
-                            <div class="bank-compartment-tabs" style="display: flex; background: #e2e8f0; border-radius: 8px; padding: 2px; gap: 2px;">
-                                <button type="button" id="btnBankCompartment1" class="btn-compartment-tab active" style="border:none; border-radius:6px; padding:0.25rem 0.55rem; font-size:0.72rem; font-weight:700; cursor:pointer; background:#1d4ed8; color:#ffffff;" title="Ngăn 1: Câu hỏi Chuẩn Hóa do Admin & AI tạo sẵn">
-                                    <span>👑</span> <span>Ngăn 1: Kho Chuẩn (Admin/AI)</span>
-                                </button>
-                                <button type="button" id="btnBankCompartment2" class="btn-compartment-tab" style="border:none; border-radius:6px; padding:0.25rem 0.55rem; font-size:0.72rem; font-weight:700; cursor:pointer; background:transparent; color:#475569;" title="Ngăn 2: Câu hỏi do Người dùng đóng góp & Tự tạo">
-                                    <span>👨‍🏫</span> <span>Ngăn 2: Người Dùng Tạo</span>
-                                </button>
-                            </div>
+                        <div style="display: flex; gap: 0.4rem;">
                             <button id="btnTabBankList" class="btn-creator-subtab active">
-                                <span>📚</span> <span>Xem Kho</span>
+                                <span>📚</span> <span>Ngân Hàng Câu Hỏi</span>
                                 <span id="bankTotalCount" class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8;">6 câu</span>
                             </button>
                             <button id="btnTabAddNewQ" class="btn-creator-subtab">
-                                <span>➕</span> <span>Thêm Câu Mới</span>
+                                <span>➕</span> <span>Thêm Câu Hỏi (Có Ảnh)</span>
                             </button>
                         </div>
 
@@ -3941,9 +3933,8 @@ window.openPPCTDirect = function() {
                     <div class="form-group-clean">
                         <label style="font-size: 0.78rem; font-weight: 700; color: #334155;">Chế Độ Lưu Trữ:</label>
                         <select id="importTargetMode" class="input-clean" style="font-size: 0.8rem; padding: 0.4rem;">
-                            <option value="compartment_1" selected>👑 Nạp vào Ngăn 1 (Kho Chuẩn Hóa Admin/AI)</option>
-                            <option value="compartment_2">👨‍🏫 Nạp vào Ngăn 2 (Câu Hỏi Người Dùng Đóng Góp)</option>
-                            <option value="audit_queue">⏳ Gửi vào Hàng đợi Thẩm định AI (Kho 5TB Admin)</option>
+                            <option value="append" selected>➕ Thêm mới vào Kho Đề</option>
+                            <option value="audit_queue">⏳ Gửi vào Hàng đợi Thẩm định AI (5TB)</option>
                             <option value="overwrite">🔄 Ghi đè toàn bộ kho hiện tại</option>
                         </select>
                     </div>
