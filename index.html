@@ -221,7 +221,7 @@
 
         verifiedUser.isLoggedIn = true;
         verifiedUser.authProvider = 'google_oauth';
-        verifiedUser.authVersion = 20261112;
+        verifiedUser.authVersion = 202611122;
         localStorage.setItem('edustudio_user_session', JSON.stringify(verifiedUser));
         if (verifiedUser.role === 'admin' || verifiedUser.role === 'vip_pro') {
             localStorage.setItem('edustudio_user_is_vip', 'true');
@@ -403,7 +403,6 @@
         
         var email = rawEmail.includes('@') ? rawEmail.toLowerCase() : (rawEmail.toLowerCase() + '@gmail.com');
         var isAdmin = (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com');
-        var adminPasswords = ['123', 'admin', 'nguyentaquan2026', 'Quan@123'];
         var keyInput = document.getElementById('authCustomGeminiKey');
         var typedGeminiKey = (keyInput?.value || '').trim();
 
@@ -443,37 +442,15 @@
         }
         
         if (isAdmin) {
-            if (!adminPasswords.includes(pwd)) {
-                if (btn) {
-                    btn.style.background = '#2563eb';
-                    btn.innerHTML = '<span>ĐĂNG NHẬP</span>';
-                }
-                if (errDiv) {
-                    errDiv.textContent = '❌ Mật khẩu tài khoản Quản trị không chính xác!';
-                    errDiv.style.display = 'block';
-                }
-                pwdInput?.focus();
-                return false;
+            if (btn) {
+                btn.style.background = '#2563eb';
+                btn.innerHTML = '<span>ĐĂNG NHẬP</span>';
             }
-            
-            var adminUser = {
-                id: 'admin_master_01',
-                name: "Thầy Nguyễn Tá Quan",
-                email: email,
-                role: "admin",
-                points: 999999,
-                demoUses: 999999,
-                avatarEmoji: "👑",
-                school: "THCS Canh Thuận",
-                geminiApiKey: activePersonalKey,
-                authVersion: 20261112,
-                isLoggedIn: true
-            };
-            localStorage.setItem('edustudio_user_session', JSON.stringify(adminUser));
-            localStorage.setItem('edustudio_user_is_vip', 'true');
-            document.getElementById('authModal')?.classList.remove('active');
-            document.body.classList.remove('modal-open');
-            window.location.reload();
+            if (errDiv) {
+                errDiv.textContent = '🔒 Mật khẩu cũ (123) đã được xóa bỏ hoàn toàn! Vui lòng bấm nút xanh "Đăng nhập bằng Google" ở trên để xác thực chính chủ Gmail.';
+                errDiv.style.display = 'block';
+            }
+            if (pwdInput) pwdInput.value = '';
             return false;
         }
         
@@ -596,7 +573,15 @@
                             if (raw) {
                                 try { u = JSON.parse(raw); } catch(e){}
                             }
-                            // CHỈ HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP XÁC THỰC THÀNH CÔNG (KHÔNG TỰ ĐỘNG GÁN ADMIN NẾU CHƯA ĐĂNG NHẬP)
+                            // CHỈ HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP XÁC THỰC THÀNH CÔNG (TỰ ĐỘNG XÓA PHIÊN CŨ MK 123 ĐỂ ĐĂNG NHẬP LẠI TỪ ĐẦU)
+                            if (u && (u.role === 'admin' && (u.authVersion !== 202611122 || u.authProvider !== 'google_oauth'))) {
+                                try {
+                                    localStorage.removeItem('edustudio_user_session');
+                                    localStorage.removeItem('edustudio_user_is_vip');
+                                    localStorage.removeItem('user_gemini_api_key');
+                                } catch(ex){}
+                                u = null;
+                            }
                             if (u && (!u.isLoggedIn || u.role === 'guest')) {
                                 u = null;
                             }
@@ -4253,7 +4238,7 @@ window.openPPCTDirect = function() {
                                 <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.3rem;">
                                     <span>📧</span> <span>Địa chỉ Gmail:</span>
                                 </label>
-                                <input type="email" id="authCustomEmail" placeholder="Nhập địa chỉ Gmail..." onkeydown="if(event.key==='Enter'){ window.doEduStudioLogin(event); }" style="width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; background: #ffffff;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'">
+                                <input type="email" id="authCustomEmail" autocomplete="off" placeholder="Nhập địa chỉ Gmail..." onkeydown="if(event.key==='Enter'){ window.doEduStudioLogin(event); }" style="width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; background: #ffffff;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'">
                             </div>
 
                             <div style="margin-bottom: 0.45rem;">
@@ -4262,7 +4247,7 @@ window.openPPCTDirect = function() {
                                     <span style="font-size: 0.68rem; font-weight: 500; color: #64748b;">Không dùng MK Gmail thật</span>
                                 </label>
                                 <div style="position: relative;">
-                                    <input type="password" id="authCustomPassword" placeholder="Nhập mật khẩu tài khoản EduStudio..." onkeydown="if(event.key==='Enter'){ window.doEduStudioLogin(event); }" style="width: 100%; box-sizing: border-box; padding: 0.6rem 2.4rem 0.6rem 0.8rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; background: #ffffff;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'">
+                                    <input type="password" id="authCustomPassword" autocomplete="new-password" placeholder="Nhập mật khẩu tài khoản EduStudio..." onkeydown="if(event.key==='Enter'){ window.doEduStudioLogin(event); }" style="width: 100%; box-sizing: border-box; padding: 0.6rem 2.4rem 0.6rem 0.8rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; background: #ffffff;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'">
                                     <button type="button" onclick="var p=document.getElementById('authCustomPassword'); p.type = (p.type==='password'?'text':'password');" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.1rem; color: #64748b; padding: 0;" title="Ẩn/Hiện mật khẩu">👁️</button>
                                 </div>
                             </div>
@@ -5077,13 +5062,13 @@ window.openPPCTDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=20261112_oauth_live"></script>
+    <script type="module" src="js/app.js?v=20261112_no123"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=3.10.69_oauth_live_20261112').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=3.10.70_no123_20261112').then(function(reg) {
                     console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
                 }).catch(function(err) {
                     console.warn('Lỗi đăng ký PWA Service Worker:', err);

@@ -1429,45 +1429,25 @@ class EduStudioApp {
             // 2. Chế độ xác thực Client-Side chuẩn hóa (khi chạy Tĩnh trên Web / Vercel / PWA Offline)
             if (!verifiedUser) {
                 const isAdmin = (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com');
-                const validAdminPass = ['123', 'admin', 'nguyentaquan2026', 'Quan@123'];
 
                 if (isAdmin) {
-                    // TÀI KHOẢN ADMIN: Bắt buộc đúng mật khẩu Quản trị
-                    if (!validAdminPass.includes(password)) {
-                        if (btnExecute) {
-                            btnExecute.disabled = false;
-                            btnExecute.innerHTML = originalBtnHtml;
-                        }
-                        const adminErr = '❌ Mật khẩu tài khoản Quản trị không chính xác! Vui lòng kiểm tra và nhập lại.';
-                        if (errDiv) {
-                            errDiv.textContent = adminErr;
-                            errDiv.style.display = 'block';
-                        }
-                        if (pwdInput) {
-                            pwdInput.style.borderColor = '#ef4444';
-                            pwdInput.focus();
-                            pwdInput.select();
-                        }
-                        this.showToast(adminErr, 4000);
-                        sound.playError();
-                        return;
+                    // ĐÃ XÓA BỎ HOÀN TOÀN MẬT KHẨU CỨNG 123: ADMIN PHẢI XÁC THỰC BẰNG GOOGLE OAUTH THẬT
+                    if (btnExecute) {
+                        btnExecute.disabled = false;
+                        btnExecute.innerHTML = originalBtnHtml;
                     }
-
-                    // Mật khẩu Admin đúng -> Phân quyền Nhóm 1 Quản trị
-                    verifiedUser = {
-                        id: "user_admin",
-                        name: "Thầy Nguyễn Tá Quan",
-                        email: email,
-                        school: "Trường THCS Bán Trú Canh Thuận",
-                        grade: "thcs",
-                        subject: "HĐTN-HN, KHTN, Tin học",
-                        role: "admin",
-                        points: 500,
-                        balance: 0,
-                        demoUses: 999,
-                        status: "active",
-                        avatar: "👑"
-                    };
+                    const adminErr = '🔒 Đã xóa bỏ mật khẩu mặc định (123). Tài khoản Quản trị vui lòng bấm nút "Đăng nhập bằng Google" ở trên để xác thực Gmail thật!';
+                    if (errDiv) {
+                        errDiv.textContent = adminErr;
+                        errDiv.style.display = 'block';
+                    }
+                    if (pwdInput) {
+                        pwdInput.value = '';
+                        pwdInput.style.borderColor = '#ef4444';
+                    }
+                    this.showToast(adminErr, 4500);
+                    sound.playError();
+                    return;
                 } else {
                     // TÀI KHOẢN GMAIL CỦA THÀNH VIÊN
                     // Kiểm tra định dạng Gmail hợp lệ

@@ -248,14 +248,20 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             existing = next((u for u in users if u.get('email', '').lower() == email), None)
 
-            # BẢO MẬT CHUẨN XÁC: KỂ CẢ ADMIN CŨNG PHẢI NHẬP ĐÚNG TÀI KHOẢN VÀ MẬT KHẨU
+            # BẢO MẬT CHUẨN XÁC: ĐÃ XÓA BỎ MỌI MẬT KHẨU CỨNG (123) — CHỈ CHẤP NHẬN HASH THẬT HOẶC GOOGLE OAUTH
             if existing:
                 user_pwd = existing.get('password')
-                # Kiểm tra mật khẩu (hỗ trợ hash sha256 hoặc mật khẩu chuẩn)
-                admin_valid = is_admin and (password in ('123', 'admin', 'nguyentaquan2026', 'Quan@123'))
-                is_authorized = (user_pwd == pwd_hash) or admin_valid or (user_pwd == hash_password('123') and password == '123')
+                if not user_pwd:
+                    self.send_response(401)
+                    self.send_header('Content-Type', 'application/json; charset=utf-8')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "success": False,
+                        "error": "🔒 Tài khoản này xác thực bằng Google. Vui lòng bấm nút xanh 'Đăng nhập bằng Google' ở phía trên!"
+                    }, ensure_ascii=False).encode('utf-8'))
+                    return
 
-                if not is_authorized:
+                if user_pwd != pwd_hash:
                     self.send_response(401)
                     self.send_header('Content-Type', 'application/json; charset=utf-8')
                     self.end_headers()
@@ -277,41 +283,15 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 target_user = existing
 
             elif is_admin:
-                # Nếu là tài khoản Admin nhưng chưa có trong users.json: kiểm tra mật khẩu admin
-                if password not in ('123', 'admin', 'nguyentaquan2026', 'Quan@123'):
-                    self.send_response(401)
-                    self.send_header('Content-Type', 'application/json; charset=utf-8')
-                    self.end_headers()
-                    self.wfile.write(json.dumps({
-                        "success": False,
-                        "error": "❌ Mật khẩu Quản Trị Viên không chính xác. Vui lòng kiểm tra và nhập lại!"
-                    }, ensure_ascii=False).encode('utf-8'))
-                    return
-
-                target_user = {
-                    "id": f"admin_{email.split('@')[0]}",
-                    "name": "Thầy Nguyễn Tá Quan",
-                    "email": email,
-                    "password": pwd_hash,
-                    "geminiApiKey": req_gemini_key,
-                    "school": "Trường THCS Bán Trú Canh Thuận",
-                    "phone": "0914.xxx.xxx",
-                    "cccd": "",
-                    "subject": "HĐTN-HN, KHTN, Tin học",
-                    "grade": "thcs",
-                    "role": "admin",
-                    "points": 500,
-                    "balance": 0,
-                    "demoUses": 999,
-                    "status": "active",
-                    "avatar": "👑",
-                    "joinDate": "01/01/2026",
-                    "lastLogin": f"Vừa xong ({now_str})",
-                    "lastSeen": now,
-                    "device": data.get('device') or "💻 Máy Tính",
-                    "loginCount": 1
-                }
-                users.insert(0, target_user)
+                # Đã xóa bỏ hoàn toàn MK 123: Tài khoản Admin phải đăng nhập qua Google OAuth chính chủ
+                self.send_response(401)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "error": "🔒 Đã xóa bỏ mật khẩu cũ (123). Tài khoản Quản trị vui lòng bấm nút xanh 'Đăng nhập bằng Google' ở trên để xác thực Gmail thật!"
+                }, ensure_ascii=False).encode('utf-8'))
+                return
 
             else:
                 # TÀI KHOẢN GMAIL MỚI ĐĂNG KÝ/ĐĂNG NHẬP:
