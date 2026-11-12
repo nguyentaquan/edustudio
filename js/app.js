@@ -1511,6 +1511,11 @@ class EduStudioApp {
         }
         if (typeof saveFn === 'function') {
             saveFn();
+            try {
+                if (window.eduCloudSync?.isConfigured() && this.currentUser?.email) {
+                    window.eduCloudSync.syncCurrentUserWorkspace(this.currentUser.email);
+                }
+            } catch(e) {}
         }
         const canExport = ['admin', 'vip_pro', 'vip'].includes(this.currentUser?.role);
         if (!canExport) {
@@ -9083,16 +9088,37 @@ D. Nói xấu sau lưng bạn với những người khác
 
     async fetchUsersFromServer() {
         try {
-            const res = await fetch('/api/users');
-            if (res.ok) {
-                const users = await res.json();
-                if (Array.isArray(users) && users.length > 0) {
-                    this.userAccounts = users;
-                    localStorage.setItem('edustudio_admin_users', JSON.stringify(users));
-                    this.renderAdminKPIs();
-                    this.renderAdminUsersList();
-                    this.updateBannerStats();
+            let mergedUsers = null;
+            try {
+                const res = await fetch('/api/users');
+                if (res.ok) {
+                    const users = await res.json();
+                    if (Array.isArray(users) && users.length > 0) mergedUsers = users;
                 }
+            } catch(e) {}
+
+            if (window.eduCloudSync?.isConfigured()) {
+                const cloudUsers = await window.eduCloudSync.listAllUsers();
+                if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
+                    if (!mergedUsers) {
+                        mergedUsers = cloudUsers;
+                    } else {
+                        cloudUsers.forEach(cu => {
+                            if (!cu || !cu.email) return;
+                            const idx = mergedUsers.findIndex(u => u.email && u.email.toLowerCase() === cu.email.toLowerCase());
+                            if (idx >= 0) mergedUsers[idx] = { ...mergedUsers[idx], ...cu };
+                            else mergedUsers.push(cu);
+                        });
+                    }
+                }
+            }
+
+            if (mergedUsers && mergedUsers.length > 0) {
+                this.userAccounts = mergedUsers;
+                localStorage.setItem('edustudio_admin_users', JSON.stringify(mergedUsers));
+                this.renderAdminKPIs();
+                this.renderAdminUsersList();
+                this.updateBannerStats();
             }
             const sRes = await fetch('/api/stats');
             if (sRes.ok) {
@@ -9316,6 +9342,9 @@ initAdminAccountModule() {
         document.getElementById('btnAdminTestAIConnection')?.addEventListener('click', () => {
             this.testAIConnection();
         });
+
+        // 8.5. Khởi tạo & Sự kiện CSDL Đám mây Chung (Firebase / Supabase)
+        this.initCloudSyncAdminControls();
 
         // 9. Nút Lưu biểu phí vi mô
         document.getElementById('btnAdminSavePricingConfig')?.addEventListener('click', () => {
@@ -9640,6 +9669,12 @@ initAdminAccountModule() {
         }
 
         this.saveUsersToStorage();
+        try {
+            if (window.eduCloudSync?.isConfigured()) {
+                const savedU = this.userAccounts.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+                if (savedU) window.eduCloudSync.upsertUser(savedU);
+            }
+        } catch(e) {}
         this.renderAdminUsersList();
         this.renderAdminKPIs();
     }
@@ -9650,6 +9685,12 @@ initAdminAccountModule() {
 
         user.demoUses = 10;
         this.saveUsersToStorage();
+        try {
+            if (window.eduCloudSync?.isConfigured()) {
+                const savedU = this.userAccounts.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+                if (savedU) window.eduCloudSync.upsertUser(savedU);
+            }
+        } catch(e) {}
         this.renderAdminUsersList();
         sound.playSuccess();
         alert(`🔄 Đã cấp lại 10 lượt Demo dùng thử miễn phí cho Giáo viên "${user.name}"!`);
@@ -9669,6 +9710,12 @@ initAdminAccountModule() {
         });
 
         this.saveUsersToStorage();
+        try {
+            if (window.eduCloudSync?.isConfigured()) {
+                const savedU = this.userAccounts.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+                if (savedU) window.eduCloudSync.upsertUser(savedU);
+            }
+        } catch(e) {}
         this.renderAdminUsersList();
         sound.playSuccess();
         alert(`🎉 ĐÃ HOÀN TẤT!
@@ -9697,6 +9744,12 @@ initAdminAccountModule() {
         }
 
         this.saveUsersToStorage();
+        try {
+            if (window.eduCloudSync?.isConfigured()) {
+                const savedU = this.userAccounts.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+                if (savedU) window.eduCloudSync.upsertUser(savedU);
+            }
+        } catch(e) {}
         this.renderAdminUsersList();
     }
 
@@ -9799,6 +9852,12 @@ initAdminAccountModule() {
         }
 
         this.saveUsersToStorage();
+        try {
+            if (window.eduCloudSync?.isConfigured()) {
+                const savedU = this.userAccounts.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+                if (savedU) window.eduCloudSync.upsertUser(savedU);
+            }
+        } catch(e) {}
         this.renderAdminUsersList();
         this.renderAdminKPIs();
         document.getElementById('adminUserModal')?.classList.remove('active');
@@ -9958,6 +10017,64 @@ Hệ thống AI của Thầy đã sẵn sàng vận hành cho hàng chục ngàn
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+
+    initCloudSyncAdminControls() {
+        const provEl = document.getElementById('adminCloudProvider');
+        const projEl = document.getElementById('adminCloudProjectId');
+        const keyEl = document.getElementById('adminCloudApiKey');
+        const badge = document.getElementById('adminCloudStatusBadge');
+        if (!window.eduCloudSync) return;
+
+        const updateBadge = () => {
+            if (!badge) return;
+            if (window.eduCloudSync.isConfigured()) {
+                const cfg = window.eduCloudSync.getConfig();
+                badge.textContent = `✅ Đã cấu hình (${cfg.provider === 'supabase' ? 'Supabase' : 'Firebase'}: ${cfg.projectId})`;
+                badge.style.background = '#dcfce7';
+                badge.style.color = '#166534';
+                badge.style.borderColor = '#86efac';
+            } else {
+                badge.textContent = 'Chưa gắn Cloud API Key';
+                badge.style.background = '#ffffff';
+                badge.style.color = '#475569';
+                badge.style.borderColor = '#cbd5e1';
+            }
+        };
+
+        const cfg = window.eduCloudSync.getConfig();
+        if (provEl) provEl.value = cfg.provider || 'firebase';
+        if (projEl) projEl.value = cfg.projectId || 'edustudio-514503';
+        if (keyEl) keyEl.value = cfg.apiKey || '';
+        updateBadge();
+
+        document.getElementById('btnAdminSaveCloudConfig')?.addEventListener('click', () => {
+            window.eduCloudSync.saveConfig({
+                provider: provEl?.value || 'firebase',
+                projectId: projEl?.value || 'edustudio-514503',
+                apiKey: keyEl?.value || ''
+            });
+            updateBadge();
+            sound.playSuccess();
+            this.showToast('☁️ Đã lưu cấu hình CSDL Đám mây chung!', 3500);
+        });
+
+        document.getElementById('btnAdminTestCloudSync')?.addEventListener('click', async () => {
+            window.eduCloudSync.saveConfig({
+                provider: provEl?.value || 'firebase',
+                projectId: projEl?.value || 'edustudio-514503',
+                apiKey: keyEl?.value || ''
+            });
+            updateBadge();
+            const res = await window.eduCloudSync.testConnection();
+            if (res.ok) {
+                sound.playFanfare();
+                alert('✅ ' + res.message);
+            } else {
+                sound.playError();
+                alert('⚠️ ' + res.message);
+            }
+        });
     }
 
 // =========================================================================

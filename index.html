@@ -125,6 +125,8 @@
     window.currentLoginMethod = 'google';
     // Dán Google OAuth Client ID chính thức của Thầy vào đây (hoặc thiết lập trong Quản trị / Modal):
     window.EDUSTUDIO_DEFAULT_GOOGLE_CLIENT_ID = '744815790631-enosh65nqge7q5k6k1bqdav46a7tlbeg.apps.googleusercontent.com';
+    // Cấu hình CSDL Đám mây chung (Firebase Firestore trên chính Project edustudio-514503 hoặc Supabase):
+    window.EDUSTUDIO_DEFAULT_CLOUD_CONFIG = { provider: 'firebase', projectId: 'edustudio-514503', apiKey: '' };
 
     window.getGoogleClientId = function() {
         var cid = '';
@@ -222,6 +224,22 @@
         verifiedUser.isLoggedIn = true;
         verifiedUser.authProvider = 'google_oauth';
         verifiedUser.authVersion = 202611122;
+
+        // Đồng bộ 2 chiều với CSDL Đám mây chung (nếu Admin đã cấu hình Firebase/Supabase)
+        if (window.eduCloudSync && window.eduCloudSync.isConfigured()) {
+            try {
+                var cloudUser = await window.eduCloudSync.fetchUser(email);
+                if (cloudUser) {
+                    if (!isAdmin && cloudUser.role) verifiedUser.role = cloudUser.role;
+                    if (cloudUser.points !== undefined) verifiedUser.points = cloudUser.points;
+                    if (cloudUser.school) verifiedUser.school = cloudUser.school;
+                    if (cloudUser.subject) verifiedUser.subject = cloudUser.subject;
+                }
+                await window.eduCloudSync.upsertUser(verifiedUser);
+                await window.eduCloudSync.loadUserWorkspace(email);
+            } catch(cloudErr) { console.warn('Cloud sync login warning:', cloudErr); }
+        }
+
         localStorage.setItem('edustudio_user_session', JSON.stringify(verifiedUser));
         if (verifiedUser.role === 'admin' || verifiedUser.role === 'vip_pro') {
             localStorage.setItem('edustudio_user_is_vip', 'true');
@@ -2683,6 +2701,41 @@
                                 </div>
                             </div>
 
+                            <!-- CẤU HÌNH CSDL ĐÁM MÂY CHUNG (ĐỒNG BỘ ĐA MÁY TRÊN VERCEL) -->
+                            <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 1rem; margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem; flex-wrap: wrap; gap: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="font-size: 1.2rem;">☁️</span>
+                                        <strong style="color: #1e3a8a; font-size: 0.9rem;">CSDL Đám Mây Chung (Đồng Bộ Tài Khoản &amp; Sản Phẩm Đa Máy trên Vercel)</strong>
+                                    </div>
+                                    <span id="adminCloudStatusBadge" class="badge-tag-tiny" style="background: #ffffff; color: #475569; border: 1px solid #cbd5e1; font-weight: 700;">Chưa gắn Cloud API Key</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
+                                    <div class="form-group-clean" style="margin-bottom: 0;">
+                                        <label style="font-weight: 600; font-size: 0.78rem; color: #1e3a8a;">Nhà Cung Cấp Cloud DB:</label>
+                                        <select id="adminCloudProvider" class="input-clean">
+                                            <option value="firebase" selected>Firebase Firestore (Chung Project edustudio-514503)</option>
+                                            <option value="supabase">Supabase PostgreSQL (REST API)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group-clean" style="margin-bottom: 0;">
+                                        <label style="font-weight: 600; font-size: 0.78rem; color: #1e3a8a;">Project ID / Supabase URL:</label>
+                                        <input type="text" id="adminCloudProjectId" class="input-clean" value="edustudio-514503" placeholder="edustudio-514503 hoặc https://xxx.supabase.co" style="font-family: monospace;">
+                                    </div>
+                                    <div class="form-group-clean" style="margin-bottom: 0;">
+                                        <label style="font-weight: 600; font-size: 0.78rem; color: #1e3a8a;">Web API Key / Anon Key:</label>
+                                        <input type="password" id="adminCloudApiKey" class="input-clean" value="" placeholder="AIza... (Firebase) hoặc eyJ... (Supabase)" style="font-family: monospace;">
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                                    <span style="font-size: 0.72rem; color: #1e40af;">💡 Dùng chung ngay Project <strong>edustudio-514503</strong> tại <a href="https://console.firebase.google.com" target="_blank" rel="noopener">Firebase Console</a> (Spark Plan miễn phí).</span>
+                                    <div style="display: flex; gap: 0.4rem;">
+                                        <button type="button" id="btnAdminTestCloudSync" class="btn-mini-action" style="background: #ffffff; color: #1d4ed8; border-color: #93c5fd;">🔌 Kiểm Tra Kết Nối Cloud</button>
+                                        <button type="button" id="btnAdminSaveCloudConfig" class="btn-mini-action" style="background: #1d4ed8; color: #ffffff; border: none; font-weight: 700;">💾 Lưu Cấu Hình Cloud</button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div style="display: flex; gap: 0.5rem; justify-content: flex-end; border-top: 1px solid #f1f5f9; padding-top: 0.75rem;">
                                 <button id="btnAdminTestAIConnection" class="btn-mini-action" style="background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe;">
                                     <span>🧪</span> <span>Kiểm Tra Kết Nối AI (Ping Test)</span>
@@ -4981,15 +5034,16 @@ window.openPPCTDirect = function() {
     })();
     </script>
 
-    <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
+    <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=20261112_tier_unified"></script>
+    <script src="js/cloud-sync.js?v=20261112_cloud_sync"></script>
+    <script type="module" src="js/app.js?v=20261112_cloud_sync"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=3.10.73_tier_unified_20261112').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=3.10.74_cloud_sync_20261112').then(function(reg) {
                     console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
                 }).catch(function(err) {
                     console.warn('Lỗi đăng ký PWA Service Worker:', err);
