@@ -7509,13 +7509,24 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.renderCustomGamesRepo();
             this.editingCustomGameId = null;
 
+            const canExportPackage = ['admin', 'vip_pro', 'vip'].includes(this.currentUser?.role);
+            if (!canExportPackage) {
+                // Thành viên Nhóm 4: Đã lưu thành sản phẩm dùng & sửa trực tiếp trên web, đồng thời mở hộp thoại Nâng cấp lên Nhóm 3 (VIP) để xuất/tải gói
+                this.closeModal('gameCreatorModal');
+                this.showToast(`💾 Đã lưu "${title}" vào Kho trên web! Nâng cấp lên Nhóm 3 (VIP) để xuất & tải gói.`, 4500);
+                setTimeout(() => {
+                    this.openModal('membershipUpgradeModal');
+                }, 250);
+                return;
+            }
+
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
             const dlAnchor = document.createElement('a');
             dlAnchor.setAttribute("href", dataStr);
             dlAnchor.setAttribute("download", `${title.replace(/\s+/g, '_')}_Goi_Tro_Choi.json`);
             dlAnchor.click();
 
-            this.showToast(`🎉 Đã lưu "${title}" vào Kho Trò Chơi và tải xuống gói JSON!`, 4000);
+            this.showToast(`🎉 Đã lưu "${title}" vào Kho Trò Chơi và xuất tải gói JSON thành công!`, 4000);
         });
 
         // 7. SỰ KIỆN LỌC KHO ĐỀ VÀ KHO VIDEO
@@ -10500,6 +10511,12 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
     }
 
     exportCustomGameJson(gameId) {
+        const canExportPackage = ['admin', 'vip_pro', 'vip'].includes(this.currentUser?.role);
+        if (!canExportPackage) {
+            this.showToast('💎 Tính năng Xuất / Tải Gói dành cho Thành viên Nhóm 3 (VIP) trở lên!', 4000);
+            this.openModal('membershipUpgradeModal');
+            return;
+        }
         const game = this.loadCustomGames().find(g => g.id === gameId);
         if (!game) return;
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(game, null, 2));
