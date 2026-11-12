@@ -322,8 +322,8 @@
             if (optGuest) { optGuest.style.border = '1.5px solid #e2e8f0'; optGuest.style.background = '#f8fafc'; }
             if (googleInputs) googleInputs.style.display = 'block';
             if (guestInfo) guestInfo.style.display = 'none';
-            if (btn) btn.innerHTML = '<span>ĐĂNG NHẬP</span>';
-            setTimeout(function(){ document.getElementById('authCustomEmail')?.focus(); }, 50);
+            if (btn) btn.style.display = 'none';
+            if (typeof window.initGoogleSignInButton === 'function') window.initGoogleSignInButton();
         } else {
             if (radGoogle) radGoogle.checked = false;
             if (radGuest) radGuest.checked = true;
@@ -331,7 +331,10 @@
             if (optGoogle) { optGoogle.style.border = '1.5px solid #e2e8f0'; optGoogle.style.background = '#f8fafc'; }
             if (googleInputs) googleInputs.style.display = 'none';
             if (guestInfo) guestInfo.style.display = 'block';
-            if (btn) btn.innerHTML = '<span>TIẾP TỤC VÀO HỆ THỐNG (KHÁCH VÃNG LAI)</span>';
+            if (btn) {
+                btn.style.display = 'flex';
+                btn.innerHTML = '<span>TIẾP TỤC VÀO HỆ THỐNG (KHÁCH VÃNG LAI)</span>';
+            }
         }
     };
 
@@ -377,102 +380,12 @@
             return false;
         }
         
-        // Chế độ Google Gmail
-        var emailInput = document.getElementById('authCustomEmail');
-        var pwdInput = document.getElementById('authCustomPassword');
-        var rawEmail = (emailInput?.value || '').trim();
-        var pwd = (pwdInput?.value || '').trim();
-        
-        if (!rawEmail) {
-            if (errDiv) {
-                errDiv.textContent = '⚠️ Vui lòng nhập địa chỉ Gmail của bạn!';
-                errDiv.style.display = 'block';
-            }
-            emailInput?.focus();
-            return false;
+        // Chế độ Google Gmail: BẮT BUỘC XÁC THỰC QUA GOOGLE OAUTH 2.0 THẬT (KHÔNG CHO NHẬP TAY GIẢ MẠO)
+        if (errDiv) {
+            errDiv.textContent = '🔐 Vui lòng bấm nút xanh "Đăng nhập bằng Google" ở phía trên để xác thực đúng địa chỉ Gmail và mật khẩu Google thật!';
+            errDiv.style.display = 'block';
         }
-        
-        if (!pwd) {
-            if (errDiv) {
-                errDiv.textContent = '⚠️ Vui lòng nhập mật khẩu Gmail!';
-                errDiv.style.display = 'block';
-            }
-            pwdInput?.focus();
-            return false;
-        }
-        
-        var email = rawEmail.includes('@') ? rawEmail.toLowerCase() : (rawEmail.toLowerCase() + '@gmail.com');
-        var isAdmin = (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com');
-        var keyInput = document.getElementById('authCustomGeminiKey');
-        var typedGeminiKey = (keyInput?.value || '').trim();
-
-        if (!isAdmin && !email.endsWith('@gmail.com')) {
-            if (errDiv) {
-                errDiv.textContent = '⚠️ Bắt buộc đăng nhập/đăng ký bằng địa chỉ @gmail.com để dùng gói Gemini Free cá nhân!';
-                errDiv.style.display = 'block';
-            }
-            emailInput?.focus();
-            return false;
-        }
-
-        if (typedGeminiKey && !typedGeminiKey.startsWith('AIza')) {
-            if (errDiv) {
-                errDiv.textContent = '⚠️ Gemini API Key hợp lệ phải bắt đầu bằng "AIza..." (lấy miễn phí tại aistudio.google.com/apikey)!';
-                errDiv.style.display = 'block';
-            }
-            keyInput?.focus();
-            return false;
-        }
-
-        var keysMap = {};
-        try { keysMap = JSON.parse(localStorage.getItem('edustudio_gemini_keys_by_email') || '{}'); } catch(ex){}
-        var activePersonalKey = typedGeminiKey || keysMap[email] || '';
-        if (typedGeminiKey) {
-            keysMap[email] = typedGeminiKey;
-            try { localStorage.setItem('edustudio_gemini_keys_by_email', JSON.stringify(keysMap)); } catch(ex){}
-        }
-        try {
-            if (activePersonalKey) localStorage.setItem('user_gemini_api_key', activePersonalKey);
-            else localStorage.removeItem('user_gemini_api_key');
-        } catch(ex){}
-        
-        if (btn) {
-            btn.style.background = '#16a34a';
-            btn.innerHTML = '<span>⏳ Đang xác thực đăng nhập...</span>';
-        }
-        
-        if (isAdmin) {
-            if (btn) {
-                btn.style.background = '#2563eb';
-                btn.innerHTML = '<span>ĐĂNG NHẬP</span>';
-            }
-            if (errDiv) {
-                errDiv.textContent = '🔒 Mật khẩu cũ (123) đã được xóa bỏ hoàn toàn! Vui lòng bấm nút xanh "Đăng nhập bằng Google" ở trên để xác thực chính chủ Gmail.';
-                errDiv.style.display = 'block';
-            }
-            if (pwdInput) pwdInput.value = '';
-            return false;
-        }
-        
-        // Thành viên thường Nhóm 4 (Đăng nhập bằng Gmail cá nhân)
-        var namePart = email.split('@')[0];
-        var memberUser = {
-            id: 'user_' + Date.now(),
-            name: namePart.charAt(0).toUpperCase() + namePart.slice(1),
-            email: email,
-            role: "member",
-            points: 100,
-            demoUses: 10,
-            avatarEmoji: "👨‍🏫",
-            geminiApiKey: activePersonalKey,
-            authVersion: 20261112,
-            isLoggedIn: true
-        };
-        localStorage.setItem('edustudio_user_session', JSON.stringify(memberUser));
-        try { localStorage.removeItem('edustudio_user_is_vip'); } catch(ex){}
-        document.getElementById('authModal')?.classList.remove('active');
-        document.body.classList.remove('modal-open');
-        window.location.reload();
+        if (typeof window.initGoogleSignInButton === 'function') window.initGoogleSignInButton();
         return false;
     };
 
@@ -573,8 +486,8 @@
                             if (raw) {
                                 try { u = JSON.parse(raw); } catch(e){}
                             }
-                            // CHỈ HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP XÁC THỰC THÀNH CÔNG (TỰ ĐỘNG XÓA PHIÊN CŨ MK 123 ĐỂ ĐĂNG NHẬP LẠI TỪ ĐẦU)
-                            if (u && (u.role === 'admin' && (u.authVersion !== 202611122 || u.authProvider !== 'google_oauth'))) {
+                            // CHỈ HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP QUA GOOGLE OAUTH THẬT (XÓA SẠCH MỌI PHIÊN GÕ TAY KHÔNG QUA GOOGLE)
+                            if (u && u.isLoggedIn && u.role !== 'guest' && (u.authProvider !== 'google_oauth' || (u.role === 'admin' && u.authVersion !== 202611122))) {
                                 try {
                                     localStorage.removeItem('edustudio_user_session');
                                     localStorage.removeItem('edustudio_user_is_vip');
@@ -4234,22 +4147,8 @@ window.openPPCTDirect = function() {
                                 </div>
                             </div>
 
-                            <div style="margin-bottom: 0.65rem;">
-                                <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.3rem;">
-                                    <span>📧</span> <span>Địa chỉ Gmail:</span>
-                                </label>
-                                <input type="email" id="authCustomEmail" autocomplete="off" placeholder="Nhập địa chỉ Gmail..." onkeydown="if(event.key==='Enter'){ window.doEduStudioLogin(event); }" style="width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; background: #ffffff;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'">
-                            </div>
-
-                            <div style="margin-bottom: 0.45rem;">
-                                <label style="display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.3rem;">
-                                    <span>🔑 Mật khẩu EduStudio (Tạo riêng cho web):</span>
-                                    <span style="font-size: 0.68rem; font-weight: 500; color: #64748b;">Không dùng MK Gmail thật</span>
-                                </label>
-                                <div style="position: relative;">
-                                    <input type="password" id="authCustomPassword" autocomplete="new-password" placeholder="Nhập mật khẩu tài khoản EduStudio..." onkeydown="if(event.key==='Enter'){ window.doEduStudioLogin(event); }" style="width: 100%; box-sizing: border-box; padding: 0.6rem 2.4rem 0.6rem 0.8rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; background: #ffffff;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'">
-                                    <button type="button" onclick="var p=document.getElementById('authCustomPassword'); p.type = (p.type==='password'?'text':'password');" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.1rem; color: #64748b; padding: 0;" title="Ẩn/Hiện mật khẩu">👁️</button>
-                                </div>
+                            <div style="background: #ffffff; border: 1px solid #dbeafe; border-radius: 8px; padding: 0.55rem 0.75rem; margin-bottom: 0.65rem; font-size: 0.74rem; color: #1e40af; line-height: 1.4;">
+                                🔐 <strong>Xác thực chính chủ 100% qua Google:</strong> Bắt buộc đăng nhập bằng đúng tài khoản <strong>@gmail.com</strong> &amp; mật khẩu Google thật. Không lưu mật khẩu trên trình duyệt.
                             </div>
 
                             <div style="margin-bottom: 0.45rem;">
@@ -4287,9 +4186,9 @@ window.openPPCTDirect = function() {
                         </div>
                     </div>
 
-                    <!-- NÚT TO ĐĂNG NHẬP (TYPE=BUTTON & ONCLICK ĐA TẦNG TRỰC TIẾP) -->
-                    <button type="button" id="btnExecuteAuthLogin" onclick="window.doEduStudioLogin(event);" style="width: 100%; justify-content: center; padding: 0.85rem 1rem; font-size: 1rem; font-weight: 800; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35); border: none; background: #2563eb; color: #ffffff; border-radius: 8px; cursor: pointer !important; display: flex; align-items: center; gap: 0.5rem; transition: all 0.15s ease;" onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#2563eb';">
-                        <span>ĐĂNG NHẬP</span>
+                    <!-- NÚT VÀO HỆ THỐNG CHO KHÁCH VÃNG LAI (ẨN Ở TAB GOOGLE ĐỂ BẮT BUỘC BẤM NÚT GOOGLE OAUTH THẬT) -->
+                    <button type="button" id="btnExecuteAuthLogin" onclick="window.doEduStudioLogin(event);" style="width: 100%; justify-content: center; padding: 0.85rem 1rem; font-size: 1rem; font-weight: 800; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35); border: none; background: #2563eb; color: #ffffff; border-radius: 8px; cursor: pointer !important; display: none; align-items: center; gap: 0.5rem; transition: all 0.15s ease;" onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#2563eb';">
+                        <span>TIẾP TỤC VÀO HỆ THỐNG (KHÁCH VÃNG LAI)</span>
                     </button>
                 </form>
             </div>
@@ -5062,13 +4961,13 @@ window.openPPCTDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster v2.9.5) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script type="module" src="js/app.js?v=20261112_no123"></script>
+    <script type="module" src="js/app.js?v=20261112_oauth_only"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=3.10.70_no123_20261112').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=3.10.71_oauth_only_20261112').then(function(reg) {
                     console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
                 }).catch(function(err) {
                     console.warn('Lỗi đăng ký PWA Service Worker:', err);

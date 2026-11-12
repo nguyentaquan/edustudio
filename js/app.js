@@ -1266,8 +1266,8 @@ class EduStudioApp {
             }
             if (googleInputs) googleInputs.style.display = 'block';
             if (guestInfo) guestInfo.style.display = 'none';
-            if (btnExecute) btnExecute.innerHTML = '<span>ĐĂNG NHẬP</span>';
-            setTimeout(() => document.getElementById('authCustomEmail')?.focus(), 50);
+            if (btnExecute) btnExecute.style.display = 'none';
+            if (typeof window.initGoogleSignInButton === 'function') window.initGoogleSignInButton();
         } else {
             if (radioGoogle) radioGoogle.checked = false;
             if (radioGuest) radioGuest.checked = true;
@@ -1281,7 +1281,10 @@ class EduStudioApp {
             }
             if (googleInputs) googleInputs.style.display = 'none';
             if (guestInfo) guestInfo.style.display = 'block';
-            if (btnExecute) btnExecute.innerHTML = '<span>TIẾP TỤC VÀO HỆ THỐNG (KHÁCH VÃNG LAI)</span>';
+            if (btnExecute) {
+                btnExecute.style.display = 'flex';
+                btnExecute.innerHTML = '<span>TIẾP TỤC VÀO HỆ THỐNG (KHÁCH VÃNG LAI)</span>';
+            }
         }
     }
 
@@ -1322,253 +1325,17 @@ class EduStudioApp {
             return;
         }
 
-        // ĐĂNG NHẬP BẰNG TÀI KHOẢN GOOGLE (GMAIL)
-        const emailInput = document.getElementById('authCustomEmail');
-        const pwdInput = document.getElementById('authCustomPassword');
+        // ĐĂNG NHẬP BẰNG TÀI KHOẢN GOOGLE: BẮT BUỘC QUA GOOGLE OAUTH 2.0 THẬT
         const errDiv = document.getElementById('authPasswordError');
-        const btnExecute = document.getElementById('btnExecuteAuthLogin');
-
-        if (errDiv) errDiv.style.display = 'none';
-        if (pwdInput) {
-            pwdInput.style.borderColor = '#cbd5e1';
-            pwdInput.classList.remove('pccm-input-error');
+        const msg = '🔐 Vui lòng bấm nút xanh "Đăng nhập bằng Google" ở phía trên để xác thực đúng địa chỉ Gmail và mật khẩu Google thật!';
+        if (errDiv) {
+            errDiv.textContent = msg;
+            errDiv.style.display = 'block';
         }
-
-        const rawEmail = (emailInput?.value || '').trim();
-        const password = (pwdInput?.value || '').trim();
-
-        if (!rawEmail) {
-            if (errDiv) {
-                errDiv.textContent = '⚠️ Vui lòng nhập địa chỉ Gmail của bạn!';
-                errDiv.style.display = 'block';
-            }
-            if (emailInput) {
-                emailInput.focus();
-                emailInput.style.borderColor = '#ef4444';
-            }
-            this.showToast('⚠️ Vui lòng nhập địa chỉ Gmail!');
-            sound.playError();
-            return;
-        }
-
-        if (!password) {
-            if (errDiv) {
-                errDiv.textContent = '⚠️ Vui lòng nhập mật khẩu Gmail!';
-                errDiv.style.display = 'block';
-            }
-            if (pwdInput) {
-                pwdInput.focus();
-                pwdInput.style.borderColor = '#ef4444';
-            }
-            this.showToast('⚠️ Vui lòng nhập mật khẩu!');
-            sound.playError();
-            return;
-        }
-
-        // Chuẩn hóa email nếu người dùng chỉ nhập username
-        const email = rawEmail.includes('@') ? rawEmail.toLowerCase() : `${rawEmail.toLowerCase()}@gmail.com`;
-
-        const originalBtnHtml = btnExecute ? btnExecute.innerHTML : '';
-        if (btnExecute) {
-            btnExecute.disabled = true;
-            btnExecute.innerHTML = '<span>⏳ Đang kiểm tra tài khoản Google...</span>';
-        }
-
-        try {
-            // BẮT BUỘC MỌI TÀI KHOẢN (KỂ CẢ ADMIN) PHẢI QUA XÁC THỰC MẬT KHẨU
-            let verifiedUser = null;
-            let onlineStats = { onlineCount: 1, totalUsers: 1 };
-            let serverErrorMsg = null;
-
-            // 1. Thử xác thực qua máy chủ backend (nếu có server chạy)
-            let serverChecked = false;
-            try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, password: password })
-                });
-                const textResp = await res.text();
-                // Chỉ parse JSON nếu server trả về JSON hợp lệ (không phải HTML của SPA router)
-                if (textResp && textResp.trim().startsWith('{')) {
-                    const data = JSON.parse(textResp);
-                    serverChecked = true;
-                    if (res.ok && data.success) {
-                        verifiedUser = data.user;
-                        if (data.onlineCount) onlineStats.onlineCount = data.onlineCount;
-                        if (data.totalUsers) onlineStats.totalUsers = data.totalUsers;
-                    } else {
-                        serverErrorMsg = data.error || '❌ Mật khẩu hoặc tài khoản Gmail không chính xác. Vui lòng kiểm tra và nhập lại!';
-                    }
-                }
-            } catch(netErr) {
-                // Máy chủ offline hoặc đang chạy trên Vercel / GitHub Pages tĩnh
-                serverChecked = false;
-            }
-
-            // Nếu máy chủ backend phản hồi lỗi rõ ràng (nhập sai mật khẩu) -> báo lỗi và dừng ngay
-            if (serverChecked && serverErrorMsg) {
-                if (btnExecute) {
-                    btnExecute.disabled = false;
-                    btnExecute.innerHTML = originalBtnHtml;
-                }
-                if (errDiv) {
-                    errDiv.textContent = serverErrorMsg;
-                    errDiv.style.display = 'block';
-                }
-                if (pwdInput) {
-                    pwdInput.style.borderColor = '#ef4444';
-                    pwdInput.focus();
-                    pwdInput.select();
-                }
-                this.showToast(serverErrorMsg, 4000);
-                sound.playError();
-                return;
-            }
-
-            // 2. Chế độ xác thực Client-Side chuẩn hóa (khi chạy Tĩnh trên Web / Vercel / PWA Offline)
-            if (!verifiedUser) {
-                const isAdmin = (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com');
-
-                if (isAdmin) {
-                    // ĐÃ XÓA BỎ HOÀN TOÀN MẬT KHẨU CỨNG 123: ADMIN PHẢI XÁC THỰC BẰNG GOOGLE OAUTH THẬT
-                    if (btnExecute) {
-                        btnExecute.disabled = false;
-                        btnExecute.innerHTML = originalBtnHtml;
-                    }
-                    const adminErr = '🔒 Đã xóa bỏ mật khẩu mặc định (123). Tài khoản Quản trị vui lòng bấm nút "Đăng nhập bằng Google" ở trên để xác thực Gmail thật!';
-                    if (errDiv) {
-                        errDiv.textContent = adminErr;
-                        errDiv.style.display = 'block';
-                    }
-                    if (pwdInput) {
-                        pwdInput.value = '';
-                        pwdInput.style.borderColor = '#ef4444';
-                    }
-                    this.showToast(adminErr, 4500);
-                    sound.playError();
-                    return;
-                } else {
-                    // TÀI KHOẢN GMAIL CỦA THÀNH VIÊN
-                    // Kiểm tra định dạng Gmail hợp lệ
-                    const isGmail = email.endsWith('@gmail.com');
-                    if (!isGmail) {
-                        if (btnExecute) {
-                            btnExecute.disabled = false;
-                            btnExecute.innerHTML = originalBtnHtml;
-                        }
-                        const gmailErr = '⚠️ Vui lòng sử dụng địa chỉ Gmail chính xác (ví dụ: hoten@gmail.com)!';
-                        if (errDiv) {
-                            errDiv.textContent = gmailErr;
-                            errDiv.style.display = 'block';
-                        }
-                        if (emailInput) emailInput.focus();
-                        this.showToast(gmailErr, 4000);
-                        sound.playError();
-                        return;
-                    }
-
-                    // Tìm xem tài khoản đã lưu thông tin trong LocalStorage chưa
-                    let savedName = email.split('@')[0];
-                    let savedSchool = "";
-                    let savedPhone = "";
-                    let savedCccd = "";
-                    let savedSubject = "";
-                    let savedRole = "member";
-                    let savedPoints = 0;
-
-                    try {
-                        const localUsersRaw = localStorage.getItem('edustudio_registered_users');
-                        if (localUsersRaw) {
-                            const uList = JSON.parse(localUsersRaw);
-                            const found = uList.find(u => u.email && u.email.toLowerCase() === email);
-                            if (found) {
-                                if (found.name) savedName = found.name;
-                                if (found.school) savedSchool = found.school;
-                                if (found.phone) savedPhone = found.phone;
-                                if (found.cccd) savedCccd = found.cccd;
-                                if (found.subject) savedSubject = found.subject;
-                                if (found.role) savedRole = found.role;
-                                if (found.points !== undefined) savedPoints = found.points;
-                            }
-                        }
-                    } catch(e){}
-
-                    // Mặc định đăng ký là THÀNH VIÊN (Nhóm 4)
-                    verifiedUser = {
-                        id: 'user_' + Date.now().toString(36),
-                        name: savedName,
-                        email: email,
-                        school: savedSchool,
-                        phone: savedPhone,
-                        cccd: savedCccd,
-                        subject: savedSubject,
-                        grade: "thcs",
-                        role: savedRole || "member",
-                        points: savedPoints,
-                        balance: 0,
-                        demoUses: 10,
-                        status: "active",
-                        avatar: "👨‍🏫"
-                    };
-                }
-            }
-
-            // ĐĂNG NHẬP THÀNH CÔNG: LƯU SESSION VÀ CẬP NHẬT GIAO DIỆN THEO NHÓM
-            verifiedUser.isLoggedIn = true;
-            this.currentUser = verifiedUser;
-            this.saveUserSession(this.currentUser);
-
-            try {
-                if (verifiedUser.role === 'admin' || verifiedUser.role === 'vip_pro') {
-                    localStorage.setItem('edustudio_user_is_vip', 'true');
-                } else {
-                    localStorage.removeItem('edustudio_user_is_vip');
-                }
-            } catch(e) {}
-
-            this.renderBannerAuthZone();
-            this.updateBannerStats(onlineStats);
-
-            try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
-            this.checkAdminStorageVisibility();
-
-            // Đóng modal đăng nhập và dọn dẹp form
-            document.getElementById('authModal')?.classList.remove('active');
-            if (pwdInput) pwdInput.value = '';
-            if (btnExecute) {
-                btnExecute.disabled = false;
-                btnExecute.innerHTML = originalBtnHtml;
-            }
-
-            sound.playFanfare();
-
-            // Hiển thị thông báo chào mừng chuẩn theo 4 nhóm thành viên
-            if (verifiedUser.role === 'admin') {
-                this.showToast(`👑 Chào mừng Quản Trị Tối Cao: ${verifiedUser.name}! (Nhóm 1: Quản Trị)`, 4000);
-            } else if (verifiedUser.role === 'vip_pro') {
-                this.showToast(`💎 Chào mừng Thành Viên VIP PRO: ${verifiedUser.name}! (Nhóm 2: VIP PRO)`, 4000);
-            } else if (verifiedUser.role === 'vip') {
-                this.showToast(`⭐ Chào mừng Thành Viên VIP: ${verifiedUser.name}! (Nhóm 3: VIP)`, 4000);
-            } else {
-                this.showToast(`🎉 Đăng nhập thành công! Chào mừng Thành Viên: ${verifiedUser.name} (Nhóm 4)`, 4000);
-            }
-
-            this.startHeartbeat();
-
-        } catch (err) {
-            console.error("Lỗi xác thực:", err);
-            if (btnExecute) {
-                btnExecute.disabled = false;
-                btnExecute.innerHTML = originalBtnHtml;
-            }
-            if (errDiv) {
-                errDiv.textContent = '❌ Không thể kết nối máy chủ xác thực: ' + err.message;
-                errDiv.style.display = 'block';
-            }
-            this.showToast('❌ Lỗi kết nối xác thực!', 3000);
-            sound.playError();
-        }
+        if (typeof window.initGoogleSignInButton === 'function') window.initGoogleSignInButton();
+        this.showToast(msg, 4000);
+        sound.playError();
+        return;
     }
 
     loginWithGoogle(accountData = null) {

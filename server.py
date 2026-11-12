@@ -294,33 +294,15 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             else:
-                # TÀI KHOẢN GMAIL MỚI ĐĂNG KÝ/ĐĂNG NHẬP:
-                user_name = email.split('@')[0]
-                new_user = {
-                    "id": f"user_{now % 10000:04d}",
-                    "name": user_name,
-                    "email": email,
-                    "password": pwd_hash,
-                    "geminiApiKey": req_gemini_key,
-                    "school": "",
-                    "phone": "",
-                    "cccd": "",
-                    "subject": "",
-                    "grade": "thcs",
-                    "role": "member",
-                    "points": 100,
-                    "balance": 0,
-                    "demoUses": 20,
-                    "status": "active",
-                    "avatar": "👨‍🏫",
-                    "joinDate": time.strftime("%d/%m/%Y"),
-                    "lastLogin": f"Vừa xong ({now_str})",
-                    "lastSeen": now,
-                    "device": data.get('device') or "💻 Máy Tính",
-                    "loginCount": 1
-                }
-                users.append(new_user)
-                target_user = new_user
+                # Khóa hoàn toàn tự đăng ký không qua Google OAuth
+                self.send_response(401)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "error": "🔒 Hệ thống chỉ chấp nhận đăng nhập qua nút 'Đăng nhập bằng Google' chính thức để xác thực Gmail thật!"
+                }, ensure_ascii=False).encode('utf-8'))
+                return
 
             save_users(users)
 
@@ -383,23 +365,23 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             claims = None
+            expected_cid = "744815790631-enosh65nqge7q5k6k1bqdav46a7tlbeg.apps.googleusercontent.com"
             try:
                 url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + urllib.parse.quote(id_token)
                 with urllib.request.urlopen(url, timeout=8) as resp:
                     claims = json.loads(resp.read().decode('utf-8'))
+            except urllib.error.HTTPError:
+                claims = None
             except Exception:
-                try:
-                    parts = id_token.split('.')
-                    padded = parts[1] + '=' * (-len(parts[1]) % 4)
-                    claims = json.loads(base64.urlsafe_b64decode(padded).decode('utf-8'))
-                except Exception:
-                    claims = None
+                claims = None
 
-            if not claims or not claims.get('email'):
+            if (not claims or not claims.get('email')
+                    or claims.get('email_verified') not in (True, 'true')
+                    or claims.get('aud') != expected_cid):
                 self.send_response(401)
                 self.send_header('Content-Type', 'application/json; charset=utf-8')
                 self.end_headers()
-                self.wfile.write(json.dumps({"success": False, "error": "Không xác thực được tài khoản Google!"}).encode('utf-8'))
+                self.wfile.write(json.dumps({"success": False, "error": "Không xác thực được tài khoản Google hợp lệ!"}).encode('utf-8'))
                 return
 
             email = claims['email'].strip().lower()
