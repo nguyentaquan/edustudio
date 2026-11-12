@@ -1465,7 +1465,7 @@ class EduStudioApp {
         if (primaryModel === 'gemini-2.5-flash' || primaryModel === 'gemini-1.5-pro') {
             primaryModel = 'gemini-3.8-flash';
         }
-        const candidates = [primaryModel, 'gemini-3.8-flash', 'gemini-3.0-flash', 'gemini-2.5-pro']
+        const candidates = [primaryModel, 'gemini-3.8-flash', 'gemini-3.0-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro']
             .filter((m, idx, arr) => m && arr.indexOf(m) === idx);
         const generationConfig = {
             temperature: options.temperature ?? 0.7
@@ -1495,7 +1495,12 @@ class EduStudioApp {
             const msg = data?.error?.message || `HTTP ${res.status}`;
             lastErrorMsg = msg;
             const isModelDeprecated = res.status === 404 || /no longer available|not found for API version|is not supported/i.test(msg);
+            const isHighDemand = res.status === 503 || res.status === 500 || /high demand|overloaded|unavailable|try again later/i.test(msg);
             if (isModelDeprecated) {
+                continue;
+            }
+            if (isHighDemand) {
+                await new Promise(r => setTimeout(r, 900));
                 continue;
             }
             if (res.status === 400 || res.status === 403) {
