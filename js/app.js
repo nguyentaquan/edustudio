@@ -1496,6 +1496,36 @@ class EduStudioApp {
         return JSON.parse(cleaned);
     }
 
+    /**
+     * Chuẩn hóa phân quyền đồng nhất toàn hệ thống (Nhóm 5 / Nhóm 4 / Nhóm 3-2-1):
+     * - Nhóm 5 (Khách): chặn & mở AuthModal
+     * - Nhóm 4 (Member): luôn LƯU sản phẩm lên web để dùng/sửa trực tiếp, KHÔNG tải file & mở hộp thoại nâng cấp Nhóm 3 (VIP)
+     * - Nhóm 3 (VIP), Nhóm 2 (VIP Pro), Nhóm 1 (Admin): vừa LƯU vừa XUẤT/TẢI gói về máy
+     */
+    enforceSaveAndExportTier(saveFn, exportFn, productLabel = 'Sản phẩm') {
+        if (this.isGuest() || !this.currentUser?.isLoggedIn) {
+            try { sound.playWrong(); } catch(e) {}
+            alert(`🔒 YÊU CẦU ĐĂNG NHẬP GOOGLE\n\nVui lòng đăng nhập bằng tài khoản Google để Lưu và sử dụng "${productLabel}".`);
+            this.openAuthModal();
+            return false;
+        }
+        if (typeof saveFn === 'function') {
+            saveFn();
+        }
+        const canExport = ['admin', 'vip_pro', 'vip'].includes(this.currentUser?.role);
+        if (!canExport) {
+            try { sound.playClick(); } catch(e) {}
+            this.showToast(`💾 Đã lưu "${productLabel}" lên web để dùng & sửa tiếp! Nâng cấp lên Nhóm 3 (VIP) để xuất & tải về máy.`, 4500);
+            this.closeModal();
+            setTimeout(() => this.openModal('membershipUpgradeModal'), 200);
+            return 'saved_only';
+        }
+        if (typeof exportFn === 'function') {
+            exportFn();
+        }
+        return 'exported';
+    }
+
     async saveUserGeminiKey(keyInput = null) {
         const key = (keyInput || document.getElementById('userGeminiApiKeyInput')?.value || '').trim();
         if (!key) {
@@ -3427,7 +3457,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         alert("🎉 Đã nhúng Minigame Khởi Động vào slide!");
     }
 
-    savePresentationToRepo() {
+    savePresentationToRepo(silent = false) {
         const titleInput = document.getElementById('pptLessonTitleInput');
         const title = titleInput?.value.trim() || 'Bài Giảng PPT Mới';
         const grade = document.getElementById('pptGradeSelect')?.value || 'Lớp 8';
@@ -3443,20 +3473,27 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             slides: this.activePresentation.slides.length,
             subject: `${subject} ${grade}`,
             grade: grade,
-            author: this.currentUser.name,
-            school: this.currentUser.school,
+            author: this.currentUser?.name || 'Giáo viên',
+            school: this.currentUser?.school || '',
             badge: '📊',
             verified: true,
-            desc: `Bài giảng chuẩn 16:9 gồm ${this.activePresentation.slides.length} slides tương tác, thiết kế bởi ${this.currentUser.name}.`,
+            desc: `Bài giảng chuẩn 16:9 gồm ${this.activePresentation.slides.length} slides tương tác, thiết kế bởi ${this.currentUser?.name || 'Giáo viên'}.`,
             gradient: 'linear-gradient(135deg, #1d4ed8, #0284c7)',
             presentationData: JSON.parse(JSON.stringify(this.activePresentation))
         };
 
         this.pptRepo.unshift(newRepoItem);
-        sound.playFanfare();
-        alert(`🎉 [LƯU THÀNH CÔNG!]\nBài giảng "${title}" (${this.activePresentation.slides.length} slides) đã được lưu vào Kho Bài Giảng PPT!`);
+        try {
+            const saved = JSON.parse(localStorage.getItem('edustudio_custom_ppts') || '[]');
+            saved.unshift(newRepoItem);
+            localStorage.setItem('edustudio_custom_ppts', JSON.stringify(saved.slice(0, 30)));
+        } catch(e) {}
         this.renderPPTRepo();
-        this.switchTab('ppt');
+        if (!silent) {
+            sound.playFanfare();
+            alert(`🎉 [LƯU THÀNH CÔNG!]\nBài giảng "${title}" (${this.activePresentation.slides.length} slides) đã được lưu vào Kho Bài Giảng PPT!`);
+            this.switchTab('ppt');
+        }
     }
 
     exportPresentationPPTX() {
@@ -5002,16 +5039,27 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
 
         document.getElementById('btnMediaSaveAndExport')?.addEventListener('click', () => {
-            sound.playFanfare();
-            alert(`🎉 [LƯU VÀ XUẤT GÓI MEDIA THÀNH CÔNG!]\n\n• Định dạng: ${this.mediaAspect === '9:16' ? '9:16 Dọc (1080x1920) Full Bleed' : '16:9 Ngang'}\n• Số nhân vật: ${this.mediaActorsOnStage.length} đối tượng 3D\n• Chuẩn chữ chạy: Phát sáng, 100% không hộp nền (GEMINI.md)\n• Đã lưu vào Kho Video EduStudio!`);
-
-            const isVip = localStorage.getItem('edustudio_user_is_vip') === 'true';
-            if (!isVip) {
-                setTimeout(() => {
-                    const go = confirm("💡 Quyền lợi VIP Pro:\nKết nối cụm máy chủ Cloud GPU H200 (Wan 2.2 14B) để sinh video chuyển động 3D và Lip-sync Full HD tức thì!\n\nThầy/Cô có muốn mở hộp thoại Nâng Cấp VIP Pro không?");
-                    if (go) document.getElementById('membershipUpgradeModal')?.classList.add('active');
-                }, 700);
-            }
+            if (!this.requireGeminiAccess('Lưu và Xuất gói Media Studio')) return;
+            this.enforceSaveAndExportTier(
+                () => {
+                    try {
+                        const list = JSON.parse(localStorage.getItem('edustudio_custom_videos') || '[]');
+                        list.unshift({
+                            id: 'media_' + Date.now(),
+                            aspect: this.mediaAspect || '9:16',
+                            actors: (this.mediaActorsOnStage || []).length,
+                            author: this.currentUser?.name || 'Giáo viên',
+                            updatedAt: new Date().toISOString()
+                        });
+                        localStorage.setItem('edustudio_custom_videos', JSON.stringify(list.slice(0, 30)));
+                    } catch(e) {}
+                },
+                () => {
+                    sound.playFanfare();
+                    alert(`🎉 [LƯU VÀ XUẤT GÓI MEDIA THÀNH CÔNG!]\n\n• Định dạng: ${this.mediaAspect === '9:16' ? '9:16 Dọc (1080x1920) Full Bleed' : '16:9 Ngang'}\n• Số nhân vật: ${this.mediaActorsOnStage.length} đối tượng 3D\n• Chuẩn chữ chạy: Phát sáng, 100% không hộp nền (GEMINI.md)\n• Đã lưu vào Kho Video EduStudio!`);
+                },
+                'Dự án Video Media'
+            );
         });
 
         document.getElementById('btnMediaRenderCloudAdv')?.addEventListener('click', () => {
@@ -5536,48 +5584,50 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             }
         });
 
-        // 5. Nút Xuất File Word (.DOCX) - Biểu phí vi mô 500đ / VIP Pro
+        // 5. Nút Xuất File Word (.DOCX) - Chuẩn phân quyền Nhóm 5 / Nhóm 4 / Nhóm 3-2-1
         document.getElementById('btnLPExportDocx')?.addEventListener('click', () => {
-            const isVip = localStorage.getItem('edustudio_user_is_vip') === 'true';
-            sound.playFanfare();
-
             const title = document.getElementById('lpTitleInput').value || 'KHBD';
             const htmlContent = document.getElementById('lpPreviewContainer').innerHTML;
 
-            const docContent = `
-                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                <head>
-                    <meta charset='utf-8'>
-                    <title>${title}</title>
-                    <style>
-                        body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.5; margin: 1in; }
-                        h1, h2, h3, h4 { color: #000000; font-family: 'Times New Roman', serif; }
-                        table { border-collapse: collapse; width: 100%; margin-top: 10pt; margin-bottom: 10pt; }
-                        th, td { border: 1pt solid black; padding: 6pt; text-align: left; vertical-align: top; }
-                        th { background-color: #f2f2f2; font-weight: bold; }
-                    </style>
-                </head>
-                <body>
-                    ${htmlContent}
-                </body>
-                </html>
-            `;
-
-            const blob = new Blob([docContent], { type: 'application/msword;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `KHBD_${title.replace(/[^a-zA-Z0-9_\u00C0-\u024F\u1E00-\u1EFF]/g, "_")}_Chuan5512.doc`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            if (isVip) {
-                alert(`🎉 [XUẤT BẢN WORD .DOCX THÀNH CÔNG!]\n\nĐã xuất file: "${a.download}" chuẩn Công văn 5512/BGDĐT hoàn toàn miễn phí cho Thành viên VIP Pro!`);
-            } else {
-                alert(`🎉 [XUẤT BẢN WORD .DOCX THÀNH CÔNG!]\n\nĐã tải file "${a.download}" về máy tính!\n• Biểu phí vi mô duy trì web: 500 VNĐ / file (Đã trừ 1 điểm cống hiến vào tài khoản thành viên Google).\nThầy/Cô có thể nâng cấp VIP Pro để tải không giới hạn!`);
-            }
+            this.enforceSaveAndExportTier(
+                () => {
+                    try {
+                        const saved = JSON.parse(localStorage.getItem('edustudio_custom_lesson_plans') || '[]');
+                        saved.unshift({ id: 'lp_' + Date.now(), title, html: htmlContent, updatedAt: new Date().toISOString() });
+                        localStorage.setItem('edustudio_custom_lesson_plans', JSON.stringify(saved.slice(0, 30)));
+                    } catch(e) {}
+                },
+                () => {
+                    sound.playFanfare();
+                    const docContent = `
+                        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                        <head>
+                            <meta charset='utf-8'>
+                            <title>${title}</title>
+                            <style>
+                                body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.5; margin: 1in; }
+                                h1, h2, h3, h4 { color: #000000; font-family: 'Times New Roman', serif; }
+                                table { border-collapse: collapse; width: 100%; margin-top: 10pt; margin-bottom: 10pt; }
+                                th, td { border: 1pt solid black; padding: 6pt; text-align: left; vertical-align: top; }
+                                th { background-color: #f2f2f2; font-weight: bold; }
+                            </style>
+                        </head>
+                        <body>${htmlContent}</body>
+                        </html>
+                    `;
+                    const blob = new Blob([docContent], { type: 'application/msword;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `KHBD_${title.replace(/[^a-zA-Z0-9_\u00C0-\u024F\u1E00-\u1EFF]/g, "_")}_Chuan5512.doc`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    this.showToast(`🎉 Đã xuất file "${a.download}" chuẩn Công văn 5512!`, 4000);
+                },
+                `KHBD: ${title}`
+            );
         });
 
         // 6. Nút Lưu Vào Kho Bài Dạy
@@ -7645,13 +7695,11 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
 
         document.getElementById('btnLabFullscreen')?.addEventListener('click', () => {
-            const isVip = localStorage.getItem('edustudio_user_is_vip') === 'true';
-            if (!isVip) {
-                const goUpgrade = confirm("💎 TÍNH NĂNG NÂNG CAO:\nQuyền năng Mở Rộng Toàn Màn Hình Thí Nghiệm Ảo 4K trên Máy Chiếu dành riêng cho Thành Viên VIP Pro!\n\nThầy/Cô có muốn mở Hộp Thoại Đăng Ký Nâng Cấp VIP Pro ngay bây giờ không?");
-                if (goUpgrade) {
-                    document.getElementById('membershipUpgradeModal')?.classList.add('active');
-                    return;
-                }
+            const canFullscreen = ['admin', 'vip_pro', 'vip'].includes(this.currentUser?.role);
+            if (!canFullscreen) {
+                this.showToast('💎 Mở rộng Toàn Màn Hình 4K dành cho Thành viên Nhóm 3 (VIP) trở lên!', 4000);
+                this.openModal('membershipUpgradeModal');
+                return;
             }
             sound.playFanfare();
             const canvasWrap = document.querySelector('.lab-canvas-wrapper');
@@ -7663,17 +7711,12 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
 
         const handleLabSaveAndExport = () => {
-            this.saveLabToRepo();
-            this.exportLabPackage();
-            const isVip = localStorage.getItem('edustudio_user_is_vip') === 'true';
-            if (!isVip) {
-                setTimeout(() => {
-                    const goVip = confirm("🎉 ĐÃ LƯU & XUẤT GÓI THÍ NGHIỆM ẢO THÀNH CÔNG!\n\n💡 Quyền lợi VIP Pro: Tự động đồng bộ lên Đám Mây 5TB và chia sẻ link thực hành trực tuyến cho học sinh toàn trường.\n\nThầy/Cô có muốn xem quyền lợi VIP Pro không?");
-                    if (goVip) {
-                        document.getElementById('membershipUpgradeModal')?.classList.add('active');
-                    }
-                }, 700);
-            }
+            const title = document.getElementById('labExperimentTitle')?.value.trim() || 'Thí nghiệm ảo';
+            this.enforceSaveAndExportTier(
+                () => this.saveLabToRepo(true),
+                () => this.exportLabPackage(),
+                title
+            );
         };
 
         document.getElementById('btnLabSaveAndExportTop')?.addEventListener('click', handleLabSaveAndExport);
@@ -7761,13 +7804,11 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
 
         document.getElementById('btnPPTFullscreen')?.addEventListener('click', () => {
-            const isVip = localStorage.getItem('edustudio_user_is_vip') === 'true';
-            if (!isVip) {
-                const goUpgrade = confirm("💎 TÍNH NĂNG NÂNG CAO:\nQuyền năng Trình Chiếu Toàn Màn Hình Độ Nét Cao 4K và Song Song 2 Màn Hình dành riêng cho Thành Viên VIP Pro!\n\nThầy/Cô có muốn mở Hộp Thoại Đăng Ký Nâng Cấp VIP Pro ngay bây giờ không?");
-                if (goUpgrade) {
-                    document.getElementById('membershipUpgradeModal')?.classList.add('active');
-                    return;
-                }
+            const canFullscreen = ['admin', 'vip_pro', 'vip'].includes(this.currentUser?.role);
+            if (!canFullscreen) {
+                this.showToast('💎 Trình chiếu Toàn Màn Hình 4K dành cho Thành viên Nhóm 3 (VIP) trở lên!', 4000);
+                this.openModal('membershipUpgradeModal');
+                return;
             }
             sound.playFanfare();
             this.startSlideShow(this.activeSlideIndex);
@@ -7779,25 +7820,29 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
 
         document.getElementById('btnPPTSaveAndExport')?.addEventListener('click', () => {
-            this.savePresentationToRepo();
-            this.exportPresentationPPTX();
-            const isVip = localStorage.getItem('edustudio_user_is_vip') === 'true';
-            if (!isVip) {
-                setTimeout(() => {
-                    const goVip = confirm("🎉 ĐÃ LƯU & XUẤT GÓI BÀI GIẢNG PPT THÀNH CÔNG!\n\n💡 Quyền lợi VIP Pro: Tự động đồng bộ lên Đám Mây 5TB và trình chiếu trực tuyến trên mọi thiết bị mà không cần mang USB.\n\nThầy/Cô có muốn xem quyền lợi VIP Pro không?");
-                    if (goVip) {
-                        document.getElementById('membershipUpgradeModal')?.classList.add('active');
-                    }
-                }, 700);
-            }
+            const title = document.getElementById('pptLessonTitleInput')?.value.trim() || 'Bài Giảng PPT';
+            this.enforceSaveAndExportTier(
+                () => this.savePresentationToRepo(true),
+                () => this.exportPresentationPPTX(),
+                title
+            );
         });
 
         document.getElementById('btnSavePresentation')?.addEventListener('click', () => {
+            if (this.isGuest() || !this.currentUser?.isLoggedIn) {
+                this.openAuthModal();
+                return;
+            }
             this.savePresentationToRepo();
         });
 
         document.getElementById('btnExportPresentation')?.addEventListener('click', () => {
-            this.exportPresentationPPTX();
+            const title = document.getElementById('pptLessonTitleInput')?.value.trim() || 'Bài Giảng PPT';
+            this.enforceSaveAndExportTier(
+                () => this.savePresentationToRepo(true),
+                () => this.exportPresentationPPTX(),
+                title
+            );
         });
 
         // NÚT ĐỌC PPT TỪ BÊN NGOÀI VÀO (THEO YÊU CẦU CỦA THẦY NGUYỄN TÁ QUAN)
@@ -7969,30 +8014,46 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 alert("Chưa có nội dung đề để xuất! Hãy bấm 'Tạo Đề Chuẩn Tức Thì' trước.");
                 return;
             }
-
-            sound.playFanfare();
-            const blob = new Blob([raw], { type: 'text/plain;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `De_Kiem_Tra_Chuan_Hoa_GDPT_${new Date().toISOString().slice(0, 10)}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-            alert("Đã xuất trọn bộ file đề kiểm tra về máy tính!");
+            const title = document.getElementById('examTitleInput')?.value.trim() || 'Đề kiểm tra chuẩn hóa';
+            this.enforceSaveAndExportTier(
+                () => {
+                    try {
+                        const saved = JSON.parse(localStorage.getItem('edustudio_custom_exams') || '[]');
+                        saved.unshift({ id: 'exam_' + Date.now(), title, content: raw, updatedAt: new Date().toISOString() });
+                        localStorage.setItem('edustudio_custom_exams', JSON.stringify(saved.slice(0, 30)));
+                    } catch(e) {}
+                },
+                () => {
+                    sound.playFanfare();
+                    const blob = new Blob([raw], { type: 'text/plain;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `De_Kiem_Tra_Chuan_Hoa_GDPT_${new Date().toISOString().slice(0, 10)}.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    this.showToast("🎉 Đã xuất trọn bộ file đề kiểm tra về máy tính!", 4000);
+                },
+                title
+            );
         });
 
-        // 9.1. CÁC NÚT XUẤT ĐỀ CHO 2 MÔ HÌNH: CHUẨN & ĐẶC THÙ (BẮT LỖI & CỐ ĐỊNH .DOCX)
+        // 9.1. CÁC NÚT XUẤT ĐỀ CHO 2 MÔ HÌNH: CHUẨN & ĐẶC THÙ (ÁP DỤNG PHÂN QUYỀN ĐỒNG NHẤT)
         document.getElementById('btnExportModelStandard')?.addEventListener('click', () => {
-            this.exportExamStandard();
+            const title = document.getElementById('examTitleInput')?.value.trim() || 'Đề kiểm tra Mô hình Chuẩn';
+            this.enforceSaveAndExportTier(null, () => this.exportExamStandard(), title);
         });
         document.getElementById('btnExportModelStandardRight')?.addEventListener('click', () => {
-            this.exportExamStandard();
+            const title = document.getElementById('examTitleInput')?.value.trim() || 'Đề kiểm tra Mô hình Chuẩn';
+            this.enforceSaveAndExportTier(null, () => this.exportExamStandard(), title);
         });
         document.getElementById('btnExportModelSpecial')?.addEventListener('click', () => {
-            this.exportExamSpecial();
+            const title = document.getElementById('examTitleInput')?.value.trim() || 'Đề kiểm tra Mô hình Đặc thù';
+            this.enforceSaveAndExportTier(null, () => this.exportExamSpecial(), title);
         });
         document.getElementById('btnExportModelSpecialRight')?.addEventListener('click', () => {
-            this.exportExamSpecial();
+            const title = document.getElementById('examTitleInput')?.value.trim() || 'Đề kiểm tra Mô hình Đặc thù';
+            this.enforceSaveAndExportTier(null, () => this.exportExamSpecial(), title);
         });
 
         // 9.2. SỰ KIỆN CHO CÁC LIÊN KẾT NỘI BỘ NGÀNH GIÁO DỤC (CCVC, SGDĐT, SNV)
@@ -10720,7 +10781,7 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
         }
     }
 
-    saveLabToRepo() {
+    saveLabToRepo(silent = false) {
         const title = document.getElementById('labExperimentTitle')?.value.trim() || 'Mô Phỏng Thí Nghiệm Ảo Mới';
         const grade = document.getElementById('labGradeSelect')?.value || 'Lớp 8';
         const subject = document.getElementById('labSubjectSelect')?.value || 'KHTN';
@@ -10731,7 +10792,7 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
             subject: subject,
             grade: grade,
             category: this.labState?.activeCategory || 'physics',
-            author: this.currentUser?.name || 'Thầy Nguyễn Tá Quan',
+            author: this.currentUser?.name || 'Giáo viên',
             verified: true,
             desc: `Thí nghiệm tương tác sư phạm chuẩn GDPT: ${title} (${subject} ${grade}) kèm bài tập định hướng tư duy.`
         };
@@ -10739,10 +10800,15 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
         if (this.labRepo) {
             this.labRepo.unshift(newLab);
         }
-        try { sound.playFanfare(); } catch(e) {}
-        alert(`💾 [ĐÃ LƯU VÀO KHO THÍ NGHIỆM ẢO!]
-
-Bài thí nghiệm "${title}" đã được lưu trữ thành công vào hệ thống. Thầy Cô và Học sinh có thể mở xem và tương tác bất cứ lúc nào!`);
+        try {
+            const saved = JSON.parse(localStorage.getItem('edustudio_custom_labs') || '[]');
+            saved.unshift(newLab);
+            localStorage.setItem('edustudio_custom_labs', JSON.stringify(saved.slice(0, 30)));
+        } catch(e) {}
+        if (!silent) {
+            try { sound.playFanfare(); } catch(e) {}
+            alert(`💾 [ĐÃ LƯU VÀO KHO THÍ NGHIỆM ẢO!]\n\nBài thí nghiệm "${title}" đã được lưu trữ thành công vào hệ thống. Thầy Cô và Học sinh có thể mở xem và tương tác bất cứ lúc nào!`);
+        }
     }
 
     exportLabPackage() {

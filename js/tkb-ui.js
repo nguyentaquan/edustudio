@@ -2605,6 +2605,14 @@ setPCCMFilter(filterName) {
 
 
     exportToExcel() {
+        if (window.app && typeof window.app.enforceSaveAndExportTier === 'function') {
+            const check = window.app.enforceSaveAndExportTier(
+                () => { try { this.saveToStorage?.(); } catch(e) {} },
+                null,
+                'Thời khóa biểu Toàn trường'
+            );
+            if (check !== 'exported') return;
+        }
         let csvContent = "\uFEFF";
         csvContent += `THỜI KHÓA BIỂU TOÀN TRƯỜNG - NĂM HỌC ${this.engine.schoolConfig.academicYear}\n`;
         csvContent += `Đơn vị: ${this.engine.schoolConfig.schoolName}\n\n`;
@@ -5092,6 +5100,14 @@ setPCCMFilter(filterName) {
      * Mọi giáo viên đều có thể mở, xem và chỉnh sửa dễ dàng trên Microsoft Excel!
      */
     exportMasterTKBPackage() {
+        if (window.app && typeof window.app.enforceSaveAndExportTier === 'function') {
+            const check = window.app.enforceSaveAndExportTier(
+                () => { try { this.saveToStorage?.(); } catch(e) {} },
+                null,
+                'Gói Dữ liệu TKB Toàn trường (.xlsx)'
+            );
+            if (check !== 'exported') return;
+        }
         if (typeof XLSX === 'undefined') {
             this.showToast('⚠️ Thư viện Excel đang nạp, vui lòng thử lại sau giây lát!');
             return;
