@@ -1683,8 +1683,8 @@
                                     <div style="display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.75rem;">
                                         <!-- CỤM 2 NÚT TẠO ĐỀ RIÊNG BIỆT CHO 2 HÌNH THỨC (CHUẨN & ĐẶC THÙ) KÈM HỘP THOẠI 3 NGUỒN ĐỀ -->
                                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                                            <button id="btnCreateExamStandard" class="btn-mini-action" style="justify-content: center; background:#1d4ed8; color:#ffffff; border-color:#1d4ed8; padding:0.6rem 0.5rem; font-weight:700; font-size:0.78rem;" title="Mở hộp thoại 3 lựa chọn nguồn đề để tạo đề Mô hình Chuẩn">
-                                                <span>⚡</span> <span>1. Tạo Đề Chuẩn</span>
+                                            <button id="btnCreateExamStandard" class="btn-mini-action" style="justify-content: center; background:#1d4ed8; color:#ffffff; border-color:#1d4ed8; padding:0.6rem 0.5rem; font-weight:700; font-size:0.78rem;" title="Mở hộp thoại 3 lựa chọn nguồn đề để tạo đề Mô hình Chuẩn BGDĐT">
+                                                <span>⚡</span> <span>1. Tạo Đề Chuẩn BGD</span>
                                             </button>
                                             <button id="btnCreateExamSpecial" class="btn-mini-action" style="justify-content: center; background:#059669; color:#ffffff; border-color:#059669; padding:0.6rem 0.5rem; font-weight:700; font-size:0.78rem;" title="Mở hộp thoại 3 lựa chọn nguồn đề để tạo đề Mô hình Đặc Thù">
                                                 <span>📑</span> <span>2. Tạo Đề Đặc Thù</span>
@@ -3627,13 +3627,21 @@ window.openPPCTDirect = function() {
                 <div class="creator-panel-right">
                     <!-- THANH CHUYỂN TAB BÊN PHẢI -->
                     <div class="creator-right-tabs-bar">
-                        <div style="display: flex; gap: 0.4rem;">
+                        <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                            <div class="bank-compartment-tabs" style="display: flex; background: #e2e8f0; border-radius: 8px; padding: 2px; gap: 2px;">
+                                <button type="button" id="btnBankCompartment1" class="btn-compartment-tab active" style="border:none; border-radius:6px; padding:0.25rem 0.55rem; font-size:0.72rem; font-weight:700; cursor:pointer; background:#1d4ed8; color:#ffffff;" title="Ngăn 1: Câu hỏi Chuẩn Hóa do Admin & AI tạo sẵn">
+                                    <span>👑</span> <span>Ngăn 1: Kho Chuẩn (Admin/AI)</span>
+                                </button>
+                                <button type="button" id="btnBankCompartment2" class="btn-compartment-tab" style="border:none; border-radius:6px; padding:0.25rem 0.55rem; font-size:0.72rem; font-weight:700; cursor:pointer; background:transparent; color:#475569;" title="Ngăn 2: Câu hỏi do Người dùng đóng góp & Tự tạo">
+                                    <span>👨‍🏫</span> <span>Ngăn 2: Người Dùng Tạo</span>
+                                </button>
+                            </div>
                             <button id="btnTabBankList" class="btn-creator-subtab active">
-                                <span>📚</span> <span>Ngân Hàng Câu Hỏi</span>
+                                <span>📚</span> <span>Xem Kho</span>
                                 <span id="bankTotalCount" class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8;">6 câu</span>
                             </button>
                             <button id="btnTabAddNewQ" class="btn-creator-subtab">
-                                <span>➕</span> <span>Thêm Câu Hỏi (Có Ảnh)</span>
+                                <span>➕</span> <span>Thêm Câu Mới</span>
                             </button>
                         </div>
 
@@ -3933,8 +3941,9 @@ window.openPPCTDirect = function() {
                     <div class="form-group-clean">
                         <label style="font-size: 0.78rem; font-weight: 700; color: #334155;">Chế Độ Lưu Trữ:</label>
                         <select id="importTargetMode" class="input-clean" style="font-size: 0.8rem; padding: 0.4rem;">
-                            <option value="append" selected>➕ Thêm mới vào Kho Đề</option>
-                            <option value="audit_queue">⏳ Gửi vào Hàng đợi Thẩm định AI (5TB)</option>
+                            <option value="compartment_1" selected>👑 Nạp vào Ngăn 1 (Kho Chuẩn Hóa Admin/AI)</option>
+                            <option value="compartment_2">👨‍🏫 Nạp vào Ngăn 2 (Câu Hỏi Người Dùng Đóng Góp)</option>
+                            <option value="audit_queue">⏳ Gửi vào Hàng đợi Thẩm định AI (Kho 5TB Admin)</option>
                             <option value="overwrite">🔄 Ghi đè toàn bộ kho hiện tại</option>
                         </select>
                     </div>
@@ -5039,14 +5048,14 @@ window.openPPCTDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script src="js/cloud-sync.js?v=20261112_gemini38"></script>
-    <script type="module" src="js/app.js?v=20261112_gemini38"></script>
+    <script src="js/cloud-sync.js?v=20261113_core_ai"></script>
+    <script type="module" src="js/app.js?v=20261113_core_ai"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=3.10.78_gemini38_20261112').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=3.10.79_core_ai_20261113').then(function(reg) {
                     console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
                 }).catch(function(err) {
                     console.warn('Lỗi đăng ký PWA Service Worker:', err);

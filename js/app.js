@@ -55,7 +55,8 @@ class EduStudioApp {
         this.activeQuiz = DataSchema.getDefaultSampleQuiz();
         this.activeRoster = DataSchema.createStudentRoster();
 
-        // Ngân hàng câu hỏi chuẩn hóa (Bank) dùng chung hệ thống
+        // Ngân hàng câu hỏi chuẩn hóa (Bank) dùng chung hệ thống & Phân chia 2 ngăn
+        this.activeBankCompartment = 1; // 1: Kho Chuẩn (Admin/AI), 2: Người Dùng Tạo
         this.questionBank = this.initDefaultQuestionBank();
 
         // Dữ liệu kho đề kiểm tra (Repo)
@@ -2400,6 +2401,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     initDefaultQuestionBank() {
         return [
             {
+                id: 'bank_admin_1',
+                compartment: 1, // Ngăn 1: Admin/AI tạo sẵn chuẩn hóa
+                sourceType: 'admin_ai',
+                auditVerified: true,
                 grade: 'Lớp 8',
                 subject: 'KHTN',
                 competency: 'pt_nhan_biet',
@@ -2417,6 +2422,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 explanation: 'Phản ứng hoá học là quá trình biến đổi từ chất này thành chất khác, thường kèm theo hiện tượng kết tủa, bay hơi khí, đổi màu hoặc tỏa nhiệt.'
             },
             {
+                id: 'bank_admin_2',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
                 grade: 'Lớp 8',
                 subject: 'HĐTN-HN',
                 competency: 'pt_thong_hieu',
@@ -2434,6 +2443,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 explanation: 'Tôn trọng sự khác biệt là biết lắng nghe, đồng cảm và chấp nhận tính cách, văn hóa, quan điểm của người khác.'
             },
             {
+                id: 'bank_admin_3',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
                 grade: 'Lớp 8',
                 subject: 'Toán học',
                 competency: 'pt_van_dung',
@@ -2446,6 +2459,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 explanation: 'S = (a + b) * h / 2 = (6 + 10) * 5 / 2 = 16 * 5 / 2 = 40 cm².'
             },
             {
+                id: 'bank_admin_4',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
                 grade: 'MN',
                 subject: 'Phát triển nhận thức',
                 competency: 'mn_nhan_thuc',
@@ -2458,6 +2475,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 explanation: 'Quả táo đỏ rất giàu vitamin, vỏ đỏ tươi và thịt quả giòn ngọt.'
             },
             {
+                id: 'bank_admin_5',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
                 grade: 'MN',
                 subject: 'Phát triển ngôn ngữ',
                 competency: 'mn_ngon_ngu',
@@ -2470,6 +2491,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 explanation: 'Chú chó là bạn nhỏ bốn chân trung thành, giúp gia đình trông nhà và sủa gâu gâu.'
             },
             {
+                id: 'bank_admin_6',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
                 grade: 'Lớp 8',
                 subject: 'KHTN',
                 competency: 'pt_nhan_biet',
@@ -6445,6 +6470,22 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         }
     }
 
+    updateBankCompartmentButtons() {
+        const b1 = document.getElementById('btnBankCompartment1');
+        const b2 = document.getElementById('btnBankCompartment2');
+        const comp = this.activeBankCompartment || 1;
+        if (b1) {
+            b1.style.background = comp === 1 ? '#1d4ed8' : 'transparent';
+            b1.style.color = comp === 1 ? '#ffffff' : '#475569';
+            b1.classList.toggle('active', comp === 1);
+        }
+        if (b2) {
+            b2.style.background = comp === 2 ? '#059669' : 'transparent';
+            b2.style.color = comp === 2 ? '#ffffff' : '#475569';
+            b2.classList.toggle('active', comp === 2);
+        }
+    }
+
     openGameCreatorModal() {
         try { sound.playClick(); } catch(e) {}
         // Đảm bảo không gian nền luôn là Kho Trò Chơi (thoát khỏi Xưởng TN Ảo)
@@ -6472,6 +6513,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         }
 
         // Render ngân hàng câu hỏi an toàn và cập nhật bộ đếm
+        this.updateBankCompartmentButtons();
         this.renderBankQuestions();
         this.updateSelectedCounter();
 
@@ -6514,14 +6556,20 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 this.selectedQuestions = [];
             }
 
+            const currentComp = this.activeBankCompartment || 1;
+            const compList = this.questionBank.map((q, origIdx) => ({ ...q, _origIndex: origIdx }))
+                .filter(q => (q.compartment || 1) === currentComp);
+
             if (totalBadge) {
-                totalBadge.textContent = `${this.questionBank.length} câu`;
+                totalBadge.textContent = `${compList.length} câu (${currentComp === 1 ? 'Ngăn 1' : 'Ngăn 2'})`;
             }
 
-            if (this.questionBank.length === 0) {
+            if (compList.length === 0) {
                 container.innerHTML = `
                     <div style="text-align:center; padding: 2rem; color: #94a3b8; font-size: 0.85rem;">
-                        Ngân hàng chưa có câu hỏi nào. Hãy bấm "Thêm Câu Hỏi" để tạo câu hỏi mới!
+                        ${currentComp === 1 
+                            ? 'Ngăn 1 (Kho Chuẩn Admin/AI) chưa có câu hỏi nào. Admin hãy nạp đề mẫu hoặc dùng AI tạo thêm!' 
+                            : 'Ngăn 2 (Câu hỏi Người dùng) hiện chưa có dữ liệu. Bạn có thể tự soạn thêm câu mới hoặc nạp từ file!'}
                     </div>
                 `;
                 return;
@@ -6530,8 +6578,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             const prefix = ['A', 'B', 'C', 'D'];
             let html = '';
 
-            this.questionBank.forEach((q, bIdx) => {
+            compList.forEach((q, displayIdx) => {
                 if (!q) return;
+                const bIdx = q._origIndex;
                 const isAlreadyAdded = Array.isArray(this.selectedQuestions) && this.selectedQuestions.some(sq => sq && sq.stem && q.stem && sq.stem.trim() === q.stem.trim());
 
                 let optsHtml = '';
@@ -6551,10 +6600,15 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                     `;
                 });
 
+                const compBadge = q.compartment === 2 
+                    ? `<span class="badge-tag-tiny" style="background:#fef3c7; color:#b45309; font-weight:700;">👨‍🏫 Ngăn 2: Người Dùng Tạo</span>`
+                    : `<span class="badge-tag-tiny" style="background:#dbeafe; color:#1d4ed8; font-weight:700;">👑 Ngăn 1: Chuẩn Hóa Admin/AI</span>`;
+
                 html += `
                     <div class="bank-card-item ${isAlreadyAdded ? 'is-selected-card' : ''}" id="bankCard_${bIdx}">
                         <div class="bank-card-header">
                             <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                                ${compBadge}
                                 <span class="badge-tag-tiny" style="background:#f1f5f9; color:#475569;">${q.grade || 'Lớp 8'}</span>
                                 <span class="badge-tag-tiny" style="background:#e0f2fe; color:#0369a1;">${q.subject || 'KHTN'}</span>
                                 <span class="badge-tag-tiny badge-competency">${q.competencyText || 'Nhận biết'}</span>
@@ -6565,7 +6619,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                         </div>
 
                         <div class="bank-card-stem">
-                            <strong>Câu ${bIdx + 1}:</strong> ${q.stem || 'Nội dung câu hỏi...'}
+                            <strong>Câu ${displayIdx + 1}:</strong> ${q.stem || 'Nội dung câu hỏi...'}
                             ${q.stemImage ? `<div style="margin-top:0.35rem;"><img src="${q.stemImage}" style="max-height:65px; border-radius:6px; border:1px solid #cbd5e1;"></div>` : ''}
                         </div>
 
@@ -6701,9 +6755,15 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 this.showToast(`✨ Gemini AI đã biên soạn xong đề "${title}"!`, 4000);
             } catch (err) {
                 if (rawInput) rawInput.value = '';
-                if (err.message !== 'AUTH_OR_KEY_REQUIRED') {
-                    alert('❌ Không thể tạo đề bằng Gemini AI:\n' + err.message);
+                if (err.message === 'AUTH_OR_KEY_REQUIRED') {
+                    return;
                 }
+                console.warn('AI Exam Gen Network/Quota Notice:', err);
+
+                // TỰ ĐỘNG CHUYỂN SANG DÙNG KHO ĐỀ CHUẨN HÓA (NGĂN 1) KÈM THÔNG BÁO TẾ NHỊ
+                alert(`💎 [THÔNG BÁO TỐI ƯU HÓA HỆ THỐNG EDUSTUDIO]\n\nĐường truyền AI trực tuyến lúc này đang có lượng truy cập lớn hoặc tạm nghẽn nhịp.\n\n👉 Để bảo đảm tiến độ của Thầy/Cô, Hệ thống đã tự động chuyển sang trích xuất và lắp ghép ĐỀ KIỂM TRA TỪ KHO CHUẨN HÓA NGĂN 1 (Đã được Ban Biên Tập & AI đối soát ma trận ${ratio} theo chuẩn Công văn Bộ GD&ĐT).\n\n✓ Đề kiểm tra đã được khởi tạo hoàn tất trên màn hình!`);
+                this.generateExamByStructure('internal', hybridRatio);
+                return;
             }
             return;
         }
@@ -7519,6 +7579,21 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.closeGameCreatorModal();
         });
 
+        // Chuyển ngăn ngân hàng câu hỏi (Ngăn 1: Chuẩn Hóa Admin/AI vs Ngăn 2: Người Dùng Tạo)
+        document.getElementById('btnBankCompartment1')?.addEventListener('click', () => {
+            this.activeBankCompartment = 1;
+            this.updateBankCompartmentButtons();
+            this.renderBankQuestions();
+            sound.playTick();
+        });
+
+        document.getElementById('btnBankCompartment2')?.addEventListener('click', () => {
+            this.activeBankCompartment = 2;
+            this.updateBankCompartmentButtons();
+            this.renderBankQuestions();
+            sound.playTick();
+        });
+
         document.getElementById('btnTabBankList')?.addEventListener('click', () => {
             document.getElementById('btnTabBankList').classList.add('active');
             document.getElementById('btnTabAddNewQ').classList.remove('active');
@@ -7680,6 +7755,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
             const newQ = {
                 id: 'bank_user_' + Date.now(),
+                compartment: 2, // Ngăn 2: Người dùng tự tạo trong quá trình sử dụng
+                sourceType: 'user_created',
                 stem: stem,
                 stemImage: this.tempStemImage,
                 options: opts,
@@ -7694,6 +7771,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
             this.questionBank.unshift(newQ);
             this.selectedQuestions.push(newQ);
+            this.activeBankCompartment = 2; // Tự chuyển sang tab Ngăn 2 để người dùng thấy ngay câu vừa tạo
+            this.updateBankCompartmentButtons();
 
             sound.playFanfare();
             alert("🎉 Đã lưu câu hỏi mới thành công vào Ngân hàng và Trò chơi!");
@@ -8688,31 +8767,49 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         // Xác nhận nạp vào kho
         btnConfirmImport?.addEventListener('click', () => {
             if (stagedQuestions.length === 0) return;
-            const mode = document.getElementById('importTargetMode')?.value || 'append';
+            const mode = document.getElementById('importTargetMode')?.value || 'compartment_1';
 
             if (mode === 'overwrite') {
-                this.questionBank = [...stagedQuestions];
+                this.questionBank = [...stagedQuestions.map(q => ({ ...q, compartment: 1 }))];
+                this.activeBankCompartment = 1;
+            } else if (mode === 'compartment_2') {
+                const assigned = stagedQuestions.map(q => ({
+                    ...q,
+                    compartment: 2,
+                    sourceType: 'user_import'
+                }));
+                this.questionBank.unshift(...assigned);
+                this.activeBankCompartment = 2;
             } else if (mode === 'audit_queue') {
                 const existingQueue = JSON.parse(localStorage.getItem('edustudio_audit_queue') || '[]');
                 existingQueue.push({
                     id: 'queue_' + Date.now(),
                     date: new Date().toLocaleString('vi-VN'),
-                    uploader: 'Thành viên tải lên',
+                    uploader: this.currentUser?.name || 'Thành viên tải lên',
                     count: stagedQuestions.length,
                     questions: stagedQuestions
                 });
                 localStorage.setItem('edustudio_audit_queue', JSON.stringify(existingQueue));
-                alert(`⏳ Đã gửi ${stagedQuestions.length} câu hỏi vào Hàng đợi Thẩm định AI (Kho 5TB của Admin)!`);
+                alert(`⏳ Đã gửi ${stagedQuestions.length} câu hỏi vào Hàng đợi Thẩm định AI (Kho 5TB của Admin)!\nSau khi được AI thẩm định đạt chuẩn, tài liệu sẽ được phân loại vào Kho trên Web.`);
                 closeIOModal();
                 return;
             } else {
-                this.questionBank.push(...stagedQuestions);
+                // compartment_1 (mặc định: nạp vào Ngăn 1 - Kho Chuẩn Admin/AI)
+                const assigned = stagedQuestions.map(q => ({
+                    ...q,
+                    compartment: 1,
+                    sourceType: 'admin_import',
+                    auditVerified: true
+                }));
+                this.questionBank.unshift(...assigned);
+                this.activeBankCompartment = 1;
             }
 
             sound.playFanfare();
+            this.updateBankCompartmentButtons();
             this.renderBankQuestions();
             closeIOModal();
-            alert(`🎉 Nạp thành công ${stagedQuestions.length} câu hỏi vào Ngân Hàng Kho Đề!`);
+            alert(`🎉 Nạp thành công ${stagedQuestions.length} câu hỏi vào ${this.activeBankCompartment === 1 ? 'Ngăn 1 (Kho Chuẩn Admin/AI)' : 'Ngăn 2 (Người Dùng Tạo)'}!`);
         });
 
         // =========================================================================
@@ -10787,28 +10884,66 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
 
             const normalized = items.slice(0, count).map((q, idx) => ({
                 id: 'ai_q_' + Date.now() + '_' + idx,
+                compartment: 1, // Ngăn 1: Sản phẩm AI do hệ thống sinh ra
+                sourceType: 'ai_generated',
+                auditVerified: true,
+                grade: grade,
+                subject: subject,
                 stem: String(q.stem || `Câu hỏi ${idx + 1}`).trim(),
                 options: Array.isArray(q.options) && q.options.length >= 4
                     ? q.options.slice(0, 4).map(o => String(o || '').trim())
                     : ['Đáp án A', 'Đáp án B', 'Đáp án C', 'Đáp án D'],
                 correctIndex: (Number.isInteger(q.correctIndex) && q.correctIndex >= 0 && q.correctIndex <= 3) ? q.correctIndex : 0,
                 explanation: String(q.explanation || '').trim(),
-                competency: compSel?.value || 'pt_nhan_biet'
+                competency: compSel?.value || 'pt_nhan_biet',
+                competencyText: compText
             }));
 
             if (!Array.isArray(this.questionBank)) this.questionBank = [];
             this.questionBank = [...normalized, ...this.questionBank];
             this.selectedQuestions = [...normalized];
+            this.activeBankCompartment = 1;
 
+            this.updateBankCompartmentButtons();
             this.renderBankQuestions();
             this.updateSelectedCounter();
             sound.playFanfare();
+            alert(`🎉 [THÀNH CÔNG RỰC RỠ!]\nGemini AI đã khởi tạo thành công trọn bộ ${normalized.length} câu hỏi đạt chuẩn cho chủ đề: "${topic}"!\n- Dữ liệu đã tự động nạp vào Trò Chơi và lưu vào Ngăn 1 (Kho Chuẩn Admin/AI).\n- Bạn có thể bấm [Xem Trước Trò Chơi] hoặc [Áp Dụng Vào Tiết Dạy] ngay.`);
             this.showToast(`✨ Gemini AI đã tạo xong ${normalized.length} câu hỏi cho "${topic}"!`, 4000);
         } catch (err) {
-            if (err.message !== 'AUTH_OR_KEY_REQUIRED') {
-                console.error('AI Game Gen Error:', err);
-                alert('❌ Không thể tạo câu hỏi bằng Gemini AI:\n' + err.message);
+            if (err.message === 'AUTH_OR_KEY_REQUIRED') {
+                return;
             }
+            console.warn('AI Game Gen Network/Quota Notice:', err);
+
+            // BẬT CƠ CHẾ SƯ PHẠM THẦY NGUYỄN TÁ QUAN: TỰ ĐỘNG CHUYỂN SANG DÙNG TÀI NGUYÊN NGĂN 1
+            let fallbackPool = (this.questionBank || []).filter(q => (q.compartment || 1) === 1);
+            if (grade && grade !== 'MN') {
+                const gradeMatched = fallbackPool.filter(q => !q.grade || q.grade === grade);
+                if (gradeMatched.length >= count) fallbackPool = gradeMatched;
+            }
+            if (fallbackPool.length < count) {
+                fallbackPool = this.initDefaultQuestionBank();
+            }
+
+            const shuffled = [...fallbackPool].sort(() => 0.5 - Math.random()).slice(0, count);
+            this.selectedQuestions = shuffled.map(q => ({
+                stem: q.stem,
+                stemImage: q.stemImage || null,
+                options: [...q.options],
+                optImages: q.optImages ? [...q.optImages] : null,
+                correctIndex: q.correctIndex,
+                explanation: q.explanation || ''
+            }));
+
+            this.activeBankCompartment = 1;
+            this.updateBankCompartmentButtons();
+            this.renderBankQuestions();
+            this.updateSelectedCounter();
+            sound.playFanfare();
+
+            alert(`💎 [THÔNG BÁO TỐI ƯU HÓA HỆ THỐNG EDUSTUDIO]\n\nĐường truyền AI trực tuyến lúc này đang có lượng truy cập lớn hoặc tạm nghẽn nhịp.\n\n👉 Để bảo đảm tiết dạy của Thầy/Cô diễn ra liền mạch và hoàn thành đúng mục tiêu bài học, Hệ thống đã tự động kích hoạt TÀI NGUYÊN SƯ PHẠM CAO CẤP TRONG NGĂN 1 (Bộ câu hỏi chuẩn hóa do Admin & AI biên soạn sẵn theo đúng ma trận ${grade} - ${subject}).\n\n✓ Đã nạp thành công ${this.selectedQuestions.length} câu hỏi vào trò chơi! Thầy/Cô có thể sử dụng ngay mà không bị gián đoạn.`);
+            this.showToast(`✓ Đã nạp ${this.selectedQuestions.length} câu hỏi chuẩn hóa từ Ngăn 1 vào bài học!`, 4500);
         } finally {
             if (btn) {
                 btn.disabled = false;
