@@ -3132,6 +3132,17 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         const container = document.getElementById('pptCardsGrid');
         if (!container) return;
 
+        try {
+            const customPpts = JSON.parse(localStorage.getItem('edustudio_custom_ppts') || '[]');
+            if (Array.isArray(customPpts) && customPpts.length > 0) {
+                customPpts.forEach(cp => {
+                    if (cp && cp.id && !this.pptRepo.some(x => x.id === cp.id)) {
+                        this.pptRepo.unshift(cp);
+                    }
+                });
+            }
+        } catch(e) {}
+
         container.innerHTML = this.pptRepo.map(item => `
             <div class="ppt-card card-verified-container">
                 <div class="badge-audit-verified-corner" title="Đã đối soát chuẩn Sư phạm bởi Ban Biên Tập EduStudio">
@@ -3173,8 +3184,16 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             btn.addEventListener('click', (e) => {
                 const id = e.currentTarget.dataset.id;
                 const p = this.pptRepo.find(x => x.id === id);
-                sound.playFanfare();
-                alert(`Đã tải tệp bài giảng PowerPoint (.pptx) "${p?.title || 'Bài giảng'}" về máy tính thành công!`);
+                this.enforceSaveAndExportTier(
+                    null,
+                    () => {
+                        if (p && p.presentationData) {
+                            this.activePresentation = JSON.parse(JSON.stringify(p.presentationData));
+                        }
+                        this.exportPresentationPPTX();
+                    },
+                    p?.title || 'Bài giảng PPT'
+                );
             });
         });
     }
@@ -3240,6 +3259,69 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     initPPTStudio() {
         this.renderSlideDeck();
         this.renderCurrentSlideCanvas();
+        const btnAI = document.getElementById('btnAIGeneratePPT');
+        if (btnAI && !btnAI._boundAI) {
+            btnAI._boundAI = true;
+            btnAI.addEventListener('click', () => this.generatePresentationWithAI());
+        }
+    }
+
+    async generatePresentationWithAI() {
+        const btn = document.getElementById('btnAIGeneratePPT');
+        const title = document.getElementById('pptLessonTitleInput')?.value.trim() || 'Bài giảng tương tác';
+        const grade = document.getElementById('pptGradeSelect')?.value || 'Lớp 8';
+        const subject = document.getElementById('pptSubjectSelect')?.value || 'HĐTN-HN';
+
+        const origHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳</span> <span>Gemini đang thiết kế bộ Slide...</span>';
+        }
+        try {
+            const promptText =
+                `Bạn là chuyên gia thiết kế bài giảng điện tử 16:9 chuẩn Bộ 4 Dễ & Công văn 5512.\n` +
+                `Hãy soạn đúng 5 slide bài giảng cho:\n` +
+                `- Tên bài học: "${title}"\n- Lớp / Bậc học: ${grade}\n- Môn học: ${subject}\n` +
+                `Cấu trúc 5 slide: (1) Khởi động gây hứng thú, (2) Hình thành kiến thức 1, (3) Hình thành kiến thức 2, (4) Luyện tập câu hỏi tương tác, (5) Vận dụng & Ghi nhớ.\n` +
+                `Mỗi slide ngắn gọn (tối đa 5 gạch đầu dòng súc tích để chiếu máy chiếu), tiếng Việt Unicode chuẩn.\n` +
+                `Trả về DUY NHẤT một mảng JSON gồm 5 đối tượng:\n` +
+                `[{"step":1,"stepName":"1. Khởi động (Hook)","title":"Tiêu đề slide","content":"• Ý 1\\n• Ý 2\\n• Ý 3","speakerNotes":"Lời dẫn giảng của giáo viên"}]`;
+
+            const slides = await this.callGeminiPersonal(promptText, {
+                featureName: 'AI Gemini Soạn Bộ Slide PPT',
+                json: true,
+                temperature: 0.65
+            });
+            if (!Array.isArray(slides) || slides.length === 0) {
+                throw new Error('Dữ liệu slide AI trả về không hợp lệ.');
+            }
+            this.activePresentation.title = title;
+            this.activePresentation.grade = grade;
+            this.activePresentation.subject = subject;
+            this.activePresentation.slides = slides.map((s, idx) => ({
+                id: 'ai_slide_' + Date.now() + '_' + idx,
+                step: Number(s.step) || (idx + 1),
+                stepName: String(s.stepName || `Bước ${idx + 1}`),
+                title: String(s.title || `Slide ${idx + 1}`),
+                content: String(s.content || ''),
+                speakerNotes: String(s.speakerNotes || ''),
+                layout: 'title_content'
+            }));
+            this.activeSlideIndex = 0;
+            this.renderSlideDeck();
+            this.renderCurrentSlideCanvas();
+            sound.playFanfare();
+            this.showToast(`✨ Gemini AI đã soạn xong ${this.activePresentation.slides.length} slide cho "${title}"!`, 4000);
+        } catch (err) {
+            if (err.message !== 'AUTH_OR_KEY_REQUIRED') {
+                alert('❌ Không thể soạn bộ Slide bằng Gemini AI:\n' + err.message);
+            }
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        }
     }
 
     renderSlideDeck() {
@@ -5706,19 +5788,79 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         };
     }
 
-    generateLessonPlanWithAI(params) {
+    async generateLessonPlanWithAI(params) {
         if (!this.requireGeminiAccess('Trí tuệ Gemini Soạn Kế hoạch bài dạy')) {
             return;
         }
         const statusBadge = document.getElementById('lpStatusBadge');
+        const btnLP = document.getElementById('btnLPGenerateAI');
+        const origBtnHtml = btnLP ? btnLP.innerHTML : '';
         if (statusBadge) {
-            statusBadge.textContent = "AI Đang Soạn Chuẩn...";
+            statusBadge.textContent = "⏳ Gemini AI Đang Soạn...";
             statusBadge.style.background = "#fef08a";
             statusBadge.style.color = "#854d0e";
         }
+        if (btnLP) {
+            btnLP.disabled = true;
+            btnLP.innerHTML = '<span>⏳</span> <span>Gemini đang soạn giáo án...</span>';
+        }
 
-        setTimeout(() => {
-            const isPreschool = (params.model === 'custom_preschool');
+        const isPreschool = (params.model === 'custom_preschool');
+        try {
+            const promptText = isPreschool
+                ? `Bạn là chuyên gia Giáo dục Mầm non Việt Nam. Hãy soạn Kế hoạch tổ chức hoạt động học Mầm non chuẩn 5 lĩnh vực, phương pháp Học qua chơi.\n` +
+                  `- Đề tài: "${params.title}"\n- Lứa tuổi: ${params.grade}\n- Môn/Lĩnh vực: ${params.subject}\n- Mục tiêu gợi ý: ${params.objectives || 'Phát triển nhận thức, ngôn ngữ và cảm xúc cho trẻ'}\n` +
+                  `Trả về DUY NHẤT đoạn mã HTML sạch (không dùng thẻ <html>/<body>, chỉ dùng thẻ <h3>, <h4>, <p>, <div>, <ul>) gồm đủ: Tiêu đề, I. Mục tiêu (Kiến thức, Kỹ năng, Thái độ), II. Chuẩn bị, III. Tiến trình 4 hoạt động (Ổn định, Khám phá, Trò chơi, Kết thúc).`
+                : `Bạn là chuyên gia Sư phạm phổ thông Việt Nam. Hãy soạn Kế hoạch bài dạy (Giáo án) chuẩn Phụ lục IV Công văn 5512/BGDĐT-GDTrH.\n` +
+                  `- Tên bài học: "${params.title}"\n- Môn học: ${params.subject}\n- Khối lớp: ${params.grade}\n- Thời lượng: ${params.duration} tiết (Tuần ${params.week})\n- Mục tiêu trọng tâm: ${params.objectives || 'Phát triển phẩm chất và năng lực học sinh'}\n` +
+                  `Trả về DUY NHẤT đoạn mã HTML sạch (không dùng thẻ <html>/<body>, không dùng markdown \`\`\`html, chỉ dùng <h3>, <h4>, <p>, <div>, <ul>) gồm đủ: Tiêu đề, I. Mục tiêu (Năng lực đặc thù, Năng lực chung, Phẩm chất), II. Thiết bị dạy học & học liệu, III. Tiến trình 4 hoạt động (1. Khởi động, 2. Hình thành kiến thức, 3. Luyện tập, 4. Vận dụng) rõ a) Mục tiêu, b) Nội dung, c) Sản phẩm, d) Tổ chức thực hiện.`;
+
+            let planHtml = await this.callGeminiPersonal(promptText, {
+                featureName: 'Trí tuệ Gemini Soạn Kế hoạch bài dạy',
+                temperature: 0.65
+            });
+            planHtml = planHtml.replace(/^```(?:html)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+            const previewContainer = document.getElementById('lpPreviewContainer');
+            if (previewContainer) previewContainer.innerHTML = planHtml;
+
+            if (statusBadge) {
+                statusBadge.textContent = isPreschool ? "✨ Gemini AI • Chuẩn 5 Lĩnh Vực" : "✨ Gemini AI • Chuẩn CV 5512";
+                statusBadge.style.background = "#dcfce7";
+                statusBadge.style.color = "#15803d";
+            }
+
+            try {
+                const saved = JSON.parse(localStorage.getItem('edustudio_custom_lesson_plans') || '[]');
+                saved.unshift({ id: 'lp_' + Date.now(), title: params.title, html: planHtml, updatedAt: new Date().toISOString() });
+                localStorage.setItem('edustudio_custom_lesson_plans', JSON.stringify(saved.slice(0, 30)));
+                if (window.eduCloudSync?.isConfigured() && this.currentUser?.email) {
+                    window.eduCloudSync.syncCurrentUserWorkspace(this.currentUser.email);
+                }
+            } catch(e) {}
+
+            sound.playFanfare();
+            this.showToast(`✨ Gemini AI đã soạn xong KHBD "${params.title}"!`, 4000);
+        } catch (err) {
+            if (statusBadge) {
+                statusBadge.textContent = "Chưa hoàn tất";
+                statusBadge.style.background = "#fee2e2";
+                statusBadge.style.color = "#b91c1c";
+            }
+            if (err.message !== 'AUTH_OR_KEY_REQUIRED') {
+                alert('❌ Không thể soạn KHBD bằng Gemini AI:\n' + err.message);
+            }
+        } finally {
+            if (btnLP) {
+                btnLP.disabled = false;
+                btnLP.innerHTML = origBtnHtml;
+            }
+        }
+    }
+
+    renderLessonPlanTemplate(params) {
+        const isPreschool = (params.model === 'custom_preschool');
+        const statusBadge = document.getElementById('lpStatusBadge');
             let planHtml = '';
 
             if (isPreschool) {
@@ -5861,19 +6003,15 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 statusBadge.style.background = "#dcfce7";
                 statusBadge.style.color = "#15803d";
             }
-
-            sound.playFanfare();
-            alert(`🎉 [TRÍ TUỆ GEMINI ĐÃ SOẠN XONG KHBD!]\n\n• Bài dạy: "${params.title}"\n• Mô hình: ${isPreschool ? 'Hoạt Động Học Mầm Non' : 'Chuẩn Công Văn 5512/BGDĐT'}\n• Đầy đủ 4 hoạt động, mục tiêu phẩm chất và năng lực.\nThầy/Cô có thể chỉnh sửa trực tiếp hoặc bấm [Xuất File .DOCX] để tải về máy!`);
-        }, 600);
     }
 
     renderLessonPlanPreview() {
         const previewContainer = document.getElementById('lpPreviewContainer');
         if (!previewContainer) return;
 
-        // Nếu đã có nội dung thì giữ nguyên, nếu chưa có thì nạp bài mẫu mặc định
+        // Nếu đã có nội dung thì giữ nguyên, nếu chưa có thì nạp bài mẫu mặc định (không tốn quota AI)
         if (!previewContainer.innerHTML.trim()) {
-            this.generateLessonPlanWithAI({
+            this.renderLessonPlanTemplate({
                 subject: "Hoạt động trải nghiệm, hướng nghiệp 8",
                 title: "Chủ đề 2: Rèn luyện tính kiên trì và chăm chỉ",
                 grade: "Lớp 8",
@@ -6445,7 +6583,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     // =========================================================================
     // 7. XƯỞNG TẠO ĐỀ CHUẨN MỚI & THẨM ĐỊNH (AI AUDITOR)
     // =========================================================================
-    generateExamByStructure(sourceOption = 'internal', hybridRatio = '70-30') {
+    async generateExamByStructure(sourceOption = 'internal', hybridRatio = '70-30') {
         const title = document.getElementById('examTitleInput')?.value || 'Đề kiểm tra Định kỳ Chuẩn hóa';
         const grade = document.getElementById('examGradeSelect')?.value || 'Lớp 8';
         const subject = document.getElementById('examSubjectSelect')?.value || 'Khoa học tự nhiên';
@@ -6455,6 +6593,40 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         const countTL = parseInt(document.getElementById('examCountTL')?.value) || 2;
         const ratio = document.getElementById('examRatioSelect')?.value || '40-30-20-10';
         const duration = document.getElementById('examDurationSelect')?.value || '45';
+
+        if (sourceOption === 'external' || sourceOption === 'hybrid') {
+            const rawInput = document.getElementById('rawQuestionInput');
+            if (rawInput) rawInput.value = `⏳ Gemini AI đang biên soạn đề kiểm tra "${title}" (${subject} - ${grade}) theo đúng ma trận ${ratio}...`;
+            try {
+                const promptText =
+                    `Bạn là chuyên gia khảo thí Bộ GD&ĐT Việt Nam. Hãy biên soạn trọn bộ Đề kiểm tra chuẩn GDPT 2018 (kèm Hướng dẫn chấm chi tiết) bằng tiếng Việt Unicode:\n` +
+                    `- Tên đề: "${title}"\n- Môn học: ${subject}\n- Lớp: ${grade}\n- Thời gian: ${duration} phút\n- Ma trận nhận thức: ${ratio} (Nhận biết - Thông hiểu - Vận dụng - Vận dụng cao)\n` +
+                    `- Chế độ nguồn: ${sourceOption === 'external' ? 'Biên soạn mới 100% ngoài kho' : `Kết hợp ${hybridRatio}%`}\n` +
+                    `- Cấu trúc bắt buộc:\n` +
+                    `  1. Phần I - Trắc nghiệm nhiều lựa chọn: đúng ${countNLC} câu (mỗi câu có A, B, C, D và ghi rõ Đáp án đúng).\n` +
+                    `  2. Phần II - Trắc nghiệm Đúng/Sai: đúng ${countDS} câu (mỗi câu có 4 ý a, b, c, d kèm đáp án Đúng/Sai).\n` +
+                    `  3. Phần III - Trả lời ngắn: đúng ${countTLN} câu (kèm Đáp số).\n` +
+                    `  4. Phần IV - Tự luận: đúng ${countTL} câu (kèm Hướng dẫn chấm & biểu điểm).\n` +
+                    `Trình bày dạng văn bản rõ ràng, chuẩn mực, không dùng ký hiệu markdown thừa.`;
+
+                const aiExam = await this.callGeminiPersonal(promptText, {
+                    featureName: 'Biên soạn Đề kiểm tra ngoài kho bằng Gemini AI',
+                    temperature: 0.6
+                });
+                if (rawInput) {
+                    rawInput.value = aiExam;
+                    this.handleLiveQuestionParse(aiExam);
+                }
+                sound.playFanfare();
+                this.showToast(`✨ Gemini AI đã biên soạn xong đề "${title}"!`, 4000);
+            } catch (err) {
+                if (rawInput) rawInput.value = '';
+                if (err.message !== 'AUTH_OR_KEY_REQUIRED') {
+                    alert('❌ Không thể tạo đề bằng Gemini AI:\n' + err.message);
+                }
+            }
+            return;
+        }
 
         let sourceLabel = "100% KHO ĐỀ NỘI BỘ EDUSTUDIO (ĐÃ THẨM ĐỊNH CHUẨN HÓA)";
         if (sourceOption === 'external') {

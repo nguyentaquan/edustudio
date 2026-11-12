@@ -1167,6 +1167,10 @@
                                 </select>
                             </div>
 
+                            <button type="button" id="btnAIGeneratePPT" class="btn-mini-action" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); color: #ffffff; border: none; padding: 0.55rem; font-weight: 800; margin-bottom: 0.6rem; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);">
+                                <span>✨</span> <span>AI Gemini Soạn Bộ Slide</span>
+                            </button>
+
                             <!-- GHI CHÚ SƯ PHẠM CHO GIÁO VIÊN KHI GIẢNG DẠY (SPEAKER NOTES) -->
                             <div class="form-group-clean" style="margin-bottom: 0.65rem;">
                                 <label style="font-size: 0.72rem; color: #475569;">Ghi chú lời giảng của Giáo viên (Speaker Notes):</label>
@@ -5036,14 +5040,14 @@ window.openPPCTDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script src="js/cloud-sync.js?v=20261112_firebase_live"></script>
-    <script type="module" src="js/app.js?v=20261112_firebase_live"></script>
+    <script src="js/cloud-sync.js?v=20261112_ai_ppt_exam"></script>
+    <script type="module" src="js/app.js?v=20261112_ai_ppt_exam"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js?v=3.10.75_firebase_live_20261112').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=3.10.76_ai_ppt_exam_20261112').then(function(reg) {
                     console.log('EduStudio PWA Service Worker đã sẵn sàng:', reg.scope);
                 }).catch(function(err) {
                     console.warn('Lỗi đăng ký PWA Service Worker:', err);
