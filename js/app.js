@@ -1227,13 +1227,14 @@ class EduStudioApp {
         } catch (e) {}
     }
 
-        openAuthModal() {
+    openAuthModal() {
         if (window.openModal) {
             window.openModal('authModal');
         } else {
             document.getElementById('authModal')?.classList.add('active');
         }
         this.selectAuthMethod('google');
+        if (typeof window.initGoogleSignInButton === 'function') window.initGoogleSignInButton();
         const emailInput = document.getElementById('authCustomEmail');
         const pwdInput = document.getElementById('authCustomPassword');
         const errDiv = document.getElementById('authPasswordError');
@@ -1547,10 +1548,7 @@ class EduStudioApp {
             } catch(e) {}
 
             this.renderBannerAuthZone();
-            this.updateBannerStats({
-                onlineCount: Math.max(1, data.onlineCount || 1),
-                totalUsers: data.totalUsers || 1
-            });
+            this.updateBannerStats(onlineStats);
 
             try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
             this.checkAdminStorageVisibility();
@@ -1632,34 +1630,117 @@ class EduStudioApp {
         }, 30000);
     }
 
+    getGeminiKeyForEmail(email) {
+        if (!email) return '';
+        try {
+            const map = JSON.parse(localStorage.getItem('edustudio_gemini_keys_by_email') || '{}');
+            return (map[email.toLowerCase()] || '').trim();
+        } catch(e) { return ''; }
+    }
+
+    saveGeminiKeyForEmail(email, key) {
+        if (!email) return;
+        try {
+            const map = JSON.parse(localStorage.getItem('edustudio_gemini_keys_by_email') || '{}');
+            if (key) map[email.toLowerCase()] = key.trim();
+            else delete map[email.toLowerCase()];
+            localStorage.setItem('edustudio_gemini_keys_by_email', JSON.stringify(map));
+        } catch(e) {}
+    }
+
+    getActiveGeminiKey() {
+        // BẢO VỆ TUYỆT ĐỐI TOKEN ADMIN: Khách và Thành viên KHÔNG BAO GIỜ dùng key của Admin
+        if (this.isGuest() || !this.currentUser?.isLoggedIn) return '';
+        const email = (this.currentUser?.email || '').toLowerCase();
+        const personalKey = (
+            this.currentUser?.geminiApiKey ||
+            this.getGeminiKeyForEmail(email) ||
+            localStorage.getItem('user_gemini_api_key') ||
+            ''
+        ).trim();
+        if (this.isAdmin()) {
+            return personalKey || (this.systemAIConfig?.geminiApiKey || '').trim();
+        }
+        return personalKey;
+    }
+
+    requireGeminiAccess(featureName = 'Tính năng AI nâng cao') {
+        if (this.isGuest() || !this.currentUser?.isLoggedIn || !this.currentUser?.email) {
+            alert(
+                `🔒 YÊU CẦU ĐĂNG NHẬP BẰNG TÀI KHOẢN GMAIL\n\n` +
+                `Tính năng "${featureName}" cần sự can thiệp của trí tuệ Google Gemini.\n` +
+                `Để bảo toàn Token của Quản trị, hệ thống bắt buộc sử dụng gói Gemini Free theo chính tài khoản Gmail cá nhân của bạn.\n\n` +
+                `Vui lòng đăng nhập/đăng ký bằng địa chỉ @gmail.com để tiếp tục!`
+            );
+            this.openAuthModal();
+            if (typeof window.setAuthMethod === 'function') window.setAuthMethod('google');
+            return false;
+        }
+
+        if (this.isAdmin()) return true;
+
+        let activeKey = this.getActiveGeminiKey();
+        if (!activeKey || !activeKey.startsWith('AIza')) {
+            const entered = prompt(
+                `🔑 KÍCH HOẠT GÓI GEMINI FREE CỦA TÀI KHOẢN GMAIL (${this.currentUser.email})\n\n` +
+                `Tính năng "${featureName}" sử dụng hạn mức Gemini API miễn phí do Google cấp cho tài khoản Gmail của bạn (không dùng Token của Quản trị).\n\n` +
+                `👉 Lấy key miễn phí tại: https://aistudio.google.com/apikey\n` +
+                `Vui lòng dán mã Gemini API Key cá nhân (bắt đầu bằng AIzaSy...) vào bên dưới:`,
+                activeKey || ''
+            );
+            if (!entered || !entered.trim()) {
+                this.showToast('⚠️ Cần gắn Gemini API Key cá nhân của Gmail để dùng tính năng AI này!');
+                return false;
+            }
+            const cleanKey = entered.trim();
+            if (!cleanKey.startsWith('AIza')) {
+                alert('⚠️ Mã Gemini API Key hợp lệ phải bắt đầu bằng "AIza..." (lấy từ Google AI Studio). Vui lòng kiểm tra lại!');
+                return false;
+            }
+            this.saveUserGeminiKey(cleanKey);
+            activeKey = cleanKey;
+        }
+        return !!activeKey;
+    }
+
     async saveUserGeminiKey(keyInput = null) {
-        const key = keyInput || document.getElementById('userGeminiApiKeyInput')?.value.trim();
+        const key = (keyInput || document.getElementById('userGeminiApiKeyInput')?.value || '').trim();
         if (!key) {
             this.showToast('⚠️ Vui lòng nhập mã khóa Gemini API Key!');
             return;
         }
-        if (!key.startsWith('AIzaSy')) {
-            this.showToast('⚠️ Khóa Gemini API Key của Google thường bắt đầu bằng AIzaSy... Vui lòng kiểm tra lại!');
+        if (!key.startsWith('AIza')) {
+            this.showToast('⚠️ Khóa Gemini API Key của Google thường bắt đầu bằng AIza... Vui lòng kiểm tra lại!');
         }
 
+        const email = (this.currentUser?.email || '').toLowerCase();
         if (this.currentUser) {
             this.currentUser.geminiApiKey = key;
             this.saveUserSession(this.currentUser);
         }
-        if (!this.systemAIConfig) this.systemAIConfig = {};
-        this.systemAIConfig.geminiApiKey = key;
-        try { localStorage.setItem('edustudio_system_ai_config', JSON.stringify(this.systemAIConfig)); } catch(e){}
+        if (email) {
+            this.saveGeminiKeyForEmail(email, key);
+        }
+        try { localStorage.setItem('user_gemini_api_key', key); } catch(e){}
 
-        if (this.currentUser && this.currentUser.email) {
+        // CHỈ Admin mới được cập nhật systemAIConfig; Thành viên thường không được ghi đè cấu hình Admin
+        if (this.isAdmin()) {
+            if (!this.systemAIConfig) this.systemAIConfig = {};
+            this.systemAIConfig.geminiApiKey = key;
+            try { localStorage.setItem('edustudio_system_ai_config', JSON.stringify(this.systemAIConfig)); } catch(e){}
+        }
+
+        if (email) {
             try {
                 await fetch('/api/users/update-ai-key', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: this.currentUser.email, geminiApiKey: key })
+                    body: JSON.stringify({ email: email, geminiApiKey: key })
                 });
             } catch(e){}
         }
-        this.showToast('🤖 Đã kết nối thành công Khóa AI của Tài khoản Google! Toàn bộ tính năng AI sẽ dùng hạn mức riêng của Thầy Cô.');
+        this.checkMediaAIPermission();
+        this.showToast('🤖 Đã kết nối thành công Gemini API Key cá nhân cho tài khoản Gmail của bạn!');
     }
 
     loginWithQRCode() {
@@ -1723,6 +1804,7 @@ class EduStudioApp {
 
         try { if (window.smartTKBUI) window.smartTKBUI.onUserSwitched(this.currentUser); } catch(e){}
         this.checkAdminStorageVisibility();
+        this.checkMediaAIPermission();
         sound.playClick();
         this.showToast('🚪 Đã đăng xuất tài khoản an toàn!');
     }
@@ -1788,6 +1870,9 @@ class EduStudioApp {
         const fSubject = document.getElementById('profSubject');
         if (fSubject) fSubject.value = u.subject || '';
 
+        const fApiKey = document.getElementById('profGeminiApiKey');
+        if (fApiKey) fApiKey.value = this.getActiveGeminiKey() || '';
+
         // Xóa trắng ô mật khẩu mới
         const fNewPwd = document.getElementById('profNewPassword');
         if (fNewPwd) fNewPwd.value = '';
@@ -1811,12 +1896,19 @@ class EduStudioApp {
         const phone = document.getElementById('profPhone')?.value.trim();
         const cccd = document.getElementById('profCCCD')?.value.trim();
         const subject = document.getElementById('profSubject')?.value.trim();
+        const profGeminiKey = document.getElementById('profGeminiApiKey')?.value.trim() || '';
         const newPwd = document.getElementById('profNewPassword')?.value.trim();
         const confirmPwd = document.getElementById('profConfirmPassword')?.value.trim();
 
         if (!fullName) {
             alert("⚠️ Họ và tên thành viên không được để trống!");
             document.getElementById('profFullName')?.focus();
+            return;
+        }
+
+        if (profGeminiKey && !profGeminiKey.startsWith('AIza')) {
+            alert("⚠️ Mã Gemini API Key không hợp lệ! Khóa của Google AI Studio bắt đầu bằng 'AIza...'.");
+            document.getElementById('profGeminiApiKey')?.focus();
             return;
         }
 
@@ -1849,7 +1941,8 @@ class EduStudioApp {
                 grade: grade,
                 phone: phone,
                 cccd: cccd,
-                subject: subject
+                subject: subject,
+                geminiApiKey: profGeminiKey
             };
             if (newPwd) {
                 payload.newPassword = newPwd;
@@ -1862,7 +1955,14 @@ class EduStudioApp {
             this.currentUser.phone = phone;
             this.currentUser.cccd = cccd;
             this.currentUser.subject = subject;
+            this.currentUser.geminiApiKey = profGeminiKey;
             this.saveUserSession(this.currentUser);
+            this.saveGeminiKeyForEmail(this.currentUser.email, profGeminiKey);
+            try {
+                if (profGeminiKey) localStorage.setItem('user_gemini_api_key', profGeminiKey);
+                else localStorage.removeItem('user_gemini_api_key');
+            } catch(e){}
+            this.checkMediaAIPermission();
 
             try {
                 let uList = [];
@@ -1908,6 +2008,7 @@ class EduStudioApp {
             }
             alert("❌ Không thể cập nhật hồ sơ: " + err.message);
         }
+    }
 
     initRealtimeClock() {
         const clockEl = document.getElementById('liveClockDisplay');
@@ -2215,7 +2316,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             const email = (this.currentUser.email || '').toLowerCase();
             const role = this.currentUser.role;
 
-            if (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com' || role === 'admin' || email.includes('nguyentaquan')) {
+            if (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com' || role === 'admin') {
                 roleDisplay = '<span class="role-badge-admin">👑 Nhóm 1: Quản Trị</span>';
             } else if (role === 'vip_pro') {
                 roleDisplay = '<span class="role-badge-vip-pro">💎 Nhóm 2: VIP PRO</span>';
@@ -2227,7 +2328,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 roleDisplay = '<span class="role-badge-member">👨‍🏫 Nhóm 4: Giáo Viên</span>';
             }
 
-            const avatar = (email.includes('nguyentaquan') || role === 'admin') ? '👑' : (this.currentUser.avatarEmoji || '👨‍🏫');
+            const avatar = (email === 'nguyentaquan@gmail.com' || email === 'nguyentaquan8@gmail.com' || role === 'admin') ? '👑' : (this.currentUser.avatarEmoji || '👨‍🏫');
             const pts = (this.currentUser.points !== undefined && this.currentUser.points !== null) ? this.currentUser.points : 500;
             const demoText = (role === 'admin' || role === 'vip_pro') ? '🪙 Vô hạn' : `🪙 ${pts} điểm`;
 
@@ -4650,14 +4751,32 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
         document.getElementById('btnMediaConfigApiKey')?.addEventListener('click', () => {
             sound.playClick();
-            const currentKey = localStorage.getItem('user_gemini_api_key') || '';
-            const key = prompt("🔑 [CẤU HÌNH GOOGLE GEMINI API KEY CÁ NHÂN]\nNhập khóa API Gemini của Thầy/Cô (được lưu an toàn cục bộ trên máy):", currentKey);
+            if (this.isGuest() || !this.currentUser?.isLoggedIn || !this.currentUser?.email) {
+                this.requireGeminiAccess('Media Studio AI');
+                return;
+            }
+            const currentKey = this.getActiveGeminiKey() || '';
+            const key = prompt(
+                `🔑 [GẮN GOOGLE GEMINI API KEY CÁ NHÂN CHO ${this.currentUser.email}]\n` +
+                `Dán khóa API Gemini miễn phí của tài khoản Gmail bạn (bắt đầu bằng AIza...):\n` +
+                `👉 Lấy miễn phí tại: https://aistudio.google.com/apikey`,
+                currentKey
+            );
             if (key !== null) {
-                if (key.trim()) {
-                    localStorage.setItem('user_gemini_api_key', key.trim());
-                    alert("✅ Đã lưu Google Gemini API Key cá nhân thành công!\nToàn quyền mở khóa Media Studio AI.");
-                    this.checkMediaAIPermission();
+                const trimmed = key.trim();
+                if (trimmed) {
+                    if (!trimmed.startsWith('AIza')) {
+                        alert("⚠️ Gemini API Key hợp lệ phải bắt đầu bằng 'AIza...'. Vui lòng kiểm tra lại!");
+                        return;
+                    }
+                    this.saveUserGeminiKey(trimmed);
+                    alert("✅ Đã lưu Google Gemini API Key cá nhân theo tài khoản Gmail!\nToàn quyền mở khóa Media Studio AI.");
                 } else {
+                    if (this.currentUser) {
+                        this.currentUser.geminiApiKey = '';
+                        this.saveUserSession(this.currentUser);
+                        this.saveGeminiKeyForEmail(this.currentUser.email, '');
+                    }
                     localStorage.removeItem('user_gemini_api_key');
                     this.checkMediaAIPermission();
                 }
@@ -5108,17 +5227,40 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     }
 
     checkMediaAIPermission() {
-        // PHÂN QUYỀN MEDIA STUDIO CHUẨN MỰC THEO 5 NHÓM
+        // PHÂN QUYỀN MEDIA STUDIO CHUẨN BYOK: Bắt buộc đăng nhập Gmail + có Gemini API Key cá nhân (Admin miễn kiểm)
         const overlay = document.getElementById('mediaAILockOverlay');
-        if (this.isGuest()) {
-            // Nhóm 5: Khách vãng lai bị khóa hoàn toàn Media Studio
-            if (overlay) overlay.style.display = 'flex';
-            return false;
-        } else {
-            // Nhóm 1, 2, 3, 4 được vào xưởng biên tập
+        const desc = document.getElementById('mediaAILockDesc');
+        const btnLogin = document.getElementById('btnMediaLoginGmail');
+        const btnConfig = document.getElementById('btnMediaConfigApiKey');
+
+        if (this.isAdmin()) {
             if (overlay) overlay.style.display = 'none';
             return true;
         }
+
+        if (this.isGuest() || !this.currentUser?.isLoggedIn || !this.currentUser?.email) {
+            if (overlay) overlay.style.display = 'flex';
+            if (btnLogin) btnLogin.style.display = 'inline-flex';
+            if (btnConfig) btnConfig.style.display = 'none';
+            if (desc) {
+                desc.innerHTML = 'Công cụ Media Studio ứng dụng trí tuệ nhân tạo <strong>Google Gemini</strong>.<br><span style="color: #b91c1c; font-weight: 700;">Yêu cầu bắt buộc: Vui lòng Đăng nhập / Đăng ký bằng tài khoản Gmail cá nhân và sử dụng gói Gemini Free của Gmail đó (tuyệt đối không dùng chung Token Quản trị).</span>';
+            }
+            return false;
+        }
+
+        const userKey = this.getActiveGeminiKey();
+        if (!userKey || !userKey.startsWith('AIza')) {
+            if (overlay) overlay.style.display = 'flex';
+            if (btnLogin) btnLogin.style.display = 'none';
+            if (btnConfig) btnConfig.style.display = 'inline-flex';
+            if (desc) {
+                desc.innerHTML = `Đã đăng nhập Gmail: <strong>${this.currentUser.email}</strong>.<br><span style="color: #b91c1c; font-weight: 700;">Vui lòng gắn mã Gemini API Key miễn phí từ Google AI Studio của tài khoản Gmail này để mở khóa xưởng Media Studio (không hao tốn Token Quản trị).</span>`;
+            }
+            return false;
+        }
+
+        if (overlay) overlay.style.display = 'none';
+        return true;
     }
 
     updateSelectedActorUI() {
@@ -5717,6 +5859,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     }
 
     generateLessonPlanWithAI(params) {
+        if (!this.requireGeminiAccess('Trí tuệ Gemini Soạn Kế hoạch bài dạy')) {
+            return;
+        }
         const statusBadge = document.getElementById('lpStatusBadge');
         if (statusBadge) {
             statusBadge.textContent = "AI Đang Soạn Chuẩn...";
@@ -8479,11 +8624,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         document.getElementById('btnCloseSourceSelector')?.addEventListener('click', closeSourceSelectorModal);
         document.getElementById('btnCancelSourceSelector')?.addEventListener('click', closeSourceSelectorModal);
 
-        // Xử lý cảnh báo điều kiện mạng & tài khoản thành viên
+        // Xử lý cảnh báo điều kiện mạng & tài khoản Gmail + Gemini API Key cá nhân
         const updateSourceWarning = (choice) => {
             const isOnline = navigator.onLine;
-            const isVip = localStorage.getItem('edustudio_user_is_vip') === 'true';
-            const userApiKey = localStorage.getItem('user_gemini_api_key');
+            const hasKey = this.isAdmin() || (!this.isGuest() && !!this.getActiveGeminiKey());
 
             if (choice === 'internal') {
                 sourceWarningBox.style.display = 'none';
@@ -8499,13 +8643,15 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 return;
             }
 
-            // Đang online nhưng kiểm tra AI thành viên
+            // Đang online nhưng kiểm tra Gmail + Gemini API Key cá nhân (bảo toàn Token Admin)
             if (choice === 'external' || choice === 'hybrid') {
-                if (!isVip && !userApiKey) {
+                if (!hasKey) {
                     sourceWarningBox.style.display = 'flex';
                     sourceWarningBox.className = 'source-warning-box';
-                    sourceWarningIcon.textContent = '⚠️';
-                    sourceWarningMessage.innerHTML = '<strong>Tài khoản của bạn không sử dụng được tính năng lấy nguồn Đề ngoài Kho Đề.</strong><br>Để sử dụng nhanh tính năng này, bạn cần Nâng cấp thành viên.';
+                    sourceWarningIcon.textContent = '🔒';
+                    sourceWarningMessage.innerHTML = this.isGuest()
+                        ? '<strong>Khách Vãng Lai không dùng được tính năng AI Gemini.</strong><br>Bắt buộc đăng nhập bằng <strong>Gmail cá nhân</strong> và dùng gói Gemini Free của bạn.'
+                        : '<strong>Chưa gắn Gemini API Key cá nhân cho tài khoản Gmail.</strong><br>Vui lòng gắn khóa Gemini Free của chính Gmail bạn để sử dụng (không dùng Token Quản trị).';
                     btnTriggerUpgrade.style.display = 'inline-flex';
                 } else {
                     sourceWarningBox.style.display = 'flex';
@@ -8513,7 +8659,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                     sourceWarningBox.style.background = '#f0fdf4';
                     sourceWarningBox.style.borderColor = '#86efac';
                     sourceWarningIcon.textContent = '✓';
-                    sourceWarningMessage.innerHTML = `<strong>Tài khoản Thành viên Hợp lệ:</strong> Đã sẵn sàng ủy quyền AI cá nhân của Thầy/Cô để khai thác nguồn đề mở rộng an toàn!`;
+                    sourceWarningMessage.innerHTML = `<strong>Tài khoản Gmail Hợp lệ:</strong> Đã kết nối Gemini API Key cá nhân để khai thác nguồn đề mở rộng an toàn!`;
                     btnTriggerUpgrade.style.display = 'none';
                 }
             }
@@ -8541,20 +8687,13 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             const hybridRatio = document.getElementById('hybridRatioSelect')?.value || '70-30';
 
             const isOnline = navigator.onLine;
-            const isVip = localStorage.getItem('edustudio_user_is_vip') === 'true';
-            const userApiKey = localStorage.getItem('user_gemini_api_key');
 
             if ((choice === 'external' || choice === 'hybrid') && !isOnline) {
                 alert("⚠️ Bạn đang Offline! Hãy kết nối Internet để sử dụng nguồn đề Ngoài Kho.");
                 return;
             }
 
-            if ((choice === 'external') && !isVip && !userApiKey) {
-                const confirmUpgrade = confirm("⚠️ Tài khoản của bạn không sử dụng được tính năng lấy nguồn Đề ngoài Kho Đề.\n\nĐể sử dụng nhanh tính năng này, Thầy/Cô cần Nâng cấp thành viên.\n\nThầy/Cô có muốn chuyển sang Hộp thoại Đăng Ký Nâng Cấp Thành Viên ngay bây giờ không?");
-                if (confirmUpgrade) {
-                    closeSourceSelectorModal();
-                    openMembershipModal();
-                }
+            if ((choice === 'external' || choice === 'hybrid') && !this.requireGeminiAccess('Khai thác & Biên soạn Đề kiểm tra ngoài kho bằng Gemini AI')) {
                 return;
             }
 
@@ -8579,27 +8718,30 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         btnTriggerUpgrade?.addEventListener('click', () => {
             closeSourceSelectorModal();
-            openMembershipModal();
+            if (!this.requireGeminiAccess('Khai thác Đề ngoài kho bằng Gemini AI')) return;
+            updateSourceWarning('external');
         });
 
         document.getElementById('btnCloseMembershipModal')?.addEventListener('click', closeMembershipModal);
         document.getElementById('btnCloseMembershipBtn')?.addEventListener('click', closeMembershipModal);
 
         document.getElementById('btnSubmitUpgrade')?.addEventListener('click', () => {
-            const name = document.getElementById('upgradeFullName')?.value || 'Thầy Nguyễn Tá Quan';
+            if (this.isGuest() || !this.currentUser?.isLoggedIn) {
+                closeMembershipModal();
+                this.requireGeminiAccess('Nâng cấp Thành viên EduStudio');
+                return;
+            }
+            const name = document.getElementById('upgradeFullName')?.value || this.currentUser.name || 'Thành Viên';
             const school = document.getElementById('upgradeSchool')?.value || 'Đơn vị giáo dục';
-            const phone = document.getElementById('upgradePhone')?.value || '090xxxxxxx';
-            const email = document.getElementById('upgradeEmail')?.value || 'taquan@edustudio.vn';
 
-            // Lưu trạng thái VIP Pro
+            // Lưu trạng thái VIP Pro gắn với tài khoản Gmail hiện tại (nhưng vẫn yêu cầu Gemini Key cá nhân khi gọi AI)
             localStorage.setItem('edustudio_user_is_vip', 'true');
             localStorage.setItem('edustudio_user_name', name);
 
             sound.playFanfare();
             closeMembershipModal();
-            alert(`🎉 CHÚC MỪNG THẦY NGUYỄN TÁ QUAN ĐÃ KÍCH HOẠT THÀNH CÔNG GÓI VIP PRO TRẢI NGHIỆM!\n\n• Nhà giáo: ${name}\n• Đơn vị: ${school}\n• Quyền lợi mở khóa:\n  - Khai thác AI Ngoài Kho Đề không giới hạn\n  - AI Đối soát đối chiếu PPCT tự động\n  - Lưu trữ 5TB Đám mây EduStudio\n\nToàn bộ tính năng cao cấp đã sẵn sàng phục vụ Thầy!`);
+            alert(`🎉 CHÚC MỪNG ${name.toUpperCase()} ĐÃ KÍCH HOẠT THÀNH CÔNG GÓI VIP PRO!\n\n• Tài khoản Gmail: ${this.currentUser.email}\n• Đơn vị: ${school}\n• Lưu ý: Các tính năng có Gemini AI can thiệp sẽ sử dụng Gemini API Key miễn phí của chính tài khoản Gmail này!`);
 
-            // Nếu đang mở form tạo đề thì cập nhật lại trạng thái
             updateSourceWarning('external');
         });
 
@@ -8781,6 +8923,14 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
 
         // 16. ĐĂNG NHẬP GOOGLE VÀ QUÉT MÃ QR (ĐẢM BẢO HOẠT ĐỘNG 100% KHI THOÁT RA VÀO LẠI)
+        document.getElementById('btnExecuteAuthLogin')?.addEventListener('click', (e) => {
+            if (typeof window.doEduStudioLogin === 'function') {
+                window.doEduStudioLogin(e);
+            } else {
+                this.executeAuthLogin();
+            }
+        });
+
         document.getElementById('btnGoogleSignIn')?.addEventListener('click', () => {
             this.loginWithGoogle();
         });
@@ -9834,12 +9984,14 @@ Lý do: ${reason}`);
 
     saveSystemAIConfig() {
         const apiKey = document.getElementById('adminSystemGeminiKey')?.value.trim() || '';
+        const googleClientId = document.getElementById('adminGoogleClientId')?.value.trim() || '';
         const model = document.getElementById('adminSystemModelSelect')?.value || 'gemini-2.5-flash';
         const delegation = document.getElementById('adminEnableGoogleAIDelegation')?.checked ?? true;
         const hfToken = document.getElementById('adminHFToken')?.value.trim() || '';
 
         this.systemAIConfig = {
             geminiApiKey: apiKey,
+            googleClientId: googleClientId,
             defaultModel: model,
             enableGoogleAIDelegation: delegation,
             hfToken: hfToken,
@@ -9850,12 +10002,16 @@ Lý do: ${reason}`);
 
         try {
             localStorage.setItem('edustudio_system_ai_config', JSON.stringify(this.systemAIConfig));
+            if (typeof window.setGoogleClientId === 'function') {
+                window.setGoogleClientId(googleClientId);
+            }
         } catch(e) {}
 
         sound.playSuccess();
-        alert(`💾 [ĐÃ LƯU CẤU HÌNH AI TOÀN HỆ THỐNG!]
+        alert(`💾 [ĐÃ LƯU CẤU HÌNH AI & GOOGLE OAUTH TOÀN HỆ THỐNG!]
 
 • Gemini Core Model: ${model}
+• Google OAuth Client ID: ${googleClientId ? 'Đã gắn (' + googleClientId.slice(0, 18) + '...)' : 'Chưa gắn'}
 • Cơ Chế Google AI Phân Tán: ${delegation ? 'BẬT (Tối ưu tài nguyên máy chủ)' : 'TẮT'}
 • Cloud GPU Token: Đã xác thực an toàn`);
     }

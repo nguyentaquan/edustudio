@@ -224,6 +224,7 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             # Chuẩn hóa email: nếu người dùng nhập 'nguyentaquan' hoặc 'nguyentaquan8' không có @, tự gắn @gmail.com
             email = raw_email if '@' in raw_email else f"{raw_email}@gmail.com"
+            req_gemini_key = (data.get('geminiApiKey') or '').strip()
             pwd_hash = hash_password(password)
             users = load_users()
             now = int(time.time())
@@ -231,10 +232,19 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             # Nhận diện Admin Master (Thầy Nguyễn Tá Quan)
             is_admin = (
-                email in ('nguyentaquan@gmail.com', 'nguyentaquan8@gmail.com') or 
-                raw_email in ('nguyentaquan', 'nguyentaquan8') or 
-                'nguyentaquan' in email
+                email in ('nguyentaquan@gmail.com', 'nguyentaquan8@gmail.com') or
+                raw_email in ('nguyentaquan', 'nguyentaquan8')
             )
+
+            if not is_admin and not email.endswith('@gmail.com'):
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "error": "⚠️ Bắt buộc đăng nhập/đăng ký bằng tài khoản Gmail (@gmail.com) để dùng gói Gemini Free cá nhân!"
+                }, ensure_ascii=False).encode('utf-8'))
+                return
 
             existing = next((u for u in users if u.get('email', '').lower() == email), None)
 
@@ -251,7 +261,7 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(json.dumps({
                         "success": False,
-                        "error": "❌ Mật khẩu hoặc tài khoản Gmail không chính xác. Vui lòng kiểm tra và nhập lại!"
+                        "error": "❌ Mật khẩu hoặc tài khoản EduStudio không chính xác. Vui lòng kiểm tra và nhập lại!"
                     }, ensure_ascii=False).encode('utf-8'))
                     return
 
@@ -259,6 +269,8 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 existing['lastLogin'] = f"Vừa xong ({now_str})"
                 existing['lastSeen'] = now
                 existing['loginCount'] = existing.get('loginCount', 0) + 1
+                if req_gemini_key:
+                    existing['geminiApiKey'] = req_gemini_key
                 if is_admin:
                     existing['role'] = 'admin'
                     existing['avatar'] = '👑'
@@ -281,6 +293,7 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     "name": "Thầy Nguyễn Tá Quan",
                     "email": email,
                     "password": pwd_hash,
+                    "geminiApiKey": req_gemini_key,
                     "school": "Trường THCS Bán Trú Canh Thuận",
                     "phone": "0914.xxx.xxx",
                     "cccd": "",
@@ -302,55 +315,24 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             else:
                 # TÀI KHOẢN GMAIL MỚI ĐĂNG KÝ/ĐĂNG NHẬP:
-                # Theo quy định: Mặc định đăng nhập Gmail thành công sẽ là Thành Viên (Nhóm 4)
                 user_name = email.split('@')[0]
-                # Format tên hiển thị thân thiện (ví dụ: thaynam -> Thầy Nam)
-                u_role = 'member'
-                u_pts = 100
-                u_demo = 20
-                u_avatar = '👨‍🏫'
-
                 new_user = {
                     "id": f"user_{now % 10000:04d}",
                     "name": user_name,
                     "email": email,
                     "password": pwd_hash,
+                    "geminiApiKey": req_gemini_key,
                     "school": "",
                     "phone": "",
                     "cccd": "",
                     "subject": "",
                     "grade": "thcs",
-                    "role": u_role,
-                    "points": u_pts,
+                    "role": "member",
+                    "points": 100,
                     "balance": 0,
-                    "demoUses": u_demo,
+                    "demoUses": 20,
                     "status": "active",
-                    "avatar": u_avatar,
-                    "joinDate": time.strftime("%d/%m/%Y"),
-                    "lastLogin": f"Vừa xong ({now_str})",
-                    "lastSeen": now,
-                    "device": data.get('device') or "💻 Máy Tính",
-                    "loginCount": 1
-                }
-                users.append(new_user)
-                target_user = new_user
-
-                new_user = {
-                    "id": f"user_{now % 10000:04d}",
-                    "name": user_name,
-                    "email": email,
-                    "password": pwd_hash,
-                    "school": "",
-                    "phone": "",
-                    "cccd": "",
-                    "subject": "",
-                    "grade": "thcs",
-                    "role": u_role,
-                    "points": u_pts,
-                    "balance": 0,
-                    "demoUses": u_demo,
-                    "status": "active",
-                    "avatar": u_avatar,
+                    "avatar": "👨‍🏫",
                     "joinDate": time.strftime("%d/%m/%Y"),
                     "lastLogin": f"Vừa xong ({now_str})",
                     "lastSeen": now,
@@ -362,15 +344,14 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             save_users(users)
 
-            # Tính lại số online trực tế
+            # Tính lại số online thực tế
             online_count = sum(1 for u in users if (now - u.get('lastSeen', 0)) < 120)
 
-            # Ghi nhật ký bảo mật
             try:
                 add_system_log(
                     user_name=target_user.get('name'),
                     role=target_user.get('role'),
-                    action=f"Đăng nhập thành công qua Google ({target_user.get('email')})",
+                    action=f"Đăng nhập thành công qua EduStudio ({target_user.get('email')})",
                     module="Xác Thực Đăng Nhập",
                     log_type="auth",
                     status="Thành công"
@@ -390,6 +371,114 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 "message": f"Xin chào {target_user.get('name')}!"
             }, ensure_ascii=False).encode('utf-8')
 
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Length', str(len(data_bytes)))
+            self.end_headers()
+            self.wfile.write(data_bytes)
+            return
+
+        elif clean_path == '/api/auth/google-oauth':
+            import base64
+            import urllib.request
+            import urllib.parse
+            try:
+                length = int(self.headers.get('Content-Length', 0))
+                body = self.rfile.read(length).decode('utf-8')
+                data = json.loads(body)
+            except Exception as e:
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+
+            id_token = (data.get('id_token') or '').strip()
+            req_gemini_key = (data.get('geminiApiKey') or '').strip()
+            if not id_token or '.' not in id_token:
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Thiếu hoặc sai định dạng Google ID Token"}).encode('utf-8'))
+                return
+
+            claims = None
+            try:
+                url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + urllib.parse.quote(id_token)
+                with urllib.request.urlopen(url, timeout=8) as resp:
+                    claims = json.loads(resp.read().decode('utf-8'))
+            except Exception:
+                try:
+                    parts = id_token.split('.')
+                    padded = parts[1] + '=' * (-len(parts[1]) % 4)
+                    claims = json.loads(base64.urlsafe_b64decode(padded).decode('utf-8'))
+                except Exception:
+                    claims = None
+
+            if not claims or not claims.get('email'):
+                self.send_response(401)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Không xác thực được tài khoản Google!"}).encode('utf-8'))
+                return
+
+            email = claims['email'].strip().lower()
+            full_name = (claims.get('name') or email.split('@')[0]).strip()
+            picture = claims.get('picture') or ''
+            is_admin = email in ('nguyentaquan@gmail.com', 'nguyentaquan8@gmail.com')
+
+            users = load_users()
+            now = int(time.time())
+            now_str = time.strftime("%H:%M %d/%m/%Y")
+            existing = next((u for u in users if u.get('email', '').lower() == email), None)
+
+            if existing:
+                existing['lastLogin'] = f"Google OAuth ({now_str})"
+                existing['lastSeen'] = now
+                existing['loginCount'] = existing.get('loginCount', 0) + 1
+                if picture: existing['picture'] = picture
+                if req_gemini_key: existing['geminiApiKey'] = req_gemini_key
+                if is_admin:
+                    existing['role'] = 'admin'
+                    existing['avatar'] = '👑'
+                target_user = existing
+            else:
+                target_user = {
+                    "id": ("admin_" if is_admin else "user_") + email.split('@')[0],
+                    "name": "Thầy Nguyễn Tá Quan" if is_admin else full_name,
+                    "email": email,
+                    "picture": picture,
+                    "geminiApiKey": req_gemini_key,
+                    "school": "Trường THCS Bán Trú Canh Thuận" if is_admin else "",
+                    "phone": "",
+                    "cccd": "",
+                    "subject": "HĐTN-HN, KHTN, Tin học" if is_admin else "",
+                    "grade": "thcs",
+                    "role": "admin" if is_admin else "member",
+                    "points": 999999 if is_admin else 100,
+                    "balance": 0,
+                    "demoUses": 999 if is_admin else 20,
+                    "status": "active",
+                    "avatar": "👑" if is_admin else "👨‍🏫",
+                    "joinDate": time.strftime("%d/%m/%Y"),
+                    "lastLogin": f"Google OAuth ({now_str})",
+                    "lastSeen": now,
+                    "device": "💻 Máy Tính",
+                    "loginCount": 1
+                }
+                users.append(target_user)
+
+            save_users(users)
+            online_count = sum(1 for u in users if (now - u.get('lastSeen', 0)) < 120)
+            resp_user = dict(target_user)
+            resp_user.pop('password', None)
+
+            data_bytes = json.dumps({
+                "success": True,
+                "user": resp_user,
+                "onlineCount": max(1, online_count),
+                "totalUsers": len(users)
+            }, ensure_ascii=False).encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.send_header('Content-Length', str(len(data_bytes)))
@@ -471,20 +560,47 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if 'cccd' in data: target['cccd'] = data['cccd'].strip()
                 if 'subject' in data: target['subject'] = data['subject'].strip()
                 if 'grade' in data: target['grade'] = data['grade'].strip()
+                if 'geminiApiKey' in data: target['geminiApiKey'] = (data.get('geminiApiKey') or '').strip()
                 new_pwd = (data.get('newPassword') or '').strip()
                 if new_pwd:
                     target['password'] = hash_password(new_pwd)
                 save_users(users)
+                safe_user = dict(target)
+                safe_user.pop('password', None)
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json; charset=utf-8')
                 self.end_headers()
-                self.wfile.write(json.dumps({"success": True, "user": target}, ensure_ascii=False).encode('utf-8'))
+                self.wfile.write(json.dumps({"success": True, "user": safe_user}, ensure_ascii=False).encode('utf-8'))
                 return
             else:
                 self.send_response(404)
                 self.send_header('Content-Type', 'application/json; charset=utf-8')
                 self.end_headers()
                 self.wfile.write(json.dumps({"success": False, "error": "Không tìm thấy tài khoản người dùng"}, ensure_ascii=False).encode('utf-8'))
+                return
+
+        elif clean_path == '/api/users/update-ai-key':
+            try:
+                length = int(self.headers.get('Content-Length', 0))
+                body = self.rfile.read(length).decode('utf-8')
+                data = json.loads(body)
+                email = (data.get('email') or '').strip().lower()
+                key = (data.get('geminiApiKey') or '').strip()
+                users = load_users()
+                target = next((u for u in users if email and u.get('email', '').lower() == email), None)
+                if target:
+                    target['geminiApiKey'] = key
+                    save_users(users)
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
                 return
 
         elif clean_path == '/api/logs/add':

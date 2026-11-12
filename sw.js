@@ -1,4 +1,4 @@
-// EduStudio PWA Cache Killer & Network First Engine (v3.10.65)
+// EduStudio PWA Cache Killer (v3.10.99 - Zero Cache)
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
@@ -8,7 +8,6 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keyList) => {
       return Promise.all(
         keyList.map((key) => {
-          console.log('[PWA] Deleting cache:', key);
           return caches.delete(key);
         })
       );
@@ -19,9 +18,8 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Bỏ qua cache hoàn toàn đối với tài nguyên code để tránh kẹt phiên bản cũ
   event.respondWith(
-    fetch(event.request).catch(() => {
+    fetch(event.request, { cache: 'no-store' }).catch(() => {
       return caches.match(event.request);
     })
   );
