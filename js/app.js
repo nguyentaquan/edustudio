@@ -1452,6 +1452,40 @@ class EduStudioApp {
         return !!activeKey;
     }
 
+    async discoverAvailableGeminiModels(apiKey) {
+        try {
+            if (this._discoveredGeminiModels && (Date.now() - (this._discoveredGeminiModelsAt || 0) < 600000)) {
+                return this._discoveredGeminiModels;
+            }
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
+            if (!res.ok) return [];
+            const payload = await res.json().catch(() => ({}));
+            const list = (payload.models || [])
+                .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
+                .map(m => String(m.name || '').replace(/^models\//, ''))
+                .filter(name => /gemini/i.test(name) && !/embedding|aqa|imagen|veo|tts|audio|robotics/i.test(name));
+            // Ưu tiên flash mới nhất -> flash khác -> pro mới nhất
+            list.sort((a, b) => {
+                const score = (n) => {
+                    let s = 0;
+                    if (/flash/i.test(n)) s += 100;
+                    if (/3\.8|3\.5|3\.1|3\.0/i.test(n)) s += 50;
+                    if (/lite/i.test(n)) s -= 10;
+                    if (/exp|preview/i.test(n)) s -= 5;
+                    return s;
+                };
+                return score(b) - score(a);
+            });
+            if (list.length) {
+                this._discoveredGeminiModels = list;
+                this._discoveredGeminiModelsAt = Date.now();
+            }
+            return list;
+        } catch (e) {
+            return [];
+        }
+    }
+
     async callGeminiPersonal(prompt, options = {}) {
         const featureName = options.featureName || 'Tính năng AI Gemini';
         if (!this.requireGeminiAccess(featureName)) {
@@ -1462,11 +1496,13 @@ class EduStudioApp {
             throw new Error('INVALID_PERSONAL_API_KEY');
         }
         let primaryModel = options.model || this.systemAIConfig?.defaultModel || 'gemini-3.8-flash';
-        if (primaryModel === 'gemini-2.5-flash' || primaryModel === 'gemini-1.5-pro') {
+        if (primaryModel === 'gemini-2.5-flash' || primaryModel === 'gemini-1.5-pro' || primaryModel === 'gemini-2.5-pro') {
             primaryModel = 'gemini-3.8-flash';
         }
-        const candidates = [primaryModel, 'gemini-3.8-flash', 'gemini-3.0-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro']
-            .filter((m, idx, arr) => m && arr.indexOf(m) === idx);
+        const discovered = await this.discoverAvailableGeminiModels(apiKey);
+        const candidates = [primaryModel, ...discovered, 'gemini-3.8-flash', 'gemini-3.1-pro-preview']
+            .filter((m, idx, arr) => m && arr.indexOf(m) === idx)
+            .slice(0, 6);
         const generationConfig = {
             temperature: options.temperature ?? 0.7
         };
