@@ -1461,8 +1461,12 @@ class EduStudioApp {
         if (!apiKey || !apiKey.startsWith('AIza')) {
             throw new Error('INVALID_PERSONAL_API_KEY');
         }
-        const model = options.model || this.systemAIConfig?.defaultModel || 'gemini-2.5-flash';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        let primaryModel = options.model || this.systemAIConfig?.defaultModel || 'gemini-3.8-flash';
+        if (primaryModel === 'gemini-2.5-flash' || primaryModel === 'gemini-1.5-pro') {
+            primaryModel = 'gemini-3.8-flash';
+        }
+        const candidates = [primaryModel, 'gemini-3.8-flash', 'gemini-3.0-flash', 'gemini-2.5-pro']
+            .filter((m, idx, arr) => m && arr.indexOf(m) === idx);
         const generationConfig = {
             temperature: options.temperature ?? 0.7
         };
@@ -1470,17 +1474,30 @@ class EduStudioApp {
             generationConfig.responseMimeType = 'application/json';
         }
 
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig
-            })
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
+        let lastErrorMsg = '';
+        let data = {};
+        let succeeded = false;
+        for (const model of candidates) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig
+                })
+            });
+            data = await res.json().catch(() => ({}));
+            if (res.ok) {
+                succeeded = true;
+                break;
+            }
             const msg = data?.error?.message || `HTTP ${res.status}`;
+            lastErrorMsg = msg;
+            const isModelDeprecated = res.status === 404 || /no longer available|not found for API version|is not supported/i.test(msg);
+            if (isModelDeprecated) {
+                continue;
+            }
             if (res.status === 400 || res.status === 403) {
                 try {
                     if (this.currentUser?.email) this.saveGeminiKeyForEmail(this.currentUser.email, '');
@@ -1499,6 +1516,9 @@ class EduStudioApp {
                 throw new Error(`API Key cá nhân đã chạm hạn mức miễn phí tạm thời (HTTP 429). Vui lòng đợi 1 phút rồi thử lại!`);
             }
             throw new Error(`Lỗi Gemini API: ${msg}`);
+        }
+        if (!succeeded) {
+            throw new Error(`Lỗi Gemini API: ${lastErrorMsg || 'Không tìm thấy model Gemini khả dụng.'}`);
         }
         const rawText = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
         if (!rawText) {
@@ -9351,14 +9371,17 @@ D. Nói xấu sau lưng bạn với những người khác
                 const parsed = JSON.parse(saved);
                 if (parsed.geminiApiKey === 'AIzaSyEduStudioMasterKeySecret999') {
                     parsed.geminiApiKey = '';
-                    localStorage.setItem('edustudio_system_ai_config', JSON.stringify(parsed));
                 }
+                if (!parsed.defaultModel || parsed.defaultModel === 'gemini-2.5-flash' || parsed.defaultModel === 'gemini-1.5-pro') {
+                    parsed.defaultModel = 'gemini-3.8-flash';
+                }
+                localStorage.setItem('edustudio_system_ai_config', JSON.stringify(parsed));
                 return parsed;
             }
         } catch(e) {}
         return {
             geminiApiKey: "",
-            defaultModel: "gemini-2.5-flash",
+            defaultModel: "gemini-3.8-flash",
             enableGoogleAIDelegation: true,
             hfToken: "hf_EduStudioDedicatedH200ClusterToken",
             docsPrice: 500,
@@ -10124,7 +10147,7 @@ Lý do: ${reason}`);
     saveSystemAIConfig() {
         const apiKey = document.getElementById('adminSystemGeminiKey')?.value.trim() || '';
         const googleClientId = document.getElementById('adminGoogleClientId')?.value.trim() || '';
-        const model = document.getElementById('adminSystemModelSelect')?.value || 'gemini-2.5-flash';
+        const model = document.getElementById('adminSystemModelSelect')?.value || 'gemini-3.8-flash';
         const delegation = document.getElementById('adminEnableGoogleAIDelegation')?.checked ?? true;
         const hfToken = document.getElementById('adminHFToken')?.value.trim() || '';
 
@@ -10157,7 +10180,7 @@ Lý do: ${reason}`);
 
     testAIConnection() {
         sound.playPop();
-        const model = document.getElementById('adminSystemModelSelect')?.value || 'gemini-2.5-flash';
+        const model = document.getElementById('adminSystemModelSelect')?.value || 'gemini-3.8-flash';
         alert(`🟢 [KẾT NỐI TRÍ TUỆ NHÂN TẠO AI THÀNH CÔNG!]
 
 • Máy chủ AI: Google Gemini Core (${model})
