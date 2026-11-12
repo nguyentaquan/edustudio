@@ -83,7 +83,7 @@
         getConfig() {
             const def = window.EDUSTUDIO_DEFAULT_CLOUD_CONFIG || {
                 provider: 'firebase',
-                projectId: 'edustudio-514503',
+                projectId: 'edustudio-cloud',
                 apiKey: ''
             };
             try {
@@ -334,3 +334,4 @@
         }
     };
 })();
+
