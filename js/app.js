@@ -2050,18 +2050,18 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         // Dữ liệu mẫu khởi tạo phong phú chuẩn sư phạm
         const defaultLogs = [
-            { id: "LOG-1001", time: "2026-11-04 00:32:10", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Kích hoạt chế độ Hoán đổi tiết 1 chạm (Click-to-Swap)", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
-            { id: "LOG-1002", time: "2026-11-04 00:28:45", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tinh chỉnh đệm lề và ép gọn kích thước ô bàn cờ TKB chuẩn 32px", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
-            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.57 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
+            { id: "LOG-1001", time: "2026-11-04 00:32:10", user: "Admin Quản Trị", role: "Nhóm 1: Quản Trị", action: "Kích hoạt chế độ Hoán đổi tiết 1 chạm (Click-to-Swap)", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
+            { id: "LOG-1002", time: "2026-11-04 00:28:45", user: "Admin Quản Trị", role: "Nhóm 1: Quản Trị", action: "Tinh chỉnh đệm lề và ép gọn kích thước ô bàn cờ TKB chuẩn 32px", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
+            { id: "LOG-1003", time: "2026-11-04 00:20:15", user: "Admin Quản Trị", role: "Nhóm 1: Quản Trị", action: "Đồng bộ nhãn phiên bản v3.10.57 GDMN & GDPT toàn hệ thống", module: "Quản Trị Hệ Thống", type: "auth", status: "Thành công" },
             { id: "LOG-1004", time: "2026-11-03 23:45:00", user: "Cô Hà Thị Thúy Hòa", role: "Nhóm 4: Giáo Viên", action: "Xem thời khóa biểu Lớp 6A2 môn Tin Học", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
-            { id: "LOG-1005", time: "2026-11-03 23:15:20", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Tạo Đề Kiểm Tra Giữa Kỳ I HĐTN 8 chuẩn ma trận & đặc tả BGDĐT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" },
+            { id: "LOG-1005", time: "2026-11-03 23:15:20", user: "Admin Quản Trị", role: "Nhóm 1: Quản Trị", action: "Tạo Đề Kiểm Tra Giữa Kỳ I HĐTN 8 chuẩn ma trận & đặc tả BGDĐT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" },
             { id: "LOG-1006", time: "2026-11-03 22:50:11", user: "Cô Dương Thị Ngọc Lành", role: "Nhóm 4: Giáo Viên", action: "Đăng nhập xác thực tài khoản Google SSO", module: "Xác Thực", type: "auth", status: "Thành công" },
             { id: "LOG-1007", time: "2026-11-03 22:10:04", user: "Thầy Nguyễn Bá Hiền", role: "Nhóm 4: Giáo Viên", action: "Soạn Kế hoạch bài dạy KHBD 5512 Lịch sử 7", module: "Soạn KHBD", type: "lesson", status: "Thành công" },
-            { id: "LOG-1008", time: "2026-11-03 21:30:18", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Xuất file Mẫu TKB Master chuẩn Excel 5 Sheets (.xlsx)", module: "Thời Khóa Biểu", type: "export", status: "Thành công" },
+            { id: "LOG-1008", time: "2026-11-03 21:30:18", user: "Admin Quản Trị", role: "Nhóm 1: Quản Trị", action: "Xuất file Mẫu TKB Master chuẩn Excel 5 Sheets (.xlsx)", module: "Thời Khóa Biểu", type: "export", status: "Thành công" },
             { id: "LOG-1009", time: "2026-11-03 20:45:33", user: "Cô Phạm Thị Nhàn", role: "Nhóm 4: Giáo Viên", action: "Khai thác bài giảng điện tử PPT 16:9 môn Ngữ Văn 6", module: "Kho Bài Giảng", type: "lesson", status: "Thành công" },
             { id: "LOG-1010", time: "2026-11-03 19:12:40", user: "Thầy Lê Quốc Thái", role: "Nhóm 4: Giáo Viên", action: "Tra cứu lịch giảng dạy và phòng bộ môn GDTC", module: "Thời Khóa Biểu", type: "tkb", status: "Thành công" },
             { id: "LOG-1011", time: "2026-11-03 18:05:15", user: "Thầy Lương Văn Tuấn", role: "Nhóm 4: Giáo Viên", action: "Đăng nhập hệ thống EduStudio và xem phân công chuyên môn", module: "Xác Thực", type: "auth", status: "Thành công" },
-            { id: "LOG-1012", time: "2026-11-03 17:30:00", user: "Thầy Nguyễn Tá Quan", role: "Nhóm 1: Quản Trị", action: "Đối soát tự động ma trận đề kiểm tra KHTN 8 với PPCT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" }
+            { id: "LOG-1012", time: "2026-11-03 17:30:00", user: "Admin Quản Trị", role: "Nhóm 1: Quản Trị", action: "Đối soát tự động ma trận đề kiểm tra KHTN 8 với PPCT", module: "Tạo & Đối Soát Đề", type: "exam", status: "Thành công" }
         ];
 
         localStorage.setItem('edustudio_user_activity_logs', JSON.stringify(defaultLogs));
@@ -2070,9 +2070,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
     logUserActivity(action, module = 'Hệ Thống', type = 'general', details = '') {
         const logs = this.getUserLogs();
-        const userName = (this.currentUser && this.currentUser.name) || 'Thầy Nguyễn Tá Quan';
-        const userEmail = (this.currentUser && this.currentUser.email) || 'nguyentaquan@gmail.com';
-        const userSchool = (this.currentUser && this.currentUser.school) || 'Trường THCS Bán Trú Canh Thuận';
+        const userName = (this.currentUser && this.currentUser.name) || 'Ban Quản Trị Hệ Thống';
+        const userEmail = (this.currentUser && this.currentUser.email) || 'admin@edustudio.vn';
+        const userSchool = (this.currentUser && this.currentUser.school) || 'Trường THCS Chuẩn GDPT';
         const role = (this.currentUser && this.currentUser.role === 'admin') ? 'Nhóm 1: Quản Trị' : 
                      ((this.currentUser && this.currentUser.role === 'vip_pro') ? 'Nhóm 2: VIP PRO' : 
                      ((this.currentUser && this.currentUser.role === 'vip') ? 'Nhóm 3: VIP' : 'Nhóm 4: Giáo Viên'));
@@ -4426,7 +4426,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         tbody.querySelectorAll('.btn-delete-raw').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = e.currentTarget.dataset.id;
-                if (confirm(`Thầy có chắc chắn muốn xóa hồ sơ ${id} khỏi thư mục DỮ LIỆU THÔ để giải phóng bộ nhớ?`)) {
+                if (confirm(`Bạn có chắc chắn muốn xóa hồ sơ ${id} khỏi Kho Đề Trung Gian để giải phóng bộ nhớ?`)) {
                     this.rawStagingFiles = this.rawStagingFiles.filter(f => f.id !== id);
                     this.renderAdminStorageConsole();
                     sound.playClick();
@@ -4468,7 +4468,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     runAllAIAudits() {
         const pendings = this.rawStagingFiles.filter(f => f.status === 'pending');
         if (pendings.length === 0) {
-            alert("Không có hồ sơ nào đang chờ thẩm định trong thư mục DỮ LIỆU THÔ!");
+            alert("Không có hồ sơ nào đang chờ thẩm định trong Kho Đề Trung Gian (5TB)!");
             return;
         }
 
@@ -4492,7 +4492,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         this.renderAdminStorageConsole();
         sound.playFanfare();
-        alert(`🎉 AI đã hoàn tất thẩm định tự động toàn bộ ${pendings.length} hồ sơ trong thư mục DỮ LIỆU THÔ! Thầy có thể bấm "Duyệt & Phân Loại File Đạt Chuẩn" để đưa vào các kho trên Web.`);
+        alert(`🎉 AI đã hoàn tất thẩm định tự động toàn bộ ${pendings.length} hồ sơ trong Kho Đề Trung Gian (5TB)! Thầy/Cô có thể bấm "Duyệt & Phân Loại File Đạt Chuẩn" để đưa vào các kho trên Web.`);
     }
 
     // Phê duyệt và chuyển 1 tài liệu vào đúng Kho trên Web
@@ -4610,7 +4610,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         this.renderAdminStorageConsole();
         sound.playFanfare();
-        alert(`🗑️ [DỌN DẸP LƯU TRỮ 5TB HOÀN TẤT]\nĐã xóa vĩnh viễn ${purgedCount} tệp tin quá hạn 10 ngày, vi phạm quy chế hoặc đã nhập kho hoàn tất.\nDung lượng thư mục DỮ LIỆU THÔ đã được tối ưu hóa sạch sẽ!`);
+        alert(`🗑️ [DỌN DẸP LƯU TRỮ 5TB HOÀN TẤT]\nĐã xóa vĩnh viễn ${purgedCount} tệp tin quá hạn 10 ngày, vi phạm quy chế hoặc đã nhập kho hoàn tất.\nDung lượng Kho Đề Trung Gian (5TB) đã được tối ưu hóa sạch sẽ!`);
     }
 
     // Mở Báo cáo Thẩm định AI chi tiết
@@ -4709,7 +4709,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 </div>
 
                 <div style="font-size: 0.72rem; color: #64748b; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 0.6rem; margin-top: 0.75rem;">
-                    Bản quyền chứng thực hệ thống EduStudio 5TB • Định hướng chuyên môn của <strong>Thầy Nguyễn Tá Quan</strong>.
+                    Bản quyền chứng thực hệ thống EduStudio 5TB • Chuẩn hóa định hướng GDMN & GDPT.
                 </div>
             </div>
         `;
@@ -5997,8 +5997,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
     getDefaultLessonPlan() {
         return {
-            school: "TRƯỜNG THCS NGUYỄN TÁ QUAN",
-            teacher: "Thầy Nguyễn Tá Quan",
+            school: "TRƯỜNG THCS CHUẨN GDPT 2018",
+            teacher: "Giáo viên bộ môn",
             subject: "Hoạt động trải nghiệm, hướng nghiệp 8",
             grade: "Lớp 8",
             title: "Chủ đề 2: Rèn luyện tính kiên trì và chăm chỉ",
@@ -6151,7 +6151,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                         </tr>
                         <tr>
                             <td style="border: none; padding: 4px;"><strong>Chủ đề:</strong> Thế giới thực vật và các con vật quanh bé</td>
-                            <td style="border: none; padding: 4px;"><strong>Giáo viên thực hiện:</strong> ${this.currentUser?.name || 'Thầy Nguyễn Tá Quan'}</td>
+                            <td style="border: none; padding: 4px;"><strong>Giáo viên thực hiện:</strong> ${this.currentUser?.name || 'Giáo viên bộ môn'}</td>
                         </tr>
                     </table>
 
@@ -6190,7 +6190,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 // Kế hoạch bài dạy phổ thông chuẩn Công văn 5512/BGDĐT
                 planHtml = `
                     <div style="text-align: center; margin-bottom: 1.5rem;">
-                        <h4 style="margin: 0; font-size: 11pt; text-transform: uppercase;">TRƯỜNG THCS NGUYỄN TÁ QUAN • TỔ KHOA HỌC TỰ NHIÊN & HĐTN</h4>
+                        <h4 style="margin: 0; font-size: 11pt; text-transform: uppercase;">TRƯỜNG THCS CHUẨN GDPT • TỔ KHOA HỌC TỰ NHIÊN & HĐTN</h4>
                         <h3 style="margin: 0.35rem 0; font-size: 15pt; font-weight: bold; color: #1e3a8a;">KẾ HOẠCH BÀI DẠY</h3>
                         <h2 style="margin: 0.25rem 0; font-size: 14pt; color: #b91c1c;">${params.title.toUpperCase()}</h2>
                         <p style="margin: 0; font-style: italic; font-size: 12pt;">Môn: <strong>${params.subject}</strong> • Khối: <strong>${params.grade}</strong> • Thời lượng: <strong>${params.duration} tiết (Tuần ${params.week})</strong></p>
@@ -6256,7 +6256,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                     </div>
 
                     <div style="margin-top: 1.5rem; text-align: right; font-style: italic;">
-                        Ngày soạn: ${new Date().toLocaleDateString('vi-VN')} • Giáo viên thực hiện: <strong>${this.currentUser?.name || 'Thầy Nguyễn Tá Quan'}</strong>
+                        Ngày soạn: ${new Date().toLocaleDateString('vi-VN')} • Giáo viên thực hiện: <strong>${this.currentUser?.name || 'Giáo viên bộ môn'}</strong>
                     </div>
                 `;
             }
@@ -6479,6 +6479,15 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     }
 
     switchTab(tabId) {
+        if (tabId === 'storage5tb' && !this.isAdmin()) {
+            sound.playWrong();
+            alert("🔒 YÊU CẦU QUYỀN HẠN QUẢN TRỊ VIÊN\n\nChức năng 'Quản Trị Hệ Thống & Quản Lý Tài Khoản' là phân hệ bảo mật cao nhất, chỉ dành riêng cho Nhóm 1: QUẢN TRỊ VIÊN (Admin Master)!");
+            if (this.isGuest() || !this.currentUser?.isLoggedIn) {
+                this.openAuthModal();
+            }
+            return;
+        }
+
         if (this.currentTab === 'games' && tabId !== 'games') {
             this.speedQuiz.destroy();
             this.guessObject.destroy();
@@ -7445,7 +7454,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 <div style='text-align: center; font-style: italic;'>------------------------- HẾT -------------------------</div>
                 <div style='font-size: 10pt; font-style: italic; margin-top: 20px; color: #555;'>
                     * Cán bộ coi thi không giải thích gì thêm. Thí sinh không được sử dụng tài liệu.<br>
-                    * Hồ sơ đề kiểm tra chuẩn hóa bởi EduStudio - Định hướng chuyên môn: <strong>Thầy Nguyễn Tá Quan</strong>.
+                    * Hồ sơ đề kiểm tra chuẩn hóa bởi Hệ thống EduStudio theo định hướng chương trình GDPT 2018.
                 </div>
             </body>
             </html>
@@ -7685,7 +7694,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 <div style='text-align: center; font-style: italic;'>------------------------- HẾT HỒ SƠ ĐẶC THÙ -------------------------</div>
                 <div style='font-size: 10pt; font-style: italic; margin-top: 20px; color: #555;'>
                     * Hồ sơ đặc thù được đóng gói chuẩn hóa theo Nghị quyết chuyển đổi số và GDPT 2018.<br>
-                    * Bản quyền kỹ thuật và sư phạm: EduStudio - Thầy Nguyễn Tá Quan.
+                    * Bản quyền kỹ thuật và sư phạm: Hệ thống giáo dục EduStudio.
                 </div>
             </body>
             </html>
