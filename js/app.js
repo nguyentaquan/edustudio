@@ -8267,6 +8267,13 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         // Lưu câu hỏi mới soạn (Chuẩn hóa đầy đủ các trường thông tin theo file mẫu Excel)
         document.getElementById('btnSaveNewQuestion')?.addEventListener('click', () => {
+            if (this.isGuest() || !this.currentUser?.isLoggedIn) {
+                try { sound.playWrong(); } catch(e) {}
+                alert("🔒 YÊU CẦU ĐĂNG NHẬP GOOGLE\n\nVui lòng đăng nhập bằng tài khoản Google để nạp câu hỏi vào Kho Đề Trung Gian (5TB) chờ thẩm định!");
+                this.openAuthModal();
+                return;
+            }
+
             const stem = document.getElementById('newQStemInput')?.value.trim();
             if (!stem) {
                 alert("Vui lòng nhập nội dung câu hỏi!");
@@ -8445,6 +8452,13 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
 
         document.getElementById('btnCreatorApplyDirect')?.addEventListener('click', () => {
+            if (this.isGuest() || !this.currentUser?.isLoggedIn) {
+                try { sound.playWrong(); } catch(e) {}
+                alert("🔒 YÊU CẦU ĐĂNG NHẬP GOOGLE\n\nVui lòng đăng nhập bằng tài khoản Google để Lưu và áp dụng trò chơi vào tiết dạy!");
+                this.openAuthModal();
+                return;
+            }
+
             const title = document.getElementById('creatorGameTitle')?.value.trim();
             if (!title) {
                 alert("Vui lòng nhập Tên trò chơi (trường bắt buộc)!");
@@ -8453,7 +8467,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             }
 
             if (this.selectedQuestions.length === 0) {
-                alert("Vui lòng chọn ít nhất 1 câu hỏi để áp dụng!");
+                alert("Vui lòng chọn hoặc tạo ít nhất 1 câu hỏi để áp dụng vào trò chơi!");
                 return;
             }
 
@@ -8477,6 +8491,12 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 competency,
                 questions: this.selectedQuestions
             });
+            try {
+                if (window.eduCloudSync?.isConfigured() && this.currentUser?.email) {
+                    window.eduCloudSync.syncCurrentUserWorkspace(this.currentUser.email);
+                }
+            } catch(e) {}
+            this.renderCustomGamesRepo();
             this.editingCustomGameId = null;
 
             document.getElementById('gameCreatorModal').classList.remove('active');
@@ -8487,61 +8507,59 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.switchGame(gameType);
         });
 
-        // 6. SỰ KIỆN LƯU VÀ XUẤT GÓI TRÒ CHƠI (CHUẨN HÓA CHO MỌI THÀNH VIÊN ĐÃ ĐĂNG NHẬP GOOGLE)
+        // 6. SỰ KIỆN LƯU VÀ XUẤT GÓI TRÒ CHƠI (ÁP DỤNG CHUẨN PHÂN QUYỀN ĐỒNG NHẤT 5 NHÓM CỦA HỆ THỐNG)
         document.getElementById('btnCreatorExportPackage')?.addEventListener('click', () => {
-            const isMember = !this.isGuest() && !!(this.currentUser && this.currentUser.isLoggedIn);
-
-            if (!isMember) {
-                sound.playWrong();
-                alert("⚠️ THÔNG BÁO SƯ PHẠM:\nChức năng Lưu và Xuất Gói Trò Chơi yêu cầu Thầy Cô đăng nhập bằng tài khoản Google!\n\nVui lòng đăng nhập để kích hoạt tính năng này.");
-                document.getElementById('gameCreatorModal')?.classList.remove('active');
-                this.openAuthModal();
+            const titleInput = document.getElementById('creatorGameTitle');
+            const title = titleInput?.value.trim();
+            if (!title) {
+                alert("Vui lòng nhập Tên trò chơi (trường bắt buộc)!");
+                titleInput?.focus();
                 return;
             }
 
-            const title = document.getElementById('creatorGameTitle')?.value.trim() || 'Tro_Choi_EduStudio';
-            if (this.selectedQuestions.length === 0) {
-                alert("Trò chơi chưa có câu hỏi nào để lưu và xuất gói!");
+            if (!this.selectedQuestions || this.selectedQuestions.length === 0) {
+                alert("Trò chơi chưa có câu hỏi nào để lưu và xuất gói! Vui lòng chọn hoặc tạo ít nhất 1 câu hỏi.");
                 return;
             }
 
-            sound.playFanfare();
+            const gameType = document.getElementById('creatorGameType')?.value || 'speed';
+            const subject = document.getElementById('creatorSubjectSelect')?.value || '';
+            const grade = document.getElementById('creatorGrade')?.value || '';
+            const timeLimit = parseInt(document.getElementById('creatorTimeLimit')?.value) || 15;
+            const competency = document.getElementById('creatorCompetency')?.value || '';
+
             const exportData = {
                 id: this.editingCustomGameId || ('custom_' + Date.now()),
                 title: title,
-                gameType: document.getElementById('creatorGameType').value,
-                type: document.getElementById('creatorGameType').value,
-                subject: document.getElementById('creatorSubjectSelect').value,
-                grade: document.getElementById('creatorGrade').value,
-                timeLimit: parseInt(document.getElementById('creatorTimeLimit').value) || 15,
-                competency: document.getElementById('creatorCompetency')?.value || '',
-                author: this.currentUser.name,
+                gameType: gameType,
+                type: gameType,
+                subject: subject,
+                grade: grade,
+                timeLimit: timeLimit,
+                competency: competency,
+                author: this.currentUser?.name || 'Giáo viên',
                 exportedAt: new Date().toISOString(),
-                questions: this.selectedQuestions
+                questions: JSON.parse(JSON.stringify(this.selectedQuestions))
             };
 
-            this.saveCustomGame(exportData);
-            this.renderCustomGamesRepo();
-            this.editingCustomGameId = null;
-
-            const canExportPackage = ['admin', 'vip_pro', 'vip'].includes(this.currentUser?.role);
-            if (!canExportPackage) {
-                // Thành viên Nhóm 4: Đã lưu thành sản phẩm dùng & sửa trực tiếp trên web, đồng thời mở hộp thoại Nâng cấp lên Nhóm 3 (VIP) để xuất/tải gói
-                this.closeModal('gameCreatorModal');
-                this.showToast(`💾 Đã lưu "${title}" vào Kho trên web! Nâng cấp lên Nhóm 3 (VIP) để xuất & tải gói.`, 4500);
-                setTimeout(() => {
-                    this.openModal('membershipUpgradeModal');
-                }, 250);
-                return;
-            }
-
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `${title.replace(/\s+/g, '_')}_Goi_Tro_Choi.json`);
-            dlAnchor.click();
-
-            this.showToast(`🎉 Đã lưu "${title}" vào Kho Trò Chơi và xuất tải gói JSON thành công!`, 4000);
+            this.enforceSaveAndExportTier(
+                () => {
+                    this.saveCustomGame(exportData);
+                    this.renderCustomGamesRepo();
+                    this.editingCustomGameId = null;
+                },
+                () => {
+                    sound.playFanfare();
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+                    const dlAnchor = document.createElement('a');
+                    dlAnchor.setAttribute("href", dataStr);
+                    dlAnchor.setAttribute("download", `${title.replace(/\s+/g, '_')}_Goi_Tro_Choi.json`);
+                    dlAnchor.click();
+                    this.closeModal('gameCreatorModal');
+                    this.showToast(`🎉 Đã lưu "${title}" vào Kho và xuất tải gói JSON thành công!`, 4000);
+                },
+                `Trò chơi: ${title}`
+            );
         });
 
         // 7. SỰ KIỆN LỌC KHO ĐỀ VÀ KHO VIDEO
@@ -9114,7 +9132,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             sound.playTick();
         });
 
-        // 1. Tab Xuất: Xuất theo bộ lọc
+        // 1. Tab Xuất: Xuất theo bộ lọc (Áp dụng phân quyền đồng nhất 5 Nhóm)
         document.getElementById('btnPerformExport')?.addEventListener('click', () => {
             const gradeFilter = document.getElementById('exportFilterGrade')?.value || 'all';
             const subjectFilter = document.getElementById('exportFilterSubject')?.value || 'all';
@@ -9133,87 +9151,93 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 return;
             }
 
-            sound.playFanfare();
-            const dateStr = new Date().toISOString().slice(0, 10);
+            this.enforceSaveAndExportTier(
+                null,
+                () => {
+                    sound.playFanfare();
+                    const dateStr = new Date().toISOString().slice(0, 10);
 
-            if (format === 'json') {
-                const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: 'application/json;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Ngan_Hang_Cau_Hoi_${gradeFilter}_${subjectFilter}_${dateStr}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-                alert(`Đã xuất thành công ${filtered.length} câu hỏi định dạng JSON!`);
-            } else if (format === 'xlsx') {
-                const csvHeader = "\uFEFFLớp,Môn học,Năng lực,Câu hỏi,Đáp án A,Đáp án B,Đáp án C,Đáp án D,Đáp án đúng,Giải thích\n";
-                const prefix = ['A', 'B', 'C', 'D'];
-                const rows = filtered.map(q => {
-                    const stem = `"${(q.stem || '').replace(/"/g, '""')}"`;
-                    const a = `"${(q.options?.[0] || '').replace(/"/g, '""')}"`;
-                    const b = `"${(q.options?.[1] || '').replace(/"/g, '""')}"`;
-                    const c = `"${(q.options?.[2] || '').replace(/"/g, '""')}"`;
-                    const d = `"${(q.options?.[3] || '').replace(/"/g, '""')}"`;
-                    const cor = prefix[q.correctIndex] || 'A';
-                    const exp = `"${(q.explanation || '').replace(/"/g, '""')}"`;
-                    return `${q.grade || 'Lớp 8'},${q.subject || 'KHTN'},${q.competencyText || 'Nhận biết'},${stem},${a},${b},${c},${d},${cor},${exp}`;
-                }).join('\n');
+                    if (format === 'json') {
+                        const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: 'application/json;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Ngan_Hang_Cau_Hoi_${gradeFilter}_${subjectFilter}_${dateStr}.json`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        this.showToast(`Đã xuất thành công ${filtered.length} câu hỏi định dạng JSON!`, 3500);
+                    } else if (format === 'xlsx') {
+                        const csvHeader = "\uFEFFLớp,Môn học,Năng lực,Câu hỏi,Đáp án A,Đáp án B,Đáp án C,Đáp án D,Đáp án đúng,Giải thích\n";
+                        const prefix = ['A', 'B', 'C', 'D'];
+                        const rows = filtered.map(q => {
+                            const stem = `"${(q.stem || '').replace(/"/g, '""')}"`;
+                            const a = `"${(q.options?.[0] || '').replace(/"/g, '""')}"`;
+                            const b = `"${(q.options?.[1] || '').replace(/"/g, '""')}"`;
+                            const c = `"${(q.options?.[2] || '').replace(/"/g, '""')}"`;
+                            const d = `"${(q.options?.[3] || '').replace(/"/g, '""')}"`;
+                            const cor = prefix[q.correctIndex] || 'A';
+                            const exp = `"${(q.explanation || '').replace(/"/g, '""')}"`;
+                            return `${q.grade || 'Lớp 8'},${q.subject || 'KHTN'},${q.competencyText || 'Nhận biết'},${stem},${a},${b},${c},${d},${cor},${exp}`;
+                        }).join('\n');
 
-                const blob = new Blob([csvHeader + rows], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Ngan_Hang_Cau_Hoi_Chuan_4_Nang_Luc_${gradeFilter}_${dateStr}.csv`;
-                a.click();
-                URL.revokeObjectURL(url);
-                alert(`Đã xuất thành công bảng tính ${filtered.length} câu hỏi chuẩn 4 mức độ năng lực!`);
-            } else {
-                // Xuất file Word .DOCX chuẩn
-                let docContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                <head><meta charset='utf-8'><title>Ngan Hang De Kiem Tra EduStudio</title>
-                <style>
-                    body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.35; margin: 2cm; }
-                    .header-tbl { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-                    .header-tbl td { vertical-align: top; text-align: center; font-size: 11pt; }
-                    .title { text-align: center; font-size: 14pt; font-weight: bold; margin: 15px 0 5px 0; }
-                    .sub-title { text-align: center; font-size: 12pt; font-style: italic; margin-bottom: 20px; }
-                    .q-stem { font-weight: bold; margin-top: 10px; margin-bottom: 4px; }
-                    .opt { margin-left: 20px; margin-bottom: 2px; }
-                    .correct { color: #166534; font-weight: bold; }
-                </style></head><body>
-                <table class="header-tbl">
-                    <tr>
-                        <td style="width: 45%;"><strong>UBND HUYỆN/QUẬN....................</strong><br><strong>TRƯỜNG THCS/THPT..................</strong></td>
-                        <td style="width: 55%;"><strong>NGÂN HÀNG ĐỀ & CÂU HỎI CHUẨN GDPT 2018</strong><br>Môn: ${subjectFilter.toUpperCase()} - ${gradeFilter.toUpperCase()}</td>
-                    </tr>
-                </table>
-                <div class="title">BỘ CÂU HỎI ĐƯỢC TRÍCH XUẤT TỪ KHO ĐỀ EDUSTUDIO</div>
-                <div class="sub-title">(Tổng cộng: ${filtered.length} câu hỏi đã qua đối soát ma trận năng lực)</div>`;
+                        const blob = new Blob([csvHeader + rows], { type: 'text/csv;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Ngan_Hang_Cau_Hoi_Chuan_4_Nang_Luc_${gradeFilter}_${dateStr}.csv`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        this.showToast(`Đã xuất thành công bảng tính ${filtered.length} câu hỏi chuẩn 4 mức độ năng lực!`, 3500);
+                    } else {
+                        // Xuất file Word .DOCX chuẩn
+                        let docContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                        <head><meta charset='utf-8'><title>Ngan Hang De Kiem Tra EduStudio</title>
+                        <style>
+                            body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.35; margin: 2cm; }
+                            .header-tbl { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                            .header-tbl td { vertical-align: top; text-align: center; font-size: 11pt; }
+                            .title { text-align: center; font-size: 14pt; font-weight: bold; margin: 15px 0 5px 0; }
+                            .sub-title { text-align: center; font-size: 12pt; font-style: italic; margin-bottom: 20px; }
+                            .q-stem { font-weight: bold; margin-top: 10px; margin-bottom: 4px; }
+                            .opt { margin-left: 20px; margin-bottom: 2px; }
+                            .correct { color: #166534; font-weight: bold; }
+                        </style></head><body>
+                        <table class="header-tbl">
+                            <tr>
+                                <td style="width: 45%;"><strong>UBND HUYỆN/QUẬN....................</strong><br><strong>TRƯỜNG THCS/THPT..................</strong></td>
+                                <td style="width: 55%;"><strong>NGÂN HÀNG ĐỀ & CÂU HỎI CHUẨN GDPT 2018</strong><br>Môn: ${subjectFilter.toUpperCase()} - ${gradeFilter.toUpperCase()}</td>
+                            </tr>
+                        </table>
+                        <div class="title">BỘ CÂU HỎI ĐƯỢC TRÍCH XUẤT TỪ KHO ĐỀ EDUSTUDIO</div>
+                        <div class="sub-title">(Tổng cộng: ${filtered.length} câu hỏi đã qua đối soát ma trận năng lực)</div>`;
 
-                filtered.forEach((q, idx) => {
-                    docContent += `<div class="q-stem">Câu ${idx + 1} (${q.competencyText || 'Nhận biết'}): ${q.stem || 'Nội dung câu hỏi...'}</div>`;
-                    if (q.options && q.options.length) {
-                        const optLabels = ['A', 'B', 'C', 'D'];
-                        q.options.forEach((opt, oIdx) => {
-                            const isCorrect = oIdx === q.correctIndex;
-                            docContent += `<div class="opt ${isCorrect ? 'correct' : ''}">${optLabels[oIdx]}. ${opt} ${isCorrect ? '(*)' : ''}</div>`;
+                        filtered.forEach((q, idx) => {
+                            docContent += `<div class="q-stem">Câu ${idx + 1} (${q.competencyText || 'Nhận biết'}): ${q.stem || 'Nội dung câu hỏi...'}</div>`;
+                            if (q.options && q.options.length) {
+                                const optLabels = ['A', 'B', 'C', 'D'];
+                                q.options.forEach((opt, oIdx) => {
+                                    const isCorrect = oIdx === q.correctIndex;
+                                    docContent += `<div class="opt ${isCorrect ? 'correct' : ''}">${optLabels[oIdx]}. ${opt} ${isCorrect ? '(*)' : ''}</div>`;
+                                });
+                            }
+                            if (q.explanation) {
+                                docContent += `<div style="font-size: 10.5pt; font-style: italic; color: #475569; margin-left: 20px; margin-bottom: 8px;">Lời giải: ${q.explanation}</div>`;
+                            }
                         });
-                    }
-                    if (q.explanation) {
-                        docContent += `<div style="font-size: 10.5pt; font-style: italic; color: #475569; margin-left: 20px; margin-bottom: 8px;">Lời giải: ${q.explanation}</div>`;
-                    }
-                });
 
-                docContent += `</body></html>`;
-                const blob = new Blob(['\ufeff' + docContent], { type: 'application/msword;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Ngan_Hang_De_${gradeFilter}_${subjectFilter}_${dateStr}.doc`;
-                a.click();
-                URL.revokeObjectURL(url);
-                alert(`Đã xuất trọn bộ ${filtered.length} câu hỏi sang định dạng Word (.DOCX) chuẩn in ấn!`);
-            }
+                        docContent += `</body></html>`;
+                        const blob = new Blob(['\ufeff' + docContent], { type: 'application/msword;charset=utf-8' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Ngan_Hang_De_${gradeFilter}_${subjectFilter}_${dateStr}.doc`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        this.showToast(`Đã xuất trọn bộ ${filtered.length} câu hỏi sang định dạng Word (.DOCX) chuẩn in ấn!`, 3500);
+                    }
+                },
+                `Ngân hàng đề (${gradeFilter} - ${subjectFilter})`
+            );
         });
 
         // =========================================================================
@@ -9761,6 +9785,12 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         // Xác nhận nạp vào Kho Đề Trung Gian (5TB Chờ Thẩm Định) & Ngân hàng đề
         btnConfirmImport?.addEventListener('click', () => {
+            if (this.isGuest() || !this.currentUser?.isLoggedIn) {
+                try { sound.playWrong(); } catch(e) {}
+                alert("🔒 YÊU CẦU ĐĂNG NHẬP GOOGLE\n\nVui lòng đăng nhập bằng tài khoản Google để nạp file đề vào Kho Đề Trung Gian (5TB)!");
+                this.openAuthModal();
+                return;
+            }
             if (stagedQuestions.length === 0) return;
 
             const now = new Date();
@@ -12107,19 +12137,21 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
     }
 
     exportCustomGameJson(gameId) {
-        const canExportPackage = ['admin', 'vip_pro', 'vip'].includes(this.currentUser?.role);
-        if (!canExportPackage) {
-            this.showToast('💎 Tính năng Xuất / Tải Gói dành cho Thành viên Nhóm 3 (VIP) trở lên!', 4000);
-            this.openModal('membershipUpgradeModal');
-            return;
-        }
         const game = this.loadCustomGames().find(g => g.id === gameId);
         if (!game) return;
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(game, null, 2));
-        const a = document.createElement('a');
-        a.setAttribute("href", dataStr);
-        a.setAttribute("download", `${(game.title || 'Tro_Choi').replace(/\s+/g, '_')}_EduStudio.json`);
-        a.click();
+        this.enforceSaveAndExportTier(
+            null,
+            () => {
+                sound.playFanfare();
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(game, null, 2));
+                const a = document.createElement('a');
+                a.setAttribute("href", dataStr);
+                a.setAttribute("download", `${(game.title || 'Tro_Choi').replace(/\s+/g, '_')}_EduStudio.json`);
+                a.click();
+                this.showToast(`🎉 Đã xuất tải gói JSON cho trò chơi "${game.title}"!`, 3500);
+            },
+            `Trò chơi: ${game.title || 'Bộ trò chơi'}`
+        );
     }
 
     
