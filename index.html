@@ -3562,14 +3562,40 @@ window.openPPCTDirect = function() {
                         <span>⚙️ 1. Thông Số Trò Chơi</span>
                     </div>
 
-                    <!-- 1. LOẠI TRÒ CHƠI (BỎ CHỮ SƯ PHẠM) -->
+                    <!-- 1. LOẠI TRÒ CHƠI (TẤT CẢ TRÒ CHƠI TRONG KHO & CƠ CHẾ NỀN TẢNG) -->
                     <div class="form-group-clean">
                         <label>Loại Trò Chơi:</label>
                         <select id="creatorGameType" class="input-clean">
-                            <option value="speed">⛵ Đua Thuyền Tri Thức</option>
-                            <option value="wheel">🎡 Vòng Quay Kỳ Diệu</option>
-                            <option value="box">🎁 Hộp Quà Bí Mật</option>
-                            <option value="guess">🐶 Đoán Con Vật / Đồ Vật (Mầm Non)</option>
+                            <optgroup label="🎮 4 CƠ CHẾ TRÒ CHƠI NỀN TẢNG">
+                                <option value="speed" selected>⛵ Đua Thuyền Tri Thức (Tốc độ & Thi đấu)</option>
+                                <option value="wheel">🎡 Vòng Quay Kỳ Diệu (Quay số ngẫu nhiên)</option>
+                                <option value="box">🎁 Hộp Quà Bí Mật (Mở quà thử thách)</option>
+                                <option value="guess">🐶 Đoán Con Vật / Đồ Vật (Mầm Non tương tác)</option>
+                            </optgroup>
+                            <optgroup label="📚 KHO 8 TRÒ CHƠI PHỔ THÔNG (GDPT 2018)">
+                                <option value="sec_khtn8_speed">⛵ KHTN 8: Phản Ứng Hóa Học & Bảo Toàn Khối Lượng</option>
+                                <option value="sec_toan7_wheel">🎯 Toán 7: Số Hữu Tỉ & Góc Đối Đỉnh Song Song</option>
+                                <option value="sec_hdtn8_box">🎁 HĐTN-HN 8: Tự Hào Truyền Thống Quê Hương & Bản Thân</option>
+                                <option value="sec_lsdl8_speed">⛵ Lịch Sử & Địa Lí 8: Khởi Nghĩa Tây Sơn & Vùng Biển VN</option>
+                                <option value="sec_eng8_box">🎁 Tiếng Anh 8: Global Success - Leisure Time</option>
+                                <option value="sec_vatli9_speed">⛵ Vật Lí 9: Định Luật Ôm & Đoạn Mạch Điện</option>
+                                <option value="sec_sinhhoc8_wheel">🎯 Sinh Học 8: Hệ Tuần Hoàn & Máu Cơ Thể</option>
+                                <option value="sec_stem_box">🎁 STEM & Chuyển Đổi Số: Lập Trình Robot & Cảm Biến</option>
+                            </optgroup>
+                            <optgroup label="🧸 KHO 12 BỘ TRÒ CHƠI MẦM NON SƯ PHẠM (GDMN)">
+                                <option value="mn_pets">🐶 1. Bé Nhận Biết Con Vật Nuôi Gia Đình</option>
+                                <option value="mn_wildlife">🦁 2. Bé Khám Phá Thế Giới Động Vật Hoang Dã</option>
+                                <option value="mn_fruits">🍎 3. Bé Khám Phá Trái Cây & Hoa Quả Quê Hương</option>
+                                <option value="mn_nature_sounds">🌧️ 4. Bé Nhận Biết Âm Thanh Thiên Nhiên & Hiện Tượng</option>
+                                <option value="mn_day_night">☀️ 5. Bé Khám Phá Ngày & Đêm, Thời Gian</option>
+                                <option value="mn_colors">🎨 6. Bé Phân Biệt Sắc Màu Kỳ Diệu</option>
+                                <option value="mn_shapes">🔺 7. Bé Khám Phá Hình Khối Xung Quanh</option>
+                                <option value="mn_counting">🔢 8. Bé Vui Học Đếm & Chữ Số Đơn Giản</option>
+                                <option value="mn_vehicles">🚗 9. Bé Nhận Biết Phương Tiện Giao Thông</option>
+                                <option value="mn_appliances">📺 10. Bé Nhận Biết Đồ Dùng Gia Đình & An Toàn</option>
+                                <option value="mn_emotions">😊 11. Bé Nhận Biết Cảm Xúc Vui Buồn</option>
+                                <option value="mn_hygiene">🧼 12. Bé Rèn Luyện Thói Quen Vệ Sinh & Tự Phục Vụ</option>
+                            </optgroup>
                         </select>
                     </div>
 

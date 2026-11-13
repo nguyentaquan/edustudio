@@ -6690,6 +6690,156 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         }
     }
 
+    resolveGameEngineType(rawType) {
+        if (!rawType) return 'speed';
+        if (['speed', 'wheel', 'box', 'guess'].includes(rawType)) return rawType;
+        if (rawType.startsWith('sec_')) {
+            const secGame = this.secondaryGamesCatalog?.find(g => g.id === rawType);
+            return secGame?.gameType || 'speed';
+        }
+        if (rawType.startsWith('mn_')) {
+            return 'guess';
+        }
+        if (rawType.startsWith('custom_')) {
+            const custom = this.loadCustomGames().find(g => g.id === rawType);
+            return custom?.gameType || 'speed';
+        }
+        return 'speed';
+    }
+
+    populateCreatorGameTypesDropdown() {
+        const select = document.getElementById('creatorGameType');
+        if (!select) return;
+        const currentVal = select.value || 'speed';
+
+        // Xóa optgroup custom cũ nếu có
+        const oldCustomGroup = select.querySelector('optgroup[data-custom="true"]');
+        if (oldCustomGroup) oldCustomGroup.remove();
+
+        const customGames = this.loadCustomGames();
+        if (customGames && customGames.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = `⭐ TRÒ CHƠI TỰ THIẾT KẾ CỦA TÔI (${customGames.length} bộ)`;
+            optgroup.setAttribute('data-custom', 'true');
+            customGames.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g.id;
+                opt.textContent = `🌟 ${g.title || 'Trò chơi tự tạo'}`;
+                optgroup.appendChild(opt);
+            });
+            select.appendChild(optgroup);
+        }
+
+        if (currentVal) {
+            select.value = currentVal;
+        }
+    }
+
+    handleCreatorGameTypeChange(rawVal) {
+        const titleInput = document.getElementById('creatorGameTitle');
+        const gradeSelect = document.getElementById('creatorGrade');
+        const countInput = document.getElementById('creatorTargetCount');
+        const timeInput = document.getElementById('creatorTimeLimit');
+
+        // 1. Trò chơi mẫu Phổ thông (GDPT)
+        if (rawVal.startsWith('sec_')) {
+            const game = this.secondaryGamesCatalog?.find(g => g.id === rawVal);
+            if (game) {
+                if (titleInput) titleInput.value = game.title;
+                if (gradeSelect) {
+                    gradeSelect.value = game.grade || 'Lớp 8';
+                    this.populateSubjectSelect('creatorSubjectSelect', game.grade || 'Lớp 8', game.subject);
+                    this.updateCompetencyDropdownByGrade(game.grade || 'Lớp 8');
+                    this.syncCreatorGradeToNewQGrade(game.grade || 'Lớp 8');
+                }
+                if (timeInput && game.timeLimit) timeInput.value = String(game.timeLimit);
+                if (Array.isArray(game.questions)) {
+                    this.selectedQuestions = JSON.parse(JSON.stringify(game.questions));
+                    if (countInput) countInput.value = String(this.selectedQuestions.length);
+                }
+                this.renderBankQuestions();
+                this.updateSelectedCounter();
+                try { sound.playClick(); } catch(e) {}
+                this.showToast(`🎮 Đã nạp mẫu "${game.title}" (${this.selectedQuestions.length} câu) vào biểu mẫu!`, 3000);
+            }
+            return;
+        }
+
+        // 2. Trò chơi mẫu Mầm non (GDMN)
+        if (rawVal.startsWith('mn_')) {
+            const game = this.preschoolCatalog?.find(g => g.id === rawVal);
+            if (game) {
+                if (titleInput) titleInput.value = game.title;
+                if (gradeSelect) {
+                    gradeSelect.value = 'MN';
+                    this.populateSubjectSelect('creatorSubjectSelect', 'MN');
+                    this.updateCompetencyDropdownByGrade('MN');
+                    this.syncCreatorGradeToNewQGrade('MN');
+                }
+                if (timeInput) timeInput.value = '15';
+                if (Array.isArray(game.items)) {
+                    this.selectedQuestions = game.items.map(it => ({
+                        stem: `Bé hãy nhận biết: ${it.name} ${it.emoji || ''}`.trim(),
+                        options: it.options && it.options.length ? it.options : [it.name, 'Con Mèo', 'Con Gà', 'Con Vịt'],
+                        correctIndex: typeof it.correctIndex === 'number' ? it.correctIndex : 0,
+                        explanation: it.hint || it.soundName || '',
+                        grade: 'MN',
+                        subject: 'Phát triển nhận thức'
+                    }));
+                    if (countInput) countInput.value = String(this.selectedQuestions.length);
+                }
+                this.renderBankQuestions();
+                this.updateSelectedCounter();
+                try { sound.playClick(); } catch(e) {}
+                this.showToast(`🧸 Đã nạp mẫu Mầm Non "${game.title}" (${this.selectedQuestions.length} thử thách)!`, 3000);
+            }
+            return;
+        }
+
+        // 3. Trò chơi tự thiết kế (Custom Game)
+        if (rawVal.startsWith('custom_')) {
+            const game = this.loadCustomGames().find(g => g.id === rawVal);
+            if (game) {
+                if (titleInput) titleInput.value = game.title;
+                if (gradeSelect && game.grade) {
+                    gradeSelect.value = game.grade;
+                    this.populateSubjectSelect('creatorSubjectSelect', game.grade, game.subject);
+                    this.updateCompetencyDropdownByGrade(game.grade);
+                    this.syncCreatorGradeToNewQGrade(game.grade);
+                }
+                if (timeInput && game.timeLimit) timeInput.value = String(game.timeLimit);
+                if (Array.isArray(game.questions)) {
+                    this.selectedQuestions = JSON.parse(JSON.stringify(game.questions));
+                    if (countInput) countInput.value = String(this.selectedQuestions.length);
+                }
+                this.renderBankQuestions();
+                this.updateSelectedCounter();
+                try { sound.playClick(); } catch(e) {}
+                this.showToast(`⭐ Đã nạp trò chơi "${game.title}" của bạn!`, 3000);
+            }
+            return;
+        }
+
+        // 4. Các dạng cơ chế nền tảng (speed, wheel, box, guess)
+        if (rawVal === 'guess') {
+            if (gradeSelect && gradeSelect.value !== 'MN') {
+                gradeSelect.value = 'MN';
+                this.populateSubjectSelect('creatorSubjectSelect', 'MN');
+                this.updateCompetencyDropdownByGrade('MN');
+                this.syncCreatorGradeToNewQGrade('MN');
+                this.renderBankQuestions();
+            }
+        } else {
+            if (gradeSelect && gradeSelect.value === 'MN') {
+                gradeSelect.value = 'Lớp 8';
+                this.populateSubjectSelect('creatorSubjectSelect', 'Lớp 8');
+                this.updateCompetencyDropdownByGrade('Lớp 8');
+                this.syncCreatorGradeToNewQGrade('Lớp 8');
+                this.renderBankQuestions();
+            }
+        }
+    }
+
     openGameCreatorModal() {
         try { sound.playClick(); } catch(e) {}
         // Đảm bảo không gian nền luôn là Kho Trò Chơi (thoát khỏi Xưởng TN Ảo)
@@ -6705,6 +6855,11 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.updateCompetencyDropdownByGrade(grade);
             this.syncCreatorGradeToNewQGrade(grade);
         } catch(e) { console.warn('Lỗi nạp dropdown creator:', e); }
+
+        // Đồng bộ danh mục trò chơi vào dropdown Loại Trò Chơi
+        try {
+            this.populateCreatorGameTypesDropdown();
+        } catch(e) { console.warn('Lỗi populateCreatorGameTypesDropdown:', e); }
 
         // Nạp an toàn danh sách câu hỏi của bài đang hoạt động
         try {
@@ -8024,9 +8179,24 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.syncCreatorGradeToNewQGrade(val);
 
             if (val === 'MN') {
-                document.getElementById('creatorGameType').value = 'guess';
+                const curType = document.getElementById('creatorGameType')?.value || '';
+                if (curType !== 'guess' && !curType.startsWith('mn_')) {
+                    document.getElementById('creatorGameType').value = 'guess';
+                }
+            } else {
+                const curType = document.getElementById('creatorGameType')?.value || '';
+                if (curType === 'guess' || curType.startsWith('mn_')) {
+                    document.getElementById('creatorGameType').value = 'speed';
+                }
             }
             this.renderBankQuestions();
+        });
+
+        // Thay đổi Loại Trò Chơi -> Tự động nạp mẫu trò chơi tương ứng
+        const creatorGameTypeSelect = document.getElementById('creatorGameType');
+        creatorGameTypeSelect?.addEventListener('change', (e) => {
+            const rawVal = e.target.value;
+            this.handleCreatorGameTypeChange(rawVal);
         });
 
         document.getElementById('creatorSubjectSelect')?.addEventListener('change', () => {
@@ -8451,7 +8621,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 return;
             }
 
-            const gameType = document.getElementById('creatorGameType').value;
+            const rawGameType = document.getElementById('creatorGameType')?.value || 'speed';
+            const gameType = this.resolveGameEngineType(rawGameType);
             this.activeQuiz.title = title;
             this.activeQuiz.questions = JSON.parse(JSON.stringify(this.selectedQuestions));
             document.getElementById('gameCreatorModal').classList.remove('active');
@@ -8480,7 +8651,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 return;
             }
 
-            const gameType = document.getElementById('creatorGameType').value;
+            const rawGameType = document.getElementById('creatorGameType')?.value || 'speed';
+            const gameType = this.resolveGameEngineType(rawGameType);
             const timeLimit = parseInt(document.getElementById('creatorTimeLimit')?.value) || 15;
             const subject = document.getElementById('creatorSubjectSelect')?.value || '';
             const grade = document.getElementById('creatorGrade')?.value || '';
@@ -8531,7 +8703,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 return;
             }
 
-            const gameType = document.getElementById('creatorGameType')?.value || 'speed';
+            const rawGameType = document.getElementById('creatorGameType')?.value || 'speed';
+            const gameType = this.resolveGameEngineType(rawGameType);
             const subject = document.getElementById('creatorSubjectSelect')?.value || '';
             const grade = document.getElementById('creatorGrade')?.value || '';
             const timeLimit = parseInt(document.getElementById('creatorTimeLimit')?.value) || 15;
