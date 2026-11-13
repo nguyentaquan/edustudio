@@ -9306,9 +9306,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 [""],
                 ["3. BẢNG MÃ DẠNG CÂU HỎI (Cột: Dạng câu hỏi)"],
                 ["Mã Dạng", "Tên Dạng Câu Hỏi", "Cột Đáp Án Tương Ứng"],
-                ["NLC", "Nhiều lựa chọn (4 phương án A, B, C, D)", "Điền vào cột 'Đáp án NLC (A/B/C/D)' (A/B/C/D) hoặc đặt dấu * trước đáp án đúng"],
-                ["Đ-S", "Đúng - Sai (4 ý khẳng định a, b, c, d)", "Điền vào cột 'Đáp án Đúng/Sai (Đ/S)' (Đ-S-Đ-S) hoặc ghi (Đ)/(S) sau mỗi khẳng định"],
-                ["TLN", "Trả lời ngắn / Kết quả điền khuyết", "Điền vào cột 'Đáp số TLN (KQ)' hoặc đặt kết quả trong cặp ngoặc vuông [ ... ] ở cuối câu"],
+                ["NLC", "Nhiều lựa chọn (4 phương án A, B, C, D)", "Điền vào cột 'Đáp án NLC' (A/B/C/D) hoặc đặt (*) ở sau cùng phương án đúng"],
+                ["Đ-S", "Đúng - Sai (4 ý khẳng định a, b, c, d)", "Điền vào cột 'Đáp án Đúng/Sai' (Đ-S-Đ-S) hoặc ghi (Đ) / (S) ở sau cùng mỗi khẳng định"],
+                ["TLN", "Trả lời ngắn / Kết quả điền khuyết", "Điền vào cột 'Đáp số TLN (KQ)' hoặc đặt kết quả trong cặp ngoặc kép \"...\" ở sau cùng câu hỏi"],
                 [""],
                 ["4. BẢNG MÃ NĂNG LỰC (Cột: Mã Năng lực)"],
                 ["Mã Năng Lực", "Tên Mức Độ / Năng Lực", "Ghi Chú"],
@@ -9320,9 +9320,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 ["all_mn", "Tất cả năng lực MN", "Dành cho bậc học Mầm non"],
                 [""],
                 ["5. QUY ƯỚC ĐIỀN ĐÁP ÁN 3 CỘT & SOẠN THẢO QUY CHUẨN (THEO CHỈ ĐẠO THẦY NGUYỄN TÁ QUAN):"],
-                ["- Câu NLC (Nhiều Lựa Chọn): Cột 15 điền A hoặc B hoặc C hoặc D; hoặc đặt dấu '*' trước phương án đúng (ví dụ: *B. Phương án B). (Cột 16, 17 để trống)"],
-                ["- Câu Đ-S (Đúng - Sai 4 ý): Cột 16 điền chuỗi Đ/S ngăn cách dấu gạch ngang (ví dụ Đ-S-Đ-S); hoặc ghi rõ (Đ)/(S) sau mỗi khẳng định (ví dụ: a) Khẳng định 1 (Đ)). (Cột 15, 17 để trống)"],
-                ["- Câu TLN (Trả Lời Ngắn / Điền khuyết): Cột 17 điền đáp số/kết quả chính xác (ví dụ 44 hoặc CO2); hoặc đặt kết quả/từ điền khuyết trong cặp ngoặc vuông '[ ... ]' ở cuối câu (ví dụ: Kết quả là: [ 44 ]). (Cột 15, 16 để trống)"]
+                ["- Câu NLC (Nhiều Lựa Chọn): Cột 15 điền A hoặc B hoặc C hoặc D; hoặc đặt ký hiệu (*) ở sau cùng phương án đúng (ví dụ: B. Phương án B (*)). (Cột 16, 17 để trống)"],
+                ["- Câu Đ-S (Đúng - Sai 4 ý): Cột 16 điền chuỗi Đ/S ngăn cách dấu gạch ngang (ví dụ Đ-S-Đ-S); hoặc ghi rõ (Đ) hoặc (S) ở sau cùng mỗi khẳng định (ví dụ: a) Khẳng định 1 (Đ)). (Cột 15, 17 để trống)"],
+                ["- Câu TLN (Trả Lời Ngắn / Điền khuyết): Cột 17 điền đáp số/kết quả chính xác (ví dụ 44 hoặc CO2); hoặc đặt đáp số trong cặp ngoặc kép \"...\" ở sau cùng câu hỏi (ví dụ: Kết quả là: \"44\"). (Cột 15, 16 để trống)"]
             ];
 
             const ws2 = XLSX.utils.aoa_to_sheet(refData);
@@ -9366,11 +9366,11 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             <div class="sub-title">(Thí sinh không được sử dụng tài liệu)</div>
             <p><strong>PHẦN I. TRẮC NGHIỆM KHÁCH QUAN (TNKQ)</strong></p>
             <p><strong>1. Dạng 1: Câu trắc nghiệm nhiều lựa chọn (NLC):</strong></p>
-            <p>Câu 1: Câu hỏi mẫu nhiều lựa chọn 1...<br>A. Phương án A<br>*B. Phương án B (Đáp án đúng)<br>C. Phương án C<br>D. Phương án D</p>
+            <p>Câu 1: Hằng đẳng thức nào sau đây là hằng đẳng thức hiệu hai bình phương?<br>A. A^2 + B^2 = (A + B)^2<br>B. A^2 - B^2 = (A - B)(A + B) (*)<br>C. (A - B)^2 = A^2 - 2AB + B^2<br>D. A^3 - B^3 = (A - B)(A^2 + AB + B^2)</p>
             <p><strong>2. Dạng 2: Câu trắc nghiệm Đúng - Sai (Đ-S):</strong></p>
-            <p>Câu 2: Cho thông tin hình học... Xét tính đúng/sai:<br>a) Nhận định 1 (Đúng)<br>b) Nhận định 2 (Sai)<br>c) Nhận định 3 (Đúng)<br>d) Nhận định 4 (Sai)</p>
+            <p>Câu 2: Cho hình bình hành ABCD. Xét tính Đúng/Sai của các khẳng định sau:<br>a) Các cạnh đối song song và bằng nhau (Đ)<br>b) Hai đường chéo bằng nhau (S)<br>c) Các góc đối bằng nhau (Đ)<br>d) Hai đường chéo vuông góc với nhau (S)</p>
             <p><strong>3. Dạng 3: Câu trắc nghiệm Trả lời ngắn (TLN):</strong></p>
-            <p>Câu 3: Kết quả của biểu thức là: [................]</p>
+            <p>Câu 3: Khối lượng mol của khí Carbon dioxide (CO2) là bao nhiêu g/mol? (Biết C=12, O=16): "44"</p>
             </body></html>`;
 
             const blob = new Blob(['\ufeff' + wordTpl], { type: 'application/msword;charset=utf-8' });
@@ -9505,8 +9505,15 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             const exp = String(r[colExp] || '').trim();
 
                             let corIdx = 0;
-                            // H5: Nhận diện dấu '*' trước đáp án đúng của NLC
-                            if (optA.startsWith('*')) { corIdx = 0; optA = optA.slice(1).trim(); ansNLC = 'A'; }
+                            // H1 & H5: Nhận diện (*) ở sau cùng phương án đúng của NLC (ưu tiên chuẩn toán học của Thầy Quan)
+                            const hasCorrectMark = (text) => text.endsWith('(*)') || text.includes('(*)');
+                            const cleanOptText = (text) => text.replace(/\s*\(\*\)\s*$/, '').trim();
+
+                            if (hasCorrectMark(optA)) { corIdx = 0; optA = cleanOptText(optA); ansNLC = 'A'; }
+                            else if (hasCorrectMark(optB)) { corIdx = 1; optB = cleanOptText(optB); ansNLC = 'B'; }
+                            else if (hasCorrectMark(optC)) { corIdx = 2; optC = cleanOptText(optC); ansNLC = 'C'; }
+                            else if (hasCorrectMark(optD)) { corIdx = 3; optD = cleanOptText(optD); ansNLC = 'D'; }
+                            else if (optA.startsWith('*')) { corIdx = 0; optA = optA.slice(1).trim(); ansNLC = 'A'; }
                             else if (optB.startsWith('*')) { corIdx = 1; optB = optB.slice(1).trim(); ansNLC = 'B'; }
                             else if (optC.startsWith('*')) { corIdx = 2; optC = optC.slice(1).trim(); ansNLC = 'C'; }
                             else if (optD.startsWith('*')) { corIdx = 3; optD = optD.slice(1).trim(); ansNLC = 'D'; }
@@ -9514,23 +9521,28 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             else if (ansNLC.includes('C') || ansNLC === '2') corIdx = 2;
                             else if (ansNLC.includes('D') || ansNLC === '3') corIdx = 3;
 
-                            // H5: Nhận diện [ ... ] ở cuối câu cho dạng TLN
+                            // H1 & H5: Nhận diện đáp án TLN ở sau cùng câu (trong cặp ngoặc kép "..." hoặc [ ... ])
                             if (typeRaw === 'TLN' && !ansKQ) {
-                                const kqMatch = stem.match(/\[\s*(.*?)\s*\]\s*$/);
+                                const kqMatch = stem.match(/["“]([^"”]+)["”]\s*$/) || stem.match(/\[\s*(.*?)\s*\]\s*$/);
                                 if (kqMatch) {
                                     ansKQ = kqMatch[1].trim();
                                 }
                             }
 
-                            // H5: Nhận diện (Đ)/(S) cho dạng Đ-S nếu chưa có chuỗi ansDS
+                            // H1 & H5: Nhận diện (Đ)/(S) ở sau cùng mỗi khẳng định cho dạng Đ-S nếu chưa có chuỗi ansDS
                             if (typeRaw === 'Đ-S' && !ansDS) {
                                 const checkDS = (text) => {
                                     const upper = text.toUpperCase();
-                                    if (upper.includes('(Đ') || upper.includes('(ĐÚNG)')) return 'Đ';
-                                    if (upper.includes('(S') || upper.includes('(SAI)')) return 'S';
+                                    if (upper.endsWith('(Đ)') || upper.endsWith('(ĐÚNG)') || upper.includes('(Đ)')) return 'Đ';
+                                    if (upper.endsWith('(S)') || upper.endsWith('(SAI)') || upper.includes('(S)')) return 'S';
                                     return 'Đ';
                                 };
+                                const cleanDSText = (text) => text.replace(/\s*\((Đ|S|ĐÚNG|SAI)\)\s*$/i, '').trim();
                                 ansDS = `${checkDS(optA)}-${checkDS(optB)}-${checkDS(optC)}-${checkDS(optD)}`;
+                                optA = cleanDSText(optA);
+                                optB = cleanDSText(optB);
+                                optC = cleanDSText(optC);
+                                optD = cleanDSText(optD);
                             }
 
                             if (typeRaw === 'NLC') nlcCount++;
