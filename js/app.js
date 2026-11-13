@@ -6683,27 +6683,61 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 const bIdx = q._bankOrigIdx;
                 const isAlreadyAdded = Array.isArray(this.selectedQuestions) && this.selectedQuestions.some(sq => sq && sq.stem && q.stem && sq.stem.trim() === q.stem.trim());
 
-                let optsHtml = '';
-                const options = Array.isArray(q.options) ? q.options : ['Đáp án A', 'Đáp án B', 'Đáp án C', 'Đáp án D'];
-                options.forEach((opt, oIdx) => {
-                    const isCorrect = (oIdx === q.correctIndex);
-                    const optImg = (q.optImages && q.optImages[oIdx]) ? q.optImages[oIdx] : null;
-                    optsHtml += `
-                        <div class="bank-opt-choice ${isCorrect ? 'is-correct-preview' : ''}" data-bank-idx="${bIdx}" data-opt-idx="${oIdx}">
-                            <input type="radio" name="bank_preview_opt_${displayIdx}" id="b_opt_${displayIdx}_${oIdx}" ${isCorrect ? 'checked' : ''} style="cursor: pointer;">
-                            <label for="b_opt_${displayIdx}_${oIdx}" style="cursor: pointer; margin: 0; font-size: 0.8rem; color: ${isCorrect ? '#059669' : '#334155'}; display:flex; align-items:center; gap:0.35rem;">
-                                <strong>${prefix[oIdx]}.</strong> 
-                                ${optImg ? `<img src="${optImg}" style="height:22px; border-radius:3px; border:1px solid #cbd5e1; vertical-align:middle;">` : ''}
-                                <span>${opt}</span>
-                            </label>
+                const qType = q.qType || 'NLC';
+                let bodyHtml = '';
+
+                if (qType === 'Đ-S') {
+                    // Hiển thị dạng Đúng / Sai
+                    const statements = Array.isArray(q.options) && q.options.length ? q.options : ['Khẳng định a', 'Khẳng định b', 'Khẳng định c', 'Khẳng định d'];
+                    const dsParts = (q.ansDS || 'Đ-S-Đ-S').split('-');
+                    const prefixDS = ['a', 'b', 'c', 'd'];
+                    let dsRows = '';
+                    statements.forEach((st, sIdx) => {
+                        const isTrue = (dsParts[sIdx] || 'Đ').trim().toUpperCase() === 'Đ';
+                        dsRows += `
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:0.3rem 0.6rem; font-size:0.76rem;">
+                                <span><strong style="color:#b45309;">${prefixDS[sIdx]})</strong> ${st}</span>
+                                <span class="badge-tag-tiny" style="background:${isTrue ? '#dcfce7' : '#fee2e2'}; color:${isTrue ? '#15803d' : '#b91c1c'}; font-weight:700;">
+                                    ${isTrue ? '✓ Đúng' : '✕ Sai'}
+                                </span>
+                            </div>
+                        `;
+                    });
+                    bodyHtml = `<div style="display:flex; flex-direction:column; gap:0.3rem; margin-top:0.4rem;">${dsRows}</div>`;
+                } else if (qType === 'TLN') {
+                    // Hiển thị dạng Trả lời ngắn / KQ
+                    bodyHtml = `
+                        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:0.4rem 0.65rem; font-size:0.78rem; color:#166534; margin-top:0.4rem; display:flex; align-items:center; gap:0.4rem;">
+                            <strong>Đáp số / Kết quả chính xác (KQ):</strong> 
+                            <span style="font-weight:700; color:#15803d; background:#ffffff; padding:0.15rem 0.55rem; border-radius:4px; border:1px solid #86efac;">${q.ansKQ || q.options?.[0] || 'N/A'}</span>
                         </div>
                     `;
-                });
+                } else {
+                    // Dạng Nhiều lựa chọn (NLC)
+                    let optsHtml = '';
+                    const options = Array.isArray(q.options) ? q.options : ['Đáp án A', 'Đáp án B', 'Đáp án C', 'Đáp án D'];
+                    options.forEach((opt, oIdx) => {
+                        const isCorrect = (oIdx === q.correctIndex);
+                        const optImg = (q.optImages && q.optImages[oIdx]) ? q.optImages[oIdx] : null;
+                        optsHtml += `
+                            <div class="bank-opt-choice ${isCorrect ? 'is-correct-preview' : ''}" data-bank-idx="${bIdx}" data-opt-idx="${oIdx}">
+                                <input type="radio" name="bank_preview_opt_${displayIdx}" id="b_opt_${displayIdx}_${oIdx}" ${isCorrect ? 'checked' : ''} style="cursor: pointer;">
+                                <label for="b_opt_${displayIdx}_${oIdx}" style="cursor: pointer; margin: 0; font-size: 0.8rem; color: ${isCorrect ? '#059669' : '#334155'}; display:flex; align-items:center; gap:0.35rem;">
+                                    <strong>${prefix[oIdx]}.</strong> 
+                                    ${optImg ? `<img src="${optImg}" style="height:22px; border-radius:3px; border:1px solid #cbd5e1; vertical-align:middle;">` : ''}
+                                    <span>${opt}</span>
+                                </label>
+                            </div>
+                        `;
+                    });
+                    bodyHtml = `<div class="bank-card-options">${optsHtml}</div>`;
+                }
 
                 html += `
                     <div class="bank-card-item ${isAlreadyAdded ? 'is-selected-card' : ''}" id="bankCard_${bIdx}">
                         <div class="bank-card-header">
-                            <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                                <span class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">${qType}</span>
                                 <span class="badge-tag-tiny" style="background:#f1f5f9; color:#475569;">${q.grade || selGrade}</span>
                                 <span class="badge-tag-tiny" style="background:#e0f2fe; color:#0369a1;">${q.subject || selSubject}</span>
                                 <span class="badge-tag-tiny badge-competency">${q.competencyText || 'Nhận biết'}</span>
@@ -6719,9 +6753,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             ${q.stemImage ? `<div style="margin-top:0.4rem;"><img src="${q.stemImage}" style="max-height:85px; border-radius:6px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.1);"></div>` : ''}
                         </div>
 
-                        <div class="bank-card-options">
-                            ${optsHtml}
-                        </div>
+                        ${bodyHtml}
 
                         ${q.explanation ? `<div class="bank-card-explain">💡 <em>Giải thích: ${q.explanation}</em></div>` : ''}
                     </div>
@@ -7852,31 +7884,117 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             }
         });
 
-        // Lưu câu hỏi mới soạn
+        // Bộ điều khiển chuyển đổi Dạng câu hỏi (NLC, Đ-S, TLN) & Đối soát 3 cột đáp án
+        const newQTypeEl = document.getElementById('newQType');
+        const boxAnswerNLC = document.getElementById('boxAnswerNLC');
+        const boxAnswerDS = document.getElementById('boxAnswerDS');
+        const boxAnswerTLN = document.getElementById('boxAnswerTLN');
+        const badgePreviewAnsNLC = document.getElementById('badgePreviewAnsNLC');
+        const badgePreviewAnsDS = document.getElementById('badgePreviewAnsDS');
+        const badgePreviewAnsKQ = document.getElementById('badgePreviewAnsKQ');
+
+        const updateAnswerPreviewBadges = () => {
+            const currentType = newQTypeEl?.value || 'NLC';
+
+            // 1. NLC
+            const corRadio = document.querySelector('input[name="newQCorrectOpt"]:checked');
+            const corIdx = corRadio ? parseInt(corRadio.value) : 0;
+            const letters = ['A', 'B', 'C', 'D'];
+            const nlcAns = letters[corIdx] || 'A';
+            if (badgePreviewAnsNLC) badgePreviewAnsNLC.textContent = `NLC: ${nlcAns}`;
+
+            // 2. Đ-S
+            const valA = document.querySelector('input[name="newDS_val_a"]:checked')?.value || 'Đ';
+            const valB = document.querySelector('input[name="newDS_val_b"]:checked')?.value || 'S';
+            const valC = document.querySelector('input[name="newDS_val_c"]:checked')?.value || 'Đ';
+            const valD = document.querySelector('input[name="newDS_val_d"]:checked')?.value || 'S';
+            const dsAns = `${valA}-${valB}-${valC}-${valD}`;
+            if (badgePreviewAnsDS) badgePreviewAnsDS.textContent = `Đ-S: ${dsAns}`;
+
+            // 3. TLN
+            const kqVal = document.getElementById('newAnsKQText')?.value.trim() || '';
+            if (badgePreviewAnsKQ) badgePreviewAnsKQ.textContent = `KQ: ${kqVal || '--'}`;
+
+            // Làm nổi bật badge của dạng câu hỏi hiện hành
+            if (badgePreviewAnsNLC) badgePreviewAnsNLC.style.outline = (currentType === 'NLC' ? '2px solid #2563eb' : 'none');
+            if (badgePreviewAnsDS) badgePreviewAnsDS.style.outline = (currentType === 'Đ-S' ? '2px solid #d97706' : 'none');
+            if (badgePreviewAnsKQ) badgePreviewAnsKQ.style.outline = (currentType === 'TLN' ? '2px solid #059669' : 'none');
+        };
+
+        newQTypeEl?.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (boxAnswerNLC) boxAnswerNLC.style.display = (val === 'NLC') ? 'block' : 'none';
+            if (boxAnswerDS) boxAnswerDS.style.display = (val === 'Đ-S') ? 'block' : 'none';
+            if (boxAnswerTLN) boxAnswerTLN.style.display = (val === 'TLN') ? 'block' : 'none';
+            updateAnswerPreviewBadges();
+            sound.playTick();
+        });
+
+        document.querySelectorAll('input[name="newQCorrectOpt"]').forEach(r => r.addEventListener('change', updateAnswerPreviewBadges));
+        document.querySelectorAll('input[name^="newDS_val_"]').forEach(r => r.addEventListener('change', updateAnswerPreviewBadges));
+        document.getElementById('newAnsKQText')?.addEventListener('input', updateAnswerPreviewBadges);
+        updateAnswerPreviewBadges();
+
+        // Lưu câu hỏi mới soạn (Chuẩn hóa đầy đủ các trường thông tin theo file mẫu Excel)
         document.getElementById('btnSaveNewQuestion')?.addEventListener('click', () => {
             const stem = document.getElementById('newQStemInput')?.value.trim();
             if (!stem) {
                 alert("Vui lòng nhập nội dung câu hỏi!");
+                document.getElementById('newQStemInput')?.focus();
                 return;
             }
 
-            const opts = [
-                document.getElementById('newOptText_0')?.value.trim() || 'Lựa chọn A',
-                document.getElementById('newOptText_1')?.value.trim() || 'Lựa chọn B',
-                document.getElementById('newOptText_2')?.value.trim() || 'Lựa chọn C',
-                document.getElementById('newOptText_3')?.value.trim() || 'Lựa chọn D'
-            ];
-
-            const corRadio = document.querySelector('input[name="newQCorrectOpt"]:checked');
-            const corIdx = corRadio ? parseInt(corRadio.value) : 0;
+            const qType = document.getElementById('newQType')?.value || 'NLC';
+            const gradeVal = document.getElementById('newQGrade')?.value || document.getElementById('creatorGrade')?.value || 'L8';
+            const subjectVal = document.getElementById('newQSubjectCode')?.value || document.getElementById('creatorSubjectSelect')?.value || 'KHTN';
+            const compVal = document.getElementById('newQCompetencyCode')?.value || 'NB';
+            const compText = (compVal === 'NB' ? 'Nhận biết' : (compVal === 'TH' ? 'Thông hiểu' : (compVal === 'VD' ? 'Vận dụng' : (compVal === 'VDC' ? 'Vận dụng cao' : 'Năng lực Mầm non'))));
             const explanation = document.getElementById('newQExplanation')?.value.trim() || '';
-            const compSelect = document.getElementById('newQCompetency');
-            const compVal = compSelect ? compSelect.value : 'pt_nhan_biet';
-            const compText = compSelect ? compSelect.options[compSelect.selectedIndex].text : 'Nhận biết';
 
-            const gradeVal = document.getElementById('creatorGrade')?.value || 'Lớp 8';
-            const subjectVal = document.getElementById('creatorSubjectSelect')?.value || 'Khoa học tự nhiên';
-            const hasImg = !!this.tempStemImage || (Array.isArray(this.tempOptImages) && this.tempOptImages.some(img => !!img));
+            let opts = [];
+            let optImgs = [];
+            let corIdx = 0;
+            let ansNLC = '';
+            let ansDS = '';
+            let ansKQ = '';
+
+            if (qType === 'NLC') {
+                opts = [
+                    document.getElementById('newOptText_0')?.value.trim() || 'Lựa chọn A',
+                    document.getElementById('newOptText_1')?.value.trim() || 'Lựa chọn B',
+                    document.getElementById('newOptText_2')?.value.trim() || 'Lựa chọn C',
+                    document.getElementById('newOptText_3')?.value.trim() || 'Lựa chọn D'
+                ];
+                optImgs = Array.isArray(this.tempOptImages) ? [...this.tempOptImages] : [null, null, null, null];
+                const corRadio = document.querySelector('input[name="newQCorrectOpt"]:checked');
+                corIdx = corRadio ? parseInt(corRadio.value) : 0;
+                ansNLC = ['A', 'B', 'C', 'D'][corIdx] || 'A';
+            } else if (qType === 'Đ-S') {
+                const textA = document.getElementById('newDS_text_a')?.value.trim() || 'Khẳng định a';
+                const textB = document.getElementById('newDS_text_b')?.value.trim() || 'Khẳng định b';
+                const textC = document.getElementById('newDS_text_c')?.value.trim() || 'Khẳng định c';
+                const textD = document.getElementById('newDS_text_d')?.value.trim() || 'Khẳng định d';
+                opts = [textA, textB, textC, textD];
+                optImgs = [null, null, null, null];
+                const valA = document.querySelector('input[name="newDS_val_a"]:checked')?.value || 'Đ';
+                const valB = document.querySelector('input[name="newDS_val_b"]:checked')?.value || 'S';
+                const valC = document.querySelector('input[name="newDS_val_c"]:checked')?.value || 'Đ';
+                const valD = document.querySelector('input[name="newDS_val_d"]:checked')?.value || 'S';
+                ansDS = `${valA}-${valB}-${valC}-${valD}`;
+                corIdx = 0;
+            } else if (qType === 'TLN') {
+                ansKQ = document.getElementById('newAnsKQText')?.value.trim();
+                if (!ansKQ) {
+                    alert("Vui lòng nhập Đáp số / Kết quả chính xác (KQ) cho câu hỏi Trả lời ngắn!");
+                    document.getElementById('newAnsKQText')?.focus();
+                    return;
+                }
+                opts = [ansKQ];
+                optImgs = [null];
+                corIdx = 0;
+            }
+
+            const hasImg = !!this.tempStemImage || (Array.isArray(optImgs) && optImgs.some(img => !!img));
 
             const newQ = {
                 id: 'bank_user_' + Date.now(),
@@ -7886,9 +8004,13 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 pendingAudit: true,
                 stem: stem,
                 stemImage: this.tempStemImage,
+                qType: qType,
                 options: opts,
-                optImages: [...this.tempOptImages],
+                optImages: optImgs,
                 correctIndex: corIdx,
+                ansNLC: ansNLC,
+                ansDS: ansDS,
+                ansKQ: ansKQ,
                 grade: gradeVal,
                 subject: subjectVal,
                 competency: compVal,
@@ -7902,11 +8024,12 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
             const rawStagingItem = {
                 id: `RAW-2026-${String((this.rawStagingFiles?.length || 0) + 1).padStart(3, '0')}`,
-                title: `Câu hỏi ${hasImg ? 'có ảnh ' : ''}[${gradeVal} - ${subjectVal}]: ${stem.slice(0, 45)}...`,
+                title: `[${qType}] Câu hỏi ${hasImg ? 'có ảnh ' : ''}[${gradeVal} - ${subjectVal}]: ${stem.slice(0, 45)}...`,
                 targetRepo: 'games',
                 repoName: 'Kho Trò Chơi',
                 grade: gradeVal,
                 subject: subjectVal,
+                qType: qType,
                 authorName: this.currentUser?.name || 'Giáo viên tự soạn',
                 school: this.currentUser?.school || 'Trường học chuẩn GDPT',
                 contact: this.currentUser?.email || 'N/A',
@@ -7943,13 +8066,20 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             // 3. XÓA FORM SOẠN
             document.getElementById('newQStemInput').value = '';
             for (let i = 0; i < 4; i++) {
-                document.getElementById(`newOptText_${i}`).value = '';
+                const optEl = document.getElementById(`newOptText_${i}`);
+                if (optEl) optEl.value = '';
                 const box = document.getElementById(`optImgBox_${i}`);
                 if (box) box.style.display = 'none';
             }
+            const kqEl = document.getElementById('newAnsKQText');
+            if (kqEl) kqEl.value = '';
+            const expEl = document.getElementById('newQExplanation');
+            if (expEl) expEl.value = '';
+
             this.tempStemImage = null;
             this.tempOptImages = [null, null, null, null];
             stemImgPreviewBox.style.display = 'none';
+            updateAnswerPreviewBadges();
 
             // 4. CHUYỂN VỀ TAB NGÂN HÀNG HOẶC CÂU HỎI CÓ ẢNH VÀ CẬP NHẬT GIAO DIỆN
             if (hasImg) {
@@ -8756,39 +8886,184 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             }
         });
 
-        // Nút Sao lưu toàn bộ kho
-        document.getElementById('btnExportAllBank')?.addEventListener('click', () => {
+        // =========================================================================
+        // HÀM XUẤT FILE MẪU EXCEL CHUẨN HÓA ĐA NĂNG (2 SHEET THEO CHỈ ĐẠO THẦY NGUYỄN TÁ QUAN)
+        // Sheet 1: Mau_Cau_Hoi_Chuan (Mã Lớp, Mã Môn, Dạng câu hỏi, Mã Năng lực, Stem, Ảnh, 4 PA & Ảnh, 3 cột Đáp án, Lời giải)
+        // Sheet 2: Ma_Tham_Chieu (Bảng tra cứu Mã Lớp, Phân môn, Dạng NLC / Đ-S / TLN, Năng lực, Quy ước đáp án)
+        // =========================================================================
+        const exportStandardExcelTemplate = () => {
             sound.playFanfare();
-            const blob = new Blob([JSON.stringify(this.questionBank, null, 2)], { type: 'application/json;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Backup_Toan_Bo_Kho_De_EduStudio_${new Date().toISOString().slice(0, 10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            alert(`🎉 Đã sao lưu toàn bộ ${this.questionBank.length} câu hỏi và đề kiểm tra về máy tính an toàn!`);
-        });
+            if (typeof XLSX === 'undefined') {
+                alert("Thư viện Excel đang được tải, vui lòng thử lại sau giây lát!");
+                return;
+            }
 
-        // Tải File Mẫu Excel/CSV
-        document.getElementById('btnDownloadExcelTpl')?.addEventListener('click', () => {
-            sound.playFanfare();
-            const csvHeader = "\uFEFFLớp,Môn học,Năng lực,Câu hỏi,Đáp án A,Đáp án B,Đáp án C,Đáp án D,Đáp án đúng,Giải thích\n";
+            // 1. Dữ liệu Sheet 1: Mau_Cau_Hoi_Chuan
+            const headers = [
+                "Mã Lớp",
+                "Mã Môn",
+                "Dạng câu hỏi",
+                "Mã Năng lực",
+                "Nội dung câu hỏi",
+                "Ảnh câu hỏi",
+                "Lựa chọn A / Ý a",
+                "Ảnh A",
+                "Lựa chọn B / Ý b",
+                "Ảnh B",
+                "Lựa chọn C / Ý c",
+                "Ảnh C",
+                "Lựa chọn D / Ý d",
+                "Ảnh D",
+                "Đáp án NLC (A/B/C/D)",
+                "Đáp án Đúng/Sai (Đ/S)",
+                "Đáp số TLN (KQ)",
+                "Lời giải thích / Hướng dẫn chấm"
+            ];
+
             const sampleRows = [
-                'Lớp 8,HĐTN-HN,Nhận biết,"Phương pháp nào giúp học sinh quản lý thời gian học tập hiệu quả nhất?","Học thâu đêm suốt sáng","Lập kế hoạch biểu theo ngày/tuần và đặt thứ tự ưu tiên","Vừa lướt mạng vừa làm bài","Chờ có cảm hứng mới học",B,"Nhận biết được phương pháp quản lý thời gian khoa học."',
-                'Lớp 8,HĐTN-HN,Thông hiểu,"Biểu hiện nào sau đây thể hiện rõ nhất niềm tự hào về truyền thống quê hương?","Chỉ tự hào khi quê hương giàu có","Tích cực tìm hiểu, giữ gìn và phát huy các nét đẹp văn hóa","Ngại ngùng khi giới thiệu quê hương","Cho rằng truyền thống không còn phù hợp",B,"Hiểu được bản chất tự hào đi đôi với hành động."',
-                'Lớp 8,KHTN,Vận dụng,"Để bảo vệ nguồn nước ngọt tại địa phương không bị ô nhiễm, giải pháp bền vững nhất là:","Không sử dụng nước ngọt","Tuyên truyền nâng cao nhận thức, thu gom rác thải và xử lý nước thải","Chôn rác hóa chất sâu dưới đất","Đắp đê ngăn toàn bộ dòng chảy",B,"Vận dụng kiến thức khoa học vào thực tiễn đời sống."',
-                'Lớp 8,HĐTN-HN,Vận dụng cao,"Trong tình huống xảy ra bất đồng ý kiến khi làm việc nhóm, cách xử lý nào là tối ưu nhất?","Bỏ ra ngoài không tham gia nhóm","Lắng nghe quan điểm của bạn, phân tích ưu nhược điểm và tìm giải pháp hài hòa","Ép buộc mọi người theo ý mình","Mặc kệ ai muốn làm gì thì làm",B,"Giải quyết xung đột dựa trên tư duy phản biện và tinh thần hợp tác."'
-            ].join('\n');
+                [
+                    "L8", "ĐS", "NLC", "NB",
+                    "Hằng đẳng thức nào sau đây là hằng đẳng thức hiệu hai bình phương?",
+                    "",
+                    "A^2 - B^2 = (A - B)(A + B)", "",
+                    "(A - B)^2 = A^2 - 2AB + B^2", "",
+                    "(A + B)^2 = A^2 + 2AB + B^2", "",
+                    "A^3 - B^3 = (A - B)(A^2 + AB + B^2)", "",
+                    "A", "", "",
+                    "A^2 - B^2 = (A - B)(A + B) là hằng đẳng thức hiệu hai bình phương chuẩn."
+                ],
+                [
+                    "L8", "HH", "Đ-S", "TH",
+                    "Cho hình bình hành ABCD. Xét tính Đúng/Sai của các khẳng định sau:",
+                    "",
+                    "Các cạnh đối song song và bằng nhau", "",
+                    "Hai đường chéo bằng nhau", "",
+                    "Các góc đối bằng nhau", "",
+                    "Hai đường chéo vuông góc với nhau", "",
+                    "", "Đ-S-Đ-S", "",
+                    "Hình bình hành có các cạnh đối song song và bằng nhau (Đ), góc đối bằng nhau (Đ); hai đường chéo cắt nhau tại trung điểm, không nhất thiết bằng nhau hay vuông góc (S)."
+                ],
+                [
+                    "L8", "KHTN", "TLN", "VD",
+                    "Khối lượng mol của khí Carbon dioxide (CO2) là bao nhiêu g/mol? (Biết C=12, O=16)",
+                    "",
+                    "", "", "", "", "", "", "", "",
+                    "", "", "44",
+                    "Khối lượng mol M(CO2) = 12 + 16*2 = 44 g/mol."
+                ],
+                [
+                    "MN", "MN_NT", "NLC", "MN",
+                    "Con vật nào sau đây sống dưới nước, bơi bằng vây và thở bằng mang?",
+                    "",
+                    "Con cá", "",
+                    "Con gà", "",
+                    "Con mèo", "",
+                    "Con thỏ", "",
+                    "A", "", "",
+                    "Con cá là động vật có vây, bơi dưới nước và hô hấp bằng mang."
+                ]
+            ];
 
-            const blob = new Blob([csvHeader + sampleRows], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "Mau_Ngan_Hang_Cau_Hoi_Chuan_4_Nang_Luc_EduStudio.csv";
-            a.click();
-            URL.revokeObjectURL(url);
-            alert("Đã tải về thành công File mẫu bảng tính Excel/CSV chuẩn 4 mức độ năng lực!");
-        });
+            const wsData = [headers, ...sampleRows];
+            const ws1 = XLSX.utils.aoa_to_sheet(wsData);
+
+            // Căn chỉnh độ rộng cột tối ưu thị giác
+            ws1['!cols'] = [
+                { wch: 10 }, // Mã Lớp
+                { wch: 10 }, // Mã Môn
+                { wch: 14 }, // Dạng câu hỏi
+                { wch: 13 }, // Mã Năng lực
+                { wch: 45 }, // Nội dung câu hỏi
+                { wch: 14 }, // Ảnh câu hỏi
+                { wch: 28 }, // Lựa chọn A / Ý a
+                { wch: 10 }, // Ảnh A
+                { wch: 28 }, // Lựa chọn B / Ý b
+                { wch: 10 }, // Ảnh B
+                { wch: 28 }, // Lựa chọn C / Ý c
+                { wch: 10 }, // Ảnh C
+                { wch: 28 }, // Lựa chọn D / Ý d
+                { wch: 10 }, // Ảnh D
+                { wch: 22 }, // Đáp án NLC
+                { wch: 22 }, // Đáp án Đúng/Sai
+                { wch: 20 }, // Đáp số TLN
+                { wch: 45 }  // Lời giải thích
+            ];
+
+            // 2. Dữ liệu Sheet 2: Ma_Tham_Chieu
+            const refData = [
+                ["=== BẢNG MÃ THAM CHIẾU QUY CHUẨN KHO ĐỀ EDUSTUDIO ==="],
+                [""],
+                ["1. BẢNG MÃ KHỐI LỚP (Cột: Mã Lớp)"],
+                ["Mã Lớp", "Tên Khối Lớp", "Cấp Học"],
+                ["MN", "Mầm Non (3-6 tuổi)", "Mầm non"],
+                ["L1", "Lớp 1", "Tiểu học"],
+                ["L2", "Lớp 2", "Tiểu học"],
+                ["L3", "Lớp 3", "Tiểu học"],
+                ["L4", "Lớp 4", "Tiểu học"],
+                ["L5", "Lớp 5", "Tiểu học"],
+                ["L6", "Lớp 6", "THCS"],
+                ["L7", "Lớp 7", "THCS"],
+                ["L8", "Lớp 8", "THCS"],
+                ["L9", "Lớp 9", "THCS"],
+                ["L10", "Lớp 10", "THPT"],
+                ["L11", "Lớp 11", "THPT"],
+                ["L12", "Lớp 12", "THPT"],
+                [""],
+                ["2. BẢNG MÃ PHÂN MÔN HỌC (Cột: Mã Môn)"],
+                ["Mã Môn", "Tên Phân Môn", "Ghi Chú"],
+                ["ĐS", "Toán học - Đại số", "Theo thống nhất chuẩn EduStudio"],
+                ["HH", "Toán học - Hình học", "Theo thống nhất chuẩn EduStudio"],
+                ["KHTN", "Khoa học tự nhiên", "Vật lí, Hóa học, Sinh học tích hợp"],
+                ["NV", "Ngữ văn", "Văn bản, Tiếng Việt, Viết"],
+                ["TA", "Tiếng Anh", "Ngoại ngữ"],
+                ["TIN", "Tin học", "Công nghệ thông tin"],
+                ["LS-ĐL", "Lịch sử & Địa lí", "Phân môn KHXH"],
+                ["GDCD", "Giáo dục công dân", "GD Kinh tế & Pháp luật"],
+                ["HDTN", "Hoạt động trải nghiệm, hướng nghiệp", "HĐTN-HN"],
+                ["MN_NT", "Mầm non - Nhận thức", "Lĩnh vực nhận thức"],
+                ["MN_NN", "Mầm non - Ngôn ngữ", "Lĩnh vực ngôn ngữ"],
+                ["MN_TC", "Mầm non - Thể chất", "Lĩnh vực thể chất"],
+                ["MN_TM", "Mầm non - Thẩm mỹ", "Lĩnh vực thẩm mỹ"],
+                ["MN_XH", "Mầm non - Tình cảm & Xã hội", "Lĩnh vực tình cảm - KNXH"],
+                [""],
+                ["3. BẢNG MÃ DẠNG CÂU HỎI (Cột: Dạng câu hỏi)"],
+                ["Mã Dạng", "Tên Dạng Câu Hỏi", "Cột Đáp Án Tương Ứng"],
+                ["NLC", "Nhiều lựa chọn (4 phương án A, B, C, D)", "Điền vào cột 'Đáp án NLC (A/B/C/D)' (A/B/C/D)"],
+                ["Đ-S", "Đúng - Sai (4 ý khẳng định a, b, c, d)", "Điền vào cột 'Đáp án Đúng/Sai (Đ/S)' (Đ-S-Đ-S)"],
+                ["TLN", "Trả lời ngắn / Kết quả điền khuyết", "Điền vào cột 'Đáp số TLN (KQ)' (kết quả số/từ)"],
+                [""],
+                ["4. BẢNG MÃ NĂNG LỰC (Cột: Mã Năng lực)"],
+                ["Mã Năng Lực", "Tên Mức Độ / Năng Lực", "Ghi Chú"],
+                ["NB", "Nhận biết (Mức 1)", "Chuẩn GDPT 2018"],
+                ["TH", "Thông hiểu (Mức 2)", "Chuẩn GDPT 2018"],
+                ["VD", "Vận dụng (Mức 3)", "Chuẩn GDPT 2018"],
+                ["VDC", "Vận dụng cao (Mức 4)", "Chuẩn GDPT 2018"],
+                ["MN", "Năng lực chuẩn Mầm non", "5 Lĩnh vực Mầm non"],
+                [""],
+                ["5. QUY ƯỚC ĐIỀN ĐÁP ÁN 3 CỘT (ĐỘC LẬP TƯƠNG ỨNG):"],
+                ["- Câu NLC: Cột 15 điền A hoặc B hoặc C hoặc D. (Cột 16, 17 để trống)"],
+                ["- Câu Đ-S: Cột 16 điền chuỗi Đ/S ngăn cách dấu gạch ngang: ví dụ Đ-S-Đ-Đ. (Cột 15, 17 để trống)"],
+                ["- Câu TLN: Cột 17 điền đáp số/kết quả chính xác: ví dụ 44 hoặc CO2. (Cột 15, 16 để trống)"]
+            ];
+
+            const ws2 = XLSX.utils.aoa_to_sheet(refData);
+            ws2['!cols'] = [
+                { wch: 18 },
+                { wch: 38 },
+                { wch: 45 }
+            ];
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws1, "Mau_Cau_Hoi_Chuan");
+            XLSX.utils.book_append_sheet(wb, ws2, "Ma_Tham_Chieu");
+
+            XLSX.writeFile(wb, "EduSTO_Mau_De_Chuan_Hoa_GDPT_MN.xlsx");
+            this.showToast("✓ Đã tải xuống File Mẫu Excel Chuẩn Hóa (.XLSX) kèm Sheet Mã Tham Chiếu!", 4000);
+        };
+
+        // Gắn sự kiện Tải File Mẫu Excel Chuẩn Hóa
+        document.getElementById('btnDownloadStandardExcelTpl')?.addEventListener('click', exportStandardExcelTemplate);
+        document.getElementById('btnDownloadExcelTpl')?.addEventListener('click', exportStandardExcelTemplate);
 
         // Tải File Mẫu Word
         document.getElementById('btnDownloadWordTpl')?.addEventListener('click', () => {
@@ -8805,18 +9080,18 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             <table class="tbl-header">
                 <tr>
                     <td style="width: 45%;"><strong>UBND HUYỆN/QUẬN....................</strong><br><strong>TRƯỜNG THCS/THPT..................</strong></td>
-                    <td style="width: 55%;"><strong>ĐỀ KIỂM TRA ĐỊNH KỲ (CHUẨN GDPT 2018)</strong><br>MÔN: KHOA HỌC TỰ NHIÊN - LỚP 8<br>Thời gian làm bài: 45 phút</td>
+                    <td style="width: 55%;"><strong>ĐỀ KIỂM TRA ĐỊNH KỲ (CHUẨN GDPT 2018)</strong><br>MÔN: TOÁN (ĐẠI SỐ & HÌNH HỌC) - LỚP 8<br>Thời gian làm bài: 45 phút</td>
                 </tr>
             </table>
             <div class="title">ĐỀ KIỂM TRA GIỮA HỌC KỲ I (MÃ ĐỀ: 801)</div>
             <div class="sub-title">(Thí sinh không được sử dụng tài liệu)</div>
             <p><strong>PHẦN I. TRẮC NGHIỆM KHÁCH QUAN (TNKQ)</strong></p>
-            <p><strong>1. Dạng 1: Câu trắc nghiệm nhiều lựa chọn:</strong></p>
+            <p><strong>1. Dạng 1: Câu trắc nghiệm nhiều lựa chọn (NLC):</strong></p>
             <p>Câu 1: Câu hỏi mẫu nhiều lựa chọn 1...<br>A. Phương án A<br>*B. Phương án B (Đáp án đúng)<br>C. Phương án C<br>D. Phương án D</p>
-            <p><strong>2. Dạng 2: Câu trắc nghiệm Đúng - Sai:</strong></p>
-            <p>Câu 2: Cho thông tin tình huống thực tế... Xét tính đúng/sai:<br>a) Nhận định 1 (Đúng)<br>b) Nhận định 2 (Sai)<br>c) Nhận định 3 (Đúng)<br>d) Nhận định 4 (Sai)</p>
-            <p><strong>PHẦN II. TỰ LUẬN (TL)</strong></p>
-            <p>Câu 1 (2.0 điểm): Trình bày giải pháp giải quyết vấn đề...</p>
+            <p><strong>2. Dạng 2: Câu trắc nghiệm Đúng - Sai (Đ-S):</strong></p>
+            <p>Câu 2: Cho thông tin hình học... Xét tính đúng/sai:<br>a) Nhận định 1 (Đúng)<br>b) Nhận định 2 (Sai)<br>c) Nhận định 3 (Đúng)<br>d) Nhận định 4 (Sai)</p>
+            <p><strong>3. Dạng 3: Câu trắc nghiệm Trả lời ngắn (TLN):</strong></p>
+            <p>Câu 3: Kết quả của biểu thức là: [................]</p>
             </body></html>`;
 
             const blob = new Blob(['\ufeff' + wordTpl], { type: 'application/msword;charset=utf-8' });
@@ -8826,10 +9101,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             a.download = "Mau_De_Kiem_Tra_Word_Chuan_GDPT_EduStudio.doc";
             a.click();
             URL.revokeObjectURL(url);
-            alert("Đã tải về thành công File mẫu Đề Word (.DOCX) chuẩn quy cách Bộ GD&ĐT!");
+            alert("Đã tải về thành công File mẫu Đề Word (.DOC) chuẩn quy cách Bộ GD&ĐT!");
         });
 
-        // 2. Tab Nhập: Kéo thả file và phân tích Preflight
+        // 2. Tab Nhập: Kéo thả file Excel (.xlsx, .xls, .csv) và phân tích Preflight
         const ioDropZone = document.getElementById('ioDropZone');
         const ioFileInput = document.getElementById('ioUnifiedFileInput');
         const preflightBox = document.getElementById('importPreflightSummary');
@@ -8854,116 +9129,271 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             ioDropZone.style.borderColor = '#3b82f6';
             ioDropZone.style.background = '#f8fafc';
             if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                handleStagingFile(e.dataTransfer.files[0]);
+                handleStagingExcelFile(e.dataTransfer.files[0]);
             }
         });
 
         ioFileInput?.addEventListener('change', (e) => {
             if (e.target.files && e.target.files[0]) {
-                handleStagingFile(e.target.files[0]);
+                handleStagingExcelFile(e.target.files[0]);
             }
         });
 
-        const handleStagingFile = (file) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const text = event.target.result;
-                stagedQuestions = [];
+        const handleStagingExcelFile = (file) => {
+            const fileName = file.name.toLowerCase();
+            const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
 
-                if (file.name.endsWith('.json')) {
+            if (isExcel && typeof XLSX !== 'undefined') {
+                const reader = new FileReader();
+                reader.onload = (e) => {
                     try {
-                        const parsed = JSON.parse(text);
-                        const items = Array.isArray(parsed) ? parsed : (parsed.questions || []);
-                        items.forEach((item, idx) => {
+                        stagedQuestions = [];
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[sheetName];
+                        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+
+                        if (!rows || rows.length < 2) {
+                            alert("File Excel trống hoặc không có dòng dữ liệu câu hỏi!");
+                            return;
+                        }
+
+                        // Tìm hàng tiêu đề
+                        let headerRowIdx = -1;
+                        for (let r = 0; r < Math.min(5, rows.length); r++) {
+                            const rowStr = rows[r].join(' ').toLowerCase();
+                            if (rowStr.includes('câu hỏi') || rowStr.includes('nội dung') || rowStr.includes('mã lớp') || rowStr.includes('dạng')) {
+                                headerRowIdx = r;
+                                break;
+                            }
+                        }
+                        if (headerRowIdx === -1) headerRowIdx = 0;
+                        const headers = rows[headerRowIdx].map(h => String(h || '').trim().toLowerCase());
+
+                        const findCol = (keywords, defaultIdx) => {
+                            const idx = headers.findIndex(h => keywords.some(k => h.includes(k)));
+                            return idx !== -1 ? idx : defaultIdx;
+                        };
+
+                        const colGrade = findCol(['mã lớp', 'khối lớp', 'lớp'], 0);
+                        const colSub = findCol(['mã môn', 'phân môn', 'môn'], 1);
+                        const colType = findCol(['dạng câu hỏi', 'dạng', 'loại'], 2);
+                        const colComp = findCol(['mã năng lực', 'năng lực', 'mức độ'], 3);
+                        const colStem = findCol(['nội dung câu hỏi', 'câu hỏi', 'stem'], 4);
+                        const colStemImg = findCol(['ảnh câu hỏi', 'ảnh đề'], 5);
+                        const colOptA = findCol(['lựa chọn a', 'đáp án a', 'phương án a', 'ý a'], 6);
+                        const colImgA = findCol(['ảnh a'], 7);
+                        const colOptB = findCol(['lựa chọn b', 'đáp án b', 'phương án b', 'ý b'], 8);
+                        const colImgB = findCol(['ảnh b'], 9);
+                        const colOptC = findCol(['lựa chọn c', 'đáp án c', 'phương án c', 'ý c'], 10);
+                        const colImgC = findCol(['ảnh c'], 11);
+                        const colOptD = findCol(['lựa chọn d', 'đáp án d', 'phương án d', 'ý d'], 12);
+                        const colImgD = findCol(['ảnh d'], 13);
+                        const colAnsNLC = findCol(['đáp án nlc', 'đáp án đúng', 'đáp án (a/b/c/d)'], 14);
+                        const colAnsDS = findCol(['đúng/sai', 'đáp án đ/s', 'đ-s'], 15);
+                        const colAnsKQ = findCol(['đáp số tln', 'kết quả', 'kq'], 16);
+                        const colExp = findCol(['giải thích', 'hướng dẫn chấm', 'lời giải'], 17);
+
+                        let nlcCount = 0;
+                        let dsCount = 0;
+                        let tlnCount = 0;
+
+                        for (let i = headerRowIdx + 1; i < rows.length; i++) {
+                            const r = rows[i];
+                            if (!r || r.length === 0) continue;
+                            const stem = String(r[colStem] || '').trim();
+                            if (!stem) continue;
+
+                            const gradeRaw = String(r[colGrade] || 'L8').trim();
+                            const subRaw = String(r[colSub] || 'KHTN').trim();
+                            let typeRaw = String(r[colType] || 'NLC').trim().toUpperCase();
+                            if (!['NLC', 'Đ-S', 'TLN'].includes(typeRaw)) {
+                                if (typeRaw.includes('ĐÚNG') || typeRaw.includes('SAI')) typeRaw = 'Đ-S';
+                                else if (typeRaw.includes('NGẮN') || typeRaw.includes('KQ')) typeRaw = 'TLN';
+                                else typeRaw = 'NLC';
+                            }
+                            const compRaw = String(r[colComp] || 'NB').trim();
+
+                            const optA = String(r[colOptA] || '').trim();
+                            const optB = String(r[colOptB] || '').trim();
+                            const optC = String(r[colOptC] || '').trim();
+                            const optD = String(r[colOptD] || '').trim();
+
+                            const ansNLC = String(r[colAnsNLC] || 'A').trim().toUpperCase();
+                            const ansDS = String(r[colAnsDS] || '').trim();
+                            const ansKQ = String(r[colAnsKQ] || '').trim();
+                            const exp = String(r[colExp] || '').trim();
+
+                            let corIdx = 0;
+                            if (ansNLC.includes('B') || ansNLC === '1') corIdx = 1;
+                            else if (ansNLC.includes('C') || ansNLC === '2') corIdx = 2;
+                            else if (ansNLC.includes('D') || ansNLC === '3') corIdx = 3;
+
+                            if (typeRaw === 'NLC') nlcCount++;
+                            else if (typeRaw === 'Đ-S') dsCount++;
+                            else if (typeRaw === 'TLN') tlnCount++;
+
                             stagedQuestions.push({
-                                id: 'bank_' + Date.now() + '_' + idx,
-                                stem: item.stem || item.question || 'Câu hỏi...',
-                                options: item.options || ['A', 'B', 'C', 'D'],
-                                correctIndex: item.correctIndex !== undefined ? item.correctIndex : 0,
-                                grade: item.grade || document.getElementById('importTargetGrade')?.value || 'Lớp 8',
-                                subject: item.subject || document.getElementById('importTargetSubject')?.value || 'Khoa học tự nhiên',
-                                competencyText: item.competencyText || 'Nhận biết',
-                                explanation: item.explanation || ''
-                            });
-                        });
-                    } catch (err) {
-                        alert("Lỗi đọc file JSON!");
-                    }
-                } else {
-                    // Xử lý CSV/TXT
-                    const lines = text.split('\n').filter(l => l.trim().length > 0);
-                    const startIndex = lines[0].includes('Lớp') || lines[0].includes('Câu hỏi') ? 1 : 0;
-                    for (let i = startIndex; i < lines.length; i++) {
-                        const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
-                        if (cols.length >= 8) {
-                            const corLetter = cols[8] ? cols[8].toUpperCase().trim() : 'A';
-                            const corIdx = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 }[corLetter] ?? 0;
-                            stagedQuestions.push({
-                                id: 'bank_' + Date.now() + '_' + i,
-                                grade: cols[0] || document.getElementById('importTargetGrade')?.value || 'Lớp 8',
-                                subject: cols[1] || document.getElementById('importTargetSubject')?.value || 'Khoa học tự nhiên',
-                                competencyText: cols[2] || 'Nhận biết',
-                                stem: cols[3] || 'Câu hỏi...',
-                                options: [cols[4] || '', cols[5] || '', cols[6] || '', cols[7] || ''],
+                                id: 'bank_excel_' + Date.now() + '_' + i,
+                                compartment: 2,
+                                sourceType: 'excel_import',
+                                auditVerified: false,
+                                pendingAudit: true,
+                                grade: gradeRaw,
+                                subject: subRaw,
+                                qType: typeRaw,
+                                competency: compRaw,
+                                competencyText: compRaw,
+                                stem: stem,
+                                stemImage: String(r[colStemImg] || '').trim(),
+                                options: [optA || 'Lựa chọn A', optB || 'Lựa chọn B', optC || 'Lựa chọn C', optD || 'Lựa chọn D'],
+                                optImages: [String(r[colImgA] || '').trim(), String(r[colImgB] || '').trim(), String(r[colImgC] || '').trim(), String(r[colImgD] || '').trim()],
                                 correctIndex: corIdx,
-                                explanation: cols[9] || ''
+                                ansNLC: ansNLC,
+                                ansDS: ansDS,
+                                ansKQ: ansKQ,
+                                explanation: exp
                             });
                         }
-                    }
-                }
 
-                if (stagedQuestions.length > 0) {
-                    sound.playTick();
-                    preflightBox.style.display = 'block';
-                    preflightBox.innerHTML = `
-                        <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 0.35rem;">
-                            ✓ Đã phân tích file thành công: <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)
-                        </div>
-                        <div>
-                            • Phát hiện: <strong>${stagedQuestions.length} câu hỏi hợp lệ</strong> chuẩn cấu trúc ma trận.<br>
-                            • Trạng thái: Sẵn sàng nạp vào Kho Đề.
-                        </div>
-                    `;
-                    btnConfirmImport.removeAttribute('disabled');
-                    btnConfirmImport.innerHTML = `<span>📥</span> <span>Xác Nhận Nạp ${stagedQuestions.length} Câu Hỏi Vào Kho</span>`;
-                } else {
-                    alert("Không nhận diện được câu hỏi hợp lệ từ file! Vui lòng kiểm tra lại cấu trúc file mẫu.");
-                }
-            };
-            reader.readAsText(file, 'UTF-8');
+                        if (stagedQuestions.length > 0) {
+                            sound.playTick();
+                            preflightBox.style.display = 'block';
+                            preflightBox.innerHTML = `
+                                <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.35rem;">
+                                    <span>✓</span> Đã kiểm tra tính đúng cấu trúc: <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)
+                                </div>
+                                <div style="line-height: 1.5; color: #334155; font-size: 0.78rem;">
+                                    • Phát hiện tổng cộng: <strong>${stagedQuestions.length} câu hỏi hợp lệ</strong> đầy đủ trường bắt buộc.<br>
+                                    • Phân loại dạng: <strong style="color:#1d4ed8;">${nlcCount} câu Nhiều Lựa Chọn (NLC)</strong> | <strong style="color:#b45309;">${dsCount} câu Đúng-Sai (Đ-S)</strong> | <strong style="color:#059669;">${tlnCount} câu Trả Lời Ngắn (TLN)</strong>.<br>
+                                    • Nơi tiếp nhận: <strong>Kho Đề Thô (5TB chờ AI thẩm định)</strong> & Ngân hàng đề hiện hành.
+                                </div>
+                            `;
+                            btnConfirmImport.removeAttribute('disabled');
+                            btnConfirmImport.innerHTML = `<span>📥</span> <span>Nạp Toàn Bộ ${stagedQuestions.length} Câu Hỏi Vào Kho Đề Thô</span>`;
+                        } else {
+                            alert("Không nhận diện được câu hỏi hợp lệ từ file Excel! Vui lòng tải file mẫu chuẩn của hệ thống để đối soát các trường bắt buộc.");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Lỗi khi đọc file Excel: " + err.message);
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                // Xử lý CSV / JSON / TXT
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const text = event.target.result;
+                    stagedQuestions = [];
+
+                    if (fileName.endsWith('.json')) {
+                        try {
+                            const parsed = JSON.parse(text);
+                            const items = Array.isArray(parsed) ? parsed : (parsed.questions || []);
+                            items.forEach((item, idx) => {
+                                stagedQuestions.push({
+                                    id: 'bank_json_' + Date.now() + '_' + idx,
+                                    compartment: 2,
+                                    sourceType: 'excel_import',
+                                    auditVerified: false,
+                                    pendingAudit: true,
+                                    stem: item.stem || item.question || 'Câu hỏi...',
+                                    qType: item.qType || 'NLC',
+                                    options: item.options || ['A', 'B', 'C', 'D'],
+                                    correctIndex: item.correctIndex !== undefined ? item.correctIndex : 0,
+                                    ansNLC: item.ansNLC || 'A',
+                                    ansDS: item.ansDS || '',
+                                    ansKQ: item.ansKQ || '',
+                                    grade: item.grade || 'L8',
+                                    subject: item.subject || 'KHTN',
+                                    competencyText: item.competencyText || 'Nhận biết',
+                                    explanation: item.explanation || ''
+                                });
+                            });
+                        } catch (err) {
+                            alert("Lỗi đọc file JSON!");
+                        }
+                    } else {
+                        // Xử lý CSV
+                        const lines = text.split('\n').filter(l => l.trim().length > 0);
+                        const startIndex = lines[0].includes('Lớp') || lines[0].includes('Câu hỏi') ? 1 : 0;
+                        for (let i = startIndex; i < lines.length; i++) {
+                            const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+                            if (cols.length >= 5) {
+                                stagedQuestions.push({
+                                    id: 'bank_csv_' + Date.now() + '_' + i,
+                                    compartment: 2,
+                                    sourceType: 'excel_import',
+                                    auditVerified: false,
+                                    pendingAudit: true,
+                                    grade: cols[0] || 'L8',
+                                    subject: cols[1] || 'KHTN',
+                                    qType: cols[2] || 'NLC',
+                                    competencyText: cols[3] || 'Nhận biết',
+                                    stem: cols[4] || 'Câu hỏi...',
+                                    options: [cols[6] || '', cols[8] || '', cols[10] || '', cols[12] || ''],
+                                    correctIndex: 0,
+                                    ansNLC: cols[14] || 'A',
+                                    ansDS: cols[15] || '',
+                                    ansKQ: cols[16] || '',
+                                    explanation: cols[17] || ''
+                                });
+                            }
+                        }
+                    }
+
+                    if (stagedQuestions.length > 0) {
+                        sound.playTick();
+                        preflightBox.style.display = 'block';
+                        preflightBox.innerHTML = `
+                            <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 0.35rem;">
+                                ✓ Đã kiểm tra file thành công: <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)
+                            </div>
+                            <div style="font-size: 0.78rem; color: #334155;">
+                                • Phát hiện: <strong>${stagedQuestions.length} câu hỏi hợp lệ</strong>.<br>
+                                • Trạng thái: Sẵn sàng nạp vào Kho Đề Thô (5TB chờ AI thẩm định).
+                            </div>
+                        `;
+                        btnConfirmImport.removeAttribute('disabled');
+                        btnConfirmImport.innerHTML = `<span>📥</span> <span>Nạp Toàn Bộ ${stagedQuestions.length} Câu Hỏi Vào Kho Đề Thô</span>`;
+                    } else {
+                        alert("Không nhận diện được câu hỏi hợp lệ từ file!");
+                    }
+                };
+                reader.readAsText(file, 'UTF-8');
+            }
         };
 
-        // Xác nhận nạp vào kho
+        // Xác nhận nạp vào Kho Đề Thô (5TB Chờ Thẩm Định) & Ngân hàng đề
         btnConfirmImport?.addEventListener('click', () => {
             if (stagedQuestions.length === 0) return;
-            const mode = document.getElementById('importTargetMode')?.value || 'append';
-            const targetGrade = document.getElementById('importTargetGrade')?.value || 'Lớp 8';
-            const targetSubject = document.getElementById('importTargetSubject')?.value || 'Khoa học tự nhiên';
 
-            // ĐƯA TOÀN BỘ CÂU HỎI VÀO KHO TRUNG GIAN (THƯ MỤC DỮ LIỆU THÔ 5TB CHỜ AI THẨM ĐỊNH)
             const now = new Date();
             const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
+            // Ghi nhận vào Kho Đề Thô (Kho Trung Gian 5TB Chờ Thẩm Định)
             const stagingRecord = {
                 id: `RAW-2026-${String((this.rawStagingFiles?.length || 0) + 1).padStart(3, '0')}`,
-                title: `Bộ đề / câu hỏi nạp ngoài [${stagedQuestions.length} câu] (${targetGrade} - ${targetSubject})`,
+                title: `Bộ đề Excel nạp ngoài [${stagedQuestions.length} câu] (Đa phân môn & Dạng chuẩn)`,
                 targetRepo: 'games',
                 repoName: 'Kho Trò Chơi',
-                grade: targetGrade,
-                subject: targetSubject,
-                authorName: this.currentUser?.name || 'Giáo viên nạp tệp',
+                grade: stagedQuestions[0]?.grade || 'L8',
+                subject: stagedQuestions[0]?.subject || 'KHTN',
+                authorName: this.currentUser?.name || 'Giáo viên nạp tệp Excel',
                 school: this.currentUser?.school || 'Trường học chuẩn GDPT',
                 contact: this.currentUser?.email || 'N/A',
                 uploadDate: dateStr,
-                fileSize: `${(stagedQuestions.length * 1.5).toFixed(1)} KB`,
-                fileName: `Imported_Questions_${Date.now()}.json`,
+                fileSize: `${(stagedQuestions.length * 1.8).toFixed(1)} KB`,
+                fileName: `Imported_Excel_${Date.now()}.xlsx`,
                 status: 'pending',
                 auditScore: null,
                 auditDate: null,
                 auditInspector: null,
                 daysLeft: 10,
                 isExpired: false,
-                desc: `Gồm ${stagedQuestions.length} câu hỏi trắc nghiệm được nạp từ tệp ngoài.`,
+                desc: `Gồm ${stagedQuestions.length} câu hỏi trắc nghiệm (NLC, Đ-S, TLN) được nạp từ tệp Excel chuẩn hóa.`,
                 questions: stagedQuestions,
                 auditReport: null
             };
@@ -8975,25 +9405,21 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             } catch(e) {}
             try { this.renderAdminStorageConsole(); } catch(e) {}
 
-            if (mode === 'overwrite') {
-                this.questionBank = [...stagedQuestions.map(q => ({ ...q, compartment: 1 }))];
-                this.activeBankCompartment = 1;
-            } else {
-                const assigned = stagedQuestions.map(q => ({
-                    ...q,
-                    compartment: 2,
-                    sourceType: 'user_import',
-                    pendingAudit: true
-                }));
-                this.questionBank.unshift(...assigned);
-                this.activeBankCompartment = 2;
-            }
+            // Nạp vào questionBank (Ngăn 2: Người dùng tự nạp/tạo, pending audit)
+            const assigned = stagedQuestions.map(q => ({
+                ...q,
+                compartment: 2,
+                sourceType: 'excel_import',
+                pendingAudit: true
+            }));
+            this.questionBank.unshift(...assigned);
+            this.activeBankCompartment = 2;
 
             sound.playFanfare();
             this.renderBankQuestions();
             closeIOModal();
-            alert(`⏳ [ĐÃ GỬI VÀO KHO TRUNG GIAN CHỜ THẨM ĐỊNH]\n\n✓ Đã nạp thành công ${stagedQuestions.length} câu hỏi vào Ngân hàng của Thầy/Cô.\n\n🛡️ Đồng thời, câu hỏi đã được chuyển vào KHO TRUNG GIAN (Thư mục Dữ liệu thô 5TB chờ AI thẩm định).\nSau khi AI đối soát đạt chuẩn sư phạm, câu hỏi sẽ được phân loại vào Ngân hàng chính thức dùng chung toàn hệ thống!`);
-            this.showToast(`✓ Đã nạp ${stagedQuestions.length} câu hỏi và chuyển vào Kho Trung Gian (5TB)!`, 4500);
+            alert(`⏳ [ĐÃ GỬI VÀO KHO TRUNG GIAN CHỜ THẨM ĐỊNH]\n\n✓ Đã nạp thành công ${stagedQuestions.length} câu hỏi vào Ngân hàng của Thầy/Cô.\n\n🛡️ Đồng thời, câu hỏi đã được lưu trữ an toàn trong KHO ĐỀ THÔ (Thư mục Dữ liệu thô 5TB chờ AI thẩm định).\nSau khi AI đối soát đạt chuẩn sư phạm, câu hỏi sẽ được phân loại vào Ngân hàng chính thức dùng chung toàn hệ thống!`);
+            this.showToast(`✓ Đã nạp ${stagedQuestions.length} câu hỏi từ Excel vào Kho Đề Thô (5TB)!`, 4500);
         });
 
         // =========================================================================

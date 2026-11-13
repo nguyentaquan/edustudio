@@ -3625,25 +3625,21 @@ window.openPPCTDirect = function() {
 
                 <!-- BÊN PHẢI: NGÂN HÀNG CÂU HỎI & THÊM CÂU HỎI MỚI (HỖ TRỢ ẢNH ĐẦY ĐỦ) -->
                 <div class="creator-panel-right">
-                    <!-- THANH CHUYỂN TAB BÊN PHẢI -->
-                    <div class="creator-right-tabs-bar">
-                        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;">
-                            <button id="btnTabBankList" class="btn-creator-subtab active" type="button">
-                                <span>📚</span> <span>Ngân Hàng Câu Hỏi</span>
-                                <span id="bankTotalCount" class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8;">0 câu</span>
-                            </button>
-                            <button id="btnTabImageQuestions" class="btn-creator-subtab" type="button">
-                                <span>🖼️</span> <span>Câu Hỏi Có Ảnh</span>
-                                <span id="bankImageCount" class="badge-tag-tiny" style="background:#fef3c7; color:#b45309;">0 câu</span>
-                            </button>
-                            <button id="btnTabAddNewQ" class="btn-creator-subtab" type="button">
-                                <span>➕</span> <span>Soạn Câu Mới</span>
-                            </button>
-                        </div>
-
-                        <!-- Nút Mở Hộp Thoại Nhập / Xuất Câu Hỏi -->
-                        <button id="btnOpenIOCreatorModal" class="btn-mini-action" type="button" style="background:#eff6ff; color:#1d4ed8; padding: 0.25rem 0.6rem; font-size: 0.75rem;">
-                            <span>🔄</span> <span>Nhập / Xuất</span>
+                    <!-- THANH CHUYỂN TAB BÊN PHẢI (1 HÀNG DUY NHẤT CÙNG VỚI NÚT XUẤT/NHẬP) -->
+                    <div class="creator-right-tabs-bar" style="display: flex; gap: 0.35rem; align-items: center; justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.4rem; margin-bottom: 0.5rem; width: 100%;">
+                        <button id="btnTabBankList" class="btn-creator-subtab active" type="button" style="white-space: nowrap; padding: 0.32rem 0.6rem; font-size: 0.76rem;">
+                            <span>📚</span> <span>Ngân Hàng Câu Hỏi</span>
+                            <span id="bankTotalCount" class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8;">0 câu</span>
+                        </button>
+                        <button id="btnTabImageQuestions" class="btn-creator-subtab" type="button" style="white-space: nowrap; padding: 0.32rem 0.6rem; font-size: 0.76rem;">
+                            <span>🖼️</span> <span>Câu Hỏi Có Ảnh</span>
+                            <span id="bankImageCount" class="badge-tag-tiny" style="background:#fef3c7; color:#b45309;">0 câu</span>
+                        </button>
+                        <button id="btnTabAddNewQ" class="btn-creator-subtab" type="button" style="white-space: nowrap; padding: 0.32rem 0.6rem; font-size: 0.76rem;">
+                            <span>➕</span> <span>Soạn Câu Hỏi</span>
+                        </button>
+                        <button id="btnOpenIOCreatorModal" class="btn-creator-subtab" type="button" style="white-space: nowrap; padding: 0.32rem 0.65rem; font-size: 0.76rem; background: #f0fdf4; color: #166534; border-color: #bbf7d0; margin-left: auto;">
+                            <span>🔄</span> <span>Xuất/Nhập</span>
                         </button>
                     </div>
 
@@ -3657,18 +3653,77 @@ window.openPPCTDirect = function() {
                         </div>
                     </div>
 
-                    <!-- TAB CON 2: THIẾT KẾ & THÊM CÂU HỎI MỚI (HỖ TRỢ TẢI ẢNH CÂU HỎI VÀ TỪNG ĐÁP ÁN) -->
+                    <!-- TAB CON 2: THIẾT KẾ & SOẠN CÂU HỎI MỚI CHUẨN MA TRẬN 3 DẠNG CÂU HỎI -->
                     <div id="panelAddNewQ" class="creator-subtab-panel">
                         <div class="add-q-editor-card">
+                            <!-- BỘ 4 THÔNG TIN ĐỒNG BỘ 100% VỚI CÁC CỘT FILE MẪU EXCEL -->
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-bottom: 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem;">
+                                <div class="form-group-clean" style="margin-bottom: 0;">
+                                    <label style="font-size: 0.72rem; font-weight: 700; color: #334155;">1. Mã Lớp:</label>
+                                    <select id="newQGrade" class="input-clean" style="font-size: 0.76rem; padding: 0.3rem 0.4rem;">
+                                        <option value="MN">MN (Mầm Non)</option>
+                                        <option value="L1">L1 (Lớp 1)</option>
+                                        <option value="L2">L2 (Lớp 2)</option>
+                                        <option value="L3">L3 (Lớp 3)</option>
+                                        <option value="L4">L4 (Lớp 4)</option>
+                                        <option value="L5">L5 (Lớp 5)</option>
+                                        <option value="L6">L6 (Lớp 6)</option>
+                                        <option value="L7">L7 (Lớp 7)</option>
+                                        <option value="L8" selected>L8 (Lớp 8)</option>
+                                        <option value="L9">L9 (Lớp 9)</option>
+                                        <option value="L10">L10 (Lớp 10)</option>
+                                        <option value="L11">L11 (Lớp 11)</option>
+                                        <option value="L12">L12 (Lớp 12)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-clean" style="margin-bottom: 0;">
+                                    <label style="font-size: 0.72rem; font-weight: 700; color: #334155;">2. Mã Môn:</label>
+                                    <select id="newQSubjectCode" class="input-clean" style="font-size: 0.76rem; padding: 0.3rem 0.4rem;">
+                                        <option value="ĐS" selected>ĐS (Toán - Đại số)</option>
+                                        <option value="HH">HH (Toán - Hình học)</option>
+                                        <option value="KHTN">KHTN (Khoa học tự nhiên)</option>
+                                        <option value="NV">NV (Ngữ văn)</option>
+                                        <option value="TA">TA (Tiếng Anh)</option>
+                                        <option value="TIN">TIN (Tin học)</option>
+                                        <option value="LS-ĐL">LS-ĐL (Lịch sử & Địa lí)</option>
+                                        <option value="GDCD">GDCD (Giáo dục công dân)</option>
+                                        <option value="HDTN">HDTN (Hoạt động TN-HN)</option>
+                                        <option value="MN_NT">MN_NT (Phát triển Nhận thức)</option>
+                                        <option value="MN_NN">MN_NN (Phát triển Ngôn ngữ)</option>
+                                        <option value="MN_TC">MN_TC (Phát triển Thể chất)</option>
+                                        <option value="MN_TM">MN_TM (Phát triển Thẩm mỹ)</option>
+                                        <option value="MN_XH">MN_XH (Tình cảm & KNXH)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-clean" style="margin-bottom: 0;">
+                                    <label style="font-size: 0.72rem; font-weight: 700; color: #1d4ed8;">3. Dạng Câu Hỏi:</label>
+                                    <select id="newQType" class="input-clean" style="font-size: 0.76rem; padding: 0.3rem 0.4rem; border-color: #3b82f6; font-weight: 700; color: #1d4ed8;">
+                                        <option value="NLC" selected>NLC (Nhiều lựa chọn)</option>
+                                        <option value="Đ-S">Đ-S (Đúng - Sai 4 ý)</option>
+                                        <option value="TLN">TLN (Trả lời ngắn / KQ)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-clean" style="margin-bottom: 0;">
+                                    <label style="font-size: 0.72rem; font-weight: 700; color: #334155;">4. Năng Lực:</label>
+                                    <select id="newQCompetencyCode" class="input-clean" style="font-size: 0.76rem; padding: 0.3rem 0.4rem;">
+                                        <option value="NB" selected>NB (Nhận biết)</option>
+                                        <option value="TH">TH (Thông hiểu)</option>
+                                        <option value="VD">VD (Vận dụng)</option>
+                                        <option value="VDC">VDC (Vận dụng cao)</option>
+                                        <option value="MN">MN (Năng lực Mầm non)</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <!-- NỘI DUNG CÂU HỎI & ĐÍNH KÈM ẢNH CÂU HỎI -->
                             <div class="form-group-clean">
                                 <label style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span>Nội Dung Câu Hỏi:</span>
+                                    <span style="font-size: 0.78rem; font-weight: 700; color: #1e293b;">Nội Dung Câu Hỏi:</span>
                                     <span id="btnAttachStemImg" class="btn-attach-image" title="Đính kèm ảnh câu hỏi hoặc dán Ctrl+V">
                                         📷 Đính kèm ảnh câu hỏi
                                     </span>
                                 </label>
-                                <textarea id="newQStemInput" class="input-clean" style="height: 60px; resize: vertical;" placeholder="Nhập câu hỏi tại đây..."></textarea>
+                                <textarea id="newQStemInput" class="input-clean" style="height: 55px; resize: vertical;" placeholder="Nhập lời dẫn câu hỏi tại đây..."></textarea>
                                 
                                 <!-- Khung xem trước / upload ảnh của Câu hỏi -->
                                 <div id="stemImgPreviewBox" class="img-attachment-preview-box" style="display: none;">
@@ -3678,87 +3733,121 @@ window.openPPCTDirect = function() {
                                 <input type="file" id="stemImgFileInput" accept="image/*" style="display: none;">
                             </div>
 
-                            <!-- 4 ĐÁP ÁN A - B - C - D CÓ HỖ TRỢ ĐÍNH KÈM ẢNH TỪNG ĐÁP ÁN -->
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #1e293b; margin-top: 0.4rem; display: block;">
-                                Các Lựa Chọn Đáp Án & Ảnh Minh Họa (Tích chọn đáp án đúng):
-                            </label>
+                            <!-- KHU VỰC 1: ĐÁP ÁN DẠNG NHIỀU LỰA CHỌN (NLC) -->
+                            <div id="boxAnswerNLC">
+                                <label style="font-size: 0.78rem; font-weight: 700; color: #1e293b; margin-top: 0.3rem; display: block;">
+                                    Các Phương Án A - B - C - D & Ảnh Minh Họa (Tích tròn chọn đáp án đúng):
+                                </label>
 
-                            <div class="opt-with-media-grid">
-                                <!-- ĐÁP ÁN A -->
-                                <div class="opt-media-row">
-                                    <input type="radio" name="newQCorrectOpt" value="0" checked title="Chọn A là đáp án đúng">
-                                    <strong style="color: #1d4ed8; width: 16px;">A.</strong>
-                                    <input type="text" id="newOptText_0" class="input-clean opt-text-input" placeholder="Nội dung đáp án A...">
-                                    <button class="btn-opt-img-attach" data-opt="0" title="Đính kèm ảnh cho đáp án A">📷</button>
-                                    <div id="optImgBox_0" class="opt-img-mini-box" style="display: none;">
-                                        <img id="optImgPrev_0" src="" alt="A">
-                                        <span class="btn-del-opt-img" data-opt="0">✕</span>
+                                <div class="opt-with-media-grid">
+                                    <!-- ĐÁP ÁN A -->
+                                    <div class="opt-media-row">
+                                        <input type="radio" name="newQCorrectOpt" value="0" checked title="Chọn A là đáp án đúng">
+                                        <strong style="color: #1d4ed8; width: 16px;">A.</strong>
+                                        <input type="text" id="newOptText_0" class="input-clean opt-text-input" placeholder="Nội dung đáp án A...">
+                                        <button class="btn-opt-img-attach" data-opt="0" title="Đính kèm ảnh cho đáp án A">📷</button>
+                                        <div id="optImgBox_0" class="opt-img-mini-box" style="display: none;">
+                                            <img id="optImgPrev_0" src="" alt="A">
+                                            <span class="btn-del-opt-img" data-opt="0">✕</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- ĐÁP ÁN B -->
+                                    <div class="opt-media-row">
+                                        <input type="radio" name="newQCorrectOpt" value="1" title="Chọn B là đáp án đúng">
+                                        <strong style="color: #1d4ed8; width: 16px;">B.</strong>
+                                        <input type="text" id="newOptText_1" class="input-clean opt-text-input" placeholder="Nội dung đáp án B...">
+                                        <button class="btn-opt-img-attach" data-opt="1" title="Đính kèm ảnh cho đáp án B">📷</button>
+                                        <div id="optImgBox_1" class="opt-img-mini-box" style="display: none;">
+                                            <img id="optImgPrev_1" src="" alt="B">
+                                            <span class="btn-del-opt-img" data-opt="1">✕</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- ĐÁP ÁN C -->
+                                    <div class="opt-media-row">
+                                        <input type="radio" name="newQCorrectOpt" value="2" title="Chọn C là đáp án đúng">
+                                        <strong style="color: #1d4ed8; width: 16px;">C.</strong>
+                                        <input type="text" id="newOptText_2" class="input-clean opt-text-input" placeholder="Nội dung đáp án C...">
+                                        <button class="btn-opt-img-attach" data-opt="2" title="Đính kèm ảnh cho đáp án C">📷</button>
+                                        <div id="optImgBox_2" class="opt-img-mini-box" style="display: none;">
+                                            <img id="optImgPrev_2" src="" alt="C">
+                                            <span class="btn-del-opt-img" data-opt="2">✕</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- ĐÁP ÁN D -->
+                                    <div class="opt-media-row">
+                                        <input type="radio" name="newQCorrectOpt" value="3" title="Chọn D là đáp án đúng">
+                                        <strong style="color: #1d4ed8; width: 16px;">D.</strong>
+                                        <input type="text" id="newOptText_3" class="input-clean opt-text-input" placeholder="Nội dung đáp án D...">
+                                        <button class="btn-opt-img-attach" data-opt="3" title="Đính kèm ảnh cho đáp án D">📷</button>
+                                        <div id="optImgBox_3" class="opt-img-mini-box" style="display: none;">
+                                            <img id="optImgPrev_3" src="" alt="D">
+                                            <span class="btn-del-opt-img" data-opt="3">✕</span>
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- ĐÁP ÁN B -->
-                                <div class="opt-media-row">
-                                    <input type="radio" name="newQCorrectOpt" value="1" title="Chọn B là đáp án đúng">
-                                    <strong style="color: #1d4ed8; width: 16px;">B.</strong>
-                                    <input type="text" id="newOptText_1" class="input-clean opt-text-input" placeholder="Nội dung đáp án B...">
-                                    <button class="btn-opt-img-attach" data-opt="1" title="Đính kèm ảnh cho đáp án B">📷</button>
-                                    <div id="optImgBox_1" class="opt-img-mini-box" style="display: none;">
-                                        <img id="optImgPrev_1" src="" alt="B">
-                                        <span class="btn-del-opt-img" data-opt="1">✕</span>
+                            <!-- KHU VỰC 2: ĐÁP ÁN DẠNG ĐÚNG - SAI (Đ-S) 4 Ý -->
+                            <div id="boxAnswerDS" style="display: none;">
+                                <label style="font-size: 0.78rem; font-weight: 700; color: #b45309; margin-top: 0.3rem; display: block;">
+                                    4 Ý Khẳng Định a - b - c - d & Đánh Giá Tính Đúng / Sai:
+                                </label>
+                                <div style="display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.3rem;">
+                                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                                        <strong style="color: #b45309; width: 18px;">a)</strong>
+                                        <input type="text" id="newDS_text_a" class="input-clean" style="flex: 1;" placeholder="Nhận định / ý a...">
+                                        <label style="display:flex; align-items:center; gap:0.2rem; font-size:0.75rem; color:#15803d; cursor:pointer;"><input type="radio" name="newDS_val_a" value="Đ" checked> Đúng</label>
+                                        <label style="display:flex; align-items:center; gap:0.2rem; font-size:0.75rem; color:#b91c1c; cursor:pointer;"><input type="radio" name="newDS_val_a" value="S"> Sai</label>
+                                    </div>
+                                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                                        <strong style="color: #b45309; width: 18px;">b)</strong>
+                                        <input type="text" id="newDS_text_b" class="input-clean" style="flex: 1;" placeholder="Nhận định / ý b...">
+                                        <label style="display:flex; align-items:center; gap:0.2rem; font-size:0.75rem; color:#15803d; cursor:pointer;"><input type="radio" name="newDS_val_b" value="Đ"> Đúng</label>
+                                        <label style="display:flex; align-items:center; gap:0.2rem; font-size:0.75rem; color:#b91c1c; cursor:pointer;"><input type="radio" name="newDS_val_b" value="S" checked> Sai</label>
+                                    </div>
+                                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                                        <strong style="color: #b45309; width: 18px;">c)</strong>
+                                        <input type="text" id="newDS_text_c" class="input-clean" style="flex: 1;" placeholder="Nhận định / ý c...">
+                                        <label style="display:flex; align-items:center; gap:0.2rem; font-size:0.75rem; color:#15803d; cursor:pointer;"><input type="radio" name="newDS_val_c" value="Đ" checked> Đúng</label>
+                                        <label style="display:flex; align-items:center; gap:0.2rem; font-size:0.75rem; color:#b91c1c; cursor:pointer;"><input type="radio" name="newDS_val_c" value="S"> Sai</label>
+                                    </div>
+                                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                                        <strong style="color: #b45309; width: 18px;">d)</strong>
+                                        <input type="text" id="newDS_text_d" class="input-clean" style="flex: 1;" placeholder="Nhận định / ý d...">
+                                        <label style="display:flex; align-items:center; gap:0.2rem; font-size:0.75rem; color:#15803d; cursor:pointer;"><input type="radio" name="newDS_val_d" value="Đ"> Đúng</label>
+                                        <label style="display:flex; align-items:center; gap:0.2rem; font-size:0.75rem; color:#b91c1c; cursor:pointer;"><input type="radio" name="newDS_val_d" value="S" checked> Sai</label>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- ĐÁP ÁN C -->
-                                <div class="opt-media-row">
-                                    <input type="radio" name="newQCorrectOpt" value="2" title="Chọn C là đáp án đúng">
-                                    <strong style="color: #1d4ed8; width: 16px;">C.</strong>
-                                    <input type="text" id="newOptText_2" class="input-clean opt-text-input" placeholder="Nội dung đáp án C...">
-                                    <button class="btn-opt-img-attach" data-opt="2" title="Đính kèm ảnh cho đáp án C">📷</button>
-                                    <div id="optImgBox_2" class="opt-img-mini-box" style="display: none;">
-                                        <img id="optImgPrev_2" src="" alt="C">
-                                        <span class="btn-del-opt-img" data-opt="2">✕</span>
-                                    </div>
-                                </div>
-
-                                <!-- ĐÁP ÁN D -->
-                                <div class="opt-media-row">
-                                    <input type="radio" name="newQCorrectOpt" value="3" title="Chọn D là đáp án đúng">
-                                    <strong style="color: #1d4ed8; width: 16px;">D.</strong>
-                                    <input type="text" id="newOptText_3" class="input-clean opt-text-input" placeholder="Nội dung đáp án D...">
-                                    <button class="btn-opt-img-attach" data-opt="3" title="Đính kèm ảnh cho đáp án D">📷</button>
-                                    <div id="optImgBox_3" class="opt-img-mini-box" style="display: none;">
-                                        <img id="optImgPrev_3" src="" alt="D">
-                                        <span class="btn-del-opt-img" data-opt="3">✕</span>
-                                    </div>
-                                </div>
+                            <!-- KHU VỰC 3: ĐÁP ÁN DẠNG TRẢ LỜI NGẮN (TLN / KQ) -->
+                            <div id="boxAnswerTLN" style="display: none;">
+                                <label style="font-size: 0.78rem; font-weight: 700; color: #059669; margin-top: 0.3rem; display: block;">
+                                    Đáp Số / Kết Quả Chính Xác (KQ):
+                                </label>
+                                <input type="text" id="newAnsKQText" class="input-clean" style="border-color: #059669; font-weight: 700; color: #047857;" placeholder="Nhập kết quả số, biểu thức hoặc từ khóa ngắn (ví dụ: 44, CO2, Chiến dịch Điện Biên Phủ)...">
                             </div>
 
                             <input type="file" id="optImgFileInput" accept="image/*" style="display: none;">
 
-                            <!-- GIẢI THÍCH & NĂNG LỰC (ĐẦY ĐỦ CẢ MẦM NON & PHỔ THÔNG THEO YÊU CẦU CỦA THẦY) -->
-                            <div style="display: flex; gap: 0.4rem; margin-top: 0.5rem;">
-                                <input type="text" id="newQExplanation" class="input-clean" style="flex: 1.6;" placeholder="Lời giải thích / hướng dẫn chấm (tùy chọn)...">
-                                <select id="newQCompetency" class="input-clean" style="flex: 1.4;">
-                                    <optgroup label="── NĂNG LỰC PHỔ THÔNG (GDPT) ──">
-                                        <option value="all_pt">Tất cả năng lực PT</option>
-                                        <option value="pt_nhan_biet" selected>1. Nhận biết</option>
-                                        <option value="pt_thong_hieu">2. Thông hiểu</option>
-                                        <option value="pt_van_dung">3. Vận dụng</option>
-                                        <option value="pt_van_dung_cao">4. Vận dụng cao</option>
-                                    </optgroup>
-                                    <optgroup label="── NĂNG LỰC BẬC MẦM NON (5 LĨNH VỰC) ──">
-                                        <option value="all_mn">Tất cả năng lực MN</option>
-                                        <option value="mn_nhan_thuc">1. Phát triển Nhận thức</option>
-                                        <option value="mn_ngon_ngu">2. Phát triển Ngôn ngữ</option>
-                                        <option value="mn_the_chat">3. Phát triển Thể chất</option>
-                                        <option value="mn_tham_my">4. Phát triển Thẩm mỹ</option>
-                                        <option value="mn_tinh_cam">5. Phát triển Tình cảm & KN xã hội</option>
-                                    </optgroup>
-                                </select>
+                            <!-- HIỂN THỊ ĐỐI SOÁT 3 CỘT ĐÁP ÁN ĐỒNG BỘ CHUẨN FILE MẪU EXCEL -->
+                            <div style="display: flex; gap: 0.4rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.72rem; margin-top: 0.4rem; align-items: center; flex-wrap: wrap;">
+                                <span style="font-weight: 700; color: #475569;">3 Cột Đáp Án Đối Soát:</span>
+                                <span id="badgePreviewAnsNLC" class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8;">NLC: A</span>
+                                <span id="badgePreviewAnsDS" class="badge-tag-tiny" style="background:#fef3c7; color:#b45309;">Đ-S: Đ-S-Đ-S</span>
+                                <span id="badgePreviewAnsKQ" class="badge-tag-tiny" style="background:#f0fdf4; color:#15803d;">KQ: --</span>
                             </div>
 
-                            <button id="btnSaveNewQuestion" class="btn-mini-action" style="width: 100%; justify-content: center; background:#059669; color:#ffffff; border-color:#059669; margin-top: 0.65rem; padding: 0.5rem; font-weight: 700;">
-                                <span>➕</span> <span>Lưu Câu Hỏi Vào Trò Chơi & Ngân Hàng</span>
+                            <!-- GIẢI THÍCH / HƯỚNG DẪN CHẤM -->
+                            <div style="margin-top: 0.45rem;">
+                                <input type="text" id="newQExplanation" class="input-clean" placeholder="Lời giải thích / hướng dẫn chấm chi tiết (tùy chọn)...">
+                            </div>
+
+                            <button id="btnSaveNewQuestion" class="btn-mini-action" type="button" style="width: 100%; justify-content: center; background:#059669; color:#ffffff; border-color:#059669; margin-top: 0.65rem; padding: 0.52rem; font-weight: 700;">
+                                <span>➕</span> <span>Lưu Câu Hỏi Vào Kho Đề Thô & Ngân Hàng</span>
                             </button>
                         </div>
                     </div>
@@ -3799,162 +3888,79 @@ window.openPPCTDirect = function() {
     <!-- ======================================================================
          MODAL 2: FORM XUẤT / NHẬP KHO ĐỀ CHUẨN HÓA (2 TAB CHUYÊN NGHIỆP)
          ====================================================================== -->
+    <!-- ======================================================================
+         MODAL 2: FORM XUẤT / NHẬP KHO ĐỀ CHUẨN HÓA (GỌN GÀNG THEO CHỈ ĐẠO CỦA THẦY NGUYỄN TÁ QUAN)
+         1. Xuất file mẫu Excel: Tải file mẫu .XLSX chuẩn 2 Sheet (Đề mẫu & Mã tham chiếu)
+         2. Nhập file đề Excel: Chọn file, tự động kiểm tra cấu trúc & nạp vào Kho Đề Thô 5TB
+         ====================================================================== -->
     <div id="ioQuestionsModal" class="modal-overlay">
-        <div class="modal-box-center io-modal-card exam-io-modal-card">
+        <div class="modal-box-center io-modal-card exam-io-modal-card" style="max-width: 680px; width: 95%;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.65rem; margin-bottom: 1rem;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <span style="font-size: 1.4rem;">🔄</span>
                     <div>
-                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">Trung Tâm Xuất / Nhập Kho Đề Chuẩn Hóa</h3>
-                        <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">Đồng bộ dữ liệu ngân hàng đề, ma trận và bản đặc tả chuẩn GDPT 2018</p>
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">Xuất / Nhập File Đề Chuẩn Hóa</h3>
+                        <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">Đồng bộ dữ liệu ngân hàng đề dùng chung cho toàn bộ Khối Lớp, Phân Môn & Kho Đề Thô 5TB</p>
                     </div>
                 </div>
                 <button id="btnCloseIOModal" onclick="window.closeModal('ioQuestionsModal')" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #94a3b8;">✕</button>
             </div>
 
-            <!-- THANH TAB CHUYỂN ĐỔI: XUẤT / NHẬP -->
-            <div class="io-tab-nav">
-                <button id="tabIOExport" class="io-tab-btn active">
-                    <span>📤</span> <span>1. Xuất Đề & Ngân Hàng</span>
-                </button>
-                <button id="tabIOImport" class="io-tab-btn">
-                    <span>📥</span> <span>2. Nhập Đề & Câu Hỏi Vào Kho</span>
-                </button>
-            </div>
-
-            <!-- TAB PANE 1: XUẤT DỮ LIỆU & TẢI FILE MẪU -->
-            <div id="paneIOExport" class="io-tab-pane active">
-                <div class="io-filter-grid">
-                    <div class="form-group-clean">
-                        <label style="font-size: 0.78rem; font-weight: 700; color: #334155;">Khối Lớp:</label>
-                        <select id="exportFilterGrade" class="input-clean" style="font-size: 0.8rem; padding: 0.4rem;">
-                            <option value="all">Tất cả khối lớp</option>
-                            <option value="MN">Mầm Non</option>
-                            <option value="Lớp 1">Lớp 1</option>
-                            <option value="Lớp 6">Lớp 6</option>
-                            <option value="Lớp 7">Lớp 7</option>
-                            <option value="Lớp 8" selected>Lớp 8</option>
-                            <option value="Lớp 9">Lớp 9</option>
-                            <option value="Lớp 10">Lớp 10</option>
-                            <option value="Lớp 11">Lớp 11</option>
-                            <option value="Lớp 12">Lớp 12</option>
-                        </select>
-                    </div>
-                    <div class="form-group-clean">
-                        <label style="font-size: 0.78rem; font-weight: 700; color: #334155;">Môn Học:</label>
-                        <select id="exportFilterSubject" class="input-clean" style="font-size: 0.8rem; padding: 0.4rem;">
-                            <option value="all">Tất cả môn học</option>
-                            <option value="KHTN">Khoa học tự nhiên</option>
-                            <option value="Toán học">Toán học</option>
-                            <option value="HĐTN-HN">HĐTN - Hướng nghiệp</option>
-                            <option value="Ngữ văn">Ngữ văn</option>
-                            <option value="Lịch sử & Địa lí">Lịch sử & Địa lí</option>
-                            <option value="Lịch sử">Lịch sử</option>
-                            <option value="Địa lí">Địa lí</option>
-                            <option value="Tiếng Anh">Tiếng Anh</option>
-                            <option value="Tin học">Tin học</option>
-                            <option value="Mầm Non">Năng lực Mầm Non</option>
-                        </select>
-                    </div>
-                    <div class="form-group-clean">
-                        <label style="font-size: 0.78rem; font-weight: 700; color: #334155;">Định Dạng Xuất:</label>
-                        <select id="exportFormatSelect" class="input-clean" style="font-size: 0.8rem; padding: 0.4rem;">
-                            <option value="docx" selected>📄 File Word (.DOCX) - Đề & Ma Trận</option>
-                            <option value="xlsx">📊 File Excel/CSV (.CSV) - 4 Năng Lực</option>
-                            <option value="json">💾 Dữ Liệu Số (.JSON) - Sao Lưu</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 0.65rem; margin-top: 0.85rem;">
-                    <button id="btnPerformExport" class="btn-mini-action" style="flex: 1; justify-content: center; background: #1d4ed8; color: #ffffff; padding: 0.6rem; font-weight: 700;">
-                        <span>📤</span> <span>Xuất Dữ Liệu Theo Bộ Lọc</span>
-                    </button>
-                    <button id="btnExportAllBank" class="btn-mini-action" style="justify-content: center; background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; padding: 0.6rem 1rem; font-weight: 700;">
-                        <span>💾</span> <span>Sao Lưu Toàn Bộ Kho</span>
-                    </button>
-                </div>
-
-                <!-- KHU VỰC TẢI VỀ FILE MẪU CHUẨN BỘ GD&ĐT -->
-                <div class="io-template-download-box">
-                    <div>
-                        <strong style="font-size: 0.82rem; color: #065f46; display: flex; align-items: center; gap: 0.35rem;">
-                            <span>📑</span> Tải File Mẫu Trống Chuẩn Hóa Để Điền Dữ Liệu:
-                        </strong>
-                        <p style="font-size: 0.74rem; color: #047857; margin-top: 0.2rem;">
-                            File mẫu được cấu trúc sẵn các cột: Lớp, Môn, 4 Mức độ năng lực (NB - TH - VD - VDC), Đáp án, Lời giải.
+            <!-- PHẦN 1: XUẤT FILE MẪU EXCEL -->
+            <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 1rem; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <div style="font-size: 0.88rem; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 0.4rem;">
+                            <span>📊</span> <span>1. Xuất File Mẫu Excel Chuẩn Hóa</span>
+                        </div>
+                        <p style="font-size: 0.75rem; color: #15803d; margin-top: 0.35rem; line-height: 1.45;">
+                            File mẫu bảng tính Excel (.XLSX) đa năng chuẩn Bộ GD&ĐT gồm <strong>Sheet 1: Mẫu Đề Chuẩn</strong> (đầy đủ các cột: Lớp, Môn, Dạng, Năng lực, Ảnh, 3 cột Đáp án NLC / Đ-S / KQ) và <strong>Sheet 2: Mã Tham Chiếu</strong> để tra cứu nhanh.
                         </p>
                     </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button id="btnDownloadExcelTpl" class="btn-mini-action" style="background: #ffffff; color: #047857; border-color: #86efac; font-weight: 700;">
-                            <span>📊</span> <span>Mẫu Excel/CSV</span>
+                    <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                        <button id="btnDownloadStandardExcelTpl" class="btn-mini-action" type="button" style="background: #059669; color: #ffffff; border-color: #059669; font-weight: 700; padding: 0.55rem 0.95rem; font-size: 0.8rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                            <span>📊</span> <span>Tải File Mẫu Excel (.XLSX)</span>
                         </button>
-                        <button id="btnDownloadWordTpl" class="btn-mini-action" style="background: #ffffff; color: #1d4ed8; border-color: #93c5fd; font-weight: 700;">
-                            <span>📝</span> <span>Mẫu Word (.DOCX)</span>
+                        <button id="btnDownloadWordTpl" class="btn-mini-action" type="button" style="background: #ffffff; color: #1d4ed8; border-color: #93c5fd; font-weight: 600; padding: 0.55rem 0.75rem; font-size: 0.78rem;">
+                            <span>📝</span> <span>Mẫu Word</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB PANE 2: NHẬP ĐỀ & CÂU HỎI VÀO KHO -->
-            <div id="paneIOImport" class="io-tab-pane">
-                <div class="dropzone-stylish" id="ioDropZone" style="padding: 1.5rem 1rem; border: 2px dashed #3b82f6; background: #f8fafc; border-radius: 12px; cursor: pointer; text-align: center;">
-                    <span style="font-size: 2rem;">📥</span>
-                    <p style="font-size: 0.88rem; font-weight: 700; color: #1e293b; margin-top: 0.35rem;">
-                        Kéo thả file Đề / Ngân Hàng (.docx, .xlsx, .csv, .json, .txt) vào đây
+            <!-- PHẦN 2: NHẬP FILE ĐỀ EXCEL VÀO KHO ĐỀ THÔ -->
+            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 1rem;">
+                <div style="font-size: 0.88rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 0.4rem;">
+                    <span>📥</span> <span>2. Nhập File Đề Excel Vào Kho Đề Thô</span>
+                </div>
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.35rem; margin-bottom: 0.75rem; line-height: 1.45;">
+                    Chọn file đề Excel (.xlsx, .xls, .csv). Hệ thống sẽ tự động kiểm tra tính đúng cấu trúc, đối soát các trường bắt buộc và phân loại trực tiếp vào <strong>Kho Đề Thô (5TB chờ AI thẩm định)</strong>.
+                </p>
+
+                <!-- KHU VỰC CHỌN FILE -->
+                <div class="dropzone-stylish" id="ioDropZone" style="padding: 1.25rem 1rem; border: 2px dashed #3b82f6; background: #eff6ff; border-radius: 10px; cursor: pointer; text-align: center;">
+                    <span style="font-size: 1.8rem;">📂</span>
+                    <p style="font-size: 0.85rem; font-weight: 700; color: #1e40af; margin-top: 0.25rem;">
+                        Kéo thả file Đề Excel (.xlsx, .xls, .csv) vào đây hoặc bấm để chọn tệp
                     </p>
-                    <span style="font-size: 0.74rem; color: #64748b;">hoặc bấm vào để chọn file từ máy tính</span>
-                    <input type="file" id="ioUnifiedFileInput" accept=".docx,.xlsx,.csv,.json,.txt" style="display: none;">
+                    <span style="font-size: 0.72rem; color: #64748b;">Hệ thống tự động phân loại theo Mã Lớp, Mã Môn và Dạng câu hỏi (NLC, Đ-S, TLN)</span>
+                    <input type="file" id="ioUnifiedFileInput" accept=".xlsx,.xls,.csv" style="display: none;">
                 </div>
 
-                <div class="io-filter-grid" style="margin-top: 1rem;">
-                    <div class="form-group-clean">
-                        <label style="font-size: 0.78rem; font-weight: 700; color: #334155;">Gán Khối Lớp:</label>
-                        <select id="importTargetGrade" class="input-clean" style="font-size: 0.8rem; padding: 0.4rem;">
-                            <option value="auto">Tự động nhận diện từ file</option>
-                            <option value="Lớp 8" selected>Lớp 8</option>
-                            <option value="Lớp 6">Lớp 6</option>
-                            <option value="Lớp 7">Lớp 7</option>
-                            <option value="Lớp 9">Lớp 9</option>
-                            <option value="Lớp 10">Lớp 10</option>
-                            <option value="Lớp 11">Lớp 11</option>
-                            <option value="Lớp 12">Lớp 12</option>
-                        </select>
-                    </div>
-                    <div class="form-group-clean">
-                        <label style="font-size: 0.78rem; font-weight: 700; color: #334155;">Gán Môn Học:</label>
-                        <select id="importTargetSubject" class="input-clean" style="font-size: 0.8rem; padding: 0.4rem;">
-                            <option value="auto">Tự động nhận diện từ file</option>
-                            <option value="Khoa học tự nhiên" selected>Khoa học tự nhiên</option>
-                            <option value="Toán học">Toán học</option>
-                            <option value="HĐTN-HN">HĐTN - Hướng nghiệp</option>
-                            <option value="Ngữ văn">Ngữ văn</option>
-                            <option value="Lịch sử & Địa lí">Lịch sử & Địa lí</option>
-                            <option value="Lịch sử">Lịch sử</option>
-                            <option value="Địa lí">Địa lí</option>
-                        </select>
-                    </div>
-                    <div class="form-group-clean">
-                        <label style="font-size: 0.78rem; font-weight: 700; color: #334155;">Chế Độ Lưu Trữ:</label>
-                        <select id="importTargetMode" class="input-clean" style="font-size: 0.8rem; padding: 0.4rem;">
-                            <option value="append" selected>➕ Thêm mới vào Kho Đề</option>
-                            <option value="audit_queue">⏳ Gửi vào Hàng đợi Thẩm định AI (5TB)</option>
-                            <option value="overwrite">🔄 Ghi đè toàn bộ kho hiện tại</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="importPreflightSummary" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.8rem; color: #1e3a8a; margin-bottom: 0.75rem;">
+                <!-- BẢNG TỔNG HỢP KIỂM TRA PREFLIGHT -->
+                <div id="importPreflightSummary" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.8rem; color: #1e3a8a; margin-top: 0.75rem;">
                     <!-- Nạp động qua JS -->
                 </div>
 
-                <button id="btnConfirmImport" class="btn-mini-action" style="width: 100%; justify-content: center; background: #059669; color: #ffffff; padding: 0.65rem; font-weight: 700; font-size: 0.85rem;" disabled>
-                    <span>📥</span> <span>Nạp Dữ Liệu Vào Kho Đề</span>
-                </button>
+                <div style="margin-top: 0.85rem;">
+                    <button id="btnConfirmImport" class="btn-mini-action" type="button" style="width: 100%; justify-content: center; background: #059669; color: #ffffff; padding: 0.65rem; font-weight: 700; font-size: 0.85rem;" disabled>
+                        <span>📥</span> <span>Nạp Toàn Bộ Vào Kho Đề Thô & Ngân Hàng</span>
+                    </button>
+                </div>
             </div>
 
-            <div style="text-align: right; margin-top: 1.25rem; border-top: 1px solid #e2e8f0; padding-top: 0.75rem;">
-                <button id="btnCloseIOModalBtn" class="btn-mini-action" style="padding: 0.45rem 1.2rem;">Đóng</button>
+            <div style="text-align: right; margin-top: 1rem; border-top: 1px solid #e2e8f0; padding-top: 0.75rem;">
+                <button id="btnCloseIOModalBtn" class="btn-mini-action" style="padding: 0.4rem 1.1rem;">Đóng</button>
             </div>
         </div>
     </div>
