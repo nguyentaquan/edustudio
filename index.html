@@ -3627,18 +3627,22 @@ window.openPPCTDirect = function() {
                 <div class="creator-panel-right">
                     <!-- THANH CHUYỂN TAB BÊN PHẢI -->
                     <div class="creator-right-tabs-bar">
-                        <div style="display: flex; gap: 0.4rem;">
-                            <button id="btnTabBankList" class="btn-creator-subtab active">
+                        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;">
+                            <button id="btnTabBankList" class="btn-creator-subtab active" type="button">
                                 <span>📚</span> <span>Ngân Hàng Câu Hỏi</span>
-                                <span id="bankTotalCount" class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8;">6 câu</span>
+                                <span id="bankTotalCount" class="badge-tag-tiny" style="background:#eff6ff; color:#1d4ed8;">0 câu</span>
                             </button>
-                            <button id="btnTabAddNewQ" class="btn-creator-subtab">
-                                <span>➕</span> <span>Thêm Câu Hỏi (Có Ảnh)</span>
+                            <button id="btnTabImageQuestions" class="btn-creator-subtab" type="button">
+                                <span>🖼️</span> <span>Câu Hỏi Có Ảnh</span>
+                                <span id="bankImageCount" class="badge-tag-tiny" style="background:#fef3c7; color:#b45309;">0 câu</span>
+                            </button>
+                            <button id="btnTabAddNewQ" class="btn-creator-subtab" type="button">
+                                <span>➕</span> <span>Soạn Câu Mới</span>
                             </button>
                         </div>
 
                         <!-- Nút Mở Hộp Thoại Nhập / Xuất Câu Hỏi -->
-                        <button id="btnOpenIOCreatorModal" class="btn-mini-action" style="background:#eff6ff; color:#1d4ed8; padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+                        <button id="btnOpenIOCreatorModal" class="btn-mini-action" type="button" style="background:#eff6ff; color:#1d4ed8; padding: 0.25rem 0.6rem; font-size: 0.75rem;">
                             <span>🔄</span> <span>Nhập / Xuất</span>
                         </button>
                     </div>
