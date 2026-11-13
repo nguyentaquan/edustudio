@@ -2717,6 +2717,55 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         }
     }
 
+    // H1: Cập nhật động danh mục môn và năng lực trong form Soạn câu hỏi mới
+    updateNewQFormGradeOptions(gradeVal) {
+        const subjEl = document.getElementById('newQSubjectCode');
+        const compEl = document.getElementById('newQCompetencyCode');
+        if (!subjEl || !compEl) return;
+        if (gradeVal === 'MN' || gradeVal === 'Mầm Non') {
+            subjEl.innerHTML = `
+                <option value="MN_TD" selected>MN_TD (Phát triển toàn diện)</option>
+                <option value="MN_NT">MN_NT (Phát triển Nhận thức)</option>
+                <option value="MN_NN">MN_NN (Phát triển Ngôn ngữ)</option>
+                <option value="MN_TC">MN_TC (Phát triển Thể chất)</option>
+                <option value="MN_TM">MN_TM (Phát triển Thẩm mỹ)</option>
+                <option value="MN_XH">MN_XH (Tình cảm & KNXH)</option>
+            `;
+            compEl.innerHTML = `
+                <option value="all_mn" selected>Tất cả năng lực MN</option>
+            `;
+        } else {
+            subjEl.innerHTML = `
+                <option value="ĐS" selected>ĐS (Toán - Đại số)</option>
+                <option value="HH">HH (Toán - Hình học)</option>
+                <option value="KHTN">KHTN (Khoa học tự nhiên)</option>
+                <option value="NV">NV (Ngữ văn)</option>
+                <option value="TA">TA (Tiếng Anh)</option>
+                <option value="TIN">TIN (Tin học)</option>
+                <option value="LS">LS (Lịch sử)</option>
+                <option value="ĐL">ĐL (Địa lí)</option>
+                <option value="LS-ĐL">LS-ĐL (Lịch sử & Địa lí)</option>
+                <option value="GDCD">GDCD (Giáo dục công dân)</option>
+                <option value="HDTN">HDTN (Hoạt động TN-HN)</option>
+            `;
+            compEl.innerHTML = `
+                <option value="NB" selected>NB (Nhận biết)</option>
+                <option value="TH">TH (Thông hiểu)</option>
+                <option value="VD">VD (Vận dụng)</option>
+                <option value="VDC">VDC (Vận dụng cao)</option>
+            `;
+        }
+    }
+
+    // H1: Đồng bộ Lớp từ cột trái (creatorGrade) sang Mã Lớp cột phải (newQGrade)
+    syncCreatorGradeToNewQGrade(gradeVal) {
+        const newQGradeSelect = document.getElementById('newQGrade');
+        if (!newQGradeSelect) return;
+        const code = (gradeVal === 'MN' || gradeVal === 'Mầm Non') ? 'MN' : (gradeVal.startsWith('Lớp ') ? 'L' + gradeVal.replace('Lớp ', '') : gradeVal);
+        newQGradeSelect.value = code;
+        this.updateNewQFormGradeOptions(code);
+    }
+
     // =========================================================================
     // 2. DỮ LIỆU KHO ĐỀ & KHO VIDEO (REPO TÀI NGUYÊN XEM VÀ TẢI VỀ)
     // =========================================================================
@@ -6571,7 +6620,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             const btnCross = document.getElementById('btnCancelAIStandardModalCross');
 
             if (!modal) {
-                const ok = confirm("Đường truyền AI trực tuyến lúc này đang có lượng truy cập lớn hoặc tạm nghẽn.\n\n👉 Để bảo đảm đúng mục tiêu của Thầy/Cô, Hệ thống đã tự động kích hoạt TÀI NGUYÊN SƯ PHẠM CHUẨN (Bộ câu hỏi chuẩn hóa do AI biên soạn sẵn và đã qua kiểm duyệt đúng chuyên môn).");
+                const ok = confirm("Đường truyền AI trực tuyến lúc này đang có lượng truy cập lớn hoặc tạm nghẽn.\n\n👉 Để bảo đảm đúng mục tiêu của Thầy/Cô, Hệ thống đã tự động kích hoạt TÀI NGUYÊN SƯ PHẠM CHUẨN (Bộ câu hỏi chuẩn hóa do AI biên soạn sẵn và đã qua đối soát chuẩn mực GDPT & GDMN).");
                 resolve(ok);
                 return;
             }
@@ -6645,6 +6694,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             const grade = gradeSelect ? gradeSelect.value : 'Lớp 8';
             this.populateSubjectSelect('creatorSubjectSelect', grade, 'Khoa học tự nhiên (KHTN)');
             this.updateCompetencyDropdownByGrade(grade);
+            this.syncCreatorGradeToNewQGrade(grade);
         } catch(e) { console.warn('Lỗi nạp dropdown creator:', e); }
 
         // Nạp an toàn danh sách câu hỏi của bài đang hoạt động
@@ -7949,15 +7999,20 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             tabImg?.classList.remove('active');
             pAdd?.classList.add('active');
             pBank?.classList.remove('active');
+
+            // H1: Tự động đồng bộ Mã Lớp từ cột trái sang form Soạn khi mở tab
+            const currGrade = document.getElementById('creatorGrade')?.value || 'Lớp 8';
+            this.syncCreatorGradeToNewQGrade(currGrade);
             sound.playTick();
         });
 
-        // Thay đổi Lớp ở Cửa Sổ Tạo Trò Chơi -> Đổi môn học, năng lực và CẬP NHẬT TỨC THÌ KHO ĐỀ
+        // Thay đổi Lớp ở Cửa Sổ Tạo Trò Chơi -> Đổi môn học, năng lực, đồng bộ sang cột phải và CẬP NHẬT TỨC THÌ KHO ĐỀ
         const creatorGradeSelect = document.getElementById('creatorGrade');
         creatorGradeSelect?.addEventListener('change', (e) => {
             const val = e.target.value;
             this.populateSubjectSelect('creatorSubjectSelect', val);
             this.updateCompetencyDropdownByGrade(val);
+            this.syncCreatorGradeToNewQGrade(val);
 
             if (val === 'MN') {
                 document.getElementById('creatorGameType').value = 'guess';
@@ -9195,6 +9250,28 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 "Lời giải thích / Hướng dẫn chấm"
             ];
 
+            // H2: Hàng tham chiếu STT cột tương ứng (đối soát trực tiếp với Sheet 2)
+            const colIndexRow = [
+                "Cột 1",
+                "Cột 2",
+                "Cột 3",
+                "Cột 4",
+                "Cột 5",
+                "Cột 6",
+                "Cột 7",
+                "Cột 8",
+                "Cột 9",
+                "Cột 10",
+                "Cột 11",
+                "Cột 12",
+                "Cột 13",
+                "Cột 14",
+                "Cột 15 (NLC)",
+                "Cột 16 (Đ-S)",
+                "Cột 17 (TLN)",
+                "Cột 18 (Lời giải)"
+            ];
+
             const sampleRows = [
                 [
                     "L8", "ĐS", "NLC", "NB",
@@ -9227,7 +9304,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                     "Khối lượng mol M(CO2) = 12 + 16*2 = 44 g/mol."
                 ],
                 [
-                    "MN", "MN_NT", "NLC", "MN",
+                    "MN", "MN_NT", "NLC", "all_mn",
                     "Con vật nào sau đây sống dưới nước, bơi bằng vây và thở bằng mang?",
                     "",
                     "Con cá", "",
@@ -9239,7 +9316,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 ]
             ];
 
-            const wsData = [headers, ...sampleRows];
+            const wsData = [headers, colIndexRow, ...sampleRows];
             const ws1 = XLSX.utils.aoa_to_sheet(wsData);
 
             // Căn chỉnh độ rộng cột tối ưu thị giác
@@ -9316,10 +9393,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 ["TH", "Thông hiểu (Mức 2)", "Chuẩn GDPT 2018"],
                 ["VD", "Vận dụng (Mức 3)", "Chuẩn GDPT 2018"],
                 ["VDC", "Vận dụng cao (Mức 4)", "Chuẩn GDPT 2018"],
-                ["MN", "Năng lực chuẩn Mầm non", "Tất cả năng lực Mầm non"],
-                ["all_mn", "Tất cả năng lực MN", "Dành cho bậc học Mầm non"],
+                ["all_mn", "Tất cả năng lực MN", "Dành cho bậc học Mầm non (3-6 tuổi)"],
                 [""],
-                ["5. QUY ƯỚC ĐIỀN ĐÁP ÁN 3 CỘT & SOẠN THẢO QUY CHUẨN (THEO CHỈ ĐẠO THẦY NGUYỄN TÁ QUAN):"],
+                ["5. QUY ƯỚC ĐIỀN ĐÁP ÁN 3 CỘT & SOẠN THẢO QUY CHUẨN:"],
                 ["- Câu NLC (Nhiều Lựa Chọn): Cột 15 điền A hoặc B hoặc C hoặc D; hoặc đặt ký hiệu (*) ở sau cùng phương án đúng (ví dụ: B. Phương án B (*)). (Cột 16, 17 để trống)"],
                 ["- Câu Đ-S (Đúng - Sai 4 ý): Cột 16 điền chuỗi Đ/S ngăn cách dấu gạch ngang (ví dụ Đ-S-Đ-S); hoặc ghi rõ (Đ) hoặc (S) ở sau cùng mỗi khẳng định (ví dụ: a) Khẳng định 1 (Đ)). (Cột 15, 17 để trống)"],
                 ["- Câu TLN (Trả Lời Ngắn / Điền khuyết): Cột 17 điền đáp số/kết quả chính xác (ví dụ 44 hoặc CO2); hoặc đặt đáp số trong cặp ngoặc kép \"...\" ở sau cùng câu hỏi (ví dụ: Kết quả là: \"44\"). (Cột 15, 16 để trống)"]
@@ -9485,6 +9561,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             if (!stem) continue;
 
                             const gradeRaw = String(r[colGrade] || 'L8').trim();
+                            // H2: Tự động bỏ qua hàng tham chiếu STT cột (ví dụ Cột 1, Cột 2, Cột 5...)
+                            if (stem.toLowerCase().startsWith('cột') || gradeRaw.toLowerCase().startsWith('cột')) continue;
                             const subRaw = String(r[colSub] || 'KHTN').trim();
                             let typeRaw = String(r[colType] || 'NLC').trim().toUpperCase();
                             if (!['NLC', 'Đ-S', 'TLN'].includes(typeRaw)) {
