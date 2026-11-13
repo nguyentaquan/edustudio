@@ -3525,7 +3525,12 @@ window.openPPCTDirect = function() {
                         <p style="font-size: 0.78rem; color: #64748b;">Bên trái: Cấu hình trò chơi • Bên phải: Ngân hàng câu hỏi & Tự chọn câu hỏi</p>
                     </div>
                 </div>
-                <button id="btnCloseGameCreator" onclick="window.closeModal('gameCreatorModal')" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8;">✕</button>
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                    <button id="btnToggleCreatorFullscreen" type="button" title="Phóng to / Thu nhỏ cửa sổ" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.25rem 0.55rem; font-size: 0.95rem; cursor: pointer; color: #334155; display: inline-flex; align-items: center; transition: all 0.15s ease;">
+                        <span id="creatorFullscreenIcon">🗖</span>
+                    </button>
+                    <button id="btnCloseGameCreator" onclick="window.closeModal('gameCreatorModal')" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8; padding: 0 0.25rem;">✕</button>
+                </div>
             </div>
 
             <!-- BỐ CỤC 2 PHẦN RÕ RÀNG -->
@@ -3645,11 +3650,27 @@ window.openPPCTDirect = function() {
 
                     <!-- TAB CON 1: DANH SÁCH NGÂN HÀNG CÂU HỎI -->
                     <div id="panelBankList" class="creator-subtab-panel active">
-                        <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem; line-height: 1.4;">
-                            💡 <strong>Cách chọn câu hỏi:</strong> Thầy cô chỉ cần tích chọn bất kỳ đáp án nào (A/B/C/D) ở câu bất kỳ, hệ thống sẽ tự động nạp câu đó vào bộ câu hỏi của trò chơi!
-                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem; flex-wrap: wrap; gap: 0.4rem;">
+                            <p style="font-size: 0.74rem; color: #64748b; margin: 0; line-height: 1.4; flex: 1; min-width: 220px;">
+                                💡 <strong>Cách chọn câu hỏi:</strong> Thầy cô chỉ cần tích chọn bất kỳ đáp án nào (A/B/C/D) ở câu bất kỳ, hệ thống sẽ tự động nạp câu đó vào bộ câu hỏi của trò chơi!
+                            </p>
+                            <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.74rem; color: #475569;">
+                                <span>Hiển thị:</span>
+                                <select id="bankPageSizeSelect" class="input-clean" style="font-size: 0.74rem; padding: 0.2rem 0.45rem; width: auto; font-weight: 600;">
+                                    <option value="5" selected>5 câu / trang</option>
+                                    <option value="10">10 câu / trang</option>
+                                    <option value="20">20 câu / trang</option>
+                                    <option value="all">Tất cả</option>
+                                </select>
+                            </div>
+                        </div>
                         <div id="bankQuestionsContainer" style="max-height: 380px; overflow-y: auto; padding-right: 0.25rem;">
                             <!-- Nạp động qua app.js -->
+                        </div>
+
+                        <!-- THANH PHÂN TRANG THÔNG MINH DÃY SỐ CUỐI KHUNG -->
+                        <div id="bankPaginationBar" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px solid #e2e8f0; font-size: 0.75rem;">
+                            <!-- Nạp động qua app.js: [« Trước] [1] [2] ... [Tiếp »] -->
                         </div>
                     </div>
 
@@ -3686,8 +3707,11 @@ window.openPPCTDirect = function() {
                                         <option value="TA">TA (Tiếng Anh)</option>
                                         <option value="TIN">TIN (Tin học)</option>
                                         <option value="LS-ĐL">LS-ĐL (Lịch sử & Địa lí)</option>
+                                        <option value="LS">LS (Lịch sử)</option>
+                                        <option value="ĐL">ĐL (Địa lí)</option>
                                         <option value="GDCD">GDCD (Giáo dục công dân)</option>
                                         <option value="HDTN">HDTN (Hoạt động TN-HN)</option>
+                                        <option value="MN_TD">MN_TD (Phát triển toàn diện)</option>
                                         <option value="MN_NT">MN_NT (Phát triển Nhận thức)</option>
                                         <option value="MN_NN">MN_NN (Phát triển Ngôn ngữ)</option>
                                         <option value="MN_TC">MN_TC (Phát triển Thể chất)</option>
@@ -3846,9 +3870,14 @@ window.openPPCTDirect = function() {
                                 <input type="text" id="newQExplanation" class="input-clean" placeholder="Lời giải thích / hướng dẫn chấm chi tiết (tùy chọn)...">
                             </div>
 
-                            <button id="btnSaveNewQuestion" class="btn-mini-action" type="button" style="width: 100%; justify-content: center; background:#059669; color:#ffffff; border-color:#059669; margin-top: 0.65rem; padding: 0.52rem; font-weight: 700;">
-                                <span>➕</span> <span>Lưu Câu Hỏi Vào Kho Đề Thô & Ngân Hàng</span>
-                            </button>
+                            <div style="display: flex; gap: 0.45rem; margin-top: 0.65rem;">
+                                <button id="btnResetNewQuestionForm" class="btn-mini-action" type="button" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1; padding: 0.52rem 0.85rem; font-weight: 600;" title="Xóa trắng để nhập lại câu hỏi">
+                                    <span>🔄</span> <span>Xóa</span>
+                                </button>
+                                <button id="btnSaveNewQuestion" class="btn-mini-action" type="button" style="flex: 1; justify-content: center; background:#059669; color:#ffffff; border-color:#059669; padding: 0.52rem; font-weight: 700;">
+                                    <span>➕</span> <span>Lưu Câu Hỏi Vào Kho Đề Trung Gian & Ngân Hàng</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3891,7 +3920,7 @@ window.openPPCTDirect = function() {
     <!-- ======================================================================
          MODAL 2: FORM XUẤT / NHẬP KHO ĐỀ CHUẨN HÓA (GỌN GÀNG THEO CHỈ ĐẠO CỦA THẦY NGUYỄN TÁ QUAN)
          1. Xuất file mẫu Excel: Tải file mẫu .XLSX chuẩn 2 Sheet (Đề mẫu & Mã tham chiếu)
-         2. Nhập file đề Excel: Chọn file, tự động kiểm tra cấu trúc & nạp vào Kho Đề Thô 5TB
+         2. Nhập file đề Excel: Chọn file, tự động kiểm tra cấu trúc & nạp vào Kho Đề Trung Gian 5TB
          ====================================================================== -->
     <div id="ioQuestionsModal" class="modal-overlay">
         <div class="modal-box-center io-modal-card exam-io-modal-card" style="max-width: 680px; width: 95%;">
@@ -3900,7 +3929,7 @@ window.openPPCTDirect = function() {
                     <span style="font-size: 1.4rem;">🔄</span>
                     <div>
                         <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">Xuất / Nhập File Đề Chuẩn Hóa</h3>
-                        <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">Đồng bộ dữ liệu ngân hàng đề dùng chung cho toàn bộ Khối Lớp, Phân Môn & Kho Đề Thô 5TB</p>
+                        <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">Đồng bộ dữ liệu ngân hàng đề dùng chung cho toàn bộ Khối Lớp, Phân Môn & Kho Đề Trung Gian 5TB</p>
                     </div>
                 </div>
                 <button id="btnCloseIOModal" onclick="window.closeModal('ioQuestionsModal')" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #94a3b8;">✕</button>
@@ -3928,13 +3957,13 @@ window.openPPCTDirect = function() {
                 </div>
             </div>
 
-            <!-- PHẦN 2: NHẬP FILE ĐỀ EXCEL VÀO KHO ĐỀ THÔ -->
+            <!-- PHẦN 2: NHẬP FILE ĐỀ EXCEL VÀO KHO ĐỀ TRUNG GIAN -->
             <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 1rem;">
                 <div style="font-size: 0.88rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 0.4rem;">
-                    <span>📥</span> <span>2. Nhập File Đề Excel Vào Kho Đề Thô</span>
+                    <span>📥</span> <span>2. Nhập File Đề Excel Vào Kho Đề Trung Gian</span>
                 </div>
                 <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.35rem; margin-bottom: 0.75rem; line-height: 1.45;">
-                    Chọn file đề Excel (.xlsx, .xls, .csv). Hệ thống sẽ tự động kiểm tra tính đúng cấu trúc, đối soát các trường bắt buộc và phân loại trực tiếp vào <strong>Kho Đề Thô (5TB chờ AI thẩm định)</strong>.
+                    Chọn file đề Excel (.xlsx, .xls, .csv). Hệ thống sẽ tự động kiểm tra tính đúng cấu trúc, đối soát các trường bắt buộc và phân loại trực tiếp vào <strong>Kho Đề Trung Gian (5TB chờ AI thẩm định)</strong>.
                 </p>
 
                 <!-- KHU VỰC CHỌN FILE -->
@@ -3954,7 +3983,7 @@ window.openPPCTDirect = function() {
 
                 <div style="margin-top: 0.85rem;">
                     <button id="btnConfirmImport" class="btn-mini-action" type="button" style="width: 100%; justify-content: center; background: #059669; color: #ffffff; padding: 0.65rem; font-weight: 700; font-size: 0.85rem;" disabled>
-                        <span>📥</span> <span>Nạp Toàn Bộ Vào Kho Đề Thô & Ngân Hàng</span>
+                        <span>📥</span> <span>Nạp Toàn Bộ Vào Kho Đề Trung Gian & Ngân Hàng</span>
                     </button>
                 </div>
             </div>

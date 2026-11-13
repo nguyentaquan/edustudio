@@ -4087,3 +4087,91 @@ body.modal-open {
     background: rgba(255, 255, 255, 0.45);
     transform: scale(1.08);
 }
+
+/* ==========================================================================
+   GAME CREATOR FULLSCREEN & SMART PAGINATION ENHANCEMENTS
+   ========================================================================== */
+.game-creator-modal-wide.is-fullscreen {
+    width: 98vw !important;
+    max-width: 98vw !important;
+    height: 96vh !important;
+    max-height: 96vh !important;
+    border-radius: 8px !important;
+    padding: 1rem 1.25rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.game-creator-modal-wide.is-fullscreen .creator-form-grid {
+    grid-template-columns: 310px 1fr !important;
+    flex: 1 !important;
+    height: calc(96vh - 80px) !important;
+    min-height: 0 !important;
+    margin-top: 0.6rem !important;
+}
+
+.game-creator-modal-wide.is-fullscreen .creator-sidebar-settings {
+    overflow-y: auto !important;
+    max-height: 100% !important;
+}
+
+.game-creator-modal-wide.is-fullscreen .creator-main-questions {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 0 !important;
+}
+
+.game-creator-modal-wide.is-fullscreen #panelBankList,
+.game-creator-modal-wide.is-fullscreen #panelAddNewQ {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 0 !important;
+}
+
+.game-creator-modal-wide.is-fullscreen #panelAddNewQ:not(.active),
+.game-creator-modal-wide.is-fullscreen #panelBankList:not(.active) {
+    display: none !important;
+}
+
+.game-creator-modal-wide.is-fullscreen #bankQuestionsContainer {
+    max-height: none !important;
+    flex: 1 !important;
+    overflow-y: auto !important;
+}
+
+.bank-pagination-btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 0.22rem 0.55rem;
+    border-radius: 5px;
+    font-size: 0.74rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+}
+
+.bank-pagination-btn:hover:not(:disabled) {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+}
+
+.bank-pagination-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.bank-pagination-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: #f1f5f9;
+}

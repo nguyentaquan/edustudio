@@ -2414,7 +2414,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 competency: 'pt_nhan_biet',
                 competencyText: 'Nhận biết',
                 stem: 'Dấu hiệu nào sau đây chứng tỏ đã có phản ứng hoá học xảy ra?',
-                stemImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="90" viewBox="0 0 120 90"><path d="M45,20 L55,20 L55,45 L75,75 A5,5 0 0,1 70,82 L30,82 A5,5 0 0,1 25,75 L45,45 Z" fill="%23eff6ff" stroke="%232563eb" stroke-width="2.5"/><path d="M30,80 L70,80 L65,65 Q50,60 35,65 Z" fill="%2393c5fd"/><circle cx="50" cy="72" r="3" fill="%23ffffff"/><circle cx="43" cy="67" r="2.5" fill="%23ffffff"/><circle cx="57" cy="68" r="2.5" fill="%23ffffff"/><path d="M85,30 Q95,45 85,60" stroke="%23ef4444" stroke-width="2" fill="none" stroke-dasharray="3"/><text x="95" y="48" font-size="11" fill="%23ef4444" font-weight="bold">Khí bay lên</text></svg>',
+                stemImage: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='90' viewBox='0 0 120 90'><path d='M45,20 L55,20 L55,45 L75,75 A5,5 0 0,1 70,82 L30,82 A5,5 0 0,1 25,75 L45,45 Z' fill='%23eff6ff' stroke='%232563eb' stroke-width='2.5'/><path d='M30,80 L70,80 L65,65 Q50,60 35,65 Z' fill='%2393c5fd'/><circle cx='50' cy='72' r='3' fill='%23ffffff'/><circle cx='43' cy='67' r='2.5' fill='%23ffffff'/><circle cx='57' cy='68' r='2.5' fill='%23ffffff'/><path d='M85,30 Q95,45 85,60' stroke='%23ef4444' stroke-width='2' fill='none' stroke-dasharray='3'/><text x='95' y='48' font-size='11' fill='%23ef4444' font-weight='bold'>Khí bay lên</text></svg>",
                 options: [
                     'Có sự thay đổi về trạng thái hoặc màu sắc và tạo chất mới',
                     'Chỉ có sự thay đổi kích thước của vật thể',
@@ -2456,7 +2456,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 competency: 'pt_van_dung',
                 competencyText: 'Vận dụng',
                 stem: 'Một hình thang có độ dài hai đáy lần lượt là 6cm và 10cm, chiều cao 5cm. Diện tích hình thang là:',
-                stemImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="85" viewBox="0 0 160 85"><polygon points="35,15 115,15 145,70 15,70" fill="%23eff6ff" stroke="%232563eb" stroke-width="2"/><line x1="35" y1="15" x2="35" y2="70" stroke="%23dc2626" stroke-width="1.8" stroke-dasharray="3"/><text x="75" y="12" font-size="11" fill="%231e293b" font-weight="bold" text-anchor="middle">a = 6cm</text><text x="80" y="82" font-size="11" fill="%231e293b" font-weight="bold" text-anchor="middle">b = 10cm</text><text x="22" y="46" font-size="10" fill="%23dc2626" font-weight="bold">h=5</text></svg>',
+                stemImage: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='85' viewBox='0 0 160 85'><polygon points='35,15 115,15 145,70 15,70' fill='%23eff6ff' stroke='%232563eb' stroke-width='2'/><line x1='35' y1='15' x2='35' y2='70' stroke='%23dc2626' stroke-width='1.8' stroke-dasharray='3'/><text x='75' y='12' font-size='11' fill='%231e293b' font-weight='bold' text-anchor='middle'>a = 6cm</text><text x='80' y='82' font-size='11' fill='%231e293b' font-weight='bold' text-anchor='middle'>b = 10cm</text><text x='22' y='46' font-size='10' fill='%23dc2626' font-weight='bold'>h=5</text></svg>",
                 options: ['30 cm²', '40 cm²', '50 cm²', '80 cm²'],
                 optImages: [null, null, null, null],
                 correctIndex: 1,
@@ -2472,7 +2472,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 competency: 'all_mn',
                 competencyText: 'Tất cả năng lực MN',
                 stem: 'Bé hãy nhìn hình và cho biết đây là quả gì có màu đỏ tươi, ăn giòn ngọt?',
-                stemImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 90 90"><circle cx="40" cy="50" r="28" fill="%23ef4444"/><circle cx="56" cy="50" r="28" fill="%23dc2626"/><path d="M46 25 Q50 12 62 10" stroke="%2315803d" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="64" cy="18" rx="8" ry="4" fill="%2322c55e" transform="rotate(-20 64 18)"/><ellipse cx="36" cy="42" rx="6" ry="12" fill="%23fca5a5" opacity="0.6"/></svg>',
+                stemImage: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'><circle cx='40' cy='50' r='28' fill='%23ef4444'/><circle cx='56' cy='50' r='28' fill='%23dc2626'/><path d='M46 25 Q50 12 62 10' stroke='%2315803d' stroke-width='4' fill='none' stroke-linecap='round'/><ellipse cx='64' cy='18' rx='8' ry='4' fill='%2322c55e' transform='rotate(-20 64 18)'/><ellipse cx='36' cy='42' rx='6' ry='12' fill='%23fca5a5' opacity='0.6'/></svg>",
                 options: ['Quả Chuối vàng', 'Quả Táo đỏ', 'Quả Dưa hấu xanh', 'Quả Cam sành'],
                 optImages: [null, null, null, null],
                 correctIndex: 1,
@@ -2484,15 +2484,111 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 sourceType: 'admin_ai',
                 auditVerified: true,
                 grade: 'MN',
+                subject: 'Phát triển nhận thức',
+                competency: 'all_mn',
+                competencyText: 'Tất cả năng lực MN',
+                stem: 'Con vật nào kêu "Gâu gâu" và giúp gia đình trông nhà?',
+                stemImage: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'><circle cx='45' cy='45' r='35' fill='%23fcd34d'/><circle cx='24' cy='30' r='12' fill='%23b45309'/><circle cx='66' cy='30' r='12' fill='%23b45309'/><circle cx='34' cy='44' r='5' fill='%231e293b'/><circle cx='56' cy='44' r='5' fill='%231e293b'/><ellipse cx='45' cy='56' rx='8' ry='5' fill='%231e293b'/><path d='M38 64 Q45 71 52 64' stroke='%231e293b' stroke-width='2.5' fill='none' stroke-linecap='round'/></svg>",
+                options: ['Con mèo', 'Con chó', 'Con gà', 'Con vịt'],
+                optImages: [null, null, null, null],
+                correctIndex: 1,
+                explanation: 'Con chó kêu "Gâu gâu" và có bản năng giữ nhà rất tốt.'
+            },
+            {
+                id: 'bank_admin_mn_3',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
+                grade: 'MN',
+                subject: 'Phát triển nhận thức',
+                competency: 'all_mn',
+                competencyText: 'Tất cả năng lực MN',
+                stem: 'Con vật nào sống ở dưới nước, bơi bằng vây và thở bằng mang?',
+                stemImage: null,
+                options: ['Con cá', 'Con chim', 'Con thỏ', 'Con khỉ'],
+                optImages: [null, null, null, null],
+                correctIndex: 0,
+                explanation: 'Con cá bơi dưới nước bằng vây và thở bằng mang.'
+            },
+            {
+                id: 'bank_admin_mn_4',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
+                grade: 'MN',
                 subject: 'Phát triển ngôn ngữ',
                 competency: 'all_mn',
                 competencyText: 'Tất cả năng lực MN',
-                stem: 'Con vật nào giữ nhà trung thành cho gia đình và tiếng sủa "Gâu gâu"?',
-                stemImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="35" fill="%23fcd34d"/><circle cx="24" cy="30" r="12" fill="%23b45309"/><circle cx="66" cy="30" r="12" fill="%23b45309"/><circle cx="34" cy="44" r="5" fill="%231e293b"/><circle cx="56" cy="44" r="5" fill="%231e293b"/><ellipse cx="45" cy="56" rx="8" ry="5" fill="%231e293b"/><path d="M38 64 Q45 71 52 64" stroke="%231e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>',
-                options: ['Chú Mèo con', 'Chú Chó đốm', 'Con Voi to lớn', 'Chú Gà trống'],
+                stem: 'Con vật nào có đôi tai dài, thích ăn cà rốt và nhảy thoăn thoắt?',
+                stemImage: null,
+                options: ['Con rùa', 'Con thỏ', 'Con voi', 'Con hổ'],
                 optImages: [null, null, null, null],
                 correctIndex: 1,
-                explanation: 'Chú chó là bạn nhỏ bốn chân trung thành, giúp gia đình trông nhà và sủa gâu gâu.'
+                explanation: 'Chú thỏ có đôi tai dài dựng đứng và thích ăn củ cà rốt đỏ.'
+            },
+            {
+                id: 'bank_admin_mn_5',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
+                grade: 'MN',
+                subject: 'Phát triển toàn diện',
+                competency: 'all_mn',
+                competencyText: 'Tất cả năng lực MN',
+                stem: 'Xe nào sau đây có hai bánh, dùng bàn đạp để di chuyển?',
+                stemImage: null,
+                options: ['Xe ô tô', 'Xe máy bay', 'Xe đạp', 'Xe tàu thủy'],
+                optImages: [null, null, null, null],
+                correctIndex: 2,
+                explanation: 'Xe đạp có 2 bánh và bé dùng chân đạp bàn đạp để xe chạy.'
+            },
+            {
+                id: 'bank_admin_mn_6',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
+                grade: 'MN',
+                subject: 'Phát triển toàn diện',
+                competency: 'all_mn',
+                competencyText: 'Tất cả năng lực MN',
+                stem: 'Đèn tín hiệu giao thông khi bật màu gì thì người đi đường phải dừng lại?',
+                stemImage: null,
+                options: ['Màu xanh lá', 'Màu đỏ', 'Màu vàng', 'Màu tím'],
+                optImages: [null, null, null, null],
+                correctIndex: 1,
+                explanation: 'Đèn đỏ dừng lại, đèn xanh được đi, đèn vàng đi chậm.'
+            },
+            {
+                id: 'bank_admin_mn_7',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
+                grade: 'MN',
+                subject: 'Phát triển thẩm mỹ',
+                competency: 'all_mn',
+                competencyText: 'Tất cả năng lực MN',
+                stem: 'Bông hoa nào thường nở rực rỡ vào mùa xuân đón Tết ở miền Bắc, cánh hoa màu hồng thắm?',
+                stemImage: null,
+                options: ['Hoa đào', 'Hoa mai vàng', 'Hoa sen', 'Hoa súng'],
+                optImages: [null, null, null, null],
+                correctIndex: 0,
+                explanation: 'Hoa đào có sắc hồng tươi thắm báo hiệu mùa xuân về.'
+            },
+            {
+                id: 'bank_admin_mn_8',
+                compartment: 1,
+                sourceType: 'admin_ai',
+                auditVerified: true,
+                grade: 'MN',
+                subject: 'Phát triển thể chất',
+                competency: 'all_mn',
+                competencyText: 'Tất cả năng lực MN',
+                stem: 'Buổi sáng thức dậy và trước khi đi ngủ, bé cần làm gì để hàm răng luôn trắng sạch và thơm tho?',
+                stemImage: null,
+                options: ['Ăn kẹo ngọt', 'Uống nước ngọt có ga', 'Đánh răng sạch sẽ', 'Đi ngủ tiếp'],
+                optImages: [null, null, null, null],
+                correctIndex: 2,
+                explanation: 'Đánh răng đúng cách 2 lần mỗi ngày giúp bé ngừa sâu răng.'
             },
             {
                 id: 'bank_admin_6',
@@ -2519,6 +2615,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     getSubjectsByGrade(grade) {
         if (grade === 'MN') {
             return [
+                'Phát triển toàn diện',
                 'Phát triển nhận thức',
                 'Phát triển ngôn ngữ',
                 'Phát triển thể chất',
@@ -6596,6 +6693,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             const container = document.getElementById('bankQuestionsContainer');
             const totalBadge = document.getElementById('bankTotalCount');
             const imageBadge = document.getElementById('bankImageCount');
+            const paginationBar = document.getElementById('bankPaginationBar');
             if (!container) return;
 
             if (!Array.isArray(this.questionBank) || this.questionBank.length === 0) {
@@ -6627,7 +6725,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 }
 
                 // Lọc theo Môn Học / Lĩnh Vực
-                if (selSubject && selSubject !== 'all') {
+                if (selSubject && selSubject !== 'all' && selSubject !== 'Phát triển toàn diện') {
                     const qSub = (q.subject || '').toLowerCase().trim();
                     const sSub = selSubject.toLowerCase().trim();
                     if (qSub && !qSub.includes(sSub) && !sSub.includes(qSub)) {
@@ -6672,14 +6770,40 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             : '📚 Kho đề chưa có câu hỏi nào phù hợp với bộ lọc (' + selGrade + (selSubject ? ' - ' + selSubject : '') + ').<br>Quý Thầy/Cô có thể bấm <strong>[✨ Tạo Bộ Câu Hỏi Bằng AI Gemini]</strong> hoặc <strong>[➕ Soạn Câu Mới]</strong>!'}
                     </div>
                 `;
+                if (paginationBar) {
+                    paginationBar.innerHTML = `<span style="color:#64748b;">Tổng cộng: <strong>0</strong> câu hỏi</span>`;
+                }
                 return;
             }
+
+            // H2: PHÂN TRANG THÔNG MINH CHO NGÂN HÀNG CÂU HỎI
+            if (!this.bankCurrentPage) this.bankCurrentPage = 1;
+            const pageSizeSelect = document.getElementById('bankPageSizeSelect');
+            const pageSizeVal = pageSizeSelect ? pageSizeSelect.value : '5';
+            const pageSize = (pageSizeVal === 'all') ? Infinity : (parseInt(pageSizeVal) || 5);
+            const totalPages = (pageSize === Infinity) ? 1 : Math.max(1, Math.ceil(displayList.length / pageSize));
+
+            if (this.bankCurrentPage > totalPages) this.bankCurrentPage = totalPages;
+            if (this.bankCurrentPage < 1) this.bankCurrentPage = 1;
+
+            const startIdx = (pageSize === Infinity) ? 0 : (this.bankCurrentPage - 1) * pageSize;
+            const pagedList = (pageSize === Infinity) ? displayList : displayList.slice(startIdx, startIdx + pageSize);
+
+            // Hàm xử lý an toàn nguồn ảnh (tránh lỗi rò rỉ mã SVG khi chèn thẻ <img>)
+            const safeImgSrc = (src) => {
+                if (!src) return '';
+                if (src.startsWith('data:image/svg+xml') && src.includes('"')) {
+                    return src.replace(/"/g, "'");
+                }
+                return src;
+            };
 
             const prefix = ['A', 'B', 'C', 'D'];
             let html = '';
 
-            displayList.forEach((q, displayIdx) => {
+            pagedList.forEach((q, pageIdx) => {
                 if (!q) return;
+                const displayIdx = startIdx + pageIdx;
                 const bIdx = q._bankOrigIdx;
                 const isAlreadyAdded = Array.isArray(this.selectedQuestions) && this.selectedQuestions.some(sq => sq && sq.stem && q.stem && sq.stem.trim() === q.stem.trim());
 
@@ -6724,7 +6848,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                                 <input type="radio" name="bank_preview_opt_${displayIdx}" id="b_opt_${displayIdx}_${oIdx}" ${isCorrect ? 'checked' : ''} style="cursor: pointer;">
                                 <label for="b_opt_${displayIdx}_${oIdx}" style="cursor: pointer; margin: 0; font-size: 0.8rem; color: ${isCorrect ? '#059669' : '#334155'}; display:flex; align-items:center; gap:0.35rem;">
                                     <strong>${prefix[oIdx]}.</strong> 
-                                    ${optImg ? `<img src="${optImg}" style="height:22px; border-radius:3px; border:1px solid #cbd5e1; vertical-align:middle;">` : ''}
+                                    ${optImg ? `<img src="${safeImgSrc(optImg)}" style="height:22px; border-radius:3px; border:1px solid #cbd5e1; vertical-align:middle;">` : ''}
                                     <span>${opt}</span>
                                 </label>
                             </div>
@@ -6750,7 +6874,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
                         <div class="bank-card-stem">
                             <strong>Câu ${displayIdx + 1}:</strong> ${q.stem || 'Nội dung câu hỏi...'}
-                            ${q.stemImage ? `<div style="margin-top:0.4rem;"><img src="${q.stemImage}" style="max-height:85px; border-radius:6px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.1);"></div>` : ''}
+                            ${q.stemImage ? `<div style="margin-top:0.4rem;"><img src="${safeImgSrc(q.stemImage)}" style="max-height:85px; border-radius:6px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.1);"></div>` : ''}
                         </div>
 
                         ${bodyHtml}
@@ -6761,6 +6885,62 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             });
 
             container.innerHTML = html;
+
+            // RENDER THANH PHÂN TRANG THÔNG MINH DÃY SỐ CUỐI KHUNG
+            if (paginationBar) {
+                if (pageSize === Infinity || totalPages <= 1) {
+                    paginationBar.innerHTML = `<span style="color:#64748b;">Hiển thị toàn bộ <strong>${displayList.length}</strong> câu hỏi</span>`;
+                } else {
+                    let pageButtonsHtml = '';
+                    for (let p = 1; p <= totalPages; p++) {
+                        pageButtonsHtml += `
+                            <button type="button" class="bank-pagination-btn ${p === this.bankCurrentPage ? 'active' : ''}" data-page="${p}">
+                                ${p}
+                            </button>
+                        `;
+                    }
+
+                    paginationBar.innerHTML = `
+                        <div style="color: #64748b; font-size: 0.74rem;">
+                            Trang <strong>${this.bankCurrentPage}</strong> / <strong>${totalPages}</strong> (${displayList.length} câu)
+                        </div>
+                        <div style="display: flex; gap: 0.25rem; align-items: center;">
+                            <button type="button" class="bank-pagination-btn" id="btnBankPrevPage" ${this.bankCurrentPage <= 1 ? 'disabled' : ''} title="Trang trước">
+                                ◀ Trước
+                            </button>
+                            ${pageButtonsHtml}
+                            <button type="button" class="bank-pagination-btn" id="btnBankNextPage" ${this.bankCurrentPage >= totalPages ? 'disabled' : ''} title="Trang tiếp">
+                                Tiếp ▶
+                            </button>
+                        </div>
+                    `;
+
+                    // Gắn sự kiện cho các nút số trang
+                    paginationBar.querySelectorAll('.bank-pagination-btn[data-page]').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            this.bankCurrentPage = parseInt(e.currentTarget.dataset.page) || 1;
+                            this.renderBankQuestions();
+                            container.scrollTop = 0;
+                        });
+                    });
+
+                    document.getElementById('btnBankPrevPage')?.addEventListener('click', () => {
+                        if (this.bankCurrentPage > 1) {
+                            this.bankCurrentPage--;
+                            this.renderBankQuestions();
+                            container.scrollTop = 0;
+                        }
+                    });
+
+                    document.getElementById('btnBankNextPage')?.addEventListener('click', () => {
+                        if (this.bankCurrentPage < totalPages) {
+                            this.bankCurrentPage++;
+                            this.renderBankQuestions();
+                            container.scrollTop = 0;
+                        }
+                    });
+                }
+            }
 
             container.querySelectorAll('.btn-bank-toggle').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -7714,6 +7894,26 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.closeGameCreatorModal();
         });
 
+        // Phóng to / Thu nhỏ cửa sổ Game Creator (H1 theo yêu cầu Thầy Quan)
+        const btnToggleFullscreen = document.getElementById('btnToggleCreatorFullscreen');
+        btnToggleFullscreen?.addEventListener('click', () => {
+            const modalBox = document.querySelector('#gameCreatorModal .game-creator-modal-wide');
+            const icon = document.getElementById('creatorFullscreenIcon');
+            if (modalBox) {
+                const isFull = modalBox.classList.toggle('is-fullscreen');
+                if (icon) icon.textContent = isFull ? '🗗' : '🗖';
+                btnToggleFullscreen.title = isFull ? 'Thu nhỏ cửa sổ' : 'Phóng to cửa sổ';
+                sound.playTick();
+            }
+        });
+
+        // Thay đổi số lượng câu hiển thị trên mỗi trang (H2: 5, 10, 20 hoặc Tất cả)
+        document.getElementById('bankPageSizeSelect')?.addEventListener('change', () => {
+            this.bankCurrentPage = 1;
+            this.renderBankQuestions();
+            sound.playTick();
+        });
+
         const tabBank = document.getElementById('btnTabBankList');
         const tabImg = document.getElementById('btnTabImageQuestions');
         const tabAdd = document.getElementById('btnTabAddNewQ');
@@ -7934,6 +8134,81 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         document.querySelectorAll('input[name^="newDS_val_"]').forEach(r => r.addEventListener('change', updateAnswerPreviewBadges));
         document.getElementById('newAnsKQText')?.addEventListener('input', updateAnswerPreviewBadges);
         updateAnswerPreviewBadges();
+
+        // H3: Đồng bộ động danh mục môn và năng lực khi thay đổi Mã Lớp ở form Soạn Câu Hỏi Mới
+        const updateNewQFormGradeOptions = (gradeVal) => {
+            const subjEl = document.getElementById('newQSubjectCode');
+            const compEl = document.getElementById('newQCompetencyCode');
+            if (!subjEl || !compEl) return;
+            if (gradeVal === 'MN') {
+                subjEl.innerHTML = `
+                    <option value="MN_TD" selected>MN_TD (Phát triển toàn diện)</option>
+                    <option value="MN_NT">MN_NT (Phát triển Nhận thức)</option>
+                    <option value="MN_NN">MN_NN (Phát triển Ngôn ngữ)</option>
+                    <option value="MN_TC">MN_TC (Phát triển Thể chất)</option>
+                    <option value="MN_TM">MN_TM (Phát triển Thẩm mỹ)</option>
+                    <option value="MN_XH">MN_XH (Tình cảm & KNXH)</option>
+                `;
+                compEl.innerHTML = `
+                    <option value="all_mn" selected>Tất cả năng lực MN</option>
+                `;
+            } else {
+                subjEl.innerHTML = `
+                    <option value="ĐS" selected>ĐS (Toán - Đại số)</option>
+                    <option value="HH">HH (Toán - Hình học)</option>
+                    <option value="KHTN">KHTN (Khoa học tự nhiên)</option>
+                    <option value="NV">NV (Ngữ văn)</option>
+                    <option value="TA">TA (Tiếng Anh)</option>
+                    <option value="TIN">TIN (Tin học)</option>
+                    <option value="LS">LS (Lịch sử)</option>
+                    <option value="ĐL">ĐL (Địa lí)</option>
+                    <option value="LS-ĐL">LS-ĐL (Lịch sử & Địa lí)</option>
+                    <option value="GDCD">GDCD (Giáo dục công dân)</option>
+                    <option value="HDTN">HDTN (Hoạt động TN-HN)</option>
+                `;
+                compEl.innerHTML = `
+                    <option value="NB" selected>NB (Nhận biết)</option>
+                    <option value="TH">TH (Thông hiểu)</option>
+                    <option value="VD">VD (Vận dụng)</option>
+                    <option value="VDC">VDC (Vận dụng cao)</option>
+                `;
+            }
+        };
+
+        document.getElementById('newQGrade')?.addEventListener('change', (e) => {
+            updateNewQFormGradeOptions(e.target.value);
+            sound.playTick();
+        });
+
+        // H3: Nút "Xóa" để làm sạch form và nhập lại nội dung câu hỏi
+        document.getElementById('btnResetNewQuestionForm')?.addEventListener('click', () => {
+            document.getElementById('newQStemInput').value = '';
+            for (let i = 0; i < 4; i++) {
+                const optEl = document.getElementById(`newOptText_${i}`);
+                if (optEl) optEl.value = '';
+                const box = document.getElementById(`optImgBox_${i}`);
+                if (box) box.style.display = 'none';
+                const img = document.getElementById(`optImgPrev_${i}`);
+                if (img) img.src = '';
+            }
+            const kqEl = document.getElementById('newAnsKQText');
+            if (kqEl) kqEl.value = '';
+            const expEl = document.getElementById('newQExplanation');
+            if (expEl) expEl.value = '';
+            const stemBox = document.getElementById('stemImgPreviewBox');
+            if (stemBox) stemBox.style.display = 'none';
+            const stemImg = document.getElementById('stemImgPreview');
+            if (stemImg) stemImg.src = '';
+
+            const firstRadio = document.querySelector('input[name="newQCorrectOpt"][value="0"]');
+            if (firstRadio) firstRadio.checked = true;
+
+            this.tempStemImage = null;
+            this.tempOptImages = [null, null, null, null];
+            updateAnswerPreviewBadges();
+            sound.playTick();
+            this.showToast('✓ Đã xóa trắng nội dung để nhập lại câu hỏi!', 2500);
+        });
 
         // Lưu câu hỏi mới soạn (Chuẩn hóa đầy đủ các trường thông tin theo file mẫu Excel)
         document.getElementById('btnSaveNewQuestion')?.addEventListener('click', () => {
@@ -9017,20 +9292,23 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 ["NV", "Ngữ văn", "Văn bản, Tiếng Việt, Viết"],
                 ["TA", "Tiếng Anh", "Ngoại ngữ"],
                 ["TIN", "Tin học", "Công nghệ thông tin"],
-                ["LS-ĐL", "Lịch sử & Địa lí", "Phân môn KHXH"],
+                ["LS", "Lịch sử", "Môn Lịch sử riêng biệt (chuẩn phân môn GDPT)"],
+                ["ĐL", "Địa lí", "Môn Địa lí riêng biệt (chuẩn phân môn GDPT)"],
+                ["LS-ĐL", "Lịch sử & Địa lí", "Phân môn KHXH tích hợp"],
                 ["GDCD", "Giáo dục công dân", "GD Kinh tế & Pháp luật"],
                 ["HDTN", "Hoạt động trải nghiệm, hướng nghiệp", "HĐTN-HN"],
-                ["MN_NT", "Mầm non - Nhận thức", "Lĩnh vực nhận thức"],
-                ["MN_NN", "Mầm non - Ngôn ngữ", "Lĩnh vực ngôn ngữ"],
-                ["MN_TC", "Mầm non - Thể chất", "Lĩnh vực thể chất"],
-                ["MN_TM", "Mầm non - Thẩm mỹ", "Lĩnh vực thẩm mỹ"],
-                ["MN_XH", "Mầm non - Tình cảm & Xã hội", "Lĩnh vực tình cảm - KNXH"],
+                ["MN_TD", "Mầm non - Phát triển toàn diện", "Chăm sóc & Giáo dục toàn diện MN"],
+                ["MN_NT", "Mầm non - Nhận thức", "Lĩnh vực phát triển nhận thức"],
+                ["MN_NN", "Mầm non - Ngôn ngữ", "Lĩnh vực phát triển ngôn ngữ"],
+                ["MN_TC", "Mầm non - Thể chất", "Lĩnh vực phát triển thể chất"],
+                ["MN_TM", "Mầm non - Thẩm mỹ", "Lĩnh vực phát triển thẩm mỹ"],
+                ["MN_XH", "Mầm non - Tình cảm & Xã hội", "Lĩnh vực tình cảm & kỹ năng xã hội"],
                 [""],
                 ["3. BẢNG MÃ DẠNG CÂU HỎI (Cột: Dạng câu hỏi)"],
                 ["Mã Dạng", "Tên Dạng Câu Hỏi", "Cột Đáp Án Tương Ứng"],
-                ["NLC", "Nhiều lựa chọn (4 phương án A, B, C, D)", "Điền vào cột 'Đáp án NLC (A/B/C/D)' (A/B/C/D)"],
-                ["Đ-S", "Đúng - Sai (4 ý khẳng định a, b, c, d)", "Điền vào cột 'Đáp án Đúng/Sai (Đ/S)' (Đ-S-Đ-S)"],
-                ["TLN", "Trả lời ngắn / Kết quả điền khuyết", "Điền vào cột 'Đáp số TLN (KQ)' (kết quả số/từ)"],
+                ["NLC", "Nhiều lựa chọn (4 phương án A, B, C, D)", "Điền vào cột 'Đáp án NLC (A/B/C/D)' (A/B/C/D) hoặc đặt dấu * trước đáp án đúng"],
+                ["Đ-S", "Đúng - Sai (4 ý khẳng định a, b, c, d)", "Điền vào cột 'Đáp án Đúng/Sai (Đ/S)' (Đ-S-Đ-S) hoặc ghi (Đ)/(S) sau mỗi khẳng định"],
+                ["TLN", "Trả lời ngắn / Kết quả điền khuyết", "Điền vào cột 'Đáp số TLN (KQ)' hoặc đặt kết quả trong cặp ngoặc vuông [ ... ] ở cuối câu"],
                 [""],
                 ["4. BẢNG MÃ NĂNG LỰC (Cột: Mã Năng lực)"],
                 ["Mã Năng Lực", "Tên Mức Độ / Năng Lực", "Ghi Chú"],
@@ -9038,12 +9316,13 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 ["TH", "Thông hiểu (Mức 2)", "Chuẩn GDPT 2018"],
                 ["VD", "Vận dụng (Mức 3)", "Chuẩn GDPT 2018"],
                 ["VDC", "Vận dụng cao (Mức 4)", "Chuẩn GDPT 2018"],
-                ["MN", "Năng lực chuẩn Mầm non", "5 Lĩnh vực Mầm non"],
+                ["MN", "Năng lực chuẩn Mầm non", "Tất cả năng lực Mầm non"],
+                ["all_mn", "Tất cả năng lực MN", "Dành cho bậc học Mầm non"],
                 [""],
-                ["5. QUY ƯỚC ĐIỀN ĐÁP ÁN 3 CỘT (ĐỘC LẬP TƯƠNG ỨNG):"],
-                ["- Câu NLC: Cột 15 điền A hoặc B hoặc C hoặc D. (Cột 16, 17 để trống)"],
-                ["- Câu Đ-S: Cột 16 điền chuỗi Đ/S ngăn cách dấu gạch ngang: ví dụ Đ-S-Đ-Đ. (Cột 15, 17 để trống)"],
-                ["- Câu TLN: Cột 17 điền đáp số/kết quả chính xác: ví dụ 44 hoặc CO2. (Cột 15, 16 để trống)"]
+                ["5. QUY ƯỚC ĐIỀN ĐÁP ÁN 3 CỘT & SOẠN THẢO QUY CHUẨN (THEO CHỈ ĐẠO THẦY NGUYỄN TÁ QUAN):"],
+                ["- Câu NLC (Nhiều Lựa Chọn): Cột 15 điền A hoặc B hoặc C hoặc D; hoặc đặt dấu '*' trước phương án đúng (ví dụ: *B. Phương án B). (Cột 16, 17 để trống)"],
+                ["- Câu Đ-S (Đúng - Sai 4 ý): Cột 16 điền chuỗi Đ/S ngăn cách dấu gạch ngang (ví dụ Đ-S-Đ-S); hoặc ghi rõ (Đ)/(S) sau mỗi khẳng định (ví dụ: a) Khẳng định 1 (Đ)). (Cột 15, 17 để trống)"],
+                ["- Câu TLN (Trả Lời Ngắn / Điền khuyết): Cột 17 điền đáp số/kết quả chính xác (ví dụ 44 hoặc CO2); hoặc đặt kết quả/từ điền khuyết trong cặp ngoặc vuông '[ ... ]' ở cuối câu (ví dụ: Kết quả là: [ 44 ]). (Cột 15, 16 để trống)"]
             ];
 
             const ws2 = XLSX.utils.aoa_to_sheet(refData);
@@ -9215,20 +9494,44 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             }
                             const compRaw = String(r[colComp] || 'NB').trim();
 
-                            const optA = String(r[colOptA] || '').trim();
-                            const optB = String(r[colOptB] || '').trim();
-                            const optC = String(r[colOptC] || '').trim();
-                            const optD = String(r[colOptD] || '').trim();
+                            let optA = String(r[colOptA] || '').trim();
+                            let optB = String(r[colOptB] || '').trim();
+                            let optC = String(r[colOptC] || '').trim();
+                            let optD = String(r[colOptD] || '').trim();
 
-                            const ansNLC = String(r[colAnsNLC] || 'A').trim().toUpperCase();
-                            const ansDS = String(r[colAnsDS] || '').trim();
-                            const ansKQ = String(r[colAnsKQ] || '').trim();
+                            let ansNLC = String(r[colAnsNLC] || 'A').trim().toUpperCase();
+                            let ansDS = String(r[colAnsDS] || '').trim();
+                            let ansKQ = String(r[colAnsKQ] || '').trim();
                             const exp = String(r[colExp] || '').trim();
 
                             let corIdx = 0;
-                            if (ansNLC.includes('B') || ansNLC === '1') corIdx = 1;
+                            // H5: Nhận diện dấu '*' trước đáp án đúng của NLC
+                            if (optA.startsWith('*')) { corIdx = 0; optA = optA.slice(1).trim(); ansNLC = 'A'; }
+                            else if (optB.startsWith('*')) { corIdx = 1; optB = optB.slice(1).trim(); ansNLC = 'B'; }
+                            else if (optC.startsWith('*')) { corIdx = 2; optC = optC.slice(1).trim(); ansNLC = 'C'; }
+                            else if (optD.startsWith('*')) { corIdx = 3; optD = optD.slice(1).trim(); ansNLC = 'D'; }
+                            else if (ansNLC.includes('B') || ansNLC === '1') corIdx = 1;
                             else if (ansNLC.includes('C') || ansNLC === '2') corIdx = 2;
                             else if (ansNLC.includes('D') || ansNLC === '3') corIdx = 3;
+
+                            // H5: Nhận diện [ ... ] ở cuối câu cho dạng TLN
+                            if (typeRaw === 'TLN' && !ansKQ) {
+                                const kqMatch = stem.match(/\[\s*(.*?)\s*\]\s*$/);
+                                if (kqMatch) {
+                                    ansKQ = kqMatch[1].trim();
+                                }
+                            }
+
+                            // H5: Nhận diện (Đ)/(S) cho dạng Đ-S nếu chưa có chuỗi ansDS
+                            if (typeRaw === 'Đ-S' && !ansDS) {
+                                const checkDS = (text) => {
+                                    const upper = text.toUpperCase();
+                                    if (upper.includes('(Đ') || upper.includes('(ĐÚNG)')) return 'Đ';
+                                    if (upper.includes('(S') || upper.includes('(SAI)')) return 'S';
+                                    return 'Đ';
+                                };
+                                ansDS = `${checkDS(optA)}-${checkDS(optB)}-${checkDS(optC)}-${checkDS(optD)}`;
+                            }
 
                             if (typeRaw === 'NLC') nlcCount++;
                             else if (typeRaw === 'Đ-S') dsCount++;
@@ -9267,11 +9570,11 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                                 <div style="line-height: 1.5; color: #334155; font-size: 0.78rem;">
                                     • Phát hiện tổng cộng: <strong>${stagedQuestions.length} câu hỏi hợp lệ</strong> đầy đủ trường bắt buộc.<br>
                                     • Phân loại dạng: <strong style="color:#1d4ed8;">${nlcCount} câu Nhiều Lựa Chọn (NLC)</strong> | <strong style="color:#b45309;">${dsCount} câu Đúng-Sai (Đ-S)</strong> | <strong style="color:#059669;">${tlnCount} câu Trả Lời Ngắn (TLN)</strong>.<br>
-                                    • Nơi tiếp nhận: <strong>Kho Đề Thô (5TB chờ AI thẩm định)</strong> & Ngân hàng đề hiện hành.
+                                    • Nơi tiếp nhận: <strong>Kho Đề Trung Gian (5TB chờ AI thẩm định)</strong> & Ngân hàng đề hiện hành.
                                 </div>
                             `;
                             btnConfirmImport.removeAttribute('disabled');
-                            btnConfirmImport.innerHTML = `<span>📥</span> <span>Nạp Toàn Bộ ${stagedQuestions.length} Câu Hỏi Vào Kho Đề Thô</span>`;
+                            btnConfirmImport.innerHTML = `<span>📥</span> <span>Nạp Toàn Bộ ${stagedQuestions.length} Câu Hỏi Vào Kho Đề Trung Gian</span>`;
                         } else {
                             alert("Không nhận diện được câu hỏi hợp lệ từ file Excel! Vui lòng tải file mẫu chuẩn của hệ thống để đối soát các trường bắt buộc.");
                         }
@@ -9353,11 +9656,11 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                             </div>
                             <div style="font-size: 0.78rem; color: #334155;">
                                 • Phát hiện: <strong>${stagedQuestions.length} câu hỏi hợp lệ</strong>.<br>
-                                • Trạng thái: Sẵn sàng nạp vào Kho Đề Thô (5TB chờ AI thẩm định).
+                                • Trạng thái: Sẵn sàng nạp vào Kho Đề Trung Gian (5TB chờ AI thẩm định).
                             </div>
                         `;
                         btnConfirmImport.removeAttribute('disabled');
-                        btnConfirmImport.innerHTML = `<span>📥</span> <span>Nạp Toàn Bộ ${stagedQuestions.length} Câu Hỏi Vào Kho Đề Thô</span>`;
+                        btnConfirmImport.innerHTML = `<span>📥</span> <span>Nạp Toàn Bộ ${stagedQuestions.length} Câu Hỏi Vào Kho Đề Trung Gian</span>`;
                     } else {
                         alert("Không nhận diện được câu hỏi hợp lệ từ file!");
                     }
@@ -9366,14 +9669,14 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             }
         };
 
-        // Xác nhận nạp vào Kho Đề Thô (5TB Chờ Thẩm Định) & Ngân hàng đề
+        // Xác nhận nạp vào Kho Đề Trung Gian (5TB Chờ Thẩm Định) & Ngân hàng đề
         btnConfirmImport?.addEventListener('click', () => {
             if (stagedQuestions.length === 0) return;
 
             const now = new Date();
             const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-            // Ghi nhận vào Kho Đề Thô (Kho Trung Gian 5TB Chờ Thẩm Định)
+            // Ghi nhận vào Kho Đề Trung Gian (5TB Chờ Thẩm Định)
             const stagingRecord = {
                 id: `RAW-2026-${String((this.rawStagingFiles?.length || 0) + 1).padStart(3, '0')}`,
                 title: `Bộ đề Excel nạp ngoài [${stagedQuestions.length} câu] (Đa phân môn & Dạng chuẩn)`,
@@ -9418,8 +9721,8 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             sound.playFanfare();
             this.renderBankQuestions();
             closeIOModal();
-            alert(`⏳ [ĐÃ GỬI VÀO KHO TRUNG GIAN CHỜ THẨM ĐỊNH]\n\n✓ Đã nạp thành công ${stagedQuestions.length} câu hỏi vào Ngân hàng của Thầy/Cô.\n\n🛡️ Đồng thời, câu hỏi đã được lưu trữ an toàn trong KHO ĐỀ THÔ (Thư mục Dữ liệu thô 5TB chờ AI thẩm định).\nSau khi AI đối soát đạt chuẩn sư phạm, câu hỏi sẽ được phân loại vào Ngân hàng chính thức dùng chung toàn hệ thống!`);
-            this.showToast(`✓ Đã nạp ${stagedQuestions.length} câu hỏi từ Excel vào Kho Đề Thô (5TB)!`, 4500);
+            alert(`⏳ [ĐÃ GỬI VÀO KHO TRUNG GIAN CHỜ THẨM ĐỊNH]\n\n✓ Đã nạp thành công ${stagedQuestions.length} câu hỏi vào Ngân hàng của Thầy/Cô.\n\n🛡️ Đồng thời, câu hỏi đã được lưu trữ an toàn trong KHO ĐỀ TRUNG GIAN (Thư mục Dữ liệu thô 5TB chờ AI thẩm định).\nSau khi AI đối soát đạt chuẩn sư phạm, câu hỏi sẽ được phân loại vào Ngân hàng chính thức dùng chung toàn hệ thống!`);
+            this.showToast(`✓ Đã nạp ${stagedQuestions.length} câu hỏi từ Excel vào Kho Đề Trung Gian (5TB)!`, 4500);
         });
 
         // =========================================================================
@@ -11537,12 +11840,22 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
             }
 
             let fallbackPool = (this.questionBank || []).filter(q => (q.compartment || 1) === 1 || q.auditVerified || !q.compartment);
-            if (grade && grade !== 'MN') {
+            if (grade === 'MN') {
+                const mnMatched = fallbackPool.filter(q => q.grade === 'MN' || q.grade === 'Mầm Non');
+                if (mnMatched.length > 0) fallbackPool = mnMatched;
+                else fallbackPool = this.initDefaultQuestionBank().filter(q => q.grade === 'MN' || q.grade === 'Mầm Non');
+            } else if (grade && grade !== 'all') {
                 const gradeMatched = fallbackPool.filter(q => !q.grade || q.grade === grade);
                 if (gradeMatched.length >= count) fallbackPool = gradeMatched;
             }
             if (fallbackPool.length < count) {
-                fallbackPool = this.initDefaultQuestionBank();
+                const defaultBank = this.initDefaultQuestionBank();
+                if (grade === 'MN') {
+                    const mnDef = defaultBank.filter(q => q.grade === 'MN' || q.grade === 'Mầm Non');
+                    fallbackPool = mnDef.length > 0 ? mnDef : defaultBank;
+                } else {
+                    fallbackPool = defaultBank;
+                }
             }
 
             const shuffled = [...fallbackPool].sort(() => 0.5 - Math.random()).slice(0, count);
