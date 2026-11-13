@@ -441,7 +441,27 @@
         <div class="top-bar-inner">
             <div class="live-clock-badge">
                 <span>🕒</span>
-                <span id="liveClockDisplay">Đang đồng bộ thời gian...</span>
+                <span id="liveClockDisplay"></span>
+                <script>
+                    (function() {
+                        const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                        function updateLiveClockInstant() {
+                            const el = document.getElementById('liveClockDisplay');
+                            if (!el) return;
+                            const now = new Date();
+                            const dayName = days[now.getDay()];
+                            const d = String(now.getDate()).padStart(2, '0');
+                            const m = String(now.getMonth() + 1).padStart(2, '0');
+                            const y = now.getFullYear();
+                            const hh = String(now.getHours()).padStart(2, '0');
+                            const mm = String(now.getMinutes()).padStart(2, '0');
+                            const ss = String(now.getSeconds()).padStart(2, '0');
+                            el.textContent = `${hh}:${mm}:${ss} • ${dayName}, ${d}/${m}/${y}`;
+                        }
+                        updateLiveClockInstant();
+                        setInterval(updateLiveClockInstant, 1000);
+                    })();
+                </script>
             </div>
 
             <div class="community-ticker-slim">
