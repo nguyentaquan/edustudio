@@ -16,11 +16,11 @@ import { SpeedQuizGame } from './games/speed_quiz.js';
 import { GuessObjectGame } from './games/guess_object.js';
 import { QuestionImporter } from './studio/question_importer.js';
 import { VideoStudioScaffold } from './studio/video_scaffold.js';
-import { SmartTKBUI } from './tkb-ui.js?v=3.10.49';
+import { SmartTKBUI } from './tkb-ui.js?v=3.10.58';
 
 class EduStudioApp {
         syncVersionLabels() {
-        const label = 'v3.10.57 GDMN & GDPT';
+        const label = 'v3.10.58 GDMN & GDPT';
         document.querySelectorAll('.badge-version-gold, [data-version-badge]').forEach(el => {
             el.textContent = label;
         });
@@ -1946,11 +1946,11 @@ class EduStudioApp {
         const tickerEl = document.getElementById('tickerText');
         if (!tickerEl) return;
         const messages = [
-            "Hệ thống EduStudio v3.10.57 đang vận hành phiên bản DEMO Thử Nghiệm Sư Phạm (GDMN & GDPT). Kính mời Quý Thầy Cô trải nghiệm!",
-            "Cô Hoàng Mai vừa tạo bộ trò chơi 'Đoán Con Vật Mầm Non' tương tác trực quan",
-            "Thầy Lê Hải vừa biên soạn đề kiểm tra Giữa kỳ I môn Toán 7 chuẩn 3 dạng TNKQ",
-            "Hệ thống EduStudio v3.10.57 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
-            "Xưởng Video Studio đã hoàn tất kịch bản Audio-Driven Lip-Sync 3D"
+            "Hệ thống EduStudio v3.10.58 GDMN & GDPT (EDUSTO - Nguyễn Tá Quan) đã kết nối trực tiếp với Fanpage facebook.com/edusto.taquan",
+            "Xưởng Xếp Thời Khóa Biểu Toàn Trường bằng AI (Global CSP Solver) tối ưu hóa phân công chuyên môn và tiết đôi chuẩn GDPT 2018",
+            "Kho Đề Kiểm Tra & Soạn Kế Hoạch Bài Dạy (Công văn 5512) tự động đối soát Ma trận, Bản đặc tả đạt chuẩn Bộ GD&ĐT",
+            "Hệ sinh thái EduStudio v3.10.58 GDMN & GDPT kết nối đám mây sư phạm 5TB hoạt động ổn định",
+            "Xưởng Video Studio & Phòng Thí Nghiệm Ảo hỗ trợ trực quan hóa bài giảng số mọi cấp học"
         ];
         let idx = 0;
         setInterval(() => {
@@ -2801,7 +2801,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 countDS: 8,
                 countTLN: 4,
                 countTL: 3,
-                author: 'Cô Trần Thu Sương',
+                author: 'Ban Chuyên Môn EDUSTO',
                 verified: true,
                 desc: 'Bao quát số hữu tỉ, hình học trực quan, góc và đường thẳng song song. Đạt chuẩn cấu trúc định dạng mới.',
                 contentDE: `ĐỀ KIỂM TRA GIỮA KỲ I - TOÁN 7 (MÃ ĐỀ 701)\nThời gian: 60 phút\n\nPhần I: TNKQ gồm 12 câu NLC, 8 câu Đ-S và 4 câu TLN.\nPhần II: Tự luận gồm 3 bài toán thực tế...`,
@@ -6535,148 +6535,14 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     // =========================================================================
     initRawStagingData() {
         try {
-            const saved = localStorage.getItem('edustudio_raw_staging_5tb');
+            localStorage.removeItem('edustudio_raw_staging_5tb');
+            const saved = localStorage.getItem('edustudio_raw_staging_5tb_v2_official');
             if (saved) {
                 const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                if (Array.isArray(parsed)) return parsed;
             }
         } catch(e) {}
-        return [
-            {
-                id: 'RAW-2026-001',
-                title: 'Bài Giảng PPT Tương Tác: KHTN 8 - Khối Lượng Riêng & Áp Suất',
-                targetRepo: 'ppt',
-                repoName: 'Kho Bài Giảng PPT',
-                grade: 'Lớp 8',
-                subject: 'Khoa học tự nhiên',
-                authorName: 'Thầy Hoàng Minh Đức',
-                school: 'THCS Trần Phú',
-                contact: '0988.112.334 / CCCD: 03108800xxxx',
-                uploadDate: '01/11/2026 14:15',
-                fileSize: '18.4 MB',
-                fileName: 'KHTN_8_Khoi_Luong_Rieng_Ap_Suat.pptx',
-                status: 'approved',
-                auditScore: 94,
-                auditDate: '01/11/2026 14:20',
-                auditInspector: 'Gemini Edu-Audit AI (Auto Engine)',
-                daysLeft: 10,
-                isExpired: false,
-                desc: 'Bộ 20 slides tương tác đo đạc mô phỏng chất lỏng và lực đẩy Ac-si-met.',
-                auditReport: {
-                    structureScore: 33,
-                    contentScore: 33,
-                    aestheticScore: 28,
-                    structureReview: 'File PPTX tỷ lệ 16:9 sắc nét, nhúng sẵn mô phỏng và câu hỏi trắc nghiệm.',
-                    contentReview: 'Bám sát YCCĐ chương trình GDPT 2018 môn KHTN 8, thuật ngữ chuẩn xác.',
-                    aestheticReview: 'Bố cục chuẩn Bộ 4 Dễ (Dễ nhìn - Dễ đọc - Dễ hiểu - Dễ nhớ), font Unicode không lỗi.',
-                    conclusion: 'ĐẠT CHUẨN SƯ PHẠM XUẤT SẮC - ĐỀ XUẤT PHÂN LOẠI VÀO KHO BÀI GIẢNG PPT'
-                }
-            },
-            {
-                id: 'RAW-2026-002',
-                title: 'Đề Kiểm Tra Cuối Học Kỳ I - Toán 8 (Mã Đề 802)',
-                targetRepo: 'exam',
-                repoName: 'Kho Đề Kiểm Tra',
-                grade: 'Lớp 8',
-                subject: 'Toán học',
-                authorName: 'Cô Lê Thị Mai',
-                school: 'THCS Chu Văn An',
-                contact: '0903.221.445 / CCCD: 00118500xxxx',
-                uploadDate: '01/11/2026 15:02',
-                fileSize: '2.1 MB',
-                fileName: 'De_Kiem_Tra_Toan_8_HK1_Ma802.docx',
-                status: 'pending',
-                auditScore: null,
-                auditDate: null,
-                auditInspector: null,
-                daysLeft: 10,
-                isExpired: false,
-                desc: 'Gồm đầy đủ Ma trận, Bản đặc tả, 12 câu NLC, 8 câu Đúng-Sai, 4 câu TLN và 3 câu Tự luận.',
-                auditReport: null
-            },
-            {
-                id: 'RAW-2026-003',
-                title: 'Trò Chơi Tương Tác: Khám Phá Nông Trại Vui Vẻ (Mầm Non)',
-                targetRepo: 'games',
-                repoName: 'Kho Trò Chơi',
-                grade: 'MN',
-                subject: 'Phát triển nhận thức',
-                authorName: 'Cô Vũ Mai Hoa',
-                school: 'Mầm Non Tuổi Thơ',
-                contact: '0977.889.900 / CCCD: 07919000xxxx',
-                uploadDate: '01/11/2026 15:30',
-                fileSize: '5.8 MB',
-                fileName: 'Tro_Choi_Nong_Trai_Vui_Ve_MN.json',
-                status: 'approved',
-                auditScore: 96,
-                auditDate: '01/11/2026 15:35',
-                auditInspector: 'Gemini Edu-Audit AI (Auto Engine)',
-                daysLeft: 10,
-                isExpired: false,
-                desc: 'Trò chơi đoán con vật và âm thanh mô phỏng tiếng kêu các bạn nhỏ nông trại.',
-                auditReport: {
-                    structureScore: 35,
-                    contentScore: 33,
-                    aestheticScore: 28,
-                    structureReview: 'Đúng chuẩn schema Game EduStudio, nhận diện mốc ảnh con vật rõ ràng.',
-                    contentReview: 'Phù hợp tâm lý lứa tuổi mầm non theo thuyết học qua chơi (Play-based learning).',
-                    aestheticReview: 'Đồ họa vector sáng rõ, âm thanh vui tươi, không gây giật lag.',
-                    conclusion: 'ĐẠT CHUẨN SƯ PHẠM XUẤT SẮC - ĐỀ XUẤT PHÂN LOẠI VÀO KHO TRÒ CHƠI'
-                }
-            },
-            {
-                id: 'RAW-2026-004',
-                title: 'Video Tư Liệu 3D: Cấu Trúc Nguyên Tử & Bảng Tuần Hoàn',
-                targetRepo: 'video',
-                repoName: 'Kho Tư Liệu Video',
-                grade: 'Lớp 8',
-                subject: 'KHTN (Hóa học)',
-                authorName: 'Thầy Đặng Tuấn Kiệt',
-                school: 'THPT Chuyên Hà Nội - Amsterdam',
-                contact: '0915.667.889 / CCCD: 00108600xxxx',
-                uploadDate: '01/11/2026 16:10',
-                fileSize: '42.6 MB',
-                fileName: 'Video_3D_Cau_Truc_Nguyen_Tu.mp4',
-                status: 'pending',
-                auditScore: null,
-                auditDate: null,
-                auditInspector: null,
-                daysLeft: 10,
-                isExpired: false,
-                desc: 'Đoạn phim 3D 75 giây mô phỏng electron chuyển động xung quanh hạt nhân.',
-                auditReport: null
-            },
-            {
-                id: 'RAW-2026-005',
-                title: 'Tài liệu Tải Lên Thử Nghiệm (Quảng Cáo Game & Link Lạ)',
-                targetRepo: 'ppt',
-                repoName: 'Kho Bài Giảng PPT',
-                grade: 'Lớp 12',
-                subject: 'Khác',
-                authorName: 'Người Dùng Khách',
-                school: 'Chưa xác thực',
-                contact: 'spam_account_09@mail.com',
-                uploadDate: '22/10/2026 09:15',
-                fileSize: '3.4 MB',
-                fileName: 'Tai_Lieu_Hot_2026.docx',
-                status: 'rejected',
-                auditScore: 28,
-                auditDate: '22/10/2026 09:20',
-                auditInspector: 'Gemini Edu-Audit AI (Auto Engine)',
-                daysLeft: 0,
-                isExpired: true,
-                desc: 'Tài liệu tải lên không rõ nguồn gốc, chèn liên kết spam ngoài giáo dục.',
-                auditReport: {
-                    structureScore: 10,
-                    contentScore: 8,
-                    aestheticScore: 10,
-                    structureReview: 'Định dạng file không khớp tiêu đề, cấu trúc lộn xộn.',
-                    contentReview: 'Nội dung chứa liên kết quảng cáo spam, không có giá trị sư phạm.',
-                    aestheticReview: 'Lỗi font chữ nặng, chứa watermark thương mại trái phép.',
-                    conclusion: 'TỪ CHỐI DUYỆT - VI PHẠM QUY CHẾ BẢO MẬT 5TB (TỰ HỦY SAU 10 NGÀY)'
-                }
-            }
-        ];
+        return [];
     }
 
     renderAdminStorageConsole() {
@@ -11143,7 +11009,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             if (!Array.isArray(this.rawStagingFiles)) this.rawStagingFiles = [];
             this.rawStagingFiles.unshift(rawStagingItem);
             try {
-                localStorage.setItem('edustudio_raw_staging_5tb', JSON.stringify(this.rawStagingFiles));
+                localStorage.setItem('edustudio_raw_staging_5tb_v2_official', JSON.stringify(this.rawStagingFiles));
             } catch(e) {}
             try { this.renderAdminStorageConsole(); } catch(e) {}
 
@@ -12671,7 +12537,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             if (!Array.isArray(this.rawStagingFiles)) this.rawStagingFiles = [];
             this.rawStagingFiles.unshift(stagingRecord);
             try {
-                localStorage.setItem('edustudio_raw_staging_5tb', JSON.stringify(this.rawStagingFiles));
+                localStorage.setItem('edustudio_raw_staging_5tb_v2_official', JSON.stringify(this.rawStagingFiles));
             } catch(e) {}
             try { this.renderAdminStorageConsole(); } catch(e) {}
 
@@ -13416,20 +13282,11 @@ D. Nói xấu sau lưng bạn với những người khác
 
     initMicroTransactions() {
         try {
-            const saved = localStorage.getItem('edustudio_micro_transactions');
+            localStorage.removeItem('edustudio_micro_transactions');
+            const saved = localStorage.getItem('edustudio_micro_transactions_v2_official');
             if (saved) return JSON.parse(saved);
         } catch(e) {}
-        const defaultTx = [
-            { id: "TX9082", userName: "Cô Trần Thu Sương", type: "Tải KHBD Word", title: "KNTT Toán 7: Hình học trực quan", amount: "-500 VNĐ", time: "10 phút trước" },
-            { id: "TX9081", userName: "Thầy Lê Văn Hùng", type: "Trừ lượt Demo", title: "Bộ Đề KT KHTN 8 (10 dạng)", amount: "-1 lượt Demo", time: "25 phút trước" },
-            { id: "TX9080", userName: "Cô Nguyễn Thị Lan", type: "Thưởng Cống Hiến", title: "Đóng góp 12 Trò chơi Mầm Non", amount: "+100 🪙", time: "1 giờ trước" },
-            { id: "TX9079", userName: "Cô Đỗ Hải Yến", type: "Tải KHBD Word", title: "Kế hoạch tuần Mầm Non Bé và Bác Hồ", amount: "-500 VNĐ", time: "2 giờ trước" },
-            { id: "TX9078", userName: "Thầy Vũ Quốc Tuấn", type: "Thưởng Cống Hiến", title: "Đối soát Đề Tin học 8", amount: "+50 🪙", time: "3 giờ trước" }
-        ];
-        try {
-            localStorage.setItem('edustudio_micro_transactions', JSON.stringify(defaultTx));
-        } catch(e) {}
-        return defaultTx;
+        return [];
     }
 
     saveUsersToStorage() {
@@ -13442,7 +13299,7 @@ D. Nói xấu sau lưng bạn với những người khác
 
     saveTransactionsToStorage() {
         try {
-            localStorage.setItem('edustudio_micro_transactions', JSON.stringify(this.microTransactions));
+            localStorage.setItem('edustudio_micro_transactions_v2_official', JSON.stringify(this.microTransactions));
         } catch(e) {}
     }
 

@@ -172,7 +172,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         });
 
         document.getElementById('btnTKBLoadSample')?.addEventListener('click', () => {
-            const ok = confirm('📋 [NẠP DỮ LIỆU MẪU THAM KHẢO]\n\nBạn có muốn nạp dữ liệu Thời Khóa Biểu mẫu chuẩn (Trường THCS Bán Trú Canh Thuận - 9 lớp) vào bàn cờ để nghiên cứu và tham khảo không?\n\n(Lưu ý: Bàn cờ sẽ nạp dữ liệu mẫu Canh Thuận để Thầy Cô đối chiếu)');
+            const ok = confirm('📋 [DÙNG THỬ TKB MẪU CHUẨN GDPT 2018]\n\nBạn có muốn nạp bộ dữ liệu Thời Khóa Biểu mẫu (Quy mô 9 lớp THCS đầy đủ PCCM & Ràng buộc sư phạm) vào bàn cờ để dùng thử và trải nghiệm không?');
             if (ok) {
                 this.engine.loadDefaultSampleData();
                 this.loadUserTKB();
@@ -181,7 +181,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 this.renderPCCMTable();
                 this.renderConfigTab();
                 this.renderStats();
-                this.showToast('✅ Đã nạp Thời khóa biểu mẫu THCS Bán Trú Canh Thuận!');
+                this.showToast('✅ Đã nạp bộ dữ liệu Thời khóa biểu mẫu chuẩn GDPT 2018!');
             }
         });
 
@@ -3302,7 +3302,7 @@ setPCCMFilter(filterName) {
                         </div>
                         <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
                             <button type="button" onclick="window.smartTKBUI.applySchoolPreset('THCS_BAN_TRU')" style="padding: 0.3rem 0.6rem; font-size: 0.72rem; font-weight: 700; border-radius: 6px; border: 1px solid #93c5fd; background: #eff6ff; color: #1d4ed8; cursor: pointer;">
-                                🏫 Mẫu THCS Bán Trú Canh Thuận (Chuẩn 17t)
+                                🏫 Mẫu THCS Chuẩn GDPT 2018 (17t)
                             </button>
                             <button type="button" onclick="window.smartTKBUI.applySchoolPreset('TIEU_HOC_2BUOI')" style="padding: 0.3rem 0.6rem; font-size: 0.72rem; font-weight: 700; border-radius: 6px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer;">
                                 🎒 Mẫu Tiểu Học 2 Buổi/Ngày (Chuẩn 23t)
@@ -5524,7 +5524,7 @@ setPCCMFilter(filterName) {
                             </div>
                             <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
                                 <button type="button" onclick="window.smartTKBUI.applySchoolPreset('THCS_BAN_TRU')" style="padding: 0.25rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; border: 1px solid #93c5fd; background: #eff6ff; color: #1d4ed8; cursor: pointer;">
-                                    🏫 THCS Bán Trú Canh Thuận (Chuẩn 17t)
+                                    🏫 Mẫu THCS Chuẩn GDPT 2018 (17t)
                                 </button>
                                 <button type="button" onclick="window.smartTKBUI.applySchoolPreset('TIEU_HOC_2BUOI')" style="padding: 0.25rem 0.55rem; font-size: 0.72rem; font-weight: 700; border-radius: 5px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer;">
                                     🎒 Tiểu Học 2 Buổi/Ngày (Chuẩn 23t)

@@ -492,7 +492,6 @@
                     <h1>
                         EduStudio
                         <span class="badge-version-gold">v3.10.58 GDMN & GDPT</span>
-                        <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
                 </div>
@@ -545,8 +544,7 @@
                                     else if (u.role === 'vip_pro') roleBadge = '<span class="role-badge-vip-pro">💎 Nhóm 2: VIP PRO</span>';
                                     else if (u.role === 'vip') roleBadge = '<span class="role-badge-vip">⭐ Nhóm 3: VIP</span>';
                                     var pts = (u.points !== undefined && u.points !== null) ? u.points : 0;
-                                    var demoText = (u.role === 'admin' || u.role === 'vip_pro') ? '• Gói Demo: ∞' : ('• Gói Demo: ' + (u.demoUses || 10) + '/10');
-                                    zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span>' + roleBadge + '</div><div class="banner-user-points"><span>🪙 ' + pts + ' điểm</span><span style="opacity: 0.85; font-size: 0.62rem;">' + demoText + '</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button></div>';
+                                    zone.innerHTML = '<div class="banner-user-card"><div class="banner-user-avatar">' + (u.avatarEmoji || '👨‍🏫') + '</div><div class="banner-user-info"><div class="banner-user-name" style="display:flex; align-items:center; gap:0.35rem;"><span>' + u.name + '</span>' + roleBadge + '</div><div class="banner-user-points"><span>🪙 ' + pts + ' điểm cống hiến</span></div><button id="btnToggleUserMenu" class="btn-gear-user" title="Cài đặt">⚙️</button></div>';
                                 } else {
                                     zone.innerHTML = '<button id="btnOpenAuthModal" class="btn-banner-login" onclick="window.openEduAuthModal ? window.openEduAuthModal() : document.getElementById(\'authModal\')?.classList.add(\'active\');"><span>👤</span> <span>ĐĂNG NHẬP</span></button>';
                                     var onlEl = document.getElementById('bannerOnlineUsers');
@@ -622,19 +620,6 @@
                 </div>
             </div>
         </nav>
-
-    <!-- DẢI RUY-BĂNG THÔNG BÁO BẢN DEMO SƯ PHẠM (SIÊU GỌN, HẸP, THANH MẢNH) -->
-    <div class="demo-ribbon-wrapper" style="max-width: 1560px; margin: 0.15rem auto 0.35rem auto; padding: 0 1rem;">
-        <div style="background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 50%, #fffbeb 100%); border: 1px solid #fde68a; border-radius: 5px; padding: 0.18rem 0.65rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; box-shadow: 0 1px 2px rgba(180, 83, 9, 0.05); min-height: 24px;">
-            <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; color: #92400e; line-height: 1.2; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                <span style="font-size: 0.85rem; flex-shrink: 0;">📢</span>
-                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong>THÔNG BÁO CHUYÊN MÔN:</strong> Hệ thống EduStudio đang vận hành phiên bản <strong>DEMO Thử Nghiệm Sư Phạm Diện Rộng</strong> (Bậc Mầm Non &amp; Phổ Thông). Kính mời Quý Thầy Cô trải nghiệm, thẩm định và đóng góp ý kiến!</span>
-            </div>
-            <div style="display: flex; gap: 0.3rem; align-items: center; flex-shrink: 0;">
-                <span class="badge-tag-tiny" style="background: #ffffff; color: #b45309; border: 1px solid #fcd34d; font-weight: 700; font-size: 0.62rem; padding: 0.06rem 0.35rem; border-radius: 4px; white-space: nowrap;">Phục Vụ GDMN &amp; GDPT 2018</span>
-            </div>
-        </div>
-    </div>
     </div>
 
     <!-- ======================================================================
@@ -984,7 +969,6 @@
                             <button class="btn-mini-action btn-upload-repo" data-repo="ppt" style="background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; font-weight: 700;">
                                 <span>📤</span> <span>Tải Lên Bài Giảng PPT</span>
                             </button>
-                            <span class="badge-tag-tiny demo-counter-badge" style="background: #fdf4ff; color: #9333ea; font-weight: 800; border: 1px solid #d8b4fe;">🎁 Demo Gói: Còn 10/10 lượt</span>
                         </div>
                     </div>
 
@@ -1491,7 +1475,6 @@
                         <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
                             <span class="badge-tag-tiny" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">8 Bộ Game Môn Học Điểm</span>
                             <span class="badge-tag-tiny" style="background: #f0fdf4; color: #15803d; font-weight: 700;">Đấu Trường Trực Quan</span>
-                            <span class="badge-tag-tiny demo-counter-badge" style="background: #fdf4ff; color: #9333ea; font-weight: 800; border: 1px solid #d8b4fe;">🎁 Demo Gói: Còn 10/10 lượt</span>
                         </div>
                     </div>
 
@@ -1524,7 +1507,6 @@
                         <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
                             <span class="badge-tag-tiny" style="background: #fef3c7; color: #b45309; font-weight: 700;">60+ Thử Thách Trực Quan</span>
                             <span class="badge-tag-tiny" style="background: #dcfce7; color: #15803d; font-weight: 700;">Âm Thanh Sống Động</span>
-                            <span class="badge-tag-tiny demo-counter-badge" style="background: #fdf4ff; color: #9333ea; font-weight: 800; border: 1px solid #d8b4fe;">🎁 Demo Gói: Còn 10/10 lượt</span>
                         </div>
                     </div>
 
@@ -2726,8 +2708,8 @@
                                     <button id="btnAdminAddUser" class="btn-mini-action" style="background: #2563eb; color: #ffffff; border: none; font-weight: 700;">
                                         <span>➕</span> <span>Thêm Tài Khoản</span>
                                     </button>
-                                    <button id="btnAdminResetAllDemo" class="btn-mini-action" style="background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;" title="Cấp lại 10 lượt Demo cho toàn bộ giáo viên thành viên">
-                                        <span>🔄</span> <span>Cấp Lại 10 Lượt Demo</span>
+                                    <button id="btnAdminResetAllDemo" class="btn-mini-action" style="background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;" title="Cấp lại 10 lượt tải miễn phí cho toàn bộ giáo viên thành viên">
+                                        <span>🔄</span> <span>Cấp Lại 10 Lượt Tải</span>
                                     </button>
                                     <button id="btnAdminExportUsersCSV" class="btn-mini-action" style="background: #f8fafc; color: #475569;" title="Xuất danh sách giáo viên ra file CSV">
                                         <span>📊</span> <span>Xuất Excel/CSV</span>
@@ -2744,7 +2726,7 @@
                                             <th>Đơn Vị & Cấp Học</th>
                                             <th>Vai Trò & Đặc Quyền</th>
                                             <th>Điểm 🪙 & Số Dư</th>
-                                            <th>Gói Demo (10 Lượt)</th>
+                                            <th>Hạn Mức Tải (10 Lượt)</th>
                                             <th>Đăng Nhập Cuối</th>
                                             <th style="text-align: right;">Thao Tác Admin</th>
                                         </tr>
@@ -2758,10 +2740,10 @@
                     </div>
 
                     <!-- ==============================================================
-                         SUB-PANE 2: KHO DỮ LIỆU 5TB & TRẠM AI THẨM ĐỊNH (GIỮ NGUYÊN TOÀN VẸN)
+                         SUB-PANE 2: KHO DỮ LIỆU 5TB & TRẠM AI THẨM ĐỊNH
                          ============================================================== -->
                     <div id="admin-subpane-storage" class="admin-subpane">
-<div class="card-white" style="margin-bottom: 1.25rem;">
+                <div class="card-white" style="margin-bottom: 1.25rem;">
                     <div class="card-white-header">
                         <div>
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -2769,36 +2751,13 @@
                                 <span class="badge-tag-tiny" style="background:#059669; color:#ffffff;">Admin Only</span>
                             </div>
                             <p style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">
-                                Hệ sinh thái lưu trữ Google Drive 5TB (G:\My Drive\EduStudio_Data) tích hợp AI Đối soát tự động & Phân bổ tài nguyên sư phạm.
+                                Hệ sinh thái lưu trữ Google Drive 5TB tích hợp AI Đối soát tự động & Phân bổ tài nguyên sư phạm.
                             </p>
                         </div>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
                             <span class="badge-tag-tiny" style="background:#e0f2fe; color:#0369a1; font-weight:700;">
-                                Đã dùng: 412.5 GB / 5,000 GB (8.25%)
+                                Dung lượng lưu trữ đám mây: 5,000 GB (5TB Sẵn Sàng)
                             </span>
-                        </div>
-                    </div>
-
-                    <!-- THANH TIẾN TRÌNH DUNG LƯỢNG 5TB TRỰC QUAN -->
-                    <div class="storage-meter-wrapper" style="margin-bottom: 1.25rem;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #475569; margin-bottom: 0.35rem; font-weight: 600;">
-                            <span>Phân bổ không gian lưu trữ 5TB:</span>
-                            <span style="color: #059669;">Còn trống: 4.58 TB (4,587.5 GB)</span>
-                        </div>
-                        <div class="storage-progress-multi">
-                            <div class="storage-bar-seg seg-raw" style="width: 2.5%;" title="Kho Đề Trung Gian (Staging): 12.4 GB"></div>
-                            <div class="storage-bar-seg seg-ppt" style="width: 29%;" title="Kho Bài Giảng PPT: 145.2 GB"></div>
-                            <div class="storage-bar-seg seg-video" style="width: 40%;" title="Kho Video Studio: 198.0 GB"></div>
-                            <div class="storage-bar-seg seg-game" style="width: 6.5%;" title="Kho Trò Chơi: 32.6 GB"></div>
-                            <div class="storage-bar-seg seg-exam" style="width: 4.8%;" title="Kho Đề Kiểm Tra: 24.0 GB"></div>
-                        </div>
-                        <div class="storage-legend-grid">
-                            <span class="legend-item"><span class="dot" style="background:#f59e0b;"></span> 01_KHO_TRUNG_GIAN (12.4 GB)</span>
-                            <span class="legend-item"><span class="dot" style="background:#1d4ed8;"></span> 02_KHO_PPT (145.2 GB)</span>
-                            <span class="legend-item"><span class="dot" style="background:#7c3aed;"></span> 03_KHO_VIDEO (198.0 GB)</span>
-                            <span class="legend-item"><span class="dot" style="background:#ec4899;"></span> 04_KHO_TRO_CHOI (32.6 GB)</span>
-                            <span class="legend-item"><span class="dot" style="background:#059669;"></span> 05_KHO_DE (24.0 GB)</span>
-                            <span class="legend-item"><span class="dot" style="background:#cbd5e1;"></span> Trống (4.58 TB)</span>
                         </div>
                     </div>
 
@@ -2807,25 +2766,25 @@
                         <div class="storage-folder-card active-raw" style="border-color:#f59e0b; background:#fffbeb;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <h4 style="color:#b45309;"><span>📥</span> 01_KHO_TRUNG_GIAN</h4>
-                                <span class="badge-tag-tiny" id="adminBadgeRawCount" style="background:#f59e0b; color:#ffffff;">5 File chờ duyệt</span>
+                                <span class="badge-tag-tiny" id="adminBadgeRawCount" style="background:#f59e0b; color:#ffffff;">0 File chờ duyệt</span>
                             </div>
                             <p style="color:#78350f;">Vùng lưu tạm file thành viên nạp vào Kho Trung Gian. <strong>AI tự động đối soát & phân loại; file sai chuẩn tự hủy sau 10 ngày.</strong></p>
                         </div>
                         <div class="storage-folder-card">
                             <h4><span>📊</span> 02_KHO_PPT</h4>
-                            <p>Bài giảng 16:9 tương tác đã đối soát (145.2 GB). Sẵn sàng đồng bộ cho giáo viên toàn quốc.</p>
+                            <p>Kho Bài giảng điện tử 16:9 tương tác đã đối soát. Sẵn sàng đồng bộ cho giáo viên toàn quốc.</p>
                         </div>
                         <div class="storage-folder-card">
                             <h4><span>🎮</span> 03_KHO_TRO_CHOI</h4>
-                            <p>Dữ liệu 4 dạng trò chơi sư phạm (32.6 GB): Đua thuyền, Hộp quà, Vòng quay, Đoán con vật MN.</p>
+                            <p>Kho 4 dạng trò chơi sư phạm: Đua thuyền, Hộp quà, Vòng quay, Đoán con vật Mầm non.</p>
                         </div>
                         <div class="storage-folder-card">
                             <h4><span>📝</span> 04_KHO_DE_KIEM_TRA</h4>
-                            <p>Ngân hàng đề chuẩn 3 dạng TNKQ và Tự luận (24.0 GB) kèm Ma trận (MT), Bản đặc tả (ĐT), Đáp án (ĐA).</p>
+                            <p>Ngân hàng đề chuẩn 3 dạng TNKQ và Tự luận kèm Ma trận (MT), Bản đặc tả (ĐT), Đáp án (ĐA).</p>
                         </div>
                         <div class="storage-folder-card">
                             <h4><span>🎬</span> 05_KHO_VIDEO</h4>
-                            <p>Tư liệu video đa phương tiện (198.0 GB): Video khởi động, Case Study, Hoạt hình 3D, MV Nghệ thuật.</p>
+                            <p>Tư liệu video đa phương tiện: Video khởi động, Case Study, Hoạt hình 3D, MV Nghệ thuật.</p>
                         </div>
                     </div>
                 </div>
@@ -3051,12 +3010,12 @@
                                 </div>
 
                                 <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 1rem;">
-                                    <div style="font-size: 0.8rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">🎁 Số Lượt Demo Dùng Thử Miễn Phí:</div>
+                                    <div style="font-size: 0.8rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">🎁 Hạn Mức Lượt Tải Miễn Phí Mặc Định:</div>
                                     <div style="display: flex; align-items: center; gap: 0.4rem;">
                                         <input type="number" id="adminDemoQuota" class="input-clean" value="10" min="1" max="50" style="font-weight: 800; font-size: 1.2rem; color: #059669; width: 100px;">
                                         <span style="font-weight: 700; color: #475569;">Lượt / Tài Khoản</span>
                                     </div>
-                                    <div style="font-size: 0.72rem; color: #64748b; margin-top: 0.35rem;">Bộ đếm trừ dần 10 lượt, tự khóa khi hết để nhắc giáo viên nâng cấp.</div>
+                                    <div style="font-size: 0.72rem; color: #64748b; margin-top: 0.35rem;">Hạn mức mặc định cho thành viên mới trước khi đóng góp học liệu hoặc nâng cấp VIP.</div>
                                 </div>
                             </div>
 
@@ -3401,226 +3360,188 @@
                             <input type="file" id="tkbMasterPackageInput" accept=".xlsx,.xls,.json" style="display: none;" onchange="window.smartTKBUI.handleMasterPackageFile(event)">
 
                             <!-- ========================================================================= -->
-                            <!-- THANH ĐIỀU HÀNH XẾP TKB STUDIO SIÊU TINH GỌN (CHỈ 2 HÀNG NGANG)             -->
-                            <!-- (Toàn bộ chi tiết vĩ mô đã được chuyển vào Hộp thoại Khai Báo Mở Rộng)      -->
+                            <!-- BẢNG ĐIỀU HÀNH XẾP TKB STUDIO CHUẨN MỰC (LƯỚI 6 CỘT THẲNG HÀNG • 2 GAM MÀU) -->
                             <!-- ========================================================================= -->
-                            <div class="tkb-compact-studio-panel" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0.5rem 0.85rem; margin-bottom: 0.75rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-                                
-                                <script>
-window.openKhaiBaoToanDienDirect = function() {
-    try {
-        if (window.smartTKBUI && typeof window.smartTKBUI.openMasterDeclarationModal === 'function') {
-            window.smartTKBUI.openMasterDeclarationModal('school');
-        } else if (window.app && window.app.tkbUI && typeof window.app.tkbUI.openMasterDeclarationModal === 'function') {
-            window.app.tkbUI.openMasterDeclarationModal('school');
-        } else {
-            console.warn('SmartTKBUI đang nạp, mở sau 250ms...');
-            setTimeout(function() {
-                if (window.smartTKBUI) window.smartTKBUI.openMasterDeclarationModal('school');
-            }, 250);
-        }
-    } catch(err) {
-        console.error('Lỗi mở Khai Báo Toàn Diện:', err);
-    }
-};
+                            <div class="tkb-compact-studio-panel" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0.65rem 0.85rem; margin-bottom: 0.75rem; box-shadow: 0 2px 6px rgba(15,23,42,0.04);">
 
-window.openPCCMMonDirect = function() {
-    try {
-        if (window.smartTKBUI && typeof window.smartTKBUI.openPCCMDetailModal === 'function') {
-            window.smartTKBUI.openPCCMDetailModal();
-        } else if (window.app && window.app.tkbUI && typeof window.app.tkbUI.openPCCMDetailModal === 'function') {
-            window.app.tkbUI.openPCCMDetailModal();
-        } else {
-            console.warn('SmartTKBUI đang nạp, mở sau 250ms...');
-            setTimeout(function() {
-                if (window.smartTKBUI) window.smartTKBUI.openPCCMDetailModal();
-            }, 250);
-        }
-    } catch(err) {
-        console.error('Lỗi mở PCCM Môn:', err);
-    }
-};
+                                <!-- HÀNG 1: LƯỚI 6 NÚT QUẢN TRỊ CẤU HÌNH & XUẤT/NHẬP HỒ SƠ (BỀ RỘNG BẰNG NHAU 100%) -->
+                                <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.45rem; margin-bottom: 0.45rem;">
+                                    <!-- Cột 1: Khai Báo Toàn Diện -->
+                                    <button id="btnOpenMasterDeclarationModal" type="button" onclick="window.openKhaiBaoToanDienDirect();"
+                                            style="width: 100%; height: 34px; background: #1e3a8a; color: #ffffff; border: 1px solid #1e3a8a; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: background 0.15s;"
+                                            onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#1e3a8a';"
+                                            title="Mở hộp thoại nhập thông tin trường, môn học, lớp học">
+                                        <span>📋</span> <span>Khai Báo Toàn Diện</span>
+                                    </button>
 
-window.openPPCTDirect = function() {
-    try {
-        if (window.smartTKBUI && typeof window.smartTKBUI.openCurriculumConfigModal === 'function') {
-            window.smartTKBUI.openCurriculumConfigModal();
-        } else if (window.app && window.app.tkbUI && typeof window.app.tkbUI.openCurriculumConfigModal === 'function') {
-            window.app.tkbUI.openCurriculumConfigModal();
-        } else {
-            console.warn('SmartTKBUI đang nạp, mở Khung PPCT sau 250ms...');
-            setTimeout(function() {
-                if (window.smartTKBUI) window.smartTKBUI.openCurriculumConfigModal();
-            }, 250);
-        }
-    } catch(err) {
-        console.error('Lỗi mở Khung PPCT:', err);
-    }
-};
-</script>
-                                <!-- HÀNG 1: CÔNG CỤ CẤU HÌNH MASTER • HỌC KỲ • THÔNG TIN TRƯỜNG (TỰ NHẬP TAY) -->
-                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.45rem; margin-bottom: 0.45rem;">
-                                    
-                                    <!-- Nhóm 1: Bộ 4 Nút Quản Trị & Xuất/Nhập Nhanh (ĐÃ MỞ KHÓA HIỆU LỰC 100% ĐỂ NHẬP LIỆU) -->
-                                    <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
-                                        <!-- Nút Mở Hộp Thoại Master Khai Báo Toàn Diện (Nhập Liệu Trường, Lớp, Môn Học) -->
-                                        <button id="btnOpenMasterDeclarationModal" type="button" onclick="window.openKhaiBaoToanDienDirect();" style="background: #0f172a; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 2px 5px rgba(0,0,0,0.25);" title="Bấm để mở hộp thoại nhập thông tin trường, môn học, lớp học">
-                                            <span>📋</span> <span>Khai Báo Toàn Diện</span>
-                                        </button>
-                                        <!-- Nút Mở Chi Tiết Phân Công Chuyên Môn (PCCM) (Nhập & Sửa Giáo Viên, Môn, Số Tiết) -->
-                                        <button id="btnOpenPCCMModal" type="button" onclick="window.openPCCMMonDirect();" style="background: #0284c7; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 2px 5px rgba(2,132,199,0.3);" title="Bấm để mở hộp thoại nhập &amp; phân công chuyên môn giáo viên">
-                                            <span>⚖️</span> <span>PCCM Môn</span>
-                                        </button>
-                                        <!-- Nút Mở Chi Tiết Phân Phối Chương Trình (PPCT) & Kế Hoạch Bài Dạy 35 Tuần -->
-                                        <button id="btnOpenPPCTModal" type="button" onclick="window.openPPCTDirect();" style="background: #7c3aed; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 2px 5px rgba(124,58,237,0.3); transition: all 0.15s ease;" title="Bấm để mở hộp thoại nhập &amp; quản trị Phân Phối Chương Trình (PPCT), Kế hoạch bài dạy 35 tuần chuẩn GDPT 2018">
-                                            <span>📚</span> <span>Khung PPCT</span>
-                                        </button>
-                                        <!-- Nút Xuất Excel Mẫu Đa Sheet -->
-                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.exportMasterTKBPackage(); else if(window.app && window.app.tkbUI) window.app.tkbUI.exportMasterTKBPackage();" style="background: #059669; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" title="Xuất toàn bộ thông tin thành file Excel (.xlsx / .xls) đa Sheet chuẩn">
-                                            <span>📥</span> <span>Xuất Excel (.xls)</span>
-                                        </button>
-                                        <!-- Nút Nhập Lại File Excel -->
-                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.triggerMasterPackageImport(); else if(window.app && window.app.tkbUI) window.app.tkbUI.triggerMasterPackageImport();" style="background: #d97706; color: #ffffff; border: none; padding: 0.28rem 0.65rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" title="Nhập lại toàn bộ thông tin từ file Excel (.xlsx / .xls)">
-                                            <span>📤</span> <span>Nhập Excel (.xls)</span>
-                                        </button>
-                                    </div>
+                                    <!-- Cột 2: PCCM Môn -->
+                                    <button id="btnOpenPCCMModal" type="button" onclick="window.openPCCMMonDirect();"
+                                            style="width: 100%; height: 34px; background: #1e3a8a; color: #ffffff; border: 1px solid #1e3a8a; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: background 0.15s;"
+                                            onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#1e3a8a';"
+                                            title="Mở hộp thoại nhập & phân công chuyên môn giáo viên">
+                                        <span>⚖️</span> <span>PCCM Môn</span>
+                                    </button>
 
-                                    <div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
+                                    <!-- Cột 3: Khung PPCT -->
+                                    <button id="btnOpenPPCTModal" type="button" onclick="window.openPPCTDirect();"
+                                            style="width: 100%; height: 34px; background: #1e3a8a; color: #ffffff; border: 1px solid #1e3a8a; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: background 0.15s;"
+                                            onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#1e3a8a';"
+                                            title="Mở hộp thoại Phân Phối Chương Trình (PPCT) & Kế hoạch bài dạy 35 tuần">
+                                        <span>📚</span> <span>Khung PPCT</span>
+                                    </button>
 
-                                    <!-- Mục Lũy Kế TKB Liền Kề Trước (Theo chỉ đạo của Thầy Nguyễn Tá Quan) -->
-                                    <div style="display: flex; align-items: center; gap: 0.3rem;">
-                                        <button id="btnPriorTKBCumulative" type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openCumulativePriorModal();" 
-                                                style="background: #ffffff; color: #047857; border: 1.5px solid #059669; padding: 0.22rem 0.6rem; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); transition: all 0.15s ease;"
-                                                onmouseover="this.style.background='#f0fdf4'; this.style.borderColor='#047857';"
-                                                onmouseout="this.style.background='#ffffff'; this.style.borderColor='#059669';"
-                                                title="Nhấp để xem bảng đối soát và quản lý Lũy kế TKB liền kề trước đó (Tuần 1 - 8)">
-                                            <span>📊</span> <span>Lũy Kế TKB Liền Kề Trước</span>
-                                        </button>
-                                    </div>
-<div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
+                                    <!-- Cột 4: Lũy Kế TKB Liền Kề Trước -->
+                                    <button id="btnPriorTKBCumulative" type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openCumulativePriorModal();"
+                                            style="width: 100%; height: 34px; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: all 0.15s;"
+                                            onmouseover="this.style.background='#eff6ff'; this.style.borderColor='#93c5fd'; this.style.color='#1e3a8a';"
+                                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.color='#0f172a';"
+                                            title="Xem bảng đối soát và quản lý Lũy kế TKB liền kề trước đó">
+                                        <span>📊</span> <span>Lũy Kế TKB Trước</span>
+                                    </button>
 
-                                    <!-- Nhóm 2: Ngày Áp Dụng (Theo chỉ đạo Thầy Quan: Áp dụng từ ngày ... không cố định tuần) -->
-                                    <div style="display: flex; align-items: center; gap: 0.35rem; background: #eff6ff; border: 1.5px solid #93c5fd; padding: 0.15rem 0.55rem; border-radius: 6px;">
-                                        <span style="font-size: 0.73rem; font-weight: 800; color: #1e40af; text-transform: uppercase; display: flex; align-items: center; gap: 0.2rem;">
-                                            <span>📅</span> <span>Áp Dụng Từ Ngày:</span>
-                                        </span>
-                                        <input type="text" id="tkbApplyFromDateInput" value="02/11/2026" placeholder="DD/MM/YYYY" 
-                                               onchange="if(window.smartTKBUI) window.smartTKBUI.onApplyFromDateChange(this.value);" 
-                                               style="width: 100px; padding: 0.2rem 0.4rem; font-size: 0.75rem; font-weight: 800; border: 1px solid #3b82f6; border-radius: 4px; color: #1e3a8a; background: #ffffff; text-align: center; outline: none;" 
-                                               title="Nhập ngày bắt đầu áp dụng bảng TKB này (Ví dụ: 02/11/2026). Khi lưu bản TKB mới, lịch sử sẽ tự động ghi nhận 'Từ ngày ... đến ngày ...'">
-                                    </div>
+                                    <!-- Cột 5: Nhập Excel (.xls) -->
+                                    <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.triggerMasterPackageImport(); else if(window.app && window.app.tkbUI) window.app.tkbUI.triggerMasterPackageImport();"
+                                            style="width: 100%; height: 34px; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: all 0.15s;"
+                                            onmouseover="this.style.background='#eff6ff'; this.style.borderColor='#93c5fd'; this.style.color='#1e3a8a';"
+                                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.color='#0f172a';"
+                                            title="Nhập toàn bộ thông tin từ file Excel (.xlsx / .xls)">
+                                        <span>📤</span> <span>Nhập Excel (.xls)</span>
+                                    </button>
 
-                                    <div style="height: 18px; width: 1px; background: #cbd5e1;" class="hide-on-mobile"></div>
+                                    <!-- Cột 6: Xuất Excel (.xls) -->
+                                    <button id="btnTKBExportExcel" type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.exportMasterTKBPackage(); else if(window.app && window.app.tkbUI) window.app.tkbUI.exportMasterTKBPackage();"
+                                            style="width: 100%; height: 34px; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: all 0.15s;"
+                                            onmouseover="this.style.background='#eff6ff'; this.style.borderColor='#93c5fd'; this.style.color='#1e3a8a';"
+                                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.color='#0f172a';"
+                                            title="Xuất toàn bộ Thời khóa biểu và hồ sơ ra file Excel (.xlsx / .xls) đa Sheet">
+                                        <span>📥</span> <span>Xuất Excel (.xls)</span>
+                                    </button>
+                                </div>
 
-                                    <!-- Nhóm 3: Định Danh Trường (TỰ NHẬP TAY • BỎ GDPT 2018 • NH: "code") -->
-                                    <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: #1e293b; font-weight: 700;">
-                                        <span style="font-size: 0.95rem;">🏫</span>
-                                        <input type="text" id="tkbGlobalSchoolNameInput" value="" placeholder="Nhập tên trường của bạn..." 
-                                               style="padding: 0.2rem 0.5rem; font-size: 0.75rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #0f172a; background: #ffffff; min-width: 185px; outline: none;" 
-                                               placeholder="Trường Mầm Non / Phổ Thông..." 
+                                <!-- HÀNG 2: LƯỚI 6 NÚT ĐIỀU HÀNH AI & THAO TÁC BÀN CỜ (THẲNG TẮP TỪNG CỘT VỚI HÀNG 1) -->
+                                <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.45rem; margin-bottom: 0.55rem;">
+                                    <!-- Cột 1: AI Xếp TKB -->
+                                    <button id="btnTKBAutoSolve" type="button"
+                                            style="width: 100%; height: 34px; background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; border-radius: 6px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; box-shadow: 0 1px 3px rgba(37,99,235,0.25); transition: background 0.15s;"
+                                            onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#2563eb';"
+                                            title="Kích hoạt thuật toán AI CSP Solver tự động xếp Thời Khóa Biểu thông minh">
+                                        <span>⚡</span> <span>AI Xếp TKB</span>
+                                    </button>
+
+                                    <!-- Cột 2: Ưu Tiên Sư Phạm -->
+                                    <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openPedagogicalPriorityModal();"
+                                            style="width: 100%; height: 34px; background: #1e3a8a; color: #ffffff; border: 1px solid #1e3a8a; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: background 0.15s;"
+                                            onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#1e3a8a';"
+                                            title="Cấu hình 6 Mức Độ Ưu Tiên Sư Phạm khi AI xếp TKB">
+                                        <span>🎖️</span> <span>Ưu Tiên Sư Phạm</span>
+                                    </button>
+
+                                    <!-- Cột 3: Tùy Chỉnh Nghỉ GV (T2 - T7) -->
+                                    <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openTeacherOffDayModal();"
+                                            style="width: 100%; height: 34px; background: #1e3a8a; color: #ffffff; border: 1px solid #1e3a8a; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: background 0.15s;"
+                                            onmouseover="this.style.background='#1d4ed8';" onmouseout="this.style.background='#1e3a8a';"
+                                            title="Tùy chỉnh chọn ngày nghỉ (Thứ 2 đến Thứ 7) cho từng Giáo viên cụ thể">
+                                        <span>🏖️</span> <span>Tùy Chỉnh Nghỉ GV</span>
+                                    </button>
+
+                                    <!-- Cột 4: Tạo TKB Mới -->
+                                    <button id="btnTKBCreateNew" type="button"
+                                            style="width: 100%; height: 34px; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: all 0.15s;"
+                                            onmouseover="this.style.background='#eff6ff'; this.style.borderColor='#93c5fd'; this.style.color='#1e3a8a';"
+                                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.color='#0f172a';"
+                                            title="Xóa trắng bàn cờ để khởi tạo TKB mới cho trường của bạn">
+                                        <span>➕</span> <span>Tạo TKB Mới</span>
+                                    </button>
+
+                                    <!-- Cột 5: Dùng thử TKB mẫu (Đã đổi tên chuẩn từ TKB Mẫu Canh Thuận theo yêu cầu của Thầy) -->
+                                    <button id="btnTKBLoadSample" type="button"
+                                            style="width: 100%; height: 34px; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: all 0.15s;"
+                                            onmouseover="this.style.background='#eff6ff'; this.style.borderColor='#93c5fd'; this.style.color='#1e3a8a';"
+                                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.color='#0f172a';"
+                                            title="Nạp dữ liệu TKB mẫu chuẩn GDPT 2018 để dùng thử và trải nghiệm">
+                                        <span>📁</span> <span>Dùng thử TKB mẫu</span>
+                                    </button>
+
+                                    <!-- Cột 6: In A4 -->
+                                    <button id="btnTKBPrint" type="button"
+                                            style="width: 100%; height: 34px; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; white-space: nowrap; transition: all 0.15s;"
+                                            onmouseover="this.style.background='#eff6ff'; this.style.borderColor='#93c5fd'; this.style.color='#1e3a8a';"
+                                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.color='#0f172a';"
+                                            title="In Thời khóa biểu chuẩn trang A4">
+                                        <span>🖨️</span> <span>In TKB Chuẩn A4</span>
+                                    </button>
+                                </div>
+
+                                <!-- HÀNG 3: THANH ĐỊNH DANH TRƯỜNG • NGÀY ÁP DỤNG • GÓC NHÌN • CẤU HÌNH SỬ - ĐỊA (ĐỒNG BỘ 1 GAM XÁM XANH THANH LỊCH) -->
+                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.4rem 0.65rem;">
+                                    <!-- Khối 1: Định danh Trường + Năm học + Ngày áp dụng -->
+                                    <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                        <span style="font-size: 0.85rem;">🏫</span>
+                                        <input type="text" id="tkbGlobalSchoolNameInput" value="" placeholder="Nhập tên trường của bạn..."
+                                               style="height: 28px; padding: 0 0.5rem; font-size: 0.75rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 5px; color: #0f172a; background: #ffffff; width: 175px; outline: none;"
                                                oninput="if(window.smartTKBUI) window.smartTKBUI.onSchoolNameChange(this.value);"
-                                               title="Nhấp để nhập tên trường trực tiếp (tự lưu)">
-                                        
-                                        <span style="font-size: 0.72rem; font-weight: 800; color: #475569; margin-left: 0.15rem;">NH:</span>
-                                        <select id="tkbGlobalSchoolYearSelect" onchange="if(window.smartTKBUI) window.smartTKBUI.onSchoolYearChange(this.value);" style="padding: 0.22rem 0.45rem; font-size: 0.73rem; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e293b; background: #ffffff; cursor: pointer; outline: none;" title="Chọn năm học">
+                                               title="Nhập tên trường trực tiếp (tự lưu)">
+                                        <span style="font-size: 0.72rem; font-weight: 700; color: #475569;">NH:</span>
+                                        <select id="tkbGlobalSchoolYearSelect" onchange="if(window.smartTKBUI) window.smartTKBUI.onSchoolYearChange(this.value);"
+                                                style="height: 28px; padding: 0 0.4rem; font-size: 0.73rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 5px; color: #0f172a; background: #ffffff; cursor: pointer; outline: none;" title="Chọn năm học">
                                             <option value="2024 - 2025">2024 - 2025</option>
                                             <option value="2025 - 2026">2025 - 2026</option>
                                             <option value="2026 - 2027" selected>2026 - 2027</option>
                                             <option value="2027 - 2028">2027 - 2028</option>
                                             <option value="2028 - 2029">2028 - 2029</option>
                                         </select>
+                                        <span style="font-size: 0.72rem; font-weight: 700; color: #1e3a8a; margin-left: 0.15rem;">📅 Áp dụng:</span>
+                                        <input type="text" id="tkbApplyFromDateInput" value="02/11/2026" placeholder="DD/MM/YYYY"
+                                               onchange="if(window.smartTKBUI) window.smartTKBUI.onApplyFromDateChange(this.value);"
+                                               style="height: 28px; width: 88px; padding: 0 0.35rem; font-size: 0.74rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e3a8a; background: #ffffff; text-align: center; outline: none;"
+                                               title="Nhập ngày bắt đầu áp dụng bảng TKB này">
                                     </div>
 
-                                </div>
-
-                                <!-- HÀNG 2: GÓC NHÌN BÀN CỜ • CHỌN LỚP/GV • CHẾ ĐỘ MÀU • CỤM NÚT ĐIỀU HÀNH (ĐÃ BỎ NÚT QUYẾT TOÁN 35T) -->
-                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                                    
-                                    <!-- Góc Nhìn & Bộ Lọc Đối Tượng & Màu Sắc -->
+                                    <!-- Khối 2: Góc nhìn bàn cờ + Bộ lọc Lớp/GV/Phòng -->
                                     <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
-                                        <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">👁️ Góc Nhìn:</span>
-                                        <div style="display: flex; gap: 0.2rem;">
-                                            <button class="tkb-view-btn-pill active" data-view="class" style="padding: 0.22rem 0.45rem; font-size: 0.72rem;">
-                                                🏠 Theo Lớp
+                                        <span style="font-size: 0.72rem; font-weight: 700; color: #475569;">👁️ Góc nhìn:</span>
+                                        <div style="display: inline-grid; grid-template-columns: repeat(4, 1fr); gap: 0.25rem;">
+                                            <button class="tkb-view-btn-pill active" data-view="class" style="height: 28px; padding: 0 0.5rem; font-size: 0.72rem; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
+                                                Theo Lớp
                                             </button>
-                                            <button class="tkb-view-btn-pill" data-view="teacher" style="padding: 0.22rem 0.45rem; font-size: 0.72rem;">
-                                                👨‍🏫 Giáo Viên
+                                            <button class="tkb-view-btn-pill" data-view="teacher" style="height: 28px; padding: 0 0.5rem; font-size: 0.72rem; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
+                                                Giáo Viên
                                             </button>
-                                            <button class="tkb-view-btn-pill" data-view="room" style="padding: 0.22rem 0.45rem; font-size: 0.72rem;">
-                                                🏛️ Phòng
+                                            <button class="tkb-view-btn-pill" data-view="room" style="height: 28px; padding: 0 0.5rem; font-size: 0.72rem; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
+                                                Phòng
                                             </button>
-                                            <button class="tkb-view-btn-pill" data-view="school" style="padding: 0.22rem 0.45rem; font-size: 0.72rem;">
-                                                🏫 Toàn Trường
+                                            <button class="tkb-view-btn-pill" data-view="school" style="height: 28px; padding: 0 0.5rem; font-size: 0.72rem; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
+                                                Toàn Trường
                                             </button>
                                         </div>
-                                        
-                                        <div style="display: inline-flex; align-items: center;">
-                                            <select id="tkbClassSelect" class="tkb-select-filter" style="padding: 0.2rem 0.45rem; font-size: 0.75rem; border-radius: 5px; font-weight: 700; color: #1e293b; background: #f8fafc; border: 1px solid #94a3b8;"></select>
-                                            <select id="tkbTeacherSelect" class="tkb-select-filter" style="display: none; padding: 0.2rem 0.45rem; font-size: 0.75rem; border-radius: 5px; font-weight: 700; color: #1e293b; background: #f8fafc; border: 1px solid #94a3b8;"></select>
-                                            <select id="tkbRoomSelect" class="tkb-select-filter" style="display: none; padding: 0.2rem 0.45rem; font-size: 0.75rem; border-radius: 5px; font-weight: 700; color: #1e293b; background: #f8fafc; border: 1px solid #94a3b8;"></select>
-                                        </div>
-
-                                        
+                                        <select id="tkbClassSelect" class="tkb-select-filter" style="height: 28px; padding: 0 0.45rem; font-size: 0.74rem; border-radius: 5px; font-weight: 700; color: #0f172a; background: #ffffff; border: 1px solid #cbd5e1;"></select>
+                                        <select id="tkbTeacherSelect" class="tkb-select-filter" style="display: none; height: 28px; padding: 0 0.45rem; font-size: 0.74rem; border-radius: 5px; font-weight: 700; color: #0f172a; background: #ffffff; border: 1px solid #cbd5e1;"></select>
+                                        <select id="tkbRoomSelect" class="tkb-select-filter" style="display: none; height: 28px; padding: 0 0.45rem; font-size: 0.74rem; border-radius: 5px; font-weight: 700; color: #0f172a; background: #ffffff; border: 1px solid #cbd5e1;"></select>
                                     </div>
 
-                                    <!-- Cụm Nút Thao Tác & Điều Hành TKB Trực Tiếp (ĐÃ LOẠI BỎ NÚT QUYẾT TOÁN 35T) -->
-                                    <div style="display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap;">
-                                        <button id="btnTKBAutoSolve" class="btn-tkb-action btn-tkb-primary" style="padding: 0.28rem 0.75rem; font-size: 0.76rem; border-radius: 6px; font-weight: 800; box-shadow: 0 2px 5px rgba(37,99,235,0.3); display: inline-flex; align-items: center; gap: 0.3rem;" title="Kích hoạt thuật toán AI CSP Solver tự động xếp Thời Khóa Biểu thông minh">
-                                            <span>⚡</span> <span>AI Xếp TKB</span>
-                                        </button>
-                                        <!-- NÚT ƯU TIÊN SƯ PHẠM NỔI BẬT VÀNG KIM SÁNG RÕ -->
-                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openPedagogicalPriorityModal();" 
-                                                style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: #fef08a; border: 2px solid #fbbf24; padding: 0.26rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 2px 6px rgba(124,58,237,0.35); transition: transform 0.15s ease;"
-                                                onmouseover="this.style.transform='scale(1.03)';"
-                                                onmouseout="this.style.transform='scale(1)';"
-                                                title="Bấm để xem và cấu hình 6 Mức Độ Ưu Tiên Sư Phạm Đẳng Cấp khi AI xếp TKB">
-                                            <span style="font-size: 0.95rem;">🎖️</span> <span>ƯU TIÊN SƯ PHẠM</span>
-                                        </button>
-                                        <!-- NÚT TÙY CHỈNH NGHỈ CHO TỪNG GIÁO VIÊN CỤ THỂ (THEO CHỈ ĐẠO CỦA THẦY QUAN) -->
-                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openTeacherOffDayModal();" 
-                                                style="background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); color: #ffffff; border: 2px solid #fde047; padding: 0.26rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 2px 6px rgba(234,88,12,0.35); transition: transform 0.15s ease;"
-                                                onmouseover="this.style.transform='scale(1.03)';"
-                                                onmouseout="this.style.transform='scale(1)';"
-                                                title="Tùy chỉnh chọn ngày nghỉ (Thứ 2 đến Thứ 7) cho từng Giáo viên cụ thể: GV A muốn nghỉ thứ mấy thì tùy chỉnh cho nghỉ!">
-                                            <span style="font-size: 0.95rem;">🏖️</span> <span>TÙY CHỈNH NGHỈ GV (T2 - T7)</span>
-                                        </button>
-                                        <!-- TIỆN ÍCH TÙY CHỌN SỐ TIẾT SỬ - ĐỊA TRỰC TIẾP TRÊN CỬA SỔ CHÍNH (THEO YÊU CẦU THẦY QUAN) -->
-                                        <div id="mainLSDLToolbarWidget" style="background: linear-gradient(135deg, #fefce8 0%, #fffbeb 100%); border: 1.5px solid #fde047; padding: 0.2rem 0.55rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
-                                            <span style="font-size: 0.74rem; font-weight: 800; color: #92400e; display: flex; align-items: center; gap: 0.25rem;">
-                                                <span>🏛️</span> <span>Sử - Địa</span> <span id="mainLsdlTargetGradeLabel" style="font-size: 0.68rem; color: #b45309; font-weight: 800; background: #fde68a; padding: 1px 4px; border-radius: 3px;">K8</span>:
-                                            </span>
-                                            <span style="font-size: 0.72rem; font-weight: 700; color: #78350f;">HK1:</span>
-                                            <label style="font-size: 0.7rem; color: #b45309; font-weight: 700; display: flex; align-items: center; gap: 0.15rem;">
-                                                Sử <input type="number" id="mainLsdlHK1Hist" value="1" min="0" max="5" style="width: 32px; padding: 0.1rem; text-align: center; border: 1px solid #d97706; border-radius: 4px; font-weight: 800;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
-                                            </label>
-                                            <label style="font-size: 0.7rem; color: #0284c7; font-weight: 700; display: flex; align-items: center; gap: 0.15rem;">
-                                                Địa <input type="number" id="mainLsdlHK1Geo" value="2" min="0" max="5" style="width: 32px; padding: 0.1rem; text-align: center; border: 1px solid #0284c7; border-radius: 4px; font-weight: 800;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
-                                            </label>
-                                            <span style="color: #cbd5e1; font-weight: 300;">|</span>
-                                            <span style="font-size: 0.72rem; font-weight: 700; color: #78350f;">HK2:</span>
-                                            <label style="font-size: 0.7rem; color: #b45309; font-weight: 700; display: flex; align-items: center; gap: 0.15rem;">
-                                                Sử <input type="number" id="mainLsdlHK2Hist" value="2" min="0" max="5" style="width: 32px; padding: 0.1rem; text-align: center; border: 1px solid #d97706; border-radius: 4px; font-weight: 800;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
-                                            </label>
-                                            <label style="font-size: 0.7rem; color: #0284c7; font-weight: 700; display: flex; align-items: center; gap: 0.15rem;">
-                                                Địa <input type="number" id="mainLsdlHK2Geo" value="1" min="0" max="5" style="width: 32px; padding: 0.1rem; text-align: center; border: 1px solid #0284c7; border-radius: 4px; font-weight: 800;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
-                                            </label>
-                                            <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.applyQuickLSDLPreset('canhthuan_9stages')" style="padding: 0.18rem 0.45rem; font-size: 0.68rem; font-weight: 800; background: #fef08a; border: 1px solid #d97706; color: #92400e; border-radius: 4px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.08);" title="Nạp nhanh chuẩn 9 chặng tuần Canh Thuận (ĐL 52t - LS 53t)">⭐ 9 Chặng</button>
-                                            <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openCanhThuanLSDLMatrixModal()" style="padding: 0.18rem 0.45rem; font-size: 0.68rem; font-weight: 800; background: #ffffff; border: 1px solid #0284c7; color: #0369a1; border-radius: 4px; cursor: pointer;" title="Xem bảng ma trận 9 chặng tuần chi tiết">📊 Xem Bảng</button>
-                                        </div>
-                                        <button id="btnTKBCreateNew" class="btn-tkb-action btn-tkb-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px;" title="Xóa trắng bàn cờ để khởi tạo TKB mới cho trường của bạn">
-                                            <span>➕</span> <span>Tạo TKB Mới</span>
-                                        </button>
-                                        <button id="btnTKBLoadSample" class="btn-tkb-action btn-tkb-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px;" title="Nạp đúng 100% nguyên bản TKB Tuần 9 trường THCS Bán Trú Canh Thuận">
-                                            <span>📁</span> <span>TKB Mẫu Canh Thuận</span>
-                                        </button>
-                                        <button id="btnTKBPrint" class="btn-tkb-action btn-tkb-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.74rem; border-radius: 6px;" title="In Thời khóa biểu chuẩn A4">
-                                            <span>🖨️</span> <span>In A4</span>
-                                        </button>
-                                        <button id="btnTKBExportExcel" class="btn-tkb-action btn-tkb-gold" style="padding: 0.25rem 0.6rem; font-size: 0.74rem; border-radius: 6px;" title="Xuất toàn bộ Thời khóa biểu ra file Excel (.xlsx / .xls)">
-                                            <span>📥</span> <span>Xuất Excel</span>
-                                        </button>
+                                    <!-- Khối 3: Phân môn Sử - Địa đồng bộ gam màu xanh-xám trang nhã -->
+                                    <div id="mainLSDLToolbarWidget" style="background: #ffffff; border: 1px solid #cbd5e1; height: 28px; padding: 0 0.5rem; border-radius: 5px; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                        <span style="font-size: 0.72rem; font-weight: 700; color: #1e3a8a; display: inline-flex; align-items: center; gap: 0.2rem; white-space: nowrap;">
+                                            <span>🏛️ Sử-Địa</span> <span id="mainLsdlTargetGradeLabel" style="font-size: 0.66rem; color: #1d4ed8; font-weight: 800; background: #eff6ff; padding: 1px 4px; border-radius: 3px; border: 1px solid #bfdbfe;">K8</span>:
+                                        </span>
+                                        <span style="font-size: 0.7rem; font-weight: 700; color: #475569;">HK1</span>
+                                        <label style="font-size: 0.7rem; color: #0f172a; font-weight: 600; display: inline-flex; align-items: center; gap: 0.12rem;">
+                                            Sử <input type="number" id="mainLsdlHK1Hist" value="1" min="0" max="5" style="width: 28px; height: 20px; text-align: center; border: 1px solid #cbd5e1; border-radius: 3px; font-weight: 700; font-size: 0.72rem;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
+                                        </label>
+                                        <label style="font-size: 0.7rem; color: #0f172a; font-weight: 600; display: inline-flex; align-items: center; gap: 0.12rem;">
+                                            Địa <input type="number" id="mainLsdlHK1Geo" value="2" min="0" max="5" style="width: 28px; height: 20px; text-align: center; border: 1px solid #cbd5e1; border-radius: 3px; font-weight: 700; font-size: 0.72rem;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
+                                        </label>
+                                        <span style="color: #cbd5e1;">|</span>
+                                        <span style="font-size: 0.7rem; font-weight: 700; color: #475569;">HK2</span>
+                                        <label style="font-size: 0.7rem; color: #0f172a; font-weight: 600; display: inline-flex; align-items: center; gap: 0.12rem;">
+                                            Sử <input type="number" id="mainLsdlHK2Hist" value="2" min="0" max="5" style="width: 28px; height: 20px; text-align: center; border: 1px solid #cbd5e1; border-radius: 3px; font-weight: 700; font-size: 0.72rem;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
+                                        </label>
+                                        <label style="font-size: 0.7rem; color: #0f172a; font-weight: 600; display: inline-flex; align-items: center; gap: 0.12rem;">
+                                            Địa <input type="number" id="mainLsdlHK2Geo" value="1" min="0" max="5" style="width: 28px; height: 20px; text-align: center; border: 1px solid #cbd5e1; border-radius: 3px; font-weight: 700; font-size: 0.72rem;" onchange="if(window.smartTKBUI) window.smartTKBUI.onMainLSDLInputChange()">
+                                        </label>
+                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.applyQuickLSDLPreset('canhthuan_9stages')" style="height: 22px; padding: 0 0.4rem; font-size: 0.68rem; font-weight: 700; background: #eff6ff; border: 1px solid #93c5fd; color: #1e3a8a; border-radius: 4px; cursor: pointer; white-space: nowrap;" title="Nạp nhanh chuẩn phân phối 9 chặng tuần (ĐL 52t - LS 53t)">9 Chặng</button>
+                                        <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openCanhThuanLSDLMatrixModal()" style="height: 22px; padding: 0 0.4rem; font-size: 0.68rem; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; border-radius: 4px; cursor: pointer; white-space: nowrap;" title="Xem bảng ma trận 9 chặng tuần chi tiết">Xem Bảng</button>
                                     </div>
-
                                 </div>
 
                             </div>
@@ -5335,7 +5256,7 @@ window.openPPCTDirect = function() {
                         <input type="number" id="editUserPoints" class="input-clean" value="100" min="0">
                     </div>
                     <div class="form-group-clean">
-                        <label style="font-weight:700;">Lượt Gói Demo Còn Lại:</label>
+                        <label style="font-weight:700;">Lượt Tải Miễn Phí Còn Lại:</label>
                         <input type="number" id="editUserDemoUses" class="input-clean" value="10" min="0" max="50">
                     </div>
                 </div>
@@ -5555,8 +5476,8 @@ window.openPPCTDirect = function() {
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script src="js/cloud-sync.js?v=20261113_core_ai"></script>
-    <script type="module" src="js/app.js?v=20261113_core_ai"></script>
+    <script src="js/cloud-sync.js?v=20261122_v31058"></script>
+    <script type="module" src="js/app.js?v=20261122_v31058"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
