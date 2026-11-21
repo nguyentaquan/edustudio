@@ -8,7 +8,7 @@
  * ==============================================================================
  */
 
-import { SmartTKBEngine } from './tkb-engine.js?v=3.10.48';
+import { SmartTKBEngine } from './tkb-engine.js?v=3.10.59';
 
 export class SmartTKBUI {
     constructor(appInstance) {
@@ -55,25 +55,36 @@ export class SmartTKBUI {
         }
         const classSelect = document.getElementById('tkbClassSelect');
         if (classSelect) {
-            classSelect.innerHTML = (this.engine.classes || []).map(c => `<option value="${c}">${c}</option>`).join('');
             if (this.engine.classes && this.engine.classes.length > 0) {
+                classSelect.innerHTML = this.engine.classes.map(c => `<option value="${c}">Lớp ${c}</option>`).join('');
                 if (!this.engine.classes.includes(this.selectedClass)) {
                     this.selectedClass = this.engine.classes[0];
                 }
                 classSelect.value = this.selectedClass;
+            } else {
+                this.selectedClass = '';
+                classSelect.innerHTML = `<option value="">(Chưa khai báo lớp)</option>`;
             }
         }
         const teacherSelect = document.getElementById('tkbTeacherSelect');
         if (teacherSelect) {
-            const tNames = (this.engine.teachers && this.engine.teachers.length > 0)
-                ? this.engine.teachers.map(t => typeof t === 'string' ? t : t.name)
-                : ["(Chưa có GV)"];
-            teacherSelect.innerHTML = tNames.map(t => `<option value="${t}">${t}</option>`).join('');
-            if (!tNames.includes(this.selectedTeacher)) {
-                this.selectedTeacher = tNames[0];
+            const tNames = (this.engine.getAllTeachers && this.engine.getAllTeachers().length > 0)
+                ? this.engine.getAllTeachers()
+                : ((this.engine.teachers && this.engine.teachers.length > 0)
+                    ? this.engine.teachers.map(t => typeof t === 'string' ? t : (t.displayName || t.fullName || t.name)).filter(Boolean)
+                    : []);
+            if (tNames.length > 0) {
+                teacherSelect.innerHTML = tNames.map(t => `<option value="${t}">👨‍🏫 ${t}</option>`).join('');
+                if (!tNames.includes(this.selectedTeacher)) {
+                    this.selectedTeacher = tNames[0];
+                }
+                teacherSelect.value = this.selectedTeacher;
+            } else {
+                this.selectedTeacher = '';
+                teacherSelect.innerHTML = `<option value="">(Chưa khai báo GV)</option>`;
             }
-            teacherSelect.value = this.selectedTeacher;
         }
+        this.renderDeclarationStatusBanner();
         const container = document.getElementById('tkbGridTableContainer');
         if (container) {
             if (this.currentViewMode === 'class') this.renderClassView(container);
@@ -87,8 +98,10 @@ export class SmartTKBUI {
         if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
         this.engine.schoolConfig.schoolName = val;
         try { localStorage.setItem('edustudio_custom_school_name', val); } catch(e){}
-        const modalInput = document.getElementById('declSchoolName');
+        const modalInput = document.getElementById('mcfgSchoolName') || document.getElementById('declSchoolName');
         if (modalInput && modalInput.value !== val) modalInput.value = val;
+        this.engine.saveState();
+        this.renderDeclarationStatusBanner();
     }
 
     onSchoolYearChange(val) {
@@ -172,32 +185,35 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
         });
 
         document.getElementById('btnTKBLoadSample')?.addEventListener('click', () => {
-            const ok = confirm('📋 [DÙNG THỬ TKB MẪU CHUẨN GDPT 2018]\n\nBạn có muốn nạp bộ dữ liệu Thời Khóa Biểu mẫu (Quy mô 9 lớp THCS đầy đủ PCCM & Ràng buộc sư phạm) vào bàn cờ để dùng thử và trải nghiệm không?');
+            const ok = confirm('📋 [DÙNG THỬ TKB MẪU CHUẨN GDPT 2018]\n\nHệ thống sẽ nạp bộ dữ liệu Thời Khóa Biểu mẫu (đầy đủ Tên trường, 9 Lớp học, Danh sách Giáo viên, Phân công chuyên môn PCCM và Bàn cờ) để Thầy/Cô trải nghiệm ngay toàn bộ tính năng.\n\nThầy/Cô đồng ý nạp dữ liệu mẫu?');
             if (ok) {
+                try { localStorage.removeItem('edustudio_custom_school_name'); } catch(e){}
                 this.engine.loadDefaultSampleData();
                 this.loadUserTKB();
                 this.updateFilterControls();
+                this.renderDeclarationStatusBanner();
                 this.renderCurrentView();
                 this.renderPCCMTable();
                 this.renderConfigTab();
                 this.renderStats();
-                this.showToast('✅ Đã nạp bộ dữ liệu Thời khóa biểu mẫu chuẩn GDPT 2018!');
+                this.showToast('✅ Đã nạp đầy đủ bộ dữ liệu Thời khóa biểu mẫu để dùng thử!');
             }
         });
 
         document.getElementById('btnTKBCreateNew')?.addEventListener('click', () => {
-            const u = this.app?.currentUser;
-            const currentSchool = (u && u.school) ? u.school : 'Trường THCS ';
-            const schoolName = prompt('🏫 Vui lòng nhập Tên Trường của bạn để khởi tạo Thời Khóa Biểu mới:', currentSchool);
-            if (schoolName !== null && schoolName.trim()) {
-                this.engine.initCleanTimetableForUser({ school: schoolName.trim() });
+            const ok = confirm('➕ [TẠO THỜI KHÓA BIỂU MỚI HOÀN TOÀN]\n\nHệ thống sẽ xóa trắng toàn bộ thông tin mẫu (Tên trường, Lớp học, Giáo viên, Phân công chuyên môn PCCM và Bàn cờ) để Thầy/Cô tự khai báo lại từ đầu cho trường của mình.\n\n(Lưu ý: Khi cần trải nghiệm lại dữ liệu có sẵn, chỉ cần bấm nút "📁 Dùng thử TKB mẫu").\n\nThầy/Cô đồng ý khởi tạo TKB mới?');
+            if (ok) {
+                this.engine.initCleanTimetableForUser({ resetAll: true });
+                const inpName = document.getElementById('tkbGlobalSchoolNameInput');
+                if (inpName) inpName.value = '';
                 this.loadUserTKB();
                 this.updateFilterControls();
+                this.renderDeclarationStatusBanner();
                 this.renderCurrentView();
                 this.renderPCCMTable();
                 this.renderConfigTab();
                 this.renderStats();
-                this.showToast('✅ Đã khởi tạo bảng Thời Khóa Biểu mới cho: ' + schoolName.trim());
+                this.showToast('✅ Đã làm mới hoàn toàn! Vui lòng khai báo Tên trường, Lớp học và Phân công chuyên môn.');
             }
         });
 
@@ -295,36 +311,390 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
 
         if (this.currentViewMode === 'class') {
             classSelect.style.display = 'inline-block';
-            classSelect.innerHTML = this.engine.classes.map(c => 
-                `<option value="${c}" ${c === this.selectedClass ? 'selected' : ''}>Lớp ${c}</option>`
-            ).join('');
+            if (this.engine.classes && this.engine.classes.length > 0) {
+                if (!this.engine.classes.includes(this.selectedClass)) {
+                    this.selectedClass = this.engine.classes[0];
+                }
+                classSelect.innerHTML = this.engine.classes.map(c => 
+                    `<option value="${c}" ${c === this.selectedClass ? 'selected' : ''}>Lớp ${c}</option>`
+                ).join('');
+            } else {
+                this.selectedClass = '';
+                classSelect.innerHTML = `<option value="">(Chưa khai báo lớp)</option>`;
+            }
         } else if (this.currentViewMode === 'teacher') {
             teacherSelect.style.display = 'inline-block';
             const teachers = this.engine.getAllTeachers();
-            teacherSelect.innerHTML = teachers.map(t => {
-                const assign = this.engine.assignments.find(a => a.teacher === t);
-                const dept = assign?.department || '';
-                const deptBadge = dept ? ` [${dept}]` : '';
-                return `<option value="${t}" ${t === this.selectedTeacher ? 'selected' : ''}>👨‍🏫 ${t}${deptBadge}</option>`;
-            }).join('');
+            if (teachers && teachers.length > 0) {
+                if (!teachers.includes(this.selectedTeacher)) {
+                    this.selectedTeacher = teachers[0];
+                }
+                teacherSelect.innerHTML = teachers.map(t => {
+                    const assign = this.engine.assignments.find(a => a.teacher === t);
+                    const dept = assign?.department || '';
+                    const deptBadge = dept ? ` [${dept}]` : '';
+                    return `<option value="${t}" ${t === this.selectedTeacher ? 'selected' : ''}>👨‍🏫 ${t}${deptBadge}</option>`;
+                }).join('');
+            } else {
+                this.selectedTeacher = '';
+                teacherSelect.innerHTML = `<option value="">(Chưa khai báo GV)</option>`;
+            }
         } else if (this.currentViewMode === 'room') {
             roomSelect.style.display = 'inline-block';
             roomSelect.innerHTML = this.engine.specialRooms.map(r => 
                 `<option value="${r.id}" ${r.id === this.selectedRoom ? 'selected' : ''}>${r.icon} ${r.name}</option>`
             ).join('');
         }
+        this.renderDeclarationStatusBanner();
+    }
+
+    /**
+     * KIỂM TRA TOÀN DIỆN CÁC HẠNG MỤC KHAI BÁO TKB & BÁO THIẾU TRỰC QUAN
+     */
+    getMissingTKBRequirements() {
+        const schoolName = (this.engine.schoolConfig?.schoolName || '').trim();
+        const classes = Array.isArray(this.engine.classes) ? this.engine.classes : [];
+        const teachersFromEngine = (this.engine.teachers || []).map(t => typeof t === 'string' ? t : (t.displayName || t.fullName || t.name || '')).filter(Boolean);
+        const teachersFromPCCM = this.engine.getAllTeachers ? this.engine.getAllTeachers() : [];
+        const teachers = Array.from(new Set([...teachersFromEngine, ...teachersFromPCCM])).filter(Boolean);
+        const assignments = Array.isArray(this.engine.assignments) ? this.engine.assignments : [];
+
+        // Tìm các lớp đã khai báo nhưng chưa được phân công bất kỳ tiết học nào trong PCCM
+        const assignedClassesSet = new Set(assignments.map(a => (a.classId || a.class || '').trim().toUpperCase()).filter(Boolean));
+        const unassignedClasses = classes.filter(c => !assignedClassesSet.has(c.trim().toUpperCase()));
+
+        const missing = [];
+        if (!schoolName) {
+            missing.push({
+                id: 'schoolName',
+                title: 'Thiếu Mục 1: Tên Trường Học',
+                detail: 'Bạn chưa nhập Tên cơ sở giáo dục / Trường học.',
+                actionLabel: '🏫 Nhập Tên Trường Ngay',
+                actionFn: 'window.smartTKBUI.focusSchoolNameInput()'
+            });
+        }
+        if (classes.length === 0) {
+            missing.push({
+                id: 'classes',
+                title: 'Thiếu Mục 2: Danh Sách Lớp Học',
+                detail: 'Trường chưa có lớp học nào được khai báo (Ví dụ: 6A1, 6A2, 7A1, 8A1, 9A1...).',
+                actionLabel: '📋 Khai Báo Lớp Học Ngay',
+                actionFn: "window.smartTKBUI.openMasterDeclarationModal('school')"
+            });
+        }
+        if (teachers.length === 0) {
+            missing.push({
+                id: 'teachers',
+                title: 'Thiếu Mục 3: Danh Sách Giáo Viên',
+                detail: 'Chưa có giáo viên nào được khai báo trong hệ thống.',
+                actionLabel: '👨‍🏫 Nhập Giáo Viên & PCCM Ngay',
+                actionFn: 'window.smartTKBUI.openPCCMDetailModal()'
+            });
+        }
+        if (assignments.length === 0) {
+            missing.push({
+                id: 'assignments',
+                title: 'Thiếu Mục 4: Phân Công Chuyên Môn (PCCM)',
+                detail: 'Chưa có dữ liệu phân công Giáo viên dạy Môn học tại từng Lớp (Số tiết/tuần).',
+                actionLabel: '⚖️ Nhập Phân Công (PCCM) Ngay',
+                actionFn: 'window.smartTKBUI.openPCCMDetailModal()'
+            });
+        } else if (unassignedClasses.length > 0) {
+            missing.push({
+                id: 'unassignedClasses',
+                title: `Còn ${unassignedClasses.length} Lớp Chưa Có Phân Công Môn Học`,
+                detail: `Các lớp chưa được phân công tiết dạy nào: ${unassignedClasses.join(', ')}.`,
+                actionLabel: '⚖️ Bổ Sung PCCM Cho Lớp Thiếu',
+                actionFn: 'window.smartTKBUI.openPCCMDetailModal()',
+                isWarning: true
+            });
+        }
+
+        return {
+            isComplete: missing.length === 0,
+            hasCriticalMissing: missing.some(m => !m.isWarning),
+            missing: missing,
+            stats: {
+                schoolName: schoolName,
+                classCount: classes.length,
+                teacherCount: teachers.length,
+                assignmentCount: assignments.length,
+                unassignedClasses: unassignedClasses
+            }
+        };
+    }
+
+    focusSchoolNameInput() {
+        const inp = document.getElementById('tkbGlobalSchoolNameInput');
+        if (inp) {
+            inp.focus();
+            inp.style.borderColor = '#dc2626';
+            inp.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.25)';
+            setTimeout(() => {
+                inp.style.borderColor = '#cbd5e1';
+                inp.style.boxShadow = 'none';
+            }, 3000);
+        }
+    }
+
+    renderDeclarationStatusBanner() {
+        const banner = document.getElementById('tkbDeclarationStatusBanner');
+        if (!banner) return;
+
+        const check = this.getMissingTKBRequirements();
+        const s = check.stats;
+
+        const itemBadge = (ok, labelOk, labelMissing, onClickJs) => {
+            if (ok) {
+                return `<span style="display:inline-flex; align-items:center; gap:0.25rem; background:#dcfce7; color:#166534; border:1px solid #86efac; padding:0.18rem 0.55rem; border-radius:999px; font-size:0.71rem; font-weight:700;">✅ ${labelOk}</span>`;
+            }
+            return `<button type="button" onclick="${onClickJs}" style="display:inline-flex; align-items:center; gap:0.25rem; background:#fef2f2; color:#dc2626; border:1.5px solid #f87171; padding:0.18rem 0.6rem; border-radius:999px; font-size:0.71rem; font-weight:800; cursor:pointer; box-shadow:0 1px 2px rgba(220,38,38,0.15);" title="Bấm vào đây để khai báo ngay mục còn thiếu này">❌ ${labelMissing} ➔</button>`;
+        };
+
+        if (check.isComplete) {
+            const modeLabel = this.engine.isSampleMode ? '🟢 Đang Dùng Thử TKB Mẫu:' : '🟢 Đã Khai Báo Đủ Dữ Liệu TKB:';
+            banner.innerHTML = `
+                <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:7px; padding:0.35rem 0.7rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.4rem;">
+                    <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
+                        <strong style="font-size:0.73rem; color:#166534;">${modeLabel}</strong>
+                        ${itemBadge(true, `Trường: ${s.schoolName}`, '', '')}
+                        ${itemBadge(true, `${s.classCount} Lớp học`, '', '')}
+                        ${itemBadge(true, `${s.teacherCount} Giáo viên`, '', '')}
+                        ${itemBadge(true, `${s.assignmentCount} Phân công PCCM`, '', '')}
+                    </div>
+                    <span style="font-size:0.71rem; color:#15803d; font-weight:700;">✨ Đã đủ điều kiện bấm [⚡ AI Xếp TKB]!</span>
+                </div>
+            `;
+        } else {
+            banner.innerHTML = `
+                <div style="background:#fff7ed; border:1.5px solid #fdba74; border-radius:7px; padding:0.4rem 0.75rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.45rem;">
+                    <div style="display:flex; align-items:center; gap:0.38rem; flex-wrap:wrap;">
+                        <strong style="font-size:0.73rem; color:#9a3412;">⚠️ Kiểm Tra Mục Khai Báo (Bấm vào mục báo đỏ để nhập ngay):</strong>
+                        ${itemBadge(!!s.schoolName, `Trường: ${s.schoolName}`, 'Thiếu: Tên Trường', 'window.smartTKBUI.focusSchoolNameInput()')}
+                        ${itemBadge(s.classCount > 0, `${s.classCount} Lớp học`, 'Thiếu: Danh Sách Lớp', "window.smartTKBUI.openMasterDeclarationModal('school')")}
+                        ${itemBadge(s.teacherCount > 0, `${s.teacherCount} Giáo viên`, 'Thiếu: Danh Sách Giáo Viên', 'window.smartTKBUI.openPCCMDetailModal()')}
+                        ${itemBadge(s.assignmentCount > 0 && s.unassignedClasses.length === 0, `${s.assignmentCount} Phân công PCCM`, s.assignmentCount === 0 ? 'Thiếu: Phân Công PCCM' : `Còn ${s.unassignedClasses.length} lớp chưa có PCCM`, 'window.smartTKBUI.openPCCMDetailModal()')}
+                    </div>
+                    <span style="font-size:0.7rem; color:#c2410c; font-weight:700;">💡 Cần khai báo đủ 4 mục trên trước khi bấm [⚡ AI Xếp TKB]</span>
+                </div>
+            `;
+        }
+    }
+
+    openMissingRequirementsModal(checkResult = null) {
+        const check = checkResult || this.getMissingTKBRequirements();
+        if (check.isComplete) return;
+
+        let modal = document.getElementById('tkbMissingReqModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'tkbMissingReqModal';
+            modal.className = 'modal-overlay';
+            modal.style.cssText = 'display:flex; position:fixed; inset:0; background:rgba(15,23,42,0.82); backdrop-filter:blur(6px); z-index:9999999; align-items:center; justify-content:center; padding:1rem;';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = `
+            <div style="background:#ffffff; border-radius:12px; max-width:620px; width:100%; border:2px solid #f97316; box-shadow:0 25px 50px rgba(0,0,0,0.4); overflow:hidden;">
+                <div style="background:linear-gradient(135deg,#9a3412,#ea580c); color:#ffffff; padding:0.9rem 1.25rem; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:0.55rem;">
+                        <span style="font-size:1.5rem;">⚠️</span>
+                        <div>
+                            <h3 style="margin:0; font-size:1rem; font-weight:800;">THÔNG BÁO CÁC MỤC KHAI BÁO CÒN THIẾU</h3>
+                            <p style="margin:0.15rem 0 0 0; font-size:0.73rem; color:#ffedd5;">Vui lòng bổ sung các mục dưới đây để hệ thống AI có đủ dữ liệu xếp Thời Khóa Biểu</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="document.getElementById('tkbMissingReqModal').style.display='none'" style="background:rgba(255,255,255,0.2); border:none; color:#ffffff; font-size:1.3rem; cursor:pointer; padding:0.1rem 0.5rem; border-radius:6px;">✕</button>
+                </div>
+
+                <div style="padding:1.15rem 1.25rem;">
+                    <div style="display:flex; flex-direction:column; gap:0.65rem; margin-bottom:1rem;">
+                        ${check.missing.map(m => `
+                            <div style="background:${m.isWarning ? '#fffbeb' : '#fef2f2'}; border:1.5px solid ${m.isWarning ? '#fcd34d' : '#fca5a5'}; border-radius:8px; padding:0.75rem 0.9rem; display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap;">
+                                <div style="flex:1; min-width:220px;">
+                                    <div style="font-size:0.84rem; font-weight:800; color:${m.isWarning ? '#92400e' : '#991b1b'};">${m.isWarning ? '⚠️' : '❌'} ${m.title}</div>
+                                    <div style="font-size:0.75rem; color:#475569; margin-top:0.2rem; line-height:1.4;">${m.detail}</div>
+                                </div>
+                                <button type="button" onclick="document.getElementById('tkbMissingReqModal').style.display='none'; ${m.actionFn}"
+                                        style="background:#1e3a8a; color:#ffffff; border:none; padding:0.45rem 0.85rem; border-radius:6px; font-size:0.75rem; font-weight:800; cursor:pointer; white-space:nowrap;">
+                                    ${m.actionLabel} ➔
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:8px; padding:0.7rem 0.9rem; font-size:0.75rem; color:#334155; line-height:1.5;">
+                        💡 <strong>Mẹo trải nghiệm nhanh:</strong> Nếu Thầy/Cô chưa muốn nhập tay từng mục mà muốn trải nghiệm ngay lập tức với bộ dữ liệu đầy đủ, hãy bấm nút <strong>[📁 Dùng thử TKB mẫu]</strong> ở bên dưới!
+                    </div>
+                </div>
+
+                <div style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:0.75rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                    <button type="button" onclick="document.getElementById('tkbMissingReqModal').style.display='none'; document.getElementById('btnTKBLoadSample')?.click();"
+                            style="background:#eff6ff; color:#1d4ed8; border:1px solid #93c5fd; padding:0.42rem 0.85rem; border-radius:6px; font-size:0.76rem; font-weight:800; cursor:pointer;">
+                        📁 Nạp Dữ Liệu "Dùng thử TKB mẫu"
+                    </button>
+                    <button type="button" onclick="document.getElementById('tkbMissingReqModal').style.display='none'"
+                            style="background:#ffffff; color:#475569; border:1px solid #cbd5e1; padding:0.42rem 0.95rem; border-radius:6px; font-size:0.76rem; font-weight:700; cursor:pointer;">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        `;
+        modal.style.display = 'flex';
+    }
+
+    saveQuickNewTKBSetup() {
+        const nameEl = document.getElementById('quickNewSchoolName');
+        const classesEl = document.getElementById('quickNewClassesList');
+        const sName = nameEl ? nameEl.value.trim() : '';
+        const cRaw = classesEl ? classesEl.value.trim() : '';
+
+        if (!sName) {
+            if (nameEl) { nameEl.style.borderColor = '#dc2626'; nameEl.focus(); }
+            this.showToast('⚠️ Thiếu Tên Trường: Vui lòng nhập Tên trường học!', 3000);
+            return;
+        }
+        const parsedClasses = cRaw.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+        if (parsedClasses.length === 0) {
+            if (classesEl) { classesEl.style.borderColor = '#dc2626'; classesEl.focus(); }
+            this.showToast('⚠️ Thiếu Danh sách Lớp: Vui lòng nhập ít nhất 1 lớp học (VD: 6A1, 6A2, 7A1)!', 3000);
+            return;
+        }
+
+        if (!this.engine.schoolConfig) this.engine.schoolConfig = {};
+        this.engine.schoolConfig.schoolName = sName;
+        this.engine.classes = Array.from(new Set(parsedClasses));
+        this.engine.resetTimetableGrid();
+        this.engine.saveState();
+
+        const topInp = document.getElementById('tkbGlobalSchoolNameInput');
+        if (topInp) topInp.value = sName;
+
+        this.loadUserTKB();
+        this.updateFilterControls();
+        this.renderDeclarationStatusBanner();
+        this.renderCurrentView();
+        this.renderPCCMTable();
+        this.renderConfigTab();
+        this.renderStats();
+        this.showToast(`✅ Đã lưu Tên trường "${sName}" và ${this.engine.classes.length} lớp học! Tiếp theo hãy bấm [⚖️ PCCM Môn] để nhập Giáo viên.`);
+    }
+
+    renderEmptyNewTKBGuidedBoard(container) {
+        const check = this.getMissingTKBRequirements();
+        const s = check.stats;
+        container.innerHTML = `
+            <div style="max-width:860px; margin:0.75rem auto; background:#ffffff; border:2px dashed #93c5fd; border-radius:12px; padding:1.5rem; box-shadow:0 4px 15px rgba(30,58,138,0.05);">
+                <div style="text-align:center; margin-bottom:1.25rem;">
+                    <div style="display:inline-flex; align-items:center; gap:0.4rem; background:#eff6ff; color:#1d4ed8; font-weight:800; font-size:0.75rem; padding:0.25rem 0.85rem; border-radius:999px; border:1px solid #bfdbfe; margin-bottom:0.5rem;">
+                        ➕ CHẾ ĐỘ KHỞI TẠO THỜI KHÓA BIỂU MỚI
+                    </div>
+                    <h3 style="margin:0; font-size:1.15rem; font-weight:800; color:#0f172a;">
+                        Hướng Dẫn Khai Báo Dữ Liệu Trường Học Mới (3 Bước Chuẩn)
+                    </h3>
+                    <p style="margin:0.3rem 0 0 0; font-size:0.8rem; color:#64748b;">
+                        Toàn bộ dữ liệu mẫu đã được làm trống. Thầy/Cô vui lòng khai báo lần lượt các mục dưới đây (mục nào thiếu hệ thống sẽ báo đỏ để dễ nhận biết):
+                    </p>
+                </div>
+
+                <!-- KHUNG NHẬP NHANH BƯỚC 1 NGAY TRÊN BÀN CỜ -->
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:1rem 1.15rem; margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem; flex-wrap:wrap; gap:0.4rem;">
+                        <strong style="font-size:0.86rem; color:#1e3a8a;">1️⃣ Bước 1: Khai báo Tên Trường &amp; Danh sách Lớp học</strong>
+                        <span style="font-size:0.72rem; font-weight:800; padding:0.15rem 0.55rem; border-radius:999px; ${s.schoolName && s.classCount > 0 ? 'background:#dcfce7; color:#166534;' : 'background:#fef2f2; color:#dc2626;'}">
+                            ${s.schoolName && s.classCount > 0 ? `✅ Đã có Trường & ${s.classCount} Lớp` : '❌ Đang thiếu Tên trường / Lớp học'}
+                        </span>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1.4fr auto; gap:0.65rem; align-items:start;">
+                        <div>
+                            <label style="display:block; font-size:0.74rem; font-weight:700; color:#334155; margin-bottom:0.2rem;">🏫 Tên Trường Học: <span style="color:#dc2626;">*</span></label>
+                            <input type="text" id="quickNewSchoolName" value="${s.schoolName}" placeholder="VD: Trường THCS Nguyễn Du"
+                                   style="width:100%; height:34px; padding:0 0.65rem; font-size:0.8rem; font-weight:700; border:1.5px solid ${s.schoolName ? '#86efac' : '#f87171'}; border-radius:6px; background:#ffffff;">
+                            <div style="font-size:0.67rem; color:#64748b; margin-top:0.2rem;">↳ <em>HD: Nhập tên chính thức của trường để in lên TKB.</em></div>
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:0.74rem; font-weight:700; color:#334155; margin-bottom:0.2rem;">🎒 Danh Sách Lớp Học (Cách nhau dấu phẩy): <span style="color:#dc2626;">*</span></label>
+                            <input type="text" id="quickNewClassesList" value="${(this.engine.classes || []).join(', ')}" placeholder="VD: 6A1, 6A2, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2"
+                                   style="width:100%; height:34px; padding:0 0.65rem; font-size:0.8rem; font-weight:700; border:1.5px solid ${s.classCount > 0 ? '#86efac' : '#f87171'}; border-radius:6px; background:#ffffff;">
+                            <div style="font-size:0.67rem; color:#64748b; margin-top:0.2rem;">↳ <em>HD: Nhập tất cả các lớp của trường, phân cách bằng dấu phẩy (,).</em></div>
+                        </div>
+                        <div style="padding-top:1.3rem;">
+                            <button type="button" onclick="window.smartTKBUI.saveQuickNewTKBSetup()"
+                                    style="height:34px; background:#1e3a8a; color:#ffffff; border:none; padding:0 1rem; border-radius:6px; font-size:0.76rem; font-weight:800; cursor:pointer; white-space:nowrap;">
+                                💾 Lưu Bước 1
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BƯỚC 2 & BƯỚC 3 -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.85rem;">
+                    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:0.9rem 1rem; display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                                <strong style="font-size:0.84rem; color:#1e3a8a;">2️⃣ Bước 2: Giáo Viên &amp; Phân Công (PCCM)</strong>
+                                <span style="font-size:0.7rem; font-weight:800; padding:0.12rem 0.5rem; border-radius:999px; ${s.teacherCount > 0 && s.assignmentCount > 0 ? 'background:#dcfce7; color:#166534;' : 'background:#fef2f2; color:#dc2626;'}">
+                                    ${s.teacherCount > 0 && s.assignmentCount > 0 ? `✅ ${s.teacherCount} GV • ${s.assignmentCount} PCCM` : '❌ Chưa có GV & PCCM'}
+                                </span>
+                            </div>
+                            <p style="font-size:0.74rem; color:#475569; margin:0 0 0.65rem 0; line-height:1.45;">
+                                <em>HD: Mở bảng Phân công chuyên môn để nhập Họ tên Giáo viên, chọn Lớp, Môn học và Số tiết/tuần (hoặc nhập từ file Excel mẫu).</em>
+                            </p>
+                        </div>
+                        <button type="button" onclick="window.smartTKBUI.openPCCMDetailModal()"
+                                style="width:100%; height:34px; background:#1e3a8a; color:#ffffff; border:none; border-radius:6px; font-size:0.76rem; font-weight:800; cursor:pointer;">
+                            ⚖️ Mở Bảng Nhập Giáo Viên &amp; PCCM ➔
+                        </button>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:0.9rem 1rem; display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                                <strong style="font-size:0.84rem; color:#1e3a8a;">3️⃣ Bước 3: Chạy AI Xếp TKB Tự Động</strong>
+                                <span style="font-size:0.7rem; font-weight:800; padding:0.12rem 0.5rem; border-radius:999px; ${check.isComplete ? 'background:#dcfce7; color:#166534;' : 'background:#fff7ed; color:#c2410c;'}">
+                                    ${check.isComplete ? '✅ Sẵn sàng' : '⏳ Chờ đủ Bước 1 & 2'}
+                                </span>
+                            </div>
+                            <p style="font-size:0.74rem; color:#475569; margin:0 0 0.65rem 0; line-height:1.45;">
+                                <em>HD: Sau khi khai báo đủ Trường, Lớp và PCCM, bấm [⚡ AI Xếp TKB] để thuật toán tự động xếp lịch không trùng tiết.</em>
+                            </p>
+                        </div>
+                        <div style="display:flex; gap:0.4rem;">
+                            <button type="button" onclick="window.smartTKBUI.handleAutoSolve()"
+                                    style="flex:1; height:34px; background:#2563eb; color:#ffffff; border:none; border-radius:6px; font-size:0.76rem; font-weight:800; cursor:pointer;">
+                                ⚡ AI Xếp TKB
+                            </button>
+                            <button type="button" onclick="document.getElementById('btnTKBLoadSample')?.click()"
+                                    style="height:34px; background:#ffffff; color:#1e3a8a; border:1px solid #93c5fd; padding:0 0.75rem; border-radius:6px; font-size:0.74rem; font-weight:700; cursor:pointer;"
+                                    title="Nạp sẵn toàn bộ dữ liệu mẫu để trải nghiệm ngay">
+                                📁 Dùng thử TKB mẫu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     /**
      * Chạy thuật toán AI xếp lịch tự động & báo cáo thời gian thực
      */
     handleAutoSolve() {
+        // Kiểm tra các mục khai báo bắt buộc trước khi chạy AI
+        const check = this.getMissingTKBRequirements();
+        this.renderDeclarationStatusBanner();
+        if (check.hasCriticalMissing) {
+            this.openMissingRequirementsModal(check);
+            return;
+        }
+
         const btn = document.getElementById('btnTKBAutoSolve');
-        if (btn) btn.innerHTML = `<span>⏳</span> <span>Đang Tối Ưu Hóa...</span>`;
+        if (btn) btn.innerHTML = `<span>⏳</span> <span>Đang Xếp TKB...</span>`;
 
         setTimeout(() => {
             const result = this.engine.solveAutomatic();
-            if (btn) btn.innerHTML = `<span>⚡</span> <span>Xếp Lịch Tự Động (AI)</span>`;
+            if (btn) btn.innerHTML = `<span>⚡</span> <span>AI Xếp TKB</span>`;
 
             if (result.success) {
                 this.showToast(`🎉 AI xếp lịch thành công 100%! Đã phân bổ ${result.assignedCount} tiết trong ${result.executionMs}ms (Không trùng lặp).`);
@@ -333,6 +703,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
             }
 
             this.cancelSwapMode();
+            this.renderDeclarationStatusBanner();
             this.renderCurrentView();
             this.renderStats();
         }, 150);
@@ -384,7 +755,17 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
      * GÓC NHÌN 1: THEO TỪNG LỚP HỌC (Ví dụ Lớp 8A)
      */
     renderClassView(container) {
+        if (!this.engine.classes || this.engine.classes.length === 0) {
+            this.renderEmptyNewTKBGuidedBoard(container);
+            return;
+        }
+        if (!this.selectedClass || !this.engine.classes.includes(this.selectedClass)) {
+            this.selectedClass = this.engine.classes[0];
+        }
         const classId = this.selectedClass;
+        if (!this.engine.timetable[classId]) {
+            this.engine.timetable[classId] = Array(this.engine.DAYS.length).fill(null).map(() => Array(this.engine.PERIODS.length).fill(null));
+        }
         const isSwapping = !!this.swapSource && this.swapSource.classId === classId;
 
         let swapBanner = '';
@@ -470,6 +851,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
      * GÓC NHÌN 2: THEO TỪNG GIÁO VIÊN
      */
     renderTeacherView(container) {
+        if (!this.engine.classes || this.engine.classes.length === 0) {
+            this.renderEmptyNewTKBGuidedBoard(container);
+            return;
+        }
         // 1. Lấy danh sách toàn bộ Thầy Cô (từ getAllTeachers() hoặc teachers)
         let teacherNames = [];
         if (this.engine.getAllTeachers) {
@@ -481,6 +866,19 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                 if (typeof t === 'string') return t;
                 return t.displayName || t.fullName || t.name || '';
             }).filter(Boolean);
+        }
+        if (teacherNames.length === 0) {
+            container.innerHTML = `
+                <div style="max-width:680px; margin:1rem auto; background:#fff7ed; border:1.5px dashed #f97316; border-radius:10px; padding:1.5rem; text-align:center;">
+                    <div style="font-size:2rem; margin-bottom:0.4rem;">👨‍🏫</div>
+                    <h4 style="margin:0 0 0.35rem 0; color:#9a3412; font-size:0.98rem;">Chưa Có Dữ Liệu Giáo Viên &amp; Phân Công Chuyên Môn</h4>
+                    <p style="margin:0 0 0.85rem 0; font-size:0.78rem; color:#475569;">Thầy/Cô vui lòng bấm vào nút <strong>[⚖️ PCCM Môn]</strong> để khai báo Giáo viên và phân công giảng dạy trước khi xem Thời khóa biểu theo Giáo viên.</p>
+                    <button type="button" onclick="window.smartTKBUI.openPCCMDetailModal()" style="background:#1e3a8a; color:#ffffff; border:none; padding:0.45rem 1rem; border-radius:6px; font-size:0.78rem; font-weight:800; cursor:pointer;">
+                        ⚖️ Mở Bảng Nhập Giáo Viên &amp; PCCM Ngay ➔
+                    </button>
+                </div>
+            `;
+            return;
         }
 
         // Ưu tiên Thầy Quan lên đầu danh sách
@@ -770,6 +1168,10 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
      */
     renderSchoolMasterView(container) {
         const classes = this.engine.classes || []; // Danh sách lớp lấy động từ Khai Báo / Thông Tin Mở Rộng
+        if (classes.length === 0) {
+            this.renderEmptyNewTKBGuidedBoard(container);
+            return;
+        }
         
         // 1. Phân nhóm Khối Lớp động từ danh sách lớp thực tế của trường (this.engine.classes)
         const gradeGroups = {};
@@ -5540,10 +5942,27 @@ setPCCMFilter(filterName) {
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
                             <div style="grid-column: 1 / -1;">
-                                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.25rem;">
-                                    🏫 Tên Cơ Sở Giáo Dục / Trường Học:
-                                </label>
-                                <input type="text" id="mcfgSchoolName" value="${sc.schoolName || 'Trường THCS Bán Trú Canh Thuận'}" style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.85rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.2rem;">
+                                    <label style="font-size: 0.75rem; font-weight: 800; color: #334155;">
+                                        🏫 Tên Cơ Sở Giáo Dục / Trường Học: <span style="color:#dc2626;">*</span>
+                                    </label>
+                                    ${!sc.schoolName ? '<span style="font-size:0.68rem; font-weight:800; color:#dc2626; background:#fef2f2; border:1px solid #fca5a5; padding:0.1rem 0.45rem; border-radius:4px;">❌ Đang thiếu Tên trường</span>' : '<span style="font-size:0.68rem; font-weight:800; color:#15803d; background:#dcfce7; padding:0.1rem 0.45rem; border-radius:4px;">✅ Đã nhập</span>'}
+                                </div>
+                                <input type="text" id="mcfgSchoolName" value="${sc.schoolName || ''}" placeholder="Nhập tên trường của bạn (Ví dụ: Trường THCS Nguyễn Du)..." style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.85rem; font-weight: 700; border: 1.5px solid ${sc.schoolName ? '#cbd5e1' : '#f87171'}; border-radius: 6px;">
+                                <div style="font-size:0.69rem; color:#64748b; margin-top:0.2rem;">↳ <em>HD: Nhập tên chính thức của trường học (sẽ hiển thị trên bản in A4 và file Excel xuất ra).</em></div>
+                            </div>
+
+                            <div style="grid-column: 1 / -1;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.2rem;">
+                                    <label style="font-size: 0.75rem; font-weight: 800; color: #334155;">
+                                        🎒 Danh Sách Các Lớp Học Toàn Trường (Phân cách bằng dấu phẩy): <span style="color:#dc2626;">*</span>
+                                    </label>
+                                    ${(!this.engine.classes || this.engine.classes.length === 0) ? '<span style="font-size:0.68rem; font-weight:800; color:#dc2626; background:#fef2f2; border:1px solid #fca5a5; padding:0.1rem 0.45rem; border-radius:4px;">❌ Đang thiếu Danh sách Lớp học</span>' : `<span style="font-size:0.68rem; font-weight:800; color:#15803d; background:#dcfce7; padding:0.1rem 0.45rem; border-radius:4px;">✅ Đã khai báo ${this.engine.classes.length} lớp</span>`}
+                                </div>
+                                <input type="text" id="mcfgClassesInputTab1" value="${(this.engine.classes || []).join(', ')}" placeholder="Ví dụ: 6A1, 6A2, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2"
+                                       oninput="const el5 = document.getElementById('mcfgClassesInput'); if(el5) el5.value = this.value;"
+                                       style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.84rem; font-weight: 700; border: 1.5px solid ${(this.engine.classes && this.engine.classes.length > 0) ? '#cbd5e1' : '#f87171'}; border-radius: 6px; color: #1e40af;">
+                                <div style="font-size:0.69rem; color:#64748b; margin-top:0.2rem;">↳ <em>HD: Nhập tất cả các lớp học của trường, cách nhau bởi dấu phẩy (,). Bắt buộc phải có lớp học để phân công giáo viên.</em></div>
                             </div>
 
                             <div>
@@ -7239,10 +7658,8 @@ setPCCMFilter(filterName) {
         modal.style.setProperty('pointer-events', 'auto', 'important');
         modal.style.setProperty('z-index', '9999999', 'important');
 
-        // Danh sách gợi ý giáo viên phổ biến khi trường mới chưa có giáo viên
-        const quickSuggestions = teachers.length > 0 ? teachers.slice(0, 6) : [
-            'Thầy Quan', 'Thầy Tuấn', 'Cô Thảo', 'Cô Duyên', 'Thầy Minh', 'Cô Lành'
-        ];
+        // Danh sách gợi ý giáo viên: CHỈ lấy từ những giáo viên đã thực sự khai báo của trường (TUYỆT ĐỐI KHÔNG chèn tên mẫu khi đang Tạo TKB Mới)
+        const quickSuggestions = teachers.length > 0 ? teachers.slice(0, 8) : [];
 
         modal.innerHTML = `
             <style>
@@ -7285,42 +7702,61 @@ setPCCMFilter(filterName) {
 
                 <!-- 2. Vùng Nhập Liệu Trực Tiếp & Danh Sách Phân Công -->
                 <div style="padding: 1rem; overflow-y: auto; flex: 1;">
+
+                    ${classes.length === 0 ? `
+                        <!-- CẢNH BÁO & Ô NHẬP NHANH KHI THIẾU DANH SÁCH LỚP HỌC -->
+                        <div style="background:#fef2f2; border:1.5px solid #f87171; border-radius:8px; padding:0.75rem 1rem; margin-bottom:0.85rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.6rem;">
+                            <div style="flex:1; min-width:260px;">
+                                <div style="font-size:0.82rem; font-weight:800; color:#991b1b;">❌ THIẾU DANH SÁCH LỚP HỌC (Bắt buộc trước khi phân công):</div>
+                                <div style="font-size:0.73rem; color:#7f1d1d; margin-top:0.15rem;">Trường chưa có lớp học nào. Hãy nhập nhanh danh sách các lớp cách nhau bởi dấu phẩy vào ô bên cạnh rồi bấm <strong>[+ Lưu Lớp Học]</strong>:</div>
+                            </div>
+                            <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
+                                <input type="text" id="pccmQuickClassesInput" placeholder="VD: 6A1, 6A2, 7A1, 8A1, 9A1" style="height:34px; width:240px; padding:0 0.6rem; font-size:0.78rem; font-weight:700; border:1.5px solid #dc2626; border-radius:6px; background:#ffffff;">
+                                <button type="button" onclick="window.smartTKBUI.saveQuickClassesFromPCCMModal()" style="height:34px; background:#dc2626; color:#ffffff; border:none; padding:0 0.85rem; border-radius:6px; font-size:0.76rem; font-weight:800; cursor:pointer; white-space:nowrap;">
+                                    + Lưu Lớp Học
+                                </button>
+                            </div>
+                        </div>
+                    ` : ''}
                     
                     <!-- KHUNG FORM NHẬP / SỬA PHÂN CÔNG TRỰC TIẾP -->
                     <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.35rem;">
                             <strong id="pccmFormTitle" style="font-size: 0.85rem; color: #166534; display: flex; align-items: center; gap: 0.35rem;">
                                 <span>➕</span> <span>NHẬP PHÂN CÔNG MÔN HỌC - GIÁO VIÊN MỚI:</span>
                             </strong>
+                            <span style="font-size:0.71rem; color:#15803d;">💡 <em>HD: Nhập tên Giáo viên ➔ Chọn Lớp ➔ Chọn Môn ➔ Nhập Số tiết/tuần ➔ Bấm [+ Thêm Phân Công]</em></span>
                             <span id="pccmEditingBadge" style="display: none; background: #fef08a; color: #854d0e; padding: 0.15rem 0.55rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">
                                 ✏️ Đang Chỉnh Sửa Phân Công
                             </span>
                         </div>
                         <input type="hidden" id="pccmEditIndex" value="-1">
 
-                        <div style="display: grid; grid-template-columns: 1.8fr 1.1fr 1.8fr 0.9fr auto; gap: 0.55rem; align-items: end;">
+                        <div style="display: grid; grid-template-columns: 1.8fr 1.1fr 1.8fr 0.9fr auto; gap: 0.55rem; align-items: start;">
                             <!-- 1. Họ Tên Thầy Cô -->
                             <div>
                                 <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
                                     👨‍🏫 Họ Tên Thầy Cô: <span style="color: #dc2626;">*</span>
                                 </label>
-                                <input id="pccmInputTeacher" list="pccmTeacherDatalist" value="${prefillTeacher}" placeholder="Gõ hoặc chọn Giáo viên..." oninput="window.smartTKBUI.onPCCMTeacherInput(this)" onkeydown="if(event.key==='Enter') window.smartTKBUI.savePCCMFromDetailModal()" style="width: 100%; padding: 0.45rem 0.65rem; font-size: 0.8rem; font-weight: 700; border: 1.5px solid #cbd5e1; border-radius: 6px; color: #0f172a; background: #ffffff; transition: border-color 0.2s;">
+                                <input id="pccmInputTeacher" list="pccmTeacherDatalist" value="${prefillTeacher}" placeholder="Gõ họ tên Giáo viên (VD: Nguyễn Văn A)..." oninput="window.smartTKBUI.onPCCMTeacherInput(this)" onkeydown="if(event.key==='Enter') window.smartTKBUI.savePCCMFromDetailModal()" style="width: 100%; padding: 0.45rem 0.65rem; font-size: 0.8rem; font-weight: 700; border: 1.5px solid #cbd5e1; border-radius: 6px; color: #0f172a; background: #ffffff; transition: border-color 0.2s;">
                                 <datalist id="pccmTeacherDatalist">
                                     ${teachers.map(t => `<option value="${t}">`).join('')}
                                 </datalist>
+                                <div style="font-size:0.65rem; color:#64748b; margin-top:0.18rem;">↳ <em>HD: Gõ tên GV mới hoặc chọn GV đã nhập.</em></div>
                                 <div id="pccmTeacherError" style="display: none; color: #dc2626; font-size: 0.72rem; font-weight: 800; margin-top: 0.25rem;">
-                                    ⚠️ Vui lòng nhập họ tên Thầy Cô trước khi Thêm!
+                                    ⚠️ Thiếu Họ Tên Thầy Cô: Vui lòng nhập tên trước khi Thêm!
                                 </div>
                             </div>
 
                             <!-- 2. Lớp Học -->
                             <div>
                                 <label style="display: block; font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 0.2rem;">
-                                    🎒 Lớp Học:
+                                    🎒 Lớp Học: <span style="color: #dc2626;">*</span>
                                 </label>
-                                <select id="pccmInputClass" style="width: 100%; padding: 0.45rem 0.5rem; font-size: 0.78rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #0f172a;">
-                                    ${classes.map(c => `<option value="${c}">Lớp ${c}</option>`).join('')}
+                                <select id="pccmInputClass" style="width: 100%; padding: 0.45rem 0.5rem; font-size: 0.78rem; font-weight: 700; border: 1px solid ${classes.length > 0 ? '#cbd5e1' : '#dc2626'}; border-radius: 6px; background: #ffffff; color: #0f172a;">
+                                    ${classes.length > 0 ? classes.map(c => `<option value="${c}">Lớp ${c}</option>`).join('') : '<option value="">(Chưa có lớp)</option>'}
                                 </select>
+                                <div style="font-size:0.65rem; color:#64748b; margin-top:0.18rem;">↳ <em>HD: Chọn lớp GV phụ trách dạy.</em></div>
                             </div>
 
                             <!-- 3. Môn Học (CHỈ LIST TÊN MÔN, HỖ TRỢ ĐA CẤP GDMN & GDPT QUỐC TẾ) -->
@@ -7389,10 +7825,11 @@ setPCCMFilter(filterName) {
                                     ⏱️ Số Tiết/Tuần:
                                 </label>
                                 <input type="number" id="pccmInputPeriods" value="3" min="1" max="30" onkeydown="if(event.key==='Enter') window.smartTKBUI.savePCCMFromDetailModal()" style="width: 100%; padding: 0.45rem 0.5rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1.5px solid #0284c7; border-radius: 6px; color: #0369a1; background: #f0f9ff;">
+                                <div style="font-size:0.65rem; color:#64748b; margin-top:0.18rem;">↳ <em>HD: Số tiết/tuần của môn này.</em></div>
                             </div>
 
                             <!-- 5. Nút Thao Tác -->
-                            <div style="display: flex; gap: 0.35rem;">
+                            <div style="display: flex; gap: 0.35rem; padding-top: 1.25rem;">
                                 <button type="button" id="pccmBtnSubmit" onclick="window.smartTKBUI.savePCCMFromDetailModal()" style="background: #059669; color: #ffffff; border: none; padding: 0.48rem 1.05rem; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 5px rgba(5,150,105,0.3); transition: all 0.15s;">
                                     ➕ Thêm Phân Công
                                 </button>
@@ -7402,14 +7839,14 @@ setPCCMFilter(filterName) {
                             </div>
                         </div>
 
-                        <!-- DÒNG GỢI Ý NHANH THẦY CÔ (KHI CHƯA NHẬP TÊN) -->
+                        <!-- DÒNG GỢI Ý NHANH THẦY CÔ (CHỈ HIỆN CÁC GIÁO VIÊN ĐÃ ĐƯỢC KHAI BÁO CỦA TRƯỜNG) -->
                         <div style="display: flex; align-items: center; gap: 0.4rem; margin-top: 0.55rem; flex-wrap: wrap;">
-                            <span style="font-size: 0.7rem; font-weight: 800; color: #64748b;">💡 Chọn nhanh Thầy Cô:</span>
-                            ${quickSuggestions.map(qName => `
+                            <span style="font-size: 0.7rem; font-weight: 800; color: #64748b;">💡 Chọn nhanh Thầy Cô đã nhập:</span>
+                            ${quickSuggestions.length > 0 ? quickSuggestions.map(qName => `
                                 <button type="button" class="pccm-chip-btn" onclick="window.smartTKBUI.selectQuickTeacher('${qName}')" style="background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b; padding: 0.18rem 0.55rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.15s;">
                                     + ${qName}
                                 </button>
-                            `).join('')}
+                            `).join('') : '<span style="font-size:0.7rem; color:#64748b; font-style:italic;">(Chưa có giáo viên nào. Khi bạn thêm giáo viên đầu tiên, tên Thầy Cô sẽ xuất hiện tại đây để chọn nhanh 1 chạm!)</span>'}
                         </div>
                     </div>
 
@@ -7431,8 +7868,11 @@ setPCCMFilter(filterName) {
                                 ${currentSubjects.map(s => `<option value="${s}">${s}</option>`).join('')}
                             </select>
                         </div>
-                        <div id="pccmFilterCounter" style="font-size: 0.73rem; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 0.2rem 0.55rem; border-radius: 4px; border: 1px solid #bae6fd;">
-                            Hiển thị: ${assignments.length} / ${assignments.length} phân công
+                        <div style="display:flex; align-items:center; gap:0.4rem;">
+                            ${assignments.length > 0 ? `<button type="button" onclick="window.smartTKBUI.clearAllPCCMInModal()" style="background:#fef2f2; color:#dc2626; border:1px solid #fca5a5; padding:0.2rem 0.55rem; border-radius:4px; font-size:0.71rem; font-weight:800; cursor:pointer;" title="Xóa trắng toàn bộ danh sách phân công để nhập lại từ đầu">🗑️ Xóa Tất Cả PCCM</button>` : ''}
+                            <div id="pccmFilterCounter" style="font-size: 0.73rem; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 0.2rem 0.55rem; border-radius: 4px; border: 1px solid #bae6fd;">
+                                Hiển thị: ${assignments.length} / ${assignments.length} phân công
+                            </div>
                         </div>
                     </div>
 
@@ -7554,7 +7994,13 @@ setPCCMFilter(filterName) {
             if (errDiv) {
                 errDiv.style.display = 'block';
             }
-            this.showToast('⚠️ Thầy Cô vui lòng nhập Họ Tên Giáo Viên trước khi bấm Thêm Phân Công!', 3500);
+            this.showToast('⚠️ Thiếu Họ Tên Thầy Cô: Vui lòng nhập Họ Tên Giáo Viên trước khi bấm Thêm Phân Công!', 3500);
+            return;
+        }
+        if (!classId) {
+            const quickClsInp = document.getElementById('pccmQuickClassesInput');
+            if (quickClsInp) quickClsInp.focus();
+            this.showToast('⚠️ Thiếu Lớp Học: Trường chưa có lớp học nào! Vui lòng nhập danh sách lớp ở khung cảnh báo phía trên trước.', 4000);
             return;
         }
 
@@ -7610,8 +8056,44 @@ setPCCMFilter(filterName) {
         }
 
         this.updateFilterControls();
+        this.renderDeclarationStatusBanner();
         this.renderCurrentView();
         this.renderPCCMTable();
+    }
+
+    saveQuickClassesFromPCCMModal() {
+        const inp = document.getElementById('pccmQuickClassesInput');
+        const raw = inp ? inp.value.trim() : '';
+        const parsed = raw.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+        if (parsed.length === 0) {
+            if (inp) inp.focus();
+            this.showToast('⚠️ Vui lòng nhập ít nhất 1 lớp học (Ví dụ: 6A1, 6A2, 7A1)!', 3000);
+            return;
+        }
+        this.engine.classes = Array.from(new Set(parsed));
+        this.engine.resetTimetableGrid();
+        this.engine.saveState();
+        this.loadUserTKB();
+        this.updateFilterControls();
+        this.renderDeclarationStatusBanner();
+        this.openPCCMDetailModal(document.getElementById('pccmInputTeacher')?.value || '');
+        this.showToast(`✅ Đã lưu ${this.engine.classes.length} lớp học! Bây giờ bạn có thể thêm phân công giáo viên.`);
+    }
+
+    clearAllPCCMInModal() {
+        if (!confirm('🗑️ Bạn có chắc chắn muốn xóa trắng toàn bộ danh sách Giáo viên & Phân công chuyên môn hiện tại để nhập lại từ đầu không?')) return;
+        this.engine.assignments = [];
+        this.engine.teachers = [];
+        this.engine.officialPCCM = [];
+        this.engine.resetTimetableGrid();
+        this.engine.saveState();
+        this.loadUserTKB();
+        this.updateFilterControls();
+        this.renderDeclarationStatusBanner();
+        this.renderCurrentView();
+        this.renderPCCMTable();
+        this.openPCCMDetailModal();
+        this.showToast('✅ Đã xóa trắng toàn bộ danh sách Phân công chuyên môn (PCCM)!');
     }
 
     /**
@@ -7771,7 +8253,7 @@ setPCCMFilter(filterName) {
 
     saveMasterDeclarationModal() {
         // 1. Lưu thông tin trường
-        const schoolName = document.getElementById('mcfgSchoolName')?.value || 'Trường THCS Bán Trú Canh Thuận';
+        const schoolName = (document.getElementById('mcfgSchoolName')?.value || '').trim();
         const tier = document.getElementById('mcfgTier')?.value || 'THCS';
         const model = document.getElementById('mcfgModel')?.value || 'BAN_TRU';
         const academicYear = document.getElementById('mcfgAcademicYear')?.value || '2026 - 2027';
@@ -7788,6 +8270,9 @@ setPCCMFilter(filterName) {
         this.engine.schoolConfig.academicYear = academicYear;
         this.engine.schoolConfig.schedulePlanType = chosenPlan;
         this.engine.schoolConfig.applyWeekRange = applyWeekRange;
+
+        const topInp = document.getElementById('tkbGlobalSchoolNameInput');
+        if (topInp) topInp.value = schoolName;
 
         let chosenSemester = 'HK1';
         if (chosenPlan === 'HK2' || chosenPlan === 'WEEK_19_27' || chosenPlan === 'WEEK_28_35') {
@@ -7807,20 +8292,22 @@ setPCCMFilter(filterName) {
         this.engine.schoolConfig.totalWeeks = totalWeeks;
         this.engine.schoolConfig.session = session;
 
-        // 1.1 Lưu danh sách Khối Lớp nếu có chỉnh sửa từ Khai Báo Mở Rộng
-        const classesInput = document.getElementById('mcfgClassesInput');
-        if (classesInput && classesInput.value.trim()) {
-            const parsedClasses = classesInput.value.split(',')
-                .map(s => s.trim().toUpperCase())
-                .filter(s => s.length > 0);
-            if (parsedClasses.length > 0) {
-                this.engine.classes = parsedClasses;
-                for (const c of parsedClasses) {
-                    if (!this.engine.timetable[c]) {
-                        this.engine.timetable[c] = Array(this.engine.DAYS.length).fill(null).map(() => Array(this.engine.PERIODS.length).fill(null));
-                    }
+        // 1.1 Lưu danh sách Khối Lớp từ Tab 1 hoặc Tab 5
+        const classesInputTab1 = document.getElementById('mcfgClassesInputTab1');
+        const classesInputTab5 = document.getElementById('mcfgClassesInput');
+        const rawClassesVal = (classesInputTab1 ? classesInputTab1.value : (classesInputTab5 ? classesInputTab5.value : '')).trim();
+        if (rawClassesVal) {
+            const parsedClasses = Array.from(new Set(
+                rawClassesVal.split(',').map(s => s.trim().toUpperCase()).filter(s => s.length > 0)
+            ));
+            this.engine.classes = parsedClasses;
+            for (const c of parsedClasses) {
+                if (!this.engine.timetable[c]) {
+                    this.engine.timetable[c] = Array(this.engine.DAYS.length).fill(null).map(() => Array(this.engine.PERIODS.length).fill(null));
                 }
             }
+        } else {
+            this.engine.classes = [];
         }
 
         // 2. Lưu PPCT Môn học
@@ -7894,7 +8381,9 @@ setPCCMFilter(filterName) {
         const modelSelect = document.getElementById('tkbGlobalModelSelect');
         if (modelSelect) modelSelect.value = model;
 
+        this.loadUserTKB();
         this.updateFilterControls();
+        this.renderDeclarationStatusBanner();
         this.updateSchoolScaleSummary();
         this.renderCurrentView();
         this.renderPCCMTable();
@@ -7902,7 +8391,13 @@ setPCCMFilter(filterName) {
         this.renderStats();
 
         this.closeMasterDeclarationModal();
-        this.showToast(`🎉 Đã lưu & kích hoạt toàn diện hồ sơ trường [${schoolName}] (${academicYear})!`);
+        const check = this.getMissingTKBRequirements();
+        if (!check.isComplete) {
+            const missingNames = check.missing.map(m => m.title).join(' • ');
+            this.showToast(`⚠️ Đã lưu thông tin! Lưu ý còn thiếu: ${missingNames}`, 4500);
+        } else {
+            this.showToast(`🎉 Đã lưu & kích hoạt đầy đủ hồ sơ trường [${schoolName}] (${academicYear})!`);
+        }
     }
 
 }

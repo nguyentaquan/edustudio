@@ -126,10 +126,12 @@ export class SmartTKBEngine {
 
     loadDefaultSampleData() {
         if (typeof CANH_THUAN_TKB_DATA !== 'undefined' && CANH_THUAN_TKB_DATA) {
+            this.isSampleMode = true;
+            this.isCleanNewMode = false;
             this.schoolConfig = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.schoolConfig));
             this.classes = [...CANH_THUAN_TKB_DATA.classes];
-            this.teachers = CANH_THUAN_TKB_DATA.teachers || [];
-            this.officialPCCM = CANH_THUAN_TKB_DATA.officialPCCM || [];
+            this.teachers = CANH_THUAN_TKB_DATA.teachers ? JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.teachers)) : [];
+            this.officialPCCM = CANH_THUAN_TKB_DATA.officialPCCM ? JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.officialPCCM)) : [];
             this.assignments = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.assignments));
             this.timetable = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.timetable));
             this.initDefaultYearlySnapshots();
@@ -321,10 +323,10 @@ export class SmartTKBEngine {
      * Lấy danh sách tất cả các bản TKB của năm
      */
     getYearlySnapshotsList() {
-        if (!this.yearlySnapshots || Object.keys(this.yearlySnapshots).length === 0) {
+        if ((!this.yearlySnapshots || Object.keys(this.yearlySnapshots).length === 0) && !this.isCleanNewMode && this.isSampleMode) {
             this.initDefaultYearlySnapshots();
         }
-        const list = Object.values(this.yearlySnapshots);
+        const list = Object.values(this.yearlySnapshots || {});
 
         // Hàm phân tích ngày định dạng DD/MM/YYYY
         const parseD = (s) => {
@@ -374,8 +376,8 @@ export class SmartTKBEngine {
             this.subjects.push({ id: "gddp", name: "Giáo Dục Địa Phương", periodsPerWeek: 1, doublePeriod: false, roomReq: null, color: "#059669", priority: 5, periodsYear: 35, periodsSem1: 18, periodsSem2: 17 });
         }
 
-        // Bổ sung phân công môn Giáo Dục Địa Phương nếu chưa có
-        if (Array.isArray(this.assignments) && this.classes && this.classes.length > 0) {
+        // CHỈ bổ sung phân công mẫu môn Giáo Dục Địa Phương khi đang ở chế độ Dùng thử TKB mẫu (TUYỆT ĐỐI KHÔNG tự chèn vào TKB Mới của người dùng)
+        if (this.isSampleMode && !this.isCleanNewMode && Array.isArray(this.assignments) && this.assignments.length > 0 && this.classes && this.classes.length > 0) {
             const hasGDDP = this.assignments.some(a => (a.subject && (a.subject.includes('Địa Phương') || a.subject.includes('GDĐP') || a.subject.includes('GDDP'))));
             if (!hasGDDP) {
                 for (const c of this.classes) {
@@ -383,10 +385,12 @@ export class SmartTKBEngine {
                     const shortTeacher = (c.startsWith('6')) ? 'Cô Nhàn' : 'Cô Thư';
                     this.assignments.push({
                         class: c,
+                        classId: c,
                         subject: "Giáo Dục Địa Phương",
                         teacher: teacherName,
                         shortTeacher: shortTeacher,
                         periodsPerWeek: 1,
+                        periods: 1,
                         doublePeriod: false,
                         roomReq: null,
                         priority: 5
@@ -981,8 +985,9 @@ export class SmartTKBEngine {
             }
         }
 
-        // 5. NẾU VẪN < 5 GIÁO VIÊN hoặc forceSampleFallback: Tự động khôi phục từ nguồn chuẩn CANH_THUAN_TKB_DATA
-        if ((teacherMap.size < 5 || forceSampleFallback) && typeof CANH_THUAN_TKB_DATA !== 'undefined' && CANH_THUAN_TKB_DATA) {
+        // 5. CHỈ KHI forceSampleFallback === true (Bấm nút Dùng thử TKB mẫu): Mới nạp từ CANH_THUAN_TKB_DATA.
+        // TUYỆT ĐỐI KHÔNG tự động nạp dữ liệu mẫu khi người dùng đang ở chế độ Tạo TKB Mới (kể cả khi số GV = 0)!
+        if (forceSampleFallback && !this.isCleanNewMode && typeof CANH_THUAN_TKB_DATA !== 'undefined' && CANH_THUAN_TKB_DATA) {
             if (Array.isArray(CANH_THUAN_TKB_DATA.officialPCCM)) {
                 CANH_THUAN_TKB_DATA.officialPCCM.forEach(t => {
                     const rawName = t['Họ và tên'];
@@ -1018,17 +1023,6 @@ export class SmartTKBEngine {
                         pccmSummary: existing.pccmSummary || subs
                     });
                 });
-            }
-
-            // Đồng bộ dữ liệu vào state hiện tại
-            if (!this.teachers || this.teachers.length < 5) {
-                this.teachers = CANH_THUAN_TKB_DATA.teachers ? JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.teachers)) : [];
-            }
-            if (!this.officialPCCM || this.officialPCCM.length < 5) {
-                this.officialPCCM = CANH_THUAN_TKB_DATA.officialPCCM ? JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.officialPCCM)) : [];
-            }
-            if ((!this.assignments || this.assignments.length < 10) && CANH_THUAN_TKB_DATA.assignments) {
-                this.assignments = JSON.parse(JSON.stringify(CANH_THUAN_TKB_DATA.assignments));
             }
         }
 
@@ -1213,6 +1207,8 @@ export class SmartTKBEngine {
         try {
             const key = this.getUserStorageKey(email);
             const data = {
+                isSampleMode: !!this.isSampleMode,
+                isCleanNewMode: !!this.isCleanNewMode,
                 schoolConfig: this.schoolConfig,
                 specialRooms: this.specialRooms,
                 classes: this.classes,
@@ -1225,7 +1221,7 @@ export class SmartTKBEngine {
                 ppctConfig: this.ppctConfig,
                 ppctLessons: this.ppctLessons || {},
                 yearlySnapshots: this.yearlySnapshots || {},
-                activeSnapshotId: this.activeSnapshotId || 'snapshot_week_9_13',
+                activeSnapshotId: this.activeSnapshotId || '',
                 teacherConstraints: this.teacherConstraints || {},
                 fixedConstraints: this.fixedConstraints || {},
                 pedagogicalPriorities: this.pedagogicalPriorities || {},
@@ -1250,7 +1246,6 @@ export class SmartTKBEngine {
             const key = this.getUserStorageKey(currentMail);
 
             let raw = localStorage.getItem(key);
-            // Đối với Admin Thầy Quan, nếu chưa có key mới thì nạp từ legacy key
             if (!raw && isAdmin) {
                 raw = localStorage.getItem('edustudio_tkb_canhthuan_official_v31028');
             }
@@ -1260,19 +1255,20 @@ export class SmartTKBEngine {
                     this.loadDefaultSampleData();
                     return true;
                 } else {
-                    // Thành viên khác hoặc khách: Khởi tạo TKB mới sạch sẽ cho trường của họ
                     this.initCleanTimetableForUser(user);
                     return true;
                 }
             }
 
             const data = JSON.parse(raw);
-            if (!data || !data.classes || !data.timetable) {
+            if (!data || !Array.isArray(data.classes) || !data.timetable) {
                 if (isAdmin) this.loadDefaultSampleData();
                 else this.initCleanTimetableForUser(user);
                 return true;
             }
 
+            this.isSampleMode = !!data.isSampleMode;
+            this.isCleanNewMode = !!data.isCleanNewMode;
             this.schoolConfig = data.schoolConfig || this.schoolConfig;
             this.specialRooms = data.specialRooms || this.specialRooms;
             this.classes = data.classes || [];
@@ -1281,15 +1277,15 @@ export class SmartTKBEngine {
             this.subjects = data.subjects || this.subjects;
             this.assignments = data.assignments || [];
             this.timetable = data.timetable || {};
-                    if (data.lsdlConfig) this.lsdlConfig = Object.assign({}, this.lsdlConfig, data.lsdlConfig);
-                    if (data.ppctConfig) this.ppctConfig = Object.assign({}, this.ppctConfig, data.ppctConfig);
+            if (data.lsdlConfig) this.lsdlConfig = Object.assign({}, this.lsdlConfig, data.lsdlConfig);
+            if (data.ppctConfig) this.ppctConfig = Object.assign({}, this.ppctConfig, data.ppctConfig);
             this.ppctLessons = data.ppctLessons || {};
             this.yearlySnapshots = data.yearlySnapshots || {};
-            this.activeSnapshotId = data.activeSnapshotId || 'snapshot_week_9_13';
+            this.activeSnapshotId = data.activeSnapshotId || '';
             this.teacherConstraints = data.teacherConstraints || {};
             if (data.fixedConstraints) this.fixedConstraints = Object.assign({}, this.fixedConstraints, data.fixedConstraints);
             if (data.pedagogicalPriorities) this.pedagogicalPriorities = Object.assign({}, this.pedagogicalPriorities, data.pedagogicalPriorities);
-            if (Object.keys(this.yearlySnapshots).length === 0) {
+            if (Object.keys(this.yearlySnapshots).length === 0 && this.isSampleMode && !this.isCleanNewMode) {
                 this.initDefaultYearlySnapshots();
             }
             this.purgeFlagSalute();
@@ -1301,21 +1297,31 @@ export class SmartTKBEngine {
     }
 
     initCleanTimetableForUser(user = null) {
-        const schoolName = (user && user.school && user.school.trim()) ? user.school.trim() : "Trường Mầm Non / Phổ Thông Của Bạn";
+        this.isSampleMode = false;
+        this.isCleanNewMode = true;
+        const customSchool = (user && user.resetAll) ? "" : ((user && user.school && user.school.trim()) ? user.school.trim() : "");
         this.schoolConfig = {
-            schoolName: schoolName,
+            schoolName: customSchool,
             academicYear: "2026 - 2027",
             semester: "Học kỳ I",
             applyFromDate: "02/11/2026",
             session: "Sáng (5 tiết/buổi)",
             homeroomTeachers: {}
         };
-        this.classes = ["6A1", "7A1", "8A1", "9A1"];
+        this.classes = [];
         this.teachers = [];
         this.officialPCCM = [];
         this.assignments = [];
         this.ppctLessons = {};
-        this.resetTimetableGrid();
+        this.yearlySnapshots = {};
+        this.activeSnapshotId = '';
+        this.teacherConstraints = {};
+        this.timetable = {};
+        try {
+            localStorage.removeItem('edustudio_custom_school_name');
+            localStorage.removeItem('edustudio_custom_teacher_periods');
+            localStorage.removeItem('edustudio_custom_teacher_roles');
+        } catch(e) {}
         this.saveState();
     }
 
