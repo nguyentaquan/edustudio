@@ -3338,84 +3338,661 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         return [
             {
                 id: 'ppt_1',
-                title: 'HĐTN 8: Tự Hào Quê Hương',
+                title: 'HĐTN 8: Tự Hào Truyền Thống Quê Hương & Bản Thân',
                 slides: 18,
-                subject: 'HĐTN-HN 8',
+                subject: 'HĐTN-HN',
                 grade: 'Lớp 8',
-                author: 'Thầy Nguyễn Tá Quan',
-                school: 'Chuyên gia GD & CNTT',
+                category: 'hdtn',
+                author: 'Tổ HĐTN - Kỹ Năng Sống',
+                school: 'Trường Chuẩn Quốc Gia',
                 badge: '🌱',
                 verified: true,
-                desc: 'Bài giảng trình chiếu 16:9 gồm 18 slides, tích hợp trò chơi khởi động và phiếu tự đánh giá.',
-                gradient: 'linear-gradient(135deg, #1d4ed8, #0284c7)'
+                desc: 'Bài giảng 16:9 gồm 18 slides, tích hợp trò chơi khởi động, câu hỏi tình huống thực tế và phiếu tự đánh giá phẩm chất.',
+                gradient: 'linear-gradient(135deg, #1d4ed8, #0284c7)',
+                presentationData: {
+                    title: 'HĐTN 8: Tự Hào Truyền Thống Quê Hương & Bản Thân',
+                    grade: 'Lớp 8',
+                    subject: 'HĐTN-HN',
+                    theme: 'navy',
+                    slides: [
+                        {
+                            id: 'ppt1_s1',
+                            step: 1,
+                            stepName: '1. Khởi động (Hook)',
+                            title: 'HOẠT ĐỘNG 1: KHỞI ĐỘNG - GIAI ĐIỆU VÀ NÉT ĐẸP QUÊ HƯƠNG',
+                            content: '• Thưởng thức một trích đoạn ca khúc mang âm hưởng dân ca quê hương.\n• Chia sẻ cảm xúc ban đầu: Em ấn tượng nhất với danh lam, phong tục hay truyền thống nào?\n• Nhiệm vụ: Tương tác nhanh với bạn cùng bàn trong 1 phút.',
+                            interactiveType: 'none',
+                            speakerNotes: 'Giáo viên bật nhạc nhẹ nhàng, dẫn dắt học sinh liên hệ với mảnh đất nơi mình sinh ra và lớn lên.'
+                        },
+                        {
+                            id: 'ppt1_s2',
+                            step: 2,
+                            stepName: '2. Khám phá kiến thức mới',
+                            title: 'HOẠT ĐỘNG 2: TÌM HIỂU VÀ PHÁT HUY TRUYỀN THỐNG TỰ HÀO',
+                            content: '• Truyền thống là những giá trị vật chất và tinh thần tốt đẹp được trao truyền qua nhiều thế hệ.\n• Các biểu hiện cốt lõi:\n  - Lòng yêu nước nồng nàn, tinh thần đoàn kết, tương thân tương ái.\n  - Cần cù, sáng tạo trong lao động; hiếu học và tôn sư trọng đạo.\n  - Ý thức bảo tồn lễ hội truyền thống và di tích lịch sử địa phương.',
+                            interactiveType: 'none',
+                            speakerNotes: 'Phân tích bản chất khái niệm. Yêu cầu từng nhóm nêu 1 tấm gương tiêu biểu của địa phương.'
+                        },
+                        {
+                            id: 'ppt1_s3',
+                            step: 3,
+                            stepName: '3. Luyện tập tương tác',
+                            title: 'HOẠT ĐỘNG 3: LUYỆN TẬP - TRẮC NGHIỆM ĐỐ VUI TÌNH HUỐNG',
+                            content: 'Học sinh chọn đáp án đúng nhất để củng cố kiến thức vừa khám phá:',
+                            interactiveType: 'quiz',
+                            quizQuestion: 'Hành động nào sau đây thể hiện rõ nhất niềm tự hào và trách nhiệm với quê hương?',
+                            quizOptions: [
+                                'A. Chỉ tự hào khi quê hương phát triển giàu có',
+                                'B. Tích cực học tập, giữ gìn nét đẹp văn hóa và tham gia phong trào thanh niên',
+                                'C. Thờ ơ, không quan tâm đến các di tích lịch sử quanh mình',
+                                'D. Cho rằng phong tục truyền thống xưa cũ đã lỗi thời'
+                            ],
+                            correctIndex: 1,
+                            speakerNotes: 'Bấm chọn phương án trực tiếp trên màn chiếu để phát âm thanh khích lệ học sinh.'
+                        },
+                        {
+                            id: 'ppt1_s4',
+                            step: 4,
+                            stepName: '4. Vận dụng & Mở rộng',
+                            title: 'HOẠT ĐỘNG 4: THỰC HÀNH VẬN DỤNG & NHIỆM VỤ THỰC TIỄN',
+                            content: '• Thiết kế một poster hoặc bài viết ngắn (khoảng 100 từ) giới thiệu một di tích lịch sử hoặc nghệ nhân quê em.\n• Rèn luyện hành vi văn minh, bảo vệ cảnh quan khi tham gia các hoạt động cộng đồng.\n• Chuẩn bị cho tiết học sau: Phỏng vấn người cao tuổi trong gia đình về phong tục truyền thống.',
+                            interactiveType: 'none',
+                            speakerNotes: 'Giao nhiệm vụ có sản phẩm học tập cụ thể, hướng dẫn tiêu chí chấm điểm cho tiết tới.'
+                        }
+                    ]
+                }
             },
             {
                 id: 'ppt_2',
-                title: 'Toán 7: Hình Học Trực Quan',
+                title: 'Toán 7: Tập Hợp Số Hữu Tỉ & Hình Học Trực Quan',
                 slides: 22,
-                subject: 'Toán học 7',
+                subject: 'Toán',
                 grade: 'Lớp 7',
-                author: 'Cô Trần Thu Sương',
-                school: 'THCS Chu Văn An',
+                category: 'math',
+                author: 'Tổ Toán Học THCS',
+                school: 'Trường Chuẩn GDPT',
                 badge: '📐',
                 verified: true,
-                desc: 'Bài giảng chuẩn 22 slides với mô phỏng 3D góc và hai đường thẳng song song.',
-                gradient: 'linear-gradient(135deg, #059669, #0284c7)'
+                desc: 'Bài giảng chuẩn 22 slides với mô phỏng 3D góc, hai đường thẳng song song và quy tắc tính toán phân số hữu tỉ.',
+                gradient: 'linear-gradient(135deg, #059669, #0284c7)',
+                presentationData: {
+                    title: 'Toán 7: Tập Hợp Số Hữu Tỉ & Hình Học Trực Quan',
+                    grade: 'Lớp 7',
+                    subject: 'Toán',
+                    theme: 'emerald',
+                    slides: [
+                        {
+                            id: 'ppt2_s1',
+                            step: 1,
+                            stepName: '1. Khởi động (Hook)',
+                            title: 'HOẠT ĐỘNG 1: KHỞI ĐỘNG - BÍ ẨN CÁC CON SỐ TRONG THỰC TẾ',
+                            content: '• Trong đời sống, ta thường gặp các số: -0.75 độ C, 3/4 mét vải, 120% doanh thu.\n• Câu hỏi: Các số này có điểm chung nào về mặt cấu trúc toán học?\n• Khám phá: Mọi số trên đều viết được dưới dạng phân số a/b (với a, b thuộc Z, b khác 0).',
+                            interactiveType: 'none',
+                            speakerNotes: 'Gợi mở từ các số đo thực tế để dẫn học sinh vào tập hợp số hữu tỉ Q.'
+                        },
+                        {
+                            id: 'ppt2_s2',
+                            step: 2,
+                            stepName: '2. Khám phá kiến thức mới',
+                            title: 'HOẠT ĐỘNG 2: ĐỊNH NGHĨA SỐ HỮU TỈ & BIỂU DIỄN TRÊN TRỤC SỐ',
+                            content: '• Số hữu tỉ là số viết được dưới dạng phân số a/b với a, b thuộc Z, b khác 0. Kí hiệu tập hợp: Q.\n• Mỗi số hữu tỉ được biểu diễn bởi một điểm duy nhất trên trục số.\n• Số đối của số hữu tỉ x (kí hiệu -x) nằm đối xứng với x qua điểm gốc 0.',
+                            interactiveType: 'none',
+                            speakerNotes: 'Minh họa trục số trực quan, lưu ý điểm mẫu số luôn dương khi biểu diễn.'
+                        },
+                        {
+                            id: 'ppt2_s3',
+                            step: 3,
+                            stepName: '3. Luyện tập tương tác',
+                            title: 'HOẠT ĐỘNG 3: LUYỆN TẬP - ĐỐ VUI NHANH SỐ HỮU TỈ',
+                            content: 'Chọn khẳng định đúng nhất trong các phương án sau:',
+                            interactiveType: 'quiz',
+                            quizQuestion: 'Số nào sau đây KHÔNG PHẢI là số hữu tỉ?',
+                            quizOptions: [
+                                'A. -1.25',
+                                'B. Số 0',
+                                'C. Số pi (3.14159...)',
+                                'D. 2 1/3 (Hỗn số)'
+                            ],
+                            correctIndex: 2,
+                            speakerNotes: 'Số pi là số vô tỉ (thập phân vô hạn không tuần hoàn), giúp học sinh phân biệt rõ Q.'
+                        },
+                        {
+                            id: 'ppt2_s4',
+                            step: 4,
+                            stepName: '4. Vận dụng & Mở rộng',
+                            title: 'HOẠT ĐỘNG 4: VẬN DỤNG TÍNH TOÁN LÃI SUẤT & THỰC ĐỊA',
+                            content: '• Bài toán thực tế: Tính toán nhiệt độ biến thiên theo độ cao dựa trên quy tắc số hữu tỉ.\n• Luyện tập: Làm bài tập 1.2, 1.3 SGK Kết Nối Tri Thức trang 9.\n• Chuẩn bị: Tìm hiểu góc đối đỉnh trong kiến trúc nhà ở.',
+                            interactiveType: 'none',
+                            speakerNotes: 'Giao bài tập có hướng dẫn phương pháp giải.'
+                        }
+                    ]
+                }
+            },
+            {
+                id: 'ppt_khtn8',
+                title: 'KHTN 8: Phản Ứng Hóa Học & Bảo Toàn Khối Lượng',
+                slides: 20,
+                subject: 'KHTN',
+                grade: 'Lớp 8',
+                category: 'khtn',
+                author: 'Tổ Khoa Học Tự Nhiên',
+                school: 'Trường Chuẩn GDPT',
+                badge: '⚗️',
+                verified: true,
+                desc: 'Bài giảng chuẩn 20 slides với thí nghiệm ảo, phân tích liên kết nguyên tử và phương trình hóa học.',
+                gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
+                presentationData: {
+                    title: 'KHTN 8: Phản Ứng Hóa Học & Bảo Toàn Khối Lượng',
+                    grade: 'Lớp 8',
+                    subject: 'KHTN',
+                    theme: 'navy',
+                    slides: [
+                        {
+                            id: 'pptk_s1',
+                            step: 1,
+                            stepName: '1. Khởi động (Hook)',
+                            title: 'HOẠT ĐỘNG 1: QUAN SÁT HIỆN TƯỢNG BIẾN ĐỔI CHẤT',
+                            content: '• Thí nghiệm đốt cháy que đóm hoặc sủi bọt khí khi nhỏ giấm vào bột baking soda.\n• Xung đột nhận thức: Chất ban đầu có còn nguyên vẹn không? Vì sao có khói và mùi mới xuất hiện?\n• Nhận định: Đã diễn ra sự biến đổi hóa học tạo chất mới.',
+                            interactiveType: 'none',
+                            speakerNotes: 'Tạo tò mò từ hiện tượng sinh bọt khí và đổi màu thực tế.'
+                        },
+                        {
+                            id: 'ppt2_s2',
+                            step: 2,
+                            stepName: '2. Khám phá kiến thức mới',
+                            title: 'HOẠT ĐỘNG 2: BẢN CHẤT PHẢN ỨNG HÓA HỌC & ĐỊNH LUẬT BẢO TOÀN KHỐI LƯỢNG',
+                            content: '• Trong phản ứng hóa học, chỉ có liên kết giữa các nguyên tử thay đổi, số nguyên tử mỗi nguyên tố giữ nguyên.\n• Định luật bảo toàn khối lượng: Trong một phản ứng hóa học, tổng khối lượng các chất tham gia bằng tổng khối lượng các sản phẩm tạo thành.\n• Công thức: m_A + m_B = m_C + m_D.',
+                            interactiveType: 'none',
+                            speakerNotes: 'Khắc sâu: Các nguyên tử chỉ sắp xếp lại, không hề tự sinh ra hay mất đi.'
+                        },
+                        {
+                            id: 'ppt2_s3',
+                            step: 3,
+                            stepName: '3. Luyện tập tương tác',
+                            title: 'HOẠT ĐỘNG 3: LUYỆN TẬP - ĐỐ VUI BẢO TOÀN KHỐI LƯỢNG',
+                            content: 'Bấm chọn đáp án đúng để hoàn thành bài toán tính nhanh:',
+                            interactiveType: 'quiz',
+                            quizQuestion: 'Đốt cháy hoàn toàn 2,4g Magie trong khí Oxi thu được 4,0g Magie oxit (MgO). Khối lượng Oxi đã phản ứng là:',
+                            quizOptions: ['A. 1,6 gam', 'B. 6,4 gam', 'C. 2,0 gam', 'D. 0,8 gam'],
+                            correctIndex: 0,
+                            speakerNotes: 'Áp dụng định luật: m_Oxi = m_MgO - m_Mg = 4,0 - 2,4 = 1,6 gam.'
+                        },
+                        {
+                            id: 'ppt2_s4',
+                            step: 4,
+                            stepName: '4. Vận dụng & Mở rộng',
+                            title: 'HOẠT ĐỘNG 4: GIẢI THÍCH HIỆN TƯỢNG THỰC TẾ & GIAO BÀI',
+                            content: '• Vì sao thanh sắt để lâu ngoài không khí bị gỉ lại có khối lượng nặng hơn thanh sắt ban đầu?\n• Giải thích bằng sự kết hợp với Oxi và hơi nước theo định luật bảo toàn khối lượng.\n• Bài tập về nhà: Cân bằng 3 phương trình phản ứng trong SGK.',
+                            interactiveType: 'none',
+                            speakerNotes: 'Giải tỏa thắc mắc trực giác của học sinh về thanh sắt gỉ.'
+                        }
+                    ]
+                }
+            },
+            {
+                id: 'ppt_van6',
+                title: 'Ngữ Văn 6: Khám Phá Vẻ Đẹp Quê Hương & Con Người',
+                slides: 18,
+                subject: 'Ngữ văn',
+                grade: 'Lớp 6',
+                category: 'lit',
+                author: 'Tổ Ngữ Văn THCS',
+                school: 'Trường Chuẩn GDPT',
+                badge: '📖',
+                verified: true,
+                desc: 'Phân tích văn bản thơ lục bát, nghệ thuật so sánh, ẩn dụ và bồi dưỡng lòng yêu quê hương đất nước.',
+                gradient: 'linear-gradient(135deg, #7c3aed, #a855f7)'
+            },
+            {
+                id: 'ppt_lsdl8',
+                title: 'Lịch Sử & Địa Lí 8: Phong Trào Tây Sơn & Biển Đảo Việt Nam',
+                slides: 20,
+                subject: 'Lịch sử & Địa lí',
+                grade: 'Lớp 8',
+                category: 'soc',
+                author: 'Tổ Lịch Sử - Địa Lí',
+                school: 'Trường Chuẩn GDPT',
+                badge: '🗺️',
+                verified: true,
+                desc: 'Lược đồ tương tác đại phá quân Thanh và bản đồ chủ quyền biển đảo Việt Nam chuẩn quốc gia.',
+                gradient: 'linear-gradient(135deg, #b45309, #d97706)'
+            },
+            {
+                id: 'ppt_eng8',
+                title: 'Tiếng Anh 8: Global Success - Leisure Time & Hobbies',
+                slides: 18,
+                subject: 'Tiếng Anh',
+                grade: 'Lớp 8',
+                category: 'eng',
+                author: 'Tổ Ngoại Ngữ THCS',
+                school: 'Trường Chuẩn GDPT',
+                badge: '🌏',
+                verified: true,
+                desc: 'Từ vựng chủ đề sở thích, cấu trúc Verbs of liking and disliking kèm bài luyện phát âm chuẩn Cambridge.',
+                gradient: 'linear-gradient(135deg, #0d9488, #059669)'
+            },
+            {
+                id: 'ppt_vatli9',
+                title: 'Vật Lí 9: Định Luật Ôm & Đoạn Mạch Nối Tiếp - Song Song',
+                slides: 20,
+                subject: 'Vật lí',
+                grade: 'Lớp 9',
+                category: 'khtn',
+                author: 'Tổ Vật Lí & Công Nghệ',
+                school: 'Trường Chuẩn GDPT',
+                badge: '⚡',
+                verified: true,
+                desc: 'Sơ đồ mạch điện mô phỏng dòng electron, công thức I = U/R và bài tập tính điện trở tương đương.',
+                gradient: 'linear-gradient(135deg, #2563eb, #3b82f6)'
+            },
+            {
+                id: 'ppt_sinh8',
+                title: 'Sinh Học 8: Hệ Tuần Hoàn & Cấu Tạo Máu Cơ Thể',
+                slides: 18,
+                subject: 'KHTN',
+                grade: 'Lớp 8',
+                category: 'khtn',
+                author: 'Tổ Sinh Học & Môi Trường',
+                school: 'Trường Chuẩn GDPT',
+                badge: '🧬',
+                verified: true,
+                desc: 'Hình ảnh mô phỏng hồng cầu, bạch cầu, tiểu cầu và chu kỳ co bóp của tim trực quan sinh động.',
+                gradient: 'linear-gradient(135deg, #e11d48, #f43f5e)'
+            },
+            {
+                id: 'ppt_stem',
+                title: 'STEM & Tin Học: Lập Trình Robot & Cảm Biến Thông Minh',
+                slides: 22,
+                subject: 'Tin học',
+                grade: 'Lớp 8',
+                category: 'stem',
+                author: 'Ban Chuyên Môn STEM',
+                school: 'Trung Tâm Đổi Mới Sáng Tạo',
+                badge: '🤖',
+                verified: true,
+                desc: 'Dự án STEM chế tạo thùng rác thông minh tự mở nắp bằng cảm biến siêu âm Ultrasonic và Arduino.',
+                gradient: 'linear-gradient(135deg, #4f46e5, #6366f1)'
             },
             {
                 id: 'ppt_3',
                 title: 'Mầm Non: Thế Giới Động Vật Quanh Bé',
                 slides: 14,
-                subject: 'Mầm Non',
+                subject: 'Phát triển nhận thức',
                 grade: 'MN',
-                author: 'Giáo viên Mầm Non',
-                school: 'Mầm Non Tuổi Thơ',
+                category: 'mn',
+                author: 'Tổ Giáo Dục Mầm Non',
+                school: 'Trường Mầm Non Họa Mi',
                 badge: '🐶',
                 verified: true,
-                desc: 'Slide hoạt hình âm thanh vui nhộn giúp trẻ nhận diện hình ảnh và tiếng kêu con vật.',
-                gradient: 'linear-gradient(135deg, #f59e0b, #ec4899)'
+                desc: 'Slide hoạt hình âm thanh vui nhộn giúp trẻ nhận diện hình ảnh và tiếng kêu con vật nuôi gần gũi.',
+                gradient: 'linear-gradient(135deg, #f59e0b, #ec4899)',
+                presentationData: {
+                    title: 'Mầm Non: Thế Giới Động Vật Quanh Bé',
+                    grade: 'MN',
+                    subject: 'Phát triển nhận thức',
+                    theme: 'amber',
+                    slides: [
+                        {
+                            id: 'mn_s1',
+                            step: 1,
+                            stepName: '1. Bé nghe tiếng kêu đoán con vật',
+                            title: 'BÉ ƠI! TIẾNG KÊU CỦA BẠN NÀO ĐÂY?',
+                            content: '• Gâu gâu! Gâu gâu! Ai đang canh giữ ngôi nhà cho bé nào?\n• Meo meo! Bạn nào thích bắt chuột và sưởi nắng?\n• Ò ó o o! Ai đánh thức mọi người dậy sớm mỗi sáng?',
+                            interactiveType: 'none',
+                            speakerNotes: 'Cô giáo mở tiếng kêu âm thanh và làm điệu bộ vui tươi để các bé hứng thú đoán tên.'
+                        },
+                        {
+                            id: 'mn_s2',
+                            step: 2,
+                            stepName: '2. Khám phá đặc điểm con vật',
+                            title: 'BÉ KHÁM PHÁ CÁC BẠN NHỎ ĐÁNG YÊU',
+                            content: '• Chú Chó Đốm: 4 chân, có đuôi luôn vẫy, rất thích chơi bóng.\n• Mèo Mướp Con: Lông mềm mượt, leo trèo rất giỏi, thích ăn cá.\n• Chú Gà Trống: Có mào đỏ tươi, bộ lông rực rỡ và cất tiếng gáy vang.',
+                            interactiveType: 'none',
+                            speakerNotes: 'Hướng dẫn bé chỉ vào từng bộ phận: tai, mắt, mũi, đuôi của các con vật.'
+                        },
+                        {
+                            id: 'mn_s3',
+                            step: 3,
+                            stepName: '3. Trò chơi chọn bạn đúng',
+                            title: 'BÉ HÃY CHỌN BẠN CÓ TIẾNG KÊU "GÂU GÂU" NHÉ!',
+                            content: 'Bé hãy chỉ tay vào hình con vật đúng nhất:',
+                            interactiveType: 'quiz',
+                            quizQuestion: 'Bạn nào sủa "Gâu gâu" và canh giữ nhà giỏi nhất?',
+                            quizOptions: ['A. Chú Chó Đốm 🐶', 'B. Mèo Con 🐱', 'C. Chú Vịt Bầu 🦆', 'D. Chú Heo Con 🐷'],
+                            correctIndex: 0,
+                            speakerNotes: 'Bé chạm trực tiếp vào màn hình máy chiếu hoặc vỗ tay khen ngợi khi chọn đúng.'
+                        },
+                        {
+                            id: 'mn_s4',
+                            step: 4,
+                            stepName: '4. Bé yêu quý và chăm sóc vật nuôi',
+                            title: 'BÉ BIẾT YÊU THƯƠNG VÀ BẢO VỆ CÁC BẠN NHỎ',
+                            content: '• Cho các bạn nhỏ ăn uống sạch sẽ, không trêu chọc hay làm đau các bạn.\n• Nhớ rửa tay bằng xà phòng sạch sẽ sau khi chơi cùng thú cưng.\n• Bé cùng hát múa ca khúc: "Đàn gà con" thật vui nhé!',
+                            interactiveType: 'none',
+                            speakerNotes: 'Giáo dục tình cảm và thói quen vệ sinh tự bảo vệ bản thân cho trẻ.'
+                        }
+                    ]
+                }
+            },
+            {
+                id: 'ppt_mn_color',
+                title: 'Mầm Non: Bé Khám Phá Sắc Màu & Hình Khối Diệu Kỳ',
+                slides: 16,
+                subject: 'Phát triển thẩm mỹ',
+                grade: 'MN',
+                category: 'mn',
+                author: 'Tổ Giáo Dục Mầm Non',
+                school: 'Trường Mầm Non Họa Mi',
+                badge: '🎨',
+                verified: true,
+                desc: 'Nhận biết màu đỏ, vàng, xanh và phân biệt hình tròn, hình vuông, hình tam giác qua trò chơi.',
+                gradient: 'linear-gradient(135deg, #10b981, #06b6d4)'
+            },
+            {
+                id: 'ppt_mn_hygiene',
+                title: 'Mầm Non: Bé Rèn Luyện Thói Quen Vệ Sinh & Tự Phục Vụ',
+                slides: 14,
+                subject: 'Phát triển thể chất',
+                grade: 'MN',
+                category: 'mn',
+                author: 'Tổ Giáo Dục Mầm Non',
+                school: 'Trường Mầm Non Họa Mi',
+                badge: '🧼',
+                verified: true,
+                desc: '6 bước rửa tay bằng xà phòng, đánh răng đúng cách và kỹ năng tự xếp ba lô, đi giày dép gọn gàng.',
+                gradient: 'linear-gradient(135deg, #6366f1, #ec4899)'
             }
         ];
     }
 
-    renderPPTRepo() {
+    loadCustomPPTs() {
+        try {
+            return JSON.parse(localStorage.getItem('edustudio_custom_ppts') || '[]');
+        } catch(e) {
+            return [];
+        }
+    }
+
+    saveCustomPPT(pptItem) {
+        if (!pptItem || !pptItem.id) return;
+        const customPpts = this.loadCustomPPTs();
+        const existingIdx = customPpts.findIndex(x => x.id === pptItem.id);
+        if (existingIdx >= 0) {
+            customPpts[existingIdx] = pptItem;
+        } else {
+            customPpts.unshift(pptItem);
+        }
+        try {
+            localStorage.setItem('edustudio_custom_ppts', JSON.stringify(customPpts.slice(0, 50)));
+            if (window.eduCloudSync?.isConfigured() && this.currentUser?.email) {
+                window.eduCloudSync.syncCurrentUserWorkspace(this.currentUser.email);
+            }
+        } catch(e) {}
+    }
+
+    deleteCustomPPT(pptId) {
+        if (!confirm("Thầy/Cô có chắc chắn muốn xóa bài giảng tự thiết kế này khỏi Kho của tôi không?")) return;
+        let customPpts = this.loadCustomPPTs();
+        customPpts = customPpts.filter(x => x.id !== pptId);
+        try {
+            localStorage.setItem('edustudio_custom_ppts', JSON.stringify(customPpts));
+            if (window.eduCloudSync?.isConfigured() && this.currentUser?.email) {
+                window.eduCloudSync.syncCurrentUserWorkspace(this.currentUser.email);
+            }
+        } catch(e) {}
+        this.renderPPTRepo();
+        try { sound.playClick(); } catch(e) {}
+        this.showToast("🗑️ Đã xóa bài giảng khỏi Kho của tôi!", 2500);
+    }
+
+    loadPPTIntoStudio(p) {
+        if (!p) return;
+        if (p.presentationData) {
+            this.activePresentation = JSON.parse(JSON.stringify(p.presentationData));
+        } else {
+            this.activePresentation = {
+                title: p.title || 'Bài giảng tương tác',
+                grade: p.grade || 'Lớp 8',
+                subject: p.subject || 'HĐTN-HN',
+                theme: 'navy',
+                slides: [
+                    {
+                        id: 'slide_1',
+                        step: 1,
+                        stepName: '1. Khởi động (Hook)',
+                        title: `HOẠT ĐỘNG 1: KHỞI ĐỘNG - ${p.title || 'BÀI MỚI'}`,
+                        content: '• Quan sát hình ảnh / video tình huống thực tế.\n• Thảo luận nhanh cặp đôi trong 1 phút.\n• Nêu cảm nhận hoặc dự đoán kết quả.',
+                        interactiveType: 'none',
+                        speakerNotes: 'Lời dẫn mở đầu bài học truyền cảm hứng.'
+                    },
+                    {
+                        id: 'slide_2',
+                        step: 2,
+                        stepName: '2. Khám phá kiến thức mới',
+                        title: 'HOẠT ĐỘNG 2: HÌNH THÀNH KIẾN THỨC MỚI',
+                        content: `• Nội dung trọng tâm môn ${p.subject || ''}.\n• Bản chất hiện tượng và các quy luật cốt lõi.\n• Minh họa trực quan và liên hệ thực tiễn.`,
+                        interactiveType: 'none',
+                        speakerNotes: 'Giáo viên phân tích bản chất khái niệm.'
+                    },
+                    {
+                        id: 'slide_3',
+                        step: 3,
+                        stepName: '3. Luyện tập tương tác',
+                        title: 'HOẠT ĐỘNG 3: LUYỆN TẬP & CỦNG CỐ',
+                        content: 'Thầy Cô bấm trực tiếp vào đáp án trên máy chiếu để kiểm tra mức độ nắm bài của học sinh:',
+                        interactiveType: 'quiz',
+                        quizQuestion: 'Đặc điểm nào thể hiện chuẩn xác nhất nội dung vừa khám phá?',
+                        quizOptions: ['A. Đáp án đúng chuẩn kiến thức', 'B. Phương án gây nhiễu 1', 'C. Phương án gây nhiễu 2', 'D. Phương án chưa chính xác'],
+                        correctIndex: 0,
+                        speakerNotes: 'Bấm nút trực tiếp trên màn chiếu để phát âm thanh khen ngợi.'
+                    },
+                    {
+                        id: 'slide_4',
+                        step: 4,
+                        stepName: '4. Vận dụng & Mở rộng',
+                        title: 'HOẠT ĐỘNG 4: VẬN DỤNG THỰC TIỄN',
+                        content: '• Vận dụng kiến thức để giải quyết tình huống cuộc sống.\n• Hướng dẫn nhiệm vụ học tập tại nhà.\n• Chuẩn bị nội dung cho bài học tiếp theo.',
+                        interactiveType: 'none',
+                        speakerNotes: 'Giao nhiệm vụ cụ thể có sản phẩm rõ ràng.'
+                    }
+                ]
+            };
+        }
+
+        const titleInput = document.getElementById('pptLessonTitleInput');
+        const gradeSelect = document.getElementById('pptGradeSelect');
+        const subjectSelect = document.getElementById('pptSubjectSelect');
+        const presetSelect = document.getElementById('pptTemplatePresetSelect');
+
+        if (titleInput) titleInput.value = this.activePresentation.title || '';
+        if (gradeSelect) {
+            gradeSelect.value = this.activePresentation.grade || 'Lớp 8';
+            this.populateSubjectSelect('pptSubjectSelect', gradeSelect.value, this.activePresentation.subject);
+        }
+        if (subjectSelect && this.activePresentation.subject) {
+            subjectSelect.value = this.activePresentation.subject;
+        }
+        if (presetSelect && p.id) {
+            presetSelect.value = p.id;
+        }
+
+        this.activeSlideIndex = 0;
+        this.switchTab('ppt-studio');
+        this.renderSlideDeck();
+        this.renderCurrentSlideCanvas();
+        try { sound.playFanfare(); } catch(e) {}
+        this.showToast(`📊 Đã mở bài giảng "${this.activePresentation.title}" vào Xưởng Soạn PPT!`, 3000);
+    }
+
+    startNewBlankPresentation() {
+        this.activePresentation = {
+            title: '',
+            grade: 'Lớp 8',
+            subject: 'Khoa học tự nhiên',
+            theme: 'navy',
+            slides: [
+                {
+                    id: 'slide_1',
+                    step: 1,
+                    stepName: '1. Khởi động (Hook)',
+                    title: 'BÀI GIẢNG ĐIỆN TỬ MỚI',
+                    content: '• Nhập nội dung bài giảng tại đây...\n• Bấm [➕ Chèn Đối Tượng] để thêm Hộp chữ, Ảnh, Bảng, Công thức Toán, Hình học.',
+                    interactiveType: 'none',
+                    speakerNotes: 'Ghi chú lời giảng của giáo viên khi trình chiếu.'
+                }
+            ]
+        };
+
+        const titleInput = document.getElementById('pptLessonTitleInput');
+        const gradeSelect = document.getElementById('pptGradeSelect');
+        const presetSelect = document.getElementById('pptTemplatePresetSelect');
+
+        if (titleInput) {
+            titleInput.value = '';
+            setTimeout(() => titleInput.focus(), 200);
+        }
+        if (gradeSelect) {
+            gradeSelect.value = 'Lớp 8';
+            this.populateSubjectSelect('pptSubjectSelect', 'Lớp 8', 'Khoa học tự nhiên');
+        }
+        if (presetSelect) presetSelect.value = '';
+
+        this.activeSlideIndex = 0;
+        this.renderSlideDeck();
+        this.renderCurrentSlideCanvas();
+        try { sound.playFanfare(); } catch(e) {}
+        this.showToast('✨ Đã làm mới trang soạn bài! Thầy Cô hãy nhập tên bài học để bắt đầu.', 3000);
+    }
+
+    renderPPTRepo(filter = 'all') {
+        // 1. Render Khối Bài Giảng Tự Thiết Kế (Của Tôi)
+        const customContainer = document.getElementById('customPPTCardsGrid');
+        if (customContainer) {
+            const customPpts = this.loadCustomPPTs();
+            if (!customPpts || customPpts.length === 0) {
+                customContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 1.5rem; text-align: center; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px;">
+                        <span style="font-size: 2rem;">📂</span>
+                        <div style="font-weight: 700; color: #475569; margin-top: 0.35rem; font-size: 0.95rem;">Thầy Cô chưa có bài giảng tự thiết kế nào</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">Hãy bấm nút [Soạn Bài Giảng Mới] ở góc trên hoặc chọn một bài giảng mẫu bên dưới để bắt đầu!</div>
+                    </div>
+                `;
+            } else {
+                customContainer.innerHTML = customPpts.map(item => `
+                    <div class="ppt-card card-verified-container">
+                        <div class="badge-audit-verified-corner" style="background: #eff6ff; color: #1d4ed8; border-color: #93c5fd;" title="Bài giảng do bạn tự thiết kế và lưu trữ trên hệ thống">
+                            ⭐ Bản Thiết Kế Của Tôi
+                        </div>
+                        <div class="ppt-thumbnail-mock" style="background: ${item.gradient || 'linear-gradient(135deg, #1d4ed8, #2563eb)'};">
+                            <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">${item.badge || '📊'}</span>
+                            <strong style="font-size: 0.95rem;">${item.title}</strong>
+                            <span style="font-size: 0.75rem; opacity: 0.9;">${item.slides || item.presentationData?.slides?.length || 4} Slides • ${item.subject || 'GDPT'}</span>
+                        </div>
+                        <div class="ppt-card-body">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #64748b; margin-bottom: 0.75rem;">
+                                <span>Tác giả: <strong>${item.author || this.currentUser?.name || 'Giáo viên'}</strong></span>
+                                <span style="color:#2563eb; font-weight:700;">${item.grade || 'Lớp 8'}</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; margin-bottom: 0.35rem;">
+                                <button class="btn-mini-action btn-play-custom-ppt" data-id="${item.id}" style="justify-content: center; background:#1d4ed8; color:#ffffff; font-weight: 700;">
+                                    <span>▶</span> <span>Trình Chiếu</span>
+                                </button>
+                                <button class="btn-mini-action btn-edit-custom-ppt" data-id="${item.id}" style="justify-content: center; background:#eff6ff; color:#1d4ed8; font-weight: 700;">
+                                    <span>✏️</span> <span>Chỉnh Sửa</span>
+                                </button>
+                            </div>
+                            <div style="display: flex; gap: 0.35rem;">
+                                <button class="btn-mini-action btn-download-custom-ppt" data-id="${item.id}" style="flex: 1; justify-content: center;" title="Tải gói bài giảng">
+                                    <span>📥</span> <span>Tải Gói</span>
+                                </button>
+                                <button class="btn-mini-action btn-del-custom-ppt" data-id="${item.id}" style="color: #ef4444;" title="Xóa bài giảng">
+                                    <span>🗑️</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                customContainer.querySelectorAll('.btn-play-custom-ppt').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        const p = this.loadCustomPPTs().find(x => x.id === id);
+                        if (p) this.startSlideShowForRepo(p);
+                    });
+                });
+
+                customContainer.querySelectorAll('.btn-edit-custom-ppt').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        const p = this.loadCustomPPTs().find(x => x.id === id);
+                        if (p) {
+                            this.editingCustomPPTId = p.id;
+                            this.loadPPTIntoStudio(p);
+                        }
+                    });
+                });
+
+                customContainer.querySelectorAll('.btn-download-custom-ppt').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        const p = this.loadCustomPPTs().find(x => x.id === id);
+                        this.enforceSaveAndExportTier(
+                            null,
+                            () => {
+                                if (p && p.presentationData) {
+                                    this.activePresentation = JSON.parse(JSON.stringify(p.presentationData));
+                                }
+                                this.exportPresentationPPTX();
+                            },
+                            p?.title || 'Bài giảng PPT'
+                        );
+                    });
+                });
+
+                customContainer.querySelectorAll('.btn-del-custom-ppt').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        this.deleteCustomPPT(id);
+                    });
+                });
+            }
+        }
+
+        // 2. Render Khối Kho Bài Giảng Chuẩn Hóa Sư Phạm
         const container = document.getElementById('pptCardsGrid');
         if (!container) return;
 
-        try {
-            const customPpts = JSON.parse(localStorage.getItem('edustudio_custom_ppts') || '[]');
-            if (Array.isArray(customPpts) && customPpts.length > 0) {
-                customPpts.forEach(cp => {
-                    if (cp && cp.id && !this.pptRepo.some(x => x.id === cp.id)) {
-                        this.pptRepo.unshift(cp);
-                    }
-                });
-            }
-        } catch(e) {}
+        let filtered = this.pptRepo;
+        if (filter !== 'all') {
+            filtered = this.pptRepo.filter(p => p.category === filter);
+        }
 
-        container.innerHTML = this.pptRepo.map(item => `
+        container.innerHTML = filtered.map(item => `
             <div class="ppt-card card-verified-container">
                 <div class="badge-audit-verified-corner" title="Đã đối soát chuẩn Sư phạm bởi Ban Biên Tập EduStudio">
-                    🛡️ Đã đối soát bởi kiemdinh@edustudio.edu.vn
+                    🛡️ Đã thẩm định chuẩn GDPT
                 </div>
                 <div class="ppt-thumbnail-mock" style="background: ${item.gradient || 'linear-gradient(135deg, #1d4ed8, #2563eb)'};">
                     <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">${item.badge || '📊'}</span>
                     <strong style="font-size: 0.95rem;">${item.title}</strong>
-                    <span style="font-size: 0.75rem; opacity: 0.9;">${item.slides} Slides • Tương Tác Trực Tiếp</span>
+                    <span style="font-size: 0.75rem; opacity: 0.9;">${item.slides} Slides • ${item.subject}</span>
                 </div>
                 <div class="ppt-card-body">
                     <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #64748b; margin-bottom: 0.75rem;">
                         <span>Tác giả: <strong>${item.author}</strong></span>
                         <span style="color:#059669; font-weight:700;">✓ Chuẩn hóa 100%</span>
                     </div>
-                    <div style="display: flex; gap: 0.4rem;">
-                        <button class="btn-mini-action btn-play-ppt" data-id="${item.id}" style="flex: 1; justify-content: center; background:#1d4ed8; color:#ffffff;">
+                    <div style="display: flex; gap: 0.35rem; margin-bottom: 0.35rem;">
+                        <button class="btn-mini-action btn-play-ppt" data-id="${item.id}" style="flex: 1.2; justify-content: center; background:#1d4ed8; color:#ffffff; font-weight: 700;">
                             <span>▶</span> <span>Trình Chiếu</span>
                         </button>
-                        <button class="btn-mini-action btn-download-ppt" data-id="${item.id}" title="Tải file PPTX">
-                            <span>📥</span> <span>Tải PPTX</span>
+                        <button class="btn-mini-action btn-customize-ppt" data-id="${item.id}" style="flex: 1; justify-content: center; background:#eff6ff; color:#1d4ed8; font-weight: 700;" title="Nạp bài giảng vào xưởng để chỉnh sửa theo ý mình">
+                            <span>✏️</span> <span>Tùy Biến</span>
                         </button>
                     </div>
+                    <button class="btn-mini-action btn-download-ppt" data-id="${item.id}" style="width: 100%; justify-content: center;" title="Tải file PPTX hoặc HTML5 Offline (Áp dụng phân quyền hệ thống)">
+                        <span>📥</span> <span>Tải Bài Giảng Offline</span>
+                    </button>
                 </div>
             </div>
         `).join('');
@@ -3426,6 +4003,16 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 const p = this.pptRepo.find(x => x.id === id);
                 if (p) {
                     this.startSlideShowForRepo(p);
+                }
+            });
+        });
+
+        container.querySelectorAll('.btn-customize-ppt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.dataset.id;
+                const p = this.pptRepo.find(x => x.id === id);
+                if (p) {
+                    this.loadPPTIntoStudio(p);
                 }
             });
         });
@@ -3446,74 +4033,1370 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 );
             });
         });
+
+        // Gắn sự kiện thanh lọc môn học PPT
+        document.querySelectorAll('.btn-ppt-filter').forEach(btn => {
+            if (!btn._boundPPTFilter) {
+                btn._boundPPTFilter = true;
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.btn-ppt-filter').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.background = '';
+                        b.style.color = '';
+                    });
+                    const target = e.currentTarget;
+                    target.classList.add('active');
+                    target.style.background = '#1d4ed8';
+                    target.style.color = '#ffffff';
+                    const f = target.dataset.filter || 'all';
+                    this.renderPPTRepo(f);
+                });
+            }
+        });
     }
 
     // =========================================================================
     // 4.1.B. XƯỞNG SOẠN & TẠO BÀI GIẢNG PPT TƯƠNG TÁC SƯ PHẠM (PPT STUDIO)
     // =========================================================================
+    // KHỞI TẠO BÀI GIẢNG TRẮNG DUY NHẤT 1 SLIDE (THEO YÊU CẦU CỦA THẦY QUAN)
+    // =========================================================================
     getDefaultPresentation() {
         return {
-            title: "Bài 12: Tự Hào Truyền Thống Quê Hương",
+            title: "",
             grade: "Lớp 8",
             subject: "HĐTN-HN",
-            theme: "navy", // 'navy', 'emerald', 'amber', 'white'
+            theme: "navy",
             slides: [
                 {
                     id: "slide_1",
                     step: 1,
                     stepName: "1. Khởi động (Hook)",
-                    title: "HOẠT ĐỘNG 1: KHỞI ĐỘNG - GIAI ĐIỆU QUÊ HƯƠNG",
-                    content: "• Nghe ca khúc hoặc xem clip ngắn về quê hương đất nước.\n• Cảm nhận ban đầu: Em ấn tượng nhất với nét đẹp văn hóa hoặc danh lam nào?\n• Nhiệm vụ: Chia sẻ nhanh cảm xúc với bạn cùng bàn trong 1 phút.",
+                    title: "BÀI GIẢNG ĐIỆN TỬ MỚI",
+                    content: "• Nhập nội dung bài giảng tại đây...\n• Bấm [➕ Chèn Đối Tượng] để thêm Hộp chữ, Ảnh, Bảng, Công thức Toán, Hình học.",
                     interactiveType: "none",
-                    speakerNotes: "Giáo viên bật nhạc khởi động nhẹ nhàng, tạo xung đột nhận thức và dẫn dắt vào bài mới."
-                },
-                {
-                    id: "slide_2",
-                    step: 2,
-                    stepName: "2. Khám phá kiến thức mới",
-                    title: "HOẠT ĐỘNG 2: TÌM HIỂU TRUYỀN THỐNG TỰ HÀO",
-                    content: "• Truyền thống là những giá trị vật chất và tinh thần được truyền từ đời này sang đời khác.\n• Các biểu hiện cốt lõi:\n  - Yêu nước, đoàn kết, tương thân tương ái.\n  - Cần cù lao động, hiếu học và tôn sư trọng đạo.\n  - Giữ gìn lễ hội dân gian và di tích lịch sử địa phương.",
-                    interactiveType: "none",
-                    speakerNotes: "Phân tích bản chất khái niệm. Yêu cầu học sinh lấy ví dụ cụ thể tại địa phương mình đang sinh sống."
-                },
-                {
-                    id: "slide_3",
-                    step: 3,
-                    stepName: "3. Luyện tập tương tác",
-                    title: "HOẠT ĐỘNG 3: LUYỆN TẬP - TRẮC NGHIỆM ĐỐ VUI SƯ PHẠM",
-                    content: "Học sinh chọn đáp án đúng nhất để củng cố kiến thức vừa khám phá:",
-                    interactiveType: "quiz",
-                    quizQuestion: "Hành động nào sau đây thể hiện rõ nhất niềm tự hào về truyền thống quê hương?",
-                    quizOptions: [
-                        "A. Chỉ tự hào khi quê hương giàu có",
-                        "B. Tích cực tìm hiểu, giữ gìn và phát huy nét đẹp văn hóa",
-                        "C. E ngại, không dám giới thiệu về địa phương mình",
-                        "D. Cho rằng truyền thống xưa không còn phù hợp"
-                    ],
-                    correctIndex: 1,
-                    speakerNotes: "Bấm trực tiếp vào các nút A/B/C/D trên máy chiếu để hiện hiệu ứng âm thanh khen ngợi học sinh."
-                },
-                {
-                    id: "slide_4",
-                    step: 4,
-                    stepName: "4. Vận dụng & Mở rộng",
-                    title: "HOẠT ĐỘNG 4: VẬN DỤNG & NHIỆM VỤ THỰC TIỄN",
-                    content: "• Thiết kế một tấm thiệp hoặc bài thuyết trình ngắn (1 trang) giới thiệu một di tích lịch sử tại quê hương em.\n• Rèn luyện thói quen ứng xử văn minh khi tham quan các công trình văn hóa.\n• Chuẩn bị cho tiết học sau: Thu thập tư liệu về các nghệ nhân dân gian.",
-                    interactiveType: "none",
-                    speakerNotes: "Giao nhiệm vụ về nhà có sản phẩm rõ ràng, hướng dẫn tiêu chí đánh giá cho tiết sau."
+                    speakerNotes: "Ghi chú lời giảng của giáo viên khi trình chiếu."
                 }
             ]
         };
     }
 
     initPPTStudio() {
+        this.bindPPTRibbonEvents();
         this.renderSlideDeck();
         this.renderCurrentSlideCanvas();
+        this.initPPTHistory();
         const btnAI = document.getElementById('btnAIGeneratePPT');
         if (btnAI && !btnAI._boundAI) {
             btnAI._boundAI = true;
             btnAI.addEventListener('click', () => this.generatePresentationWithAI());
         }
+    }
+
+    // =========================================================================
+    // QUẢN LÝ LỊCH SỬ THAO TÁC (UNDO / REDO THEO YÊU CẦU CỦA THẦY NGUYỄN TÁ QUAN)
+    // =========================================================================
+    initPPTHistory() {
+        this.pptHistory = [];
+        this.pptHistoryIndex = -1;
+        this.recordPPTHistory('Khởi tạo');
+    }
+
+    recordPPTHistoryDebounced(action = 'Chỉnh sửa', delay = 700) {
+        if (this._pptHistoryDebounceTimer) clearTimeout(this._pptHistoryDebounceTimer);
+        this._pptHistoryDebounceTimer = setTimeout(() => {
+            this.recordPPTHistory(action);
+        }, delay);
+    }
+
+    recordPPTHistory(action = '') {
+        if (!this.activePresentation) return;
+        const currentJson = JSON.stringify(this.activePresentation);
+        // Tránh ghi lặp lại nếu không có thay đổi dữ liệu thực tế
+        if (this.pptHistoryIndex >= 0 && this.pptHistory[this.pptHistoryIndex]) {
+            const lastJson = JSON.stringify(this.pptHistory[this.pptHistoryIndex].presentation);
+            if (currentJson === lastJson && (this.activeSlideIndex || 0) === this.pptHistory[this.pptHistoryIndex].slideIndex) {
+                return;
+            }
+        }
+        if (this.pptHistoryIndex < this.pptHistory.length - 1) {
+            this.pptHistory = this.pptHistory.slice(0, this.pptHistoryIndex + 1);
+        }
+        const snapshot = {
+            presentation: JSON.parse(currentJson),
+            slideIndex: this.activeSlideIndex || 0,
+            action: action
+        };
+        this.pptHistory.push(snapshot);
+        if (this.pptHistory.length > 50) {
+            this.pptHistory.shift();
+        }
+        this.pptHistoryIndex = this.pptHistory.length - 1;
+        this.updateUndoRedoButtons();
+    }
+
+    undoPPT() {
+        if (this.pptHistoryIndex > 0) {
+            this.pptHistoryIndex--;
+            const state = this.pptHistory[this.pptHistoryIndex];
+            this.activePresentation = JSON.parse(JSON.stringify(state.presentation));
+            this.activeSlideIndex = Math.min(state.slideIndex || 0, (this.activePresentation.slides?.length || 1) - 1);
+            this.renderSlideDeck();
+            this.renderCurrentSlideCanvas();
+            this.updateUndoRedoButtons();
+            try { sound.playClick(); } catch(e) {}
+            this.showToast('↩️ Đã hoàn tác (Undo)', 1200);
+        } else {
+            this.showToast('ℹ️ Đang ở trạng thái ban đầu, chưa có thao tác để hoàn tác.', 1500);
+        }
+    }
+
+    redoPPT() {
+        if (this.pptHistory && this.pptHistoryIndex < this.pptHistory.length - 1) {
+            this.pptHistoryIndex++;
+            const state = this.pptHistory[this.pptHistoryIndex];
+            this.activePresentation = JSON.parse(JSON.stringify(state.presentation));
+            this.activeSlideIndex = Math.min(state.slideIndex || 0, (this.activePresentation.slides?.length || 1) - 1);
+            this.renderSlideDeck();
+            this.renderCurrentSlideCanvas();
+            this.updateUndoRedoButtons();
+            try { sound.playClick(); } catch(e) {}
+            this.showToast('↪️ Đã làm lại (Redo)', 1200);
+        } else {
+            this.showToast('ℹ️ Không còn thao tác nào để làm lại (Redo).', 1500);
+        }
+    }
+
+    updateUndoRedoButtons() {
+        const btnUndo = document.getElementById('btnPptUndo');
+        const btnRedo = document.getElementById('btnPptRedo');
+        const canUndo = this.pptHistoryIndex > 0;
+        const canRedo = this.pptHistory && this.pptHistoryIndex < this.pptHistory.length - 1;
+        if (btnUndo) {
+            btnUndo.style.opacity = canUndo ? '1' : '0.5';
+            btnUndo.style.cursor = canUndo ? 'pointer' : 'default';
+            btnUndo.title = canUndo ? 'Hoàn tác thao tác trước (Ctrl+Z)' : 'Chưa có thao tác để hoàn tác';
+        }
+        if (btnRedo) {
+            btnRedo.style.opacity = canRedo ? '1' : '0.5';
+            btnRedo.style.cursor = canRedo ? 'pointer' : 'default';
+            btnRedo.title = canRedo ? 'Làm lại thao tác vừa hủy (Ctrl+Y)' : 'Chưa có thao tác để làm lại';
+        }
+    }
+
+    getShapeSvgContent(shapeType, fillColor = '#3b82f6') {
+        if (shapeType === 'rect') {
+            return `<rect x="5" y="5" width="90%" height="90%" rx="6" fill="${fillColor}" stroke="#1d4ed8" stroke-width="2"/>`;
+        } else if (shapeType === 'circle') {
+            return `<circle cx="50%" cy="50%" r="42%" fill="${fillColor}" stroke="#1d4ed8" stroke-width="2"/>`;
+        } else if (shapeType === 'triangle') {
+            return `<polygon points="50,5 95,95 5,95" fill="${fillColor}" stroke="#1d4ed8" stroke-width="2"/>`;
+        } else if (shapeType === 'arrow') {
+            return `<polygon points="5,35 60,35 60,15 95,50 60,85 60,65 5,65" fill="${fillColor}" stroke="#1d4ed8" stroke-width="2"/>`;
+        } else if (shapeType === 'star') {
+            return `<polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" fill="${fillColor}" stroke="#d97706" stroke-width="2"/>`;
+        }
+        return `<rect x="5" y="5" width="90%" height="90%" rx="6" fill="${fillColor}"/>`;
+    }
+
+    // =========================================================================
+    // QUẢN LÝ CLIPBOARD SLIDE (CUT - COPY - PASTE THEO YÊU CẦU CỦA THẦY QUAN)
+    // =========================================================================
+    copyCurrentSlide() {
+        const cur = this.activePresentation?.slides[this.activeSlideIndex];
+        if (!cur) return;
+        this.slideClipboard = JSON.parse(JSON.stringify(cur));
+        try { sound.playClick(); } catch(e) {}
+        this.showToast(`📋 Đã copy Slide ${this.activeSlideIndex + 1} vào bộ nhớ tạm!`, 2500);
+    }
+
+    cutCurrentSlide() {
+        const slides = this.activePresentation?.slides;
+        if (!slides || slides.length <= 1) {
+            alert("Bài giảng cần có tối thiểu 1 slide, không thể cắt slide duy nhất!");
+            return;
+        }
+        const cur = slides[this.activeSlideIndex];
+        this.slideClipboard = JSON.parse(JSON.stringify(cur));
+        slides.splice(this.activeSlideIndex, 1);
+        if (this.activeSlideIndex >= slides.length) {
+            this.activeSlideIndex = slides.length - 1;
+        }
+        try { sound.playTick(); } catch(e) {}
+        this.renderSlideDeck();
+        this.renderCurrentSlideCanvas();
+        this.recordPPTHistory('Cắt slide');
+        this.showToast("✂️ Đã cắt slide vào bộ nhớ tạm!", 2500);
+    }
+
+    pasteSlide() {
+        if (!this.slideClipboard) {
+            alert("Bộ nhớ tạm đang trống! Thầy vui lòng chọn một slide và bấm Copy hoặc Cut trước.");
+            return;
+        }
+        const slides = this.activePresentation?.slides;
+        if (!slides) return;
+
+        const newSlide = JSON.parse(JSON.stringify(this.slideClipboard));
+        newSlide.id = 'slide_' + Date.now();
+        newSlide.title = (newSlide.title || 'Slide').replace(/\s*\(Bản sao\)*$/, '') + ' (Bản sao)';
+
+        slides.splice(this.activeSlideIndex + 1, 0, newSlide);
+        this.activeSlideIndex++;
+        try { sound.playFanfare(); } catch(e) {}
+        this.renderSlideDeck();
+        this.renderCurrentSlideCanvas();
+        this.recordPPTHistory('Dán slide');
+        this.showToast(`📄 Đã dán slide mới vào vị trí ${this.activeSlideIndex + 1}!`, 2500);
+    }
+
+    // =========================================================================
+    // ĐỐI TƯỢNG ĐỘNG TRÊN CANVAS (HỘP CHỮ, ẢNH, BẢNG, HÌNH HỌC, TOÁN)
+    // =========================================================================
+    addCanvasObject(obj) {
+        const cur = this.activePresentation?.slides[this.activeSlideIndex];
+        if (!cur) return;
+        if (!Array.isArray(cur.canvasObjects)) {
+            cur.canvasObjects = [];
+        }
+        cur.canvasObjects.push(obj);
+        this.renderDynamicCanvasObjects();
+        this.recordPPTHistory('Thêm đối tượng: ' + (obj.title || obj.type));
+        try { sound.playFanfare(); } catch(e) {}
+    }
+
+    removeCanvasObject(objId) {
+        const cur = this.activePresentation?.slides[this.activeSlideIndex];
+        if (!cur || !Array.isArray(cur.canvasObjects)) return;
+        cur.canvasObjects = cur.canvasObjects.filter(o => o.id !== objId);
+        this.renderDynamicCanvasObjects();
+        this.recordPPTHistory('Xóa đối tượng');
+        try { sound.playClick(); } catch(e) {}
+    }
+
+    renderDynamicCanvasObjects() {
+        const layer = document.getElementById('slideDynamicObjectsLayer');
+        if (!layer) return;
+        layer.innerHTML = '';
+
+        const cur = this.activePresentation?.slides[this.activeSlideIndex];
+        if (!cur || !Array.isArray(cur.canvasObjects) || cur.canvasObjects.length === 0) return;
+
+        cur.canvasObjects.forEach(obj => {
+            const el = document.createElement('div');
+            el.className = `ppt-canvas-object ppt-canvas-object-${obj.type || 'generic'}`;
+            el.id = obj.id;
+            el.style.left = `${obj.x || 60}px`;
+            el.style.top = `${obj.y || 60}px`;
+            if (obj.width) el.style.width = `${obj.width}px`;
+            if (obj.height) el.style.height = `${obj.height}px`;
+
+            let bodyHtml = '';
+            let headerActionsHtml = '';
+
+            // 1. NỘI DUNG VÀ NÚT TÁC VỤ CHO TỪNG LOẠI ĐỐI TƯỢNG
+            if (obj.type === 'textbox') {
+                const isBold = obj.fontWeight === 'bold';
+                const isItalic = obj.fontStyle === 'italic';
+                const isUnderline = obj.textDecoration === 'underline';
+                
+                headerActionsHtml = `
+                    <div class="ppt-obj-actions-toolbar">
+                        <button type="button" class="ppt-act-btn btn-tb-bold ${isBold ? 'active' : ''}" title="In đậm (Bold)"><b>B</b></button>
+                        <button type="button" class="ppt-act-btn btn-tb-italic ${isItalic ? 'active' : ''}" title="In nghiêng (Italic)"><i>I</i></button>
+                        <button type="button" class="ppt-act-btn btn-tb-underline ${isUnderline ? 'active' : ''}" title="Gạch chân (Underline)"><u>U</u></button>
+                        <span class="ppt-act-divider"></span>
+                        <button type="button" class="ppt-act-btn btn-tb-font-inc" title="Tăng cỡ chữ (A+)">A<sup>+</sup></button>
+                        <button type="button" class="ppt-act-btn btn-tb-font-dec" title="Giảm cỡ chữ (A-)">A<sup>-</sup></button>
+                        <span class="ppt-act-divider"></span>
+                        <div class="ppt-color-btn-wrap" title="Đổi màu chữ">
+                            <span class="ppt-color-indicator" style="color: ${obj.textColor || '#0f172a'};">A</span>
+                            <input type="color" class="ppt-tb-color-picker" value="${obj.textColor || '#0f172a'}">
+                        </div>
+                        <button type="button" class="ppt-act-btn btn-tb-bg-toggle" title="Đổi kiểu nền: Nền trắng / Trong suốt / Nền tối / Giấy note vàng">🪟 Nền</button>
+                        <button type="button" class="ppt-act-btn btn-tb-align-toggle" title="Căn lề: Trái / Giữa / Phải">⬌</button>
+                        <span class="ppt-act-divider"></span>
+                        <button type="button" class="ppt-obj-close" title="Xóa hộp chữ này">✕</button>
+                    </div>
+                `;
+
+                bodyHtml = `<div class="ppt-textbox-inner" contenteditable="true" spellcheck="false">${obj.content || 'Nhập nội dung...'}</div>`;
+
+            } else if (obj.type === 'table') {
+                const rows = obj.rows || 3;
+                const cols = obj.cols || 3;
+                const theme = obj.themeColor || 'blue';
+                const bg = obj.bgType || 'white';
+                const bw = (obj.borderWidth !== undefined) ? obj.borderWidth : 1;
+                const align = obj.textAlign || 'center';
+
+                headerActionsHtml = `
+                    <div class="ppt-obj-actions-toolbar">
+                        <button type="button" class="ppt-act-btn btn-tbl-add-row" title="Thêm một hàng (dòng) mới">➕ Hàng</button>
+                        <button type="button" class="ppt-act-btn btn-tbl-del-row" title="Xóa bớt một hàng cuối">➖ Hàng</button>
+                        <span class="ppt-act-divider"></span>
+                        <button type="button" class="ppt-act-btn btn-tbl-add-col" title="Thêm một cột mới vào bên phải">➕ Cột</button>
+                        <button type="button" class="ppt-act-btn btn-tbl-del-col" title="Xóa bớt một cột cuối">➖ Cột</button>
+                        <span class="ppt-act-divider"></span>
+                        <button type="button" class="ppt-act-btn btn-tbl-theme" title="Đổi màu sắc tiêu đề Bảng (Xanh, Xanh lá, Đỏ, Tím, Tối)">🎨 Màu</button>
+                        <button type="button" class="ppt-act-btn btn-tbl-bg" title="Đổi màu nền bảng (Trắng / Trong suốt / Tối / Giấy vàng)">🪟 Nền</button>
+                        <button type="button" class="ppt-act-btn btn-tbl-border-inc" title="Tăng độ dày đường kẻ bảng">➕ Viền</button>
+                        <button type="button" class="ppt-act-btn btn-tbl-border-dec" title="Giảm độ dày đường kẻ bảng / ẩn viền">➖ Viền</button>
+                        <button type="button" class="ppt-act-btn btn-tbl-align" title="Căn lề chữ ô: Giữa / Trái">⬌ Căn lề</button>
+                        <span class="ppt-act-divider"></span>
+                        <button type="button" class="ppt-obj-close" title="Xóa bảng này">✕</button>
+                    </div>
+                `;
+
+                let tHtml = `<table class="ppt-table-inner ppt-table-theme-${theme} ppt-table-bg-${bg} ppt-table-border-${bw}" style="text-align: ${align};">`;
+                for (let r = 0; r < rows; r++) {
+                    tHtml += '<tr>';
+                    for (let c = 0; c < cols; c++) {
+                        const cellVal = (obj.data && obj.data[r] && obj.data[r][c] !== undefined) ? obj.data[r][c] : (r === 0 ? `Tiêu đề ${c + 1}` : `Dữ liệu`);
+                        const tag = r === 0 ? 'th' : 'td';
+                        tHtml += `<${tag} contenteditable="true" style="text-align: ${align};">${cellVal}</${tag}>`;
+                    }
+                    tHtml += '</tr>';
+                }
+                tHtml += '</table>';
+                bodyHtml = tHtml;
+
+            } else if (obj.type === 'audio') {
+                headerActionsHtml = `
+                    <div class="ppt-obj-actions-toolbar">
+                        <button type="button" class="ppt-obj-close" title="Xóa tệp âm thanh này">✕</button>
+                    </div>
+                `;
+                bodyHtml = `
+                    <div class="ppt-audio-widget">
+                        <div style="font-size: 0.72rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            🎵 ${obj.audioTitle || 'Tệp âm thanh'}
+                        </div>
+                        <audio controls class="ppt-audio-player" src="${obj.src}">
+                            Trình duyệt không hỗ trợ phát âm thanh.
+                        </audio>
+                    </div>
+                `;
+
+            } else if (obj.type === 'image') {
+                headerActionsHtml = `
+                    <div class="ppt-obj-actions-toolbar">
+                        <button type="button" class="ppt-act-btn btn-img-size-inc" title="Phóng to ảnh (10%)">🔍+</button>
+                        <button type="button" class="ppt-act-btn btn-img-size-dec" title="Thu nhỏ ảnh (10%)">🔍-</button>
+                        <span class="ppt-act-divider"></span>
+                        <button type="button" class="ppt-obj-close" title="Xóa hình ảnh">✕</button>
+                    </div>
+                `;
+                bodyHtml = `<img class="ppt-img-inner" src="${obj.src}" alt="${obj.title || 'Hình ảnh'}">`;
+
+            } else if (obj.type === 'math') {
+                headerActionsHtml = `
+                    <div class="ppt-obj-actions-toolbar">
+                        <button type="button" class="ppt-act-btn btn-math-edit" title="Chỉnh sửa mã công thức LaTeX">✏️ Sửa</button>
+                        <span class="ppt-act-divider"></span>
+                        <button type="button" class="ppt-obj-close" title="Xóa công thức">✕</button>
+                    </div>
+                `;
+                bodyHtml = `<div class="ppt-math-inner">$${obj.formula || 'x = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}'}$</div>`;
+
+            } else if (obj.type === 'shape') {
+                const shapeType = obj.shapeType || 'rect';
+                const fillColor = obj.fillColor || '#3b82f6';
+                headerActionsHtml = `
+                    <div class="ppt-obj-actions-toolbar">
+                        <div class="ppt-color-btn-wrap" title="Đổi màu hình khối">
+                            <span class="ppt-color-indicator">🎨</span>
+                            <input type="color" class="ppt-shape-color-picker" value="${fillColor}">
+                        </div>
+                        <span class="ppt-act-divider"></span>
+                        <button type="button" class="ppt-obj-close" title="Xóa hình khối">✕</button>
+                    </div>
+                `;
+                let svgContent = '';
+                if (shapeType === 'rect') {
+                    svgContent = `<rect x="5" y="5" width="90%" height="90%" rx="6" fill="${fillColor}" stroke="#1d4ed8" stroke-width="2"/>`;
+                } else if (shapeType === 'circle') {
+                    svgContent = `<circle cx="50%" cy="50%" r="42%" fill="${fillColor}" stroke="#1d4ed8" stroke-width="2"/>`;
+                } else if (shapeType === 'triangle') {
+                    svgContent = `<polygon points="50,5 95,95 5,95" fill="${fillColor}" stroke="#1d4ed8" stroke-width="2"/>`;
+                } else if (shapeType === 'arrow') {
+                    svgContent = `<polygon points="5,35 60,35 60,15 95,50 60,85 60,65 5,65" fill="${fillColor}" stroke="#1d4ed8" stroke-width="2"/>`;
+                } else if (shapeType === 'star') {
+                    svgContent = `<polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" fill="${fillColor}" stroke="#d97706" stroke-width="2"/>`;
+                }
+                bodyHtml = `<svg class="ppt-shape-svg" viewBox="0 0 100 100" preserveAspectRatio="none">${svgContent}</svg>`;
+            }
+
+            el.innerHTML = `
+                <div class="ppt-obj-header">
+                    <div class="ppt-obj-title-drag">
+                        <span>${obj.title || 'Đối tượng'}</span>
+                    </div>
+                    ${headerActionsHtml}
+                </div>
+                <div class="ppt-obj-body">${bodyHtml}</div>
+            `;
+
+            // Áp dụng định dạng tùy chỉnh cho TextBox
+            if (obj.type === 'textbox') {
+                const tbInner = el.querySelector('.ppt-textbox-inner');
+                if (tbInner) {
+                    if (obj.fontSize) tbInner.style.fontSize = obj.fontSize;
+                    if (obj.fontWeight) tbInner.style.fontWeight = obj.fontWeight;
+                    if (obj.fontStyle) tbInner.style.fontStyle = obj.fontStyle;
+                    if (obj.textDecoration) tbInner.style.textDecoration = obj.textDecoration;
+                    if (obj.textColor) tbInner.style.color = obj.textColor;
+                    if (obj.textAlign) tbInner.style.textAlign = obj.textAlign;
+                }
+                const bgType = obj.bgType || 'white';
+                if (bgType === 'transparent') {
+                    el.style.background = 'transparent';
+                    el.style.borderColor = 'rgba(255, 255, 255, 0.45)';
+                    el.style.boxShadow = 'none';
+                } else if (bgType === 'dark') {
+                    el.style.background = 'rgba(15, 23, 42, 0.92)';
+                    el.style.borderColor = '#334155';
+                    if (!obj.textColor && tbInner) tbInner.style.color = '#f8fafc';
+                } else if (bgType === 'yellow') {
+                    el.style.background = '#fef08a';
+                    el.style.borderColor = '#eab308';
+                    if (!obj.textColor && tbInner) tbInner.style.color = '#713f12';
+                } else {
+                    el.style.background = 'rgba(255, 255, 255, 0.98)';
+                    el.style.borderColor = 'rgba(59, 130, 246, 0.7)';
+                }
+            }
+
+            // Xóa đối tượng khi bấm ×
+            el.querySelector('.ppt-obj-close')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.removeCanvasObject(obj.id);
+            });
+
+            // GẮN SỰ KIỆN NÚT LỆNH THAO TÁC CHO BẢNG (TABLE)
+            if (obj.type === 'table') {
+                // Thêm hàng
+                el.querySelector('.btn-tbl-add-row')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.rows = (obj.rows || 3) + 1;
+                    if (!Array.isArray(obj.data)) obj.data = [];
+                    const newRow = [];
+                    for (let c = 0; c < (obj.cols || 3); c++) {
+                        newRow.push('Dữ liệu');
+                    }
+                    obj.data.push(newRow);
+                    obj.title = `Bảng ${obj.rows}x${obj.cols}`;
+                    obj.height = Math.min(420, (obj.height || 180) + 38);
+                    this.renderDynamicCanvasObjects();
+                    this.showToast(`➕ Đã thêm 1 hàng! (Bảng hiện có ${obj.rows} hàng)`, 1800);
+                });
+
+                // Xóa hàng
+                el.querySelector('.btn-tbl-del-row')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    if ((obj.rows || 3) <= 1) {
+                        this.showToast(`⚠️ Bảng cần giữ lại tối thiểu 1 hàng!`, 1800);
+                        return;
+                    }
+                    obj.rows -= 1;
+                    if (Array.isArray(obj.data) && obj.data.length > 0) {
+                        obj.data.pop();
+                    }
+                    obj.title = `Bảng ${obj.rows}x${obj.cols}`;
+                    obj.height = Math.max(90, (obj.height || 180) - 38);
+                    this.renderDynamicCanvasObjects();
+                    this.showToast(`➖ Đã xóa hàng cuối! (Còn ${obj.rows} hàng)`, 1800);
+                });
+
+                // Thêm cột
+                el.querySelector('.btn-tbl-add-col')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.cols = (obj.cols || 3) + 1;
+                    if (!Array.isArray(obj.data)) obj.data = [];
+                    obj.data.forEach((row, rIdx) => {
+                        row.push(rIdx === 0 ? `Tiêu đề ${obj.cols}` : 'Dữ liệu');
+                    });
+                    obj.title = `Bảng ${obj.rows}x${obj.cols}`;
+                    obj.width = Math.min(750, (obj.width || 340) + 85);
+                    this.renderDynamicCanvasObjects();
+                    this.showToast(`➕ Đã thêm 1 cột! (Bảng hiện có ${obj.cols} cột)`, 1800);
+                });
+
+                // Xóa cột
+                el.querySelector('.btn-tbl-del-col')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    if ((obj.cols || 3) <= 1) {
+                        this.showToast(`⚠️ Bảng cần giữ lại tối thiểu 1 cột!`, 1800);
+                        return;
+                    }
+                    obj.cols -= 1;
+                    if (Array.isArray(obj.data)) {
+                        obj.data.forEach(row => row.pop());
+                    }
+                    obj.title = `Bảng ${obj.rows}x${obj.cols}`;
+                    obj.width = Math.max(140, (obj.width || 340) - 85);
+                    this.renderDynamicCanvasObjects();
+                    this.showToast(`➖ Đã xóa cột cuối! (Còn ${obj.cols} cột)`, 1800);
+                });
+
+                // Đổi Theme màu Bảng
+                el.querySelector('.btn-tbl-theme')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    const themes = ['blue', 'green', 'purple', 'amber', 'dark'];
+                    const currentTheme = obj.themeColor || 'blue';
+                    const nextIdx = (themes.indexOf(currentTheme) + 1) % themes.length;
+                    obj.themeColor = themes[nextIdx];
+                    this.renderDynamicCanvasObjects();
+                    this.recordPPTHistory?.('Đổi màu bảng');
+                    const themeNames = { blue: 'Xanh dương GDPT', green: 'Xanh ngọc', purple: 'Tím hoa sim', amber: 'Cam hổ phách', dark: 'Xám sang trọng' };
+                    this.showToast(`🎨 Màu bảng: ${themeNames[obj.themeColor]}`, 1800);
+                });
+
+                // Đổi màu nền Bảng (Trắng / Trong suốt / Tối / Giấy vàng - Theo chỉ đạo của Thầy Quan)
+                el.querySelector('.btn-tbl-bg')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    const bgList = ['white', 'transparent', 'dark', 'yellow'];
+                    const curIdx = bgList.indexOf(obj.bgType || 'white');
+                    const nextIdx = (curIdx + 1) % bgList.length;
+                    obj.bgType = bgList[nextIdx];
+                    this.renderDynamicCanvasObjects();
+                    this.recordPPTHistory?.('Đổi nền bảng');
+                    const bgLabels = {
+                        white: 'Nền giấy trắng',
+                        transparent: 'Nền trong suốt',
+                        dark: 'Nền xám tối',
+                        yellow: 'Nền giấy vàng'
+                    };
+                    this.showToast(`🪟 Nền bảng: ${bgLabels[obj.bgType]}`, 1500);
+                });
+
+                // Tăng độ dày đường kẻ bảng
+                el.querySelector('.btn-tbl-border-inc')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.borderWidth = Math.min(4, ((obj.borderWidth !== undefined) ? obj.borderWidth : 1) + 1);
+                    this.renderDynamicCanvasObjects();
+                    this.recordPPTHistory?.('Tăng viền bảng');
+                    this.showToast(`➕ Đường kẻ bảng: ${obj.borderWidth}px`, 1200);
+                });
+
+                // Giảm độ dày đường kẻ bảng (xuống 0 là ẩn viền)
+                el.querySelector('.btn-tbl-border-dec')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.borderWidth = Math.max(0, ((obj.borderWidth !== undefined) ? obj.borderWidth : 1) - 1);
+                    this.renderDynamicCanvasObjects();
+                    this.recordPPTHistory?.('Giảm viền bảng');
+                    this.showToast(`➖ Đường kẻ bảng: ${obj.borderWidth === 0 ? 'Ẩn viền' : obj.borderWidth + 'px'}`, 1200);
+                });
+
+                // Căn lề Bảng
+                el.querySelector('.btn-tbl-align')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.textAlign = (obj.textAlign === 'center') ? 'left' : 'center';
+                    this.renderDynamicCanvasObjects();
+                    this.recordPPTHistory?.('Căn lề bảng');
+                    this.showToast(`⬌ Căn lề bảng: ${obj.textAlign === 'center' ? 'Căn giữa' : 'Căn trái'}`, 1500);
+                });
+            }
+
+            // GẮN SỰ KIỆN NÚT LỆNH THAO TÁC CHO HỘP CHỮ (TEXTBOX)
+            if (obj.type === 'textbox') {
+                const tbInner = el.querySelector('.ppt-textbox-inner');
+
+                // In đậm
+                el.querySelector('.btn-tb-bold')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.fontWeight = (obj.fontWeight === 'bold') ? 'normal' : 'bold';
+                    if (tbInner) tbInner.style.fontWeight = obj.fontWeight;
+                    e.currentTarget.classList.toggle('active', obj.fontWeight === 'bold');
+                });
+
+                // In nghiêng
+                el.querySelector('.btn-tb-italic')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.fontStyle = (obj.fontStyle === 'italic') ? 'normal' : 'italic';
+                    if (tbInner) tbInner.style.fontStyle = obj.fontStyle;
+                    e.currentTarget.classList.toggle('active', obj.fontStyle === 'italic');
+                });
+
+                // Gạch chân
+                el.querySelector('.btn-tb-underline')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.textDecoration = (obj.textDecoration === 'underline') ? 'none' : 'underline';
+                    if (tbInner) tbInner.style.textDecoration = obj.textDecoration;
+                    e.currentTarget.classList.toggle('active', obj.textDecoration === 'underline');
+                });
+
+                // Tăng cỡ chữ
+                el.querySelector('.btn-tb-font-inc')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    let sz = parseInt(obj.fontSize || 18) || 18;
+                    sz = Math.min(64, sz + 2);
+                    obj.fontSize = sz + 'px';
+                    if (tbInner) tbInner.style.fontSize = obj.fontSize;
+                    this.showToast(`Cỡ chữ: ${sz}pt`, 1200);
+                });
+
+                // Giảm cỡ chữ
+                el.querySelector('.btn-tb-font-dec')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    let sz = parseInt(obj.fontSize || 18) || 18;
+                    sz = Math.max(12, sz - 2);
+                    obj.fontSize = sz + 'px';
+                    if (tbInner) tbInner.style.fontSize = obj.fontSize;
+                    this.showToast(`Cỡ chữ: ${sz}pt`, 1200);
+                });
+
+                // Đổi màu chữ qua color picker
+                const colorPicker = el.querySelector('.ppt-tb-color-picker');
+                const colorIndicator = el.querySelector('.ppt-color-indicator');
+                colorPicker?.addEventListener('input', (e) => {
+                    e.stopPropagation();
+                    const col = e.target.value;
+                    obj.textColor = col;
+                    if (tbInner) tbInner.style.color = col;
+                    if (colorIndicator) colorIndicator.style.color = col;
+                });
+
+                // Đổi kiểu nền (Trong suốt / Trắng / Tối / Giấy note vàng)
+                el.querySelector('.btn-tb-bg-toggle')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    const bgTypes = ['white', 'transparent', 'dark', 'yellow'];
+                    const currentBg = obj.bgType || 'white';
+                    const nextIdx = (bgTypes.indexOf(currentBg) + 1) % bgTypes.length;
+                    obj.bgType = bgTypes[nextIdx];
+                    this.renderDynamicCanvasObjects();
+                    const bgLabels = {
+                        white: 'Nền giấy trắng',
+                        transparent: 'Nền trong suốt (Chữ nổi trên slide)',
+                        dark: 'Nền đen mờ',
+                        yellow: 'Giấy note vàng'
+                    };
+                    this.showToast(`🪟 Kiểu nền: ${bgLabels[obj.bgType]}`, 1800);
+                });
+
+                // Căn lề văn bản
+                el.querySelector('.btn-tb-align-toggle')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    const aligns = ['left', 'center', 'right'];
+                    const currentAlign = obj.textAlign || 'left';
+                    const nextIdx = (aligns.indexOf(currentAlign) + 1) % aligns.length;
+                    obj.textAlign = aligns[nextIdx];
+                    if (tbInner) tbInner.style.textAlign = obj.textAlign;
+                    const alignLabels = { left: 'Căn trái', center: 'Căn giữa', right: 'Căn phải' };
+                    this.showToast(`⬌ Căn lề: ${alignLabels[obj.textAlign]}`, 1200);
+                });
+            }
+
+            // GẮN SỰ KIỆN CHO ẢNH, TOÁN, HÌNH HỌC
+            if (obj.type === 'image') {
+                el.querySelector('.btn-img-size-inc')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.width = Math.min(800, Math.round((obj.width || 260) * 1.1));
+                    obj.height = Math.min(600, Math.round((obj.height || 170) * 1.1));
+                    el.style.width = `${obj.width}px`;
+                    el.style.height = `${obj.height}px`;
+                });
+                el.querySelector('.btn-img-size-dec')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sound.playClick?.();
+                    obj.width = Math.max(90, Math.round((obj.width || 260) * 0.9));
+                    obj.height = Math.max(60, Math.round((obj.height || 170) * 0.9));
+                    el.style.width = `${obj.width}px`;
+                    el.style.height = `${obj.height}px`;
+                });
+            }
+
+            if (obj.type === 'math') {
+                el.querySelector('.btn-math-edit')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const newFormula = prompt('Chỉnh sửa công thức LaTeX:', obj.formula || '');
+                    if (newFormula !== null && newFormula.trim()) {
+                        obj.formula = newFormula.trim();
+                        this.renderDynamicCanvasObjects();
+                    }
+                });
+            }
+
+            if (obj.type === 'shape') {
+                el.querySelector('.ppt-shape-color-picker')?.addEventListener('input', (e) => {
+                    e.stopPropagation();
+                    obj.fillColor = e.target.value;
+                    this.renderDynamicCanvasObjects();
+                });
+            }
+
+            // Đồng bộ chỉnh sửa nội dung TextBox khi gõ
+            const textBoxInner = el.querySelector('.ppt-textbox-inner');
+            if (textBoxInner) {
+                textBoxInner.addEventListener('input', () => {
+                    obj.content = textBoxInner.innerHTML;
+                });
+            }
+
+            // Đồng bộ chỉnh sửa nội dung Bảng khi gõ
+            const tableInner = el.querySelector('.ppt-table-inner');
+            if (tableInner) {
+                tableInner.addEventListener('input', () => {
+                    const rowsData = [];
+                    tableInner.querySelectorAll('tr').forEach(tr => {
+                        const row = [];
+                        tr.querySelectorAll('th, td').forEach(cell => row.push(cell.innerText));
+                        rowsData.push(row);
+                    });
+                    obj.data = rowsData;
+                });
+            }
+
+            // Kéo - thả di chuyển đối tượng trên canvas
+            this.makeCanvasObjectDraggable(el, obj);
+
+            // Bắt sự kiện chọn đối tượng để đồng bộ thanh Ribbon phía trên
+            el.addEventListener('mousedown', () => {
+                document.querySelectorAll('.ppt-canvas-object').forEach(o => o.classList.remove('selected'));
+                el.classList.add('selected');
+                this._selectedCanvasObj = obj;
+            });
+
+            layer.appendChild(el);
+        });
+
+        // Kích hoạt render công thức MathJax / KaTeX nếu có
+        if (window.renderMathInElement) {
+            try { window.renderMathInElement(layer); } catch(e) {}
+        }
+    }
+
+    makeCanvasObjectDraggable(element, objData) {
+        const header = element.querySelector('.ppt-obj-header');
+        if (!header) return;
+
+        let isDragging = false;
+        let startX = 0, startY = 0, initLeft = 0, initTop = 0;
+
+        header.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.ppt-obj-close')) return;
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initLeft = element.offsetLeft;
+            initTop = element.offsetTop;
+
+            document.querySelectorAll('.ppt-canvas-object').forEach(o => o.classList.remove('selected'));
+            element.classList.add('selected');
+
+            const onMouseMove = (moveEvt) => {
+                if (!isDragging) return;
+                const dx = moveEvt.clientX - startX;
+                const dy = moveEvt.clientY - startY;
+                const newLeft = Math.max(10, initLeft + dx);
+                const newTop = Math.max(10, initTop + dy);
+                element.style.left = `${newLeft}px`;
+                element.style.top = `${newTop}px`;
+                objData.x = newLeft;
+                objData.y = newTop;
+            };
+
+            const onMouseUp = () => {
+                if (isDragging) {
+                    isDragging = false;
+                    window.removeEventListener('mousemove', onMouseMove);
+                    window.removeEventListener('mouseup', onMouseUp);
+                    objData.width = element.offsetWidth;
+                    objData.height = element.offsetHeight;
+                }
+            };
+
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        });
+    }
+
+    bindPPTRibbonEvents() {
+        if (this._pptRibbonBound) return;
+        this._pptRibbonBound = true;
+
+        // 1. Chuyển đổi giữa 3 Tab Ribbon: Định dạng chữ, Chèn đối tượng, Theme & Bố cục
+        document.querySelectorAll('.ppt-ribbon-tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tab = e.currentTarget.dataset.tab;
+                document.querySelectorAll('.ppt-ribbon-tab-btn').forEach(b => b.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+
+                document.getElementById('ribbonPanelFormat')?.classList.toggle('active', tab === 'format');
+                document.getElementById('ribbonPanelInsert')?.classList.toggle('active', tab === 'insert');
+                document.getElementById('ribbonPanelDesign')?.classList.toggle('active', tab === 'design');
+                try { sound.playClick(); } catch(e) {}
+            });
+        });
+
+        // 2. Font chữ & Cỡ chữ
+        const fontSelect = document.getElementById('pptFontFamilySelect');
+        const sizeSelect = document.getElementById('pptFontSizeSelect');
+        const contentInput = document.getElementById('slideContentInput');
+        const content2Input = document.getElementById('slideContent2Input');
+        const titleInput = document.getElementById('slideTitleInput');
+
+        fontSelect?.addEventListener('change', (e) => {
+            const font = e.target.value;
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) cur.fontFamily = font;
+            if (contentInput) contentInput.style.fontFamily = font;
+            if (content2Input) content2Input.style.fontFamily = font;
+            if (titleInput) titleInput.style.fontFamily = font;
+            this.recordPPTHistory('Đổi phông chữ: ' + font);
+        });
+
+        sizeSelect?.addEventListener('change', (e) => {
+            const sz = e.target.value + 'px';
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) cur.fontSize = sz;
+            if (contentInput) contentInput.style.fontSize = sz;
+            if (content2Input) content2Input.style.fontSize = sz;
+            this.recordPPTHistory('Đổi cỡ chữ: ' + sz);
+        });
+
+        document.getElementById('btnPptFontIncrease')?.addEventListener('click', () => {
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            let curSz = parseInt(cur?.fontSize || sizeSelect?.value || 24);
+            curSz = Math.min(54, curSz + 2);
+            if (sizeSelect) sizeSelect.value = String(curSz);
+            if (cur) cur.fontSize = curSz + 'px';
+            if (contentInput) contentInput.style.fontSize = curSz + 'px';
+            if (content2Input) content2Input.style.fontSize = curSz + 'px';
+            this.recordPPTHistory('Tăng cỡ chữ: ' + curSz + 'pt');
+        });
+
+        document.getElementById('btnPptFontDecrease')?.addEventListener('click', () => {
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            let curSz = parseInt(cur?.fontSize || sizeSelect?.value || 24);
+            curSz = Math.max(14, curSz - 2);
+            if (sizeSelect) sizeSelect.value = String(curSz);
+            if (cur) cur.fontSize = curSz + 'px';
+            if (contentInput) contentInput.style.fontSize = curSz + 'px';
+            if (content2Input) content2Input.style.fontSize = curSz + 'px';
+            this.recordPPTHistory('Giảm cỡ chữ: ' + curSz + 'pt');
+        });
+
+        // 3. Kiểu chữ: Bold, Italic, Underline, Strike
+        document.getElementById('btnPptBold')?.addEventListener('click', (e) => {
+            if (this._selectedCanvasObj && this._selectedCanvasObj.type === 'textbox') {
+                this._selectedCanvasObj.fontWeight = (this._selectedCanvasObj.fontWeight === 'bold') ? 'normal' : 'bold';
+                const el = document.getElementById(this._selectedCanvasObj.id);
+                const tb = el?.querySelector('.ppt-textbox-inner');
+                if (tb) tb.style.fontWeight = this._selectedCanvasObj.fontWeight;
+                el?.querySelector('.btn-tb-bold')?.classList.toggle('active', this._selectedCanvasObj.fontWeight === 'bold');
+            }
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            const isBold = cur?.fontWeight === 'bold';
+            if (cur) cur.fontWeight = isBold ? 'normal' : 'bold';
+            e.currentTarget.classList.toggle('active', !isBold);
+            if (contentInput) contentInput.style.fontWeight = cur.fontWeight;
+            if (content2Input) content2Input.style.fontWeight = cur.fontWeight;
+            this.recordPPTHistory('Đổi in đậm (Bold)');
+        });
+
+        document.getElementById('btnPptItalic')?.addEventListener('click', (e) => {
+            if (this._selectedCanvasObj && this._selectedCanvasObj.type === 'textbox') {
+                this._selectedCanvasObj.fontStyle = (this._selectedCanvasObj.fontStyle === 'italic') ? 'normal' : 'italic';
+                const el = document.getElementById(this._selectedCanvasObj.id);
+                const tb = el?.querySelector('.ppt-textbox-inner');
+                if (tb) tb.style.fontStyle = this._selectedCanvasObj.fontStyle;
+                el?.querySelector('.btn-tb-italic')?.classList.toggle('active', this._selectedCanvasObj.fontStyle === 'italic');
+            }
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            const isItalic = cur?.fontStyle === 'italic';
+            if (cur) cur.fontStyle = isItalic ? 'normal' : 'italic';
+            e.currentTarget.classList.toggle('active', !isItalic);
+            if (contentInput) contentInput.style.fontStyle = cur.fontStyle;
+            if (content2Input) content2Input.style.fontStyle = cur.fontStyle;
+            this.recordPPTHistory('Đổi in nghiêng (Italic)');
+        });
+
+        document.getElementById('btnPptUnderline')?.addEventListener('click', (e) => {
+            if (this._selectedCanvasObj && this._selectedCanvasObj.type === 'textbox') {
+                this._selectedCanvasObj.textDecoration = (this._selectedCanvasObj.textDecoration === 'underline') ? 'none' : 'underline';
+                const el = document.getElementById(this._selectedCanvasObj.id);
+                const tb = el?.querySelector('.ppt-textbox-inner');
+                if (tb) tb.style.textDecoration = this._selectedCanvasObj.textDecoration;
+                el?.querySelector('.btn-tb-underline')?.classList.toggle('active', this._selectedCanvasObj.textDecoration === 'underline');
+            }
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            const isUnder = cur?.textDecoration === 'underline';
+            if (cur) cur.textDecoration = isUnder ? 'none' : 'underline';
+            e.currentTarget.classList.toggle('active', !isUnder);
+            if (contentInput) contentInput.style.textDecoration = cur.textDecoration;
+            if (content2Input) content2Input.style.textDecoration = cur.textDecoration;
+            this.recordPPTHistory('Đổi gạch chân (Underline)');
+        });
+
+        document.getElementById('btnPptStrike')?.addEventListener('click', (e) => {
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            const isStrike = cur?.textDecoration === 'line-through';
+            if (cur) cur.textDecoration = isStrike ? 'none' : 'line-through';
+            e.currentTarget.classList.toggle('active', !isStrike);
+            if (contentInput) contentInput.style.textDecoration = cur.textDecoration;
+            if (content2Input) content2Input.style.textDecoration = cur.textDecoration;
+            this.recordPPTHistory('Đổi gạch ngang chữ');
+        });
+
+        // 4. Màu chữ và Màu nền Highlight
+        document.getElementById('pptTextColorPicker')?.addEventListener('input', (e) => {
+            const color = e.target.value;
+            if (this._selectedCanvasObj && this._selectedCanvasObj.type === 'textbox') {
+                this._selectedCanvasObj.textColor = color;
+                const el = document.getElementById(this._selectedCanvasObj.id);
+                const tb = el?.querySelector('.ppt-textbox-inner');
+                if (tb) tb.style.color = color;
+                const ind = el?.querySelector('.ppt-color-indicator');
+                if (ind) ind.style.color = color;
+            }
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) cur.textColor = color;
+            if (contentInput) contentInput.style.color = color;
+            if (content2Input) content2Input.style.color = color;
+            if (titleInput) titleInput.style.color = color;
+            this.recordPPTHistoryDebounced('Đổi màu chữ');
+        });
+
+        document.getElementById('pptHighlightColorPicker')?.addEventListener('input', (e) => {
+            const bg = e.target.value;
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) cur.highlightColor = bg;
+            if (contentInput) contentInput.style.backgroundColor = bg ? `${bg}33` : 'transparent';
+            if (content2Input) content2Input.style.backgroundColor = bg ? `${bg}33` : 'transparent';
+            this.recordPPTHistoryDebounced('Đổi màu nền highlight');
+        });
+
+        // 5. Căn lề: Left, Center, Right, Justify
+        const setAlign = (align) => {
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) cur.textAlign = align;
+            if (contentInput) contentInput.style.textAlign = align;
+            if (content2Input) content2Input.style.textAlign = align;
+            ['btnPptAlignLeft', 'btnPptAlignCenter', 'btnPptAlignRight', 'btnPptAlignJustify'].forEach(id => {
+                document.getElementById(id)?.classList.remove('active');
+            });
+            if (align === 'left') document.getElementById('btnPptAlignLeft')?.classList.add('active');
+            if (align === 'center') document.getElementById('btnPptAlignCenter')?.classList.add('active');
+            if (align === 'right') document.getElementById('btnPptAlignRight')?.classList.add('active');
+            if (align === 'justify') document.getElementById('btnPptAlignJustify')?.classList.add('active');
+            this.recordPPTHistory('Căn lề: ' + align);
+        };
+
+        document.getElementById('btnPptAlignLeft')?.addEventListener('click', () => setAlign('left'));
+        document.getElementById('btnPptAlignCenter')?.addEventListener('click', () => setAlign('center'));
+        document.getElementById('btnPptAlignRight')?.addEventListener('click', () => setAlign('right'));
+        document.getElementById('btnPptAlignJustify')?.addEventListener('click', () => setAlign('justify'));
+
+        // 6. Chèn gạch đầu dòng & số thứ tự
+        document.getElementById('btnPptBulletList')?.addEventListener('click', () => {
+            if (!contentInput) return;
+            const val = contentInput.value;
+            const lines = val.split('\n');
+            const newLines = lines.map(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return line;
+                if (trimmed.startsWith('• ')) return trimmed.substring(2);
+                return '• ' + trimmed.replace(/^([0-9]+\.|\-|\+)\s*/, '');
+            });
+            contentInput.value = newLines.join('\n');
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) cur.content = contentInput.value;
+            this.recordPPTHistory('Gạch đầu dòng');
+        });
+
+        document.getElementById('btnPptNumberedList')?.addEventListener('click', () => {
+            if (!contentInput) return;
+            const val = contentInput.value;
+            const lines = val.split('\n');
+            let idx = 1;
+            const newLines = lines.map(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return line;
+                const clean = trimmed.replace(/^(•|[0-9]+\.|\-|\+)\s*/, '');
+                return `${idx++}. ${clean}`;
+            });
+            contentInput.value = newLines.join('\n');
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) cur.content = contentInput.value;
+            this.recordPPTHistory('Đánh số thứ tự');
+        });
+
+        // 7. CHÈN HỘP CHỮ (TEXT BOX TRÊN CANVAS THEO CHỈ ĐẠO CỦA THẦY QUAN)
+        document.getElementById('btnPptInsertTextBox')?.addEventListener('click', () => {
+            this.addCanvasObject({
+                id: 'obj_tb_' + Date.now(),
+                type: 'textbox',
+                title: 'Hộp Chữ Ghi Chú',
+                x: 80 + Math.floor(Math.random() * 50),
+                y: 70 + Math.floor(Math.random() * 40),
+                width: 290,
+                height: 120,
+                content: 'Nhập nội dung hộp chữ tại đây...',
+                fontSize: '18px',
+                fontWeight: 'normal',
+                fontStyle: 'normal',
+                textDecoration: 'none',
+                textColor: '#0f172a',
+                bgType: 'white',
+                textAlign: 'left'
+            });
+            this.showToast("📝 Đã chèn Hộp Chữ! Thầy có thể dùng các nút B, I, U, A+, A-, 🎨, 🪟 trên thanh tiêu đề để thao tác.", 3500);
+        });
+
+        // 8. CHÈN ẢNH TỪ MÁY TÍNH (KÉO DI CHUYỂN & THAY ĐỔI KÍCH THƯỚC TUỲ Ý)
+        const imgInput = document.getElementById('inputPptImageUpload');
+        document.getElementById('btnPptInsertImage')?.addEventListener('click', () => imgInput?.click());
+        document.getElementById('btnPickSlideImg')?.addEventListener('click', () => imgInput?.click());
+
+        imgInput?.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const f = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    const dataUrl = evt.target.result;
+                    this.addCanvasObject({
+                        id: 'obj_img_' + Date.now(),
+                        type: 'image',
+                        title: f.name.substring(0, 15) || 'Hình ảnh',
+                        x: 90,
+                        y: 80,
+                        width: 260,
+                        height: 170,
+                        src: dataUrl
+                    });
+                    this.showToast("🖼️ Đã chèn ảnh lên slide! Thầy có thể kéo di chuyển và kéo góc để thay đổi kích thước.", 3500);
+                };
+                reader.readAsDataURL(f);
+                e.target.value = '';
+            }
+        });
+
+        // 9. CHÈN BẢNG BIỂU (CHỌN SỐ HÀNG & CỘT THEO CHỈ ĐẠO CỦA THẦY QUAN)
+        document.getElementById('btnPptInsertTable')?.addEventListener('click', () => {
+            const rowsInput = prompt("Nhập số HÀNG của bảng (ví dụ: 3):", "3");
+            if (rowsInput === null) return;
+            const colsInput = prompt("Nhập số CỘT của bảng (ví dụ: 3):", "3");
+            if (colsInput === null) return;
+
+            const rows = Math.max(1, Math.min(10, parseInt(rowsInput) || 3));
+            const cols = Math.max(1, Math.min(8, parseInt(colsInput) || 3));
+
+            const tableData = [];
+            for (let r = 0; r < rows; r++) {
+                const row = [];
+                for (let c = 0; c < cols; c++) {
+                    row.push(r === 0 ? `Tiêu đề ${c + 1}` : `Dữ liệu`);
+                }
+                tableData.push(row);
+            }
+
+            this.addCanvasObject({
+                id: 'obj_tbl_' + Date.now(),
+                type: 'table',
+                title: `Bảng ${rows}x${cols}`,
+                x: 70,
+                y: 60,
+                width: Math.min(520, cols * 115),
+                height: Math.min(260, rows * 45 + 40),
+                rows,
+                cols,
+                data: tableData,
+                themeColor: 'blue',
+                textAlign: 'center'
+            });
+            this.showToast(`📊 Đã chèn Bảng ${rows}x${cols}! Thầy có thể dùng các nút ➕/➖ Hàng, ➕/➖ Cột, 🎨 Màu trên tiêu đề bảng để thao tác.`, 3500);
+        });
+
+        // 10. CHÈN CÔNG THỨC TOÁN LATEX
+        document.getElementById('btnPptInsertMath')?.addEventListener('click', () => {
+            const formula = prompt("Nhập công thức Toán học chuẩn LaTeX (ví dụ: \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}):", "x = \\frac{a + b}{c}");
+            if (formula) {
+                this.addCanvasObject({
+                    id: 'obj_math_' + Date.now(),
+                    type: 'math',
+                    title: 'Công Thức Toán',
+                    x: 80,
+                    y: 70,
+                    width: 250,
+                    height: 80,
+                    formula: formula.trim()
+                });
+                this.showToast("📐 Đã chèn công thức Toán học lên slide!", 2500);
+            }
+        });
+
+        // 11. CÁC NÚT LỆNH CHÈN HÌNH HỌC (THEO CHỈ ĐẠO CỦA THẦY: Ô VUÔNG, TRÒN, TAM GIÁC, MŨI TÊN, NGÔI SAO)
+        document.getElementById('btnPptInsertRect')?.addEventListener('click', () => {
+            this.addCanvasObject({
+                id: 'obj_sh_rect_' + Date.now(),
+                type: 'shape',
+                shapeType: 'rect',
+                title: 'Hình Chữ Nhật',
+                x: 90,
+                y: 70,
+                width: 140,
+                height: 90,
+                fillColor: '#3b82f6'
+            });
+            this.showToast("⬛ Đã chèn Hình Chữ Nhật lên slide!", 2000);
+        });
+
+        document.getElementById('btnPptInsertCircle')?.addEventListener('click', () => {
+            this.addCanvasObject({
+                id: 'obj_sh_circ_' + Date.now(),
+                type: 'shape',
+                shapeType: 'circle',
+                title: 'Hình Tròn',
+                x: 100,
+                y: 70,
+                width: 110,
+                height: 110,
+                fillColor: '#10b981'
+            });
+            this.showToast("⚪ Đã chèn Hình Tròn lên slide!", 2000);
+        });
+
+        document.getElementById('btnPptInsertTriangle')?.addEventListener('click', () => {
+            this.addCanvasObject({
+                id: 'obj_sh_tri_' + Date.now(),
+                type: 'shape',
+                shapeType: 'triangle',
+                title: 'Hình Tam Giác',
+                x: 110,
+                y: 70,
+                width: 120,
+                height: 110,
+                fillColor: '#f59e0b'
+            });
+            this.showToast("🔺 Đã chèn Hình Tam Giác lên slide!", 2000);
+        });
+
+        document.getElementById('btnPptInsertArrow')?.addEventListener('click', () => {
+            this.addCanvasObject({
+                id: 'obj_sh_arr_' + Date.now(),
+                type: 'shape',
+                shapeType: 'arrow',
+                title: 'Mũi Tên Chỉ Dẫn',
+                x: 100,
+                y: 80,
+                width: 150,
+                height: 70,
+                fillColor: '#ef4444'
+            });
+            this.showToast("➡️ Đã chèn Mũi Tên Chỉ Dẫn lên slide!", 2000);
+        });
+
+        document.getElementById('btnPptInsertStar')?.addEventListener('click', () => {
+            this.addCanvasObject({
+                id: 'obj_sh_star_' + Date.now(),
+                type: 'shape',
+                shapeType: 'star',
+                title: 'Ngôi Sao Điểm Nhấn',
+                x: 110,
+                y: 70,
+                width: 100,
+                height: 100,
+                fillColor: '#facc15'
+            });
+            this.showToast("⭐ Đã chèn Ngôi Sao Khen Thưởng lên slide!", 2000);
+        });
+
+        // 12. CHỌN ẢNH BÊN NGOÀI LÀM HÌNH NỀN SLIDE (THEO CHỈ ĐẠO CỦA THẦY)
+        const bgImgInput = document.getElementById('inputPptBgImageUpload');
+        document.getElementById('btnPptCustomBgImage')?.addEventListener('click', () => bgImgInput?.click());
+
+        bgImgInput?.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const f = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    const dataUrl = evt.target.result;
+                    const cur = this.activePresentation?.slides[this.activeSlideIndex];
+                    if (cur) cur.customBgImage = dataUrl;
+                    if (this.activePresentation) this.activePresentation.customBgImage = dataUrl;
+                    this.renderCurrentSlideCanvas();
+                    this.recordPPTHistory?.('Đổi ảnh nền slide');
+                    try { sound.playFanfare(); } catch(e) {}
+                    this.showToast("🖼️ Đã áp dụng ảnh làm nền slide 16:9 sắc nét!", 3000);
+                };
+                reader.readAsDataURL(f);
+                e.target.value = '';
+            }
+        });
+
+        document.getElementById('btnPptClearBgImage')?.addEventListener('click', () => {
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) cur.customBgImage = null;
+            if (this.activePresentation) this.activePresentation.customBgImage = null;
+            this.renderCurrentSlideCanvas();
+            this.recordPPTHistory?.('Xóa ảnh nền');
+            try { sound.playClick(); } catch(e) {}
+            this.showToast("✕ Đã xóa ảnh nền, khôi phục màu theme!", 2000);
+        });
+
+        // 12b. CHÈN TỆP ÂM THANH TỪ NGOÀI VÀO (THEO CHỈ ĐẠO CỦA THẦY)
+        const audioInput = document.getElementById('inputPptAudioUpload');
+        document.getElementById('btnPptInsertAudio')?.addEventListener('click', () => audioInput?.click());
+        audioInput?.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    const dataUrl = evt.target.result;
+                    this.addCanvasObject({
+                        id: 'obj_audio_' + Date.now(),
+                        type: 'audio',
+                        title: 'Âm thanh: ' + (file.name || 'Audio'),
+                        audioTitle: file.name,
+                        src: dataUrl,
+                        x: 80,
+                        y: 120,
+                        width: 330,
+                        height: 80
+                    });
+                    try { sound.playFanfare(); } catch(e) {}
+                    this.showToast(`🎵 Đã chèn âm thanh "${file.name}" vào slide!`, 2500);
+                };
+                reader.readAsDataURL(file);
+                e.target.value = '';
+            }
+        });
+
+        // 13. CÁC NÚT LỆNH QUẢN LÝ SLIDE: COPY - CUT - PASTE - UNDO - REDO (THEO YÊU CẦU THẦY QUAN)
+        document.getElementById('btnPptUndo')?.addEventListener('click', () => this.undoPPT());
+        document.getElementById('btnPptRedo')?.addEventListener('click', () => this.redoPPT());
+        document.getElementById('btnCopySlide')?.addEventListener('click', () => this.copyCurrentSlide());
+        document.getElementById('btnCutSlide')?.addEventListener('click', () => this.cutCurrentSlide());
+        document.getElementById('btnPasteSlide')?.addEventListener('click', () => this.pasteSlide());
+        document.getElementById('btnDupSlide')?.addEventListener('click', () => this.duplicateCurrentSlide());
+        document.getElementById('btnDelSlide')?.addEventListener('click', () => this.deleteCurrentSlide());
+
+        // Phím tắt toàn cục: Ctrl+Z, Ctrl+Y, Ctrl+C, Ctrl+X, Ctrl+V khi thao tác trên slide
+        window.addEventListener('keydown', (e) => {
+            const studioPane = document.getElementById('pane-ppt-studio');
+            if (!studioPane || !studioPane.classList.contains('active')) return;
+            // Bỏ qua nếu đang gõ chữ trong input, textarea hoặc ô contenteditable
+            const tag = (e.target.tagName || '').toLowerCase();
+            if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z' || e.key === 'Z') {
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        this.redoPPT();
+                    } else {
+                        this.undoPPT();
+                    }
+                } else if (e.key === 'y' || e.key === 'Y') {
+                    e.preventDefault();
+                    this.redoPPT();
+                } else if (e.key === 'c' || e.key === 'C') {
+                    e.preventDefault();
+                    this.copyCurrentSlide();
+                } else if (e.key === 'x' || e.key === 'X') {
+                    e.preventDefault();
+                    this.cutCurrentSlide();
+                } else if (e.key === 'v' || e.key === 'V') {
+                    e.preventDefault();
+                    this.pasteSlide();
+                }
+            }
+        });
+
+        // 14. BỘ CỤC SLIDE & THEME
+        document.getElementById('slideLayoutSelect')?.addEventListener('change', (e) => {
+            const layout = e.target.value;
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) {
+                cur.layout = layout;
+                this.renderCurrentSlideCanvas();
+                try { sound.playClick(); } catch(e) {}
+            }
+        });
+
+        document.getElementById('pptCustomBgPicker')?.addEventListener('input', (e) => {
+            const col = e.target.value;
+            const viewport = document.getElementById('slideActiveViewport');
+            if (viewport) {
+                viewport.style.background = col;
+            }
+            if (this.activePresentation) {
+                this.activePresentation.customBg = col;
+                this.activePresentation.customBgImage = null;
+            }
+        });
+
+        // 15. NÚT TÁC VỤ NHANH Ở VÙNG PHẢI
+        document.getElementById('btnPptPrevSlide')?.addEventListener('click', () => {
+            if (this.activeSlideIndex > 0) this.selectSlide(this.activeSlideIndex - 1);
+        });
+        document.getElementById('btnPptNextSlide')?.addEventListener('click', () => {
+            const max = (this.activePresentation?.slides?.length || 1) - 1;
+            if (this.activeSlideIndex < max) this.selectSlide(this.activeSlideIndex + 1);
+        });
+        document.getElementById('btnPptApply4De')?.addEventListener('click', () => {
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) {
+                cur.fontSize = '24px';
+                cur.textColor = '#ffffff';
+                this.activePresentation.theme = 'navy';
+                this.renderCurrentSlideCanvas();
+                try { sound.playFanfare(); } catch(e) {}
+                this.showToast("✨ Đã chuẩn hóa phông chữ và tương phản cao theo Bộ 4 Dễ!", 3000);
+            }
+        });
+        document.getElementById('btnPptToggleWatermark')?.addEventListener('click', () => {
+            const wm = document.getElementById('slideWatermarkTag');
+            if (wm) {
+                const isHidden = wm.style.display === 'none';
+                wm.style.display = isHidden ? 'block' : 'none';
+                this.showToast(isHidden ? "🏷️ Đã hiện Watermark sư phạm!" : "🏷️ Đã ẩn Watermark!", 2000);
+            }
+        });
+
+        // 16. Chèn Trắc Nghiệm, Minigame, Lab
+        document.getElementById('btnInsertQuizToSlide')?.addEventListener('click', () => this.insertInteractiveQuizToSlide());
+        document.getElementById('btnInsertGameToSlide')?.addEventListener('click', () => this.insertGameToSlide());
+        document.getElementById('btnInsertLabToSlide')?.addEventListener('click', () => {
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) {
+                cur.interactiveType = 'lab';
+                cur.layout = 'lab';
+                const layoutSel = document.getElementById('slideLayoutSelect');
+                if (layoutSel) layoutSel.value = 'lab';
+                this.renderCurrentSlideCanvas();
+                try { sound.playFanfare(); } catch(e) {}
+                this.showToast("🧪 Đã nhúng Thí Nghiệm Ảo KHTN vào slide!", 2500);
+            }
+        });
+
+        // 17. Đồng bộ nội dung cột 2
+        document.getElementById('slideContent2Input')?.addEventListener('input', (e) => {
+            const cur = this.activePresentation?.slides[this.activeSlideIndex];
+            if (cur) cur.content2 = e.target.value;
+        });
+
+        // 18. Nút nạp PPT bên ngoài ở Kho Bài Giảng (Khối 1: Của Tôi)
+        document.getElementById('btnUploadPPTDirect')?.addEventListener('click', () => {
+            document.getElementById('inputExternalPPTFile')?.click();
+        });
     }
 
     async generatePresentationWithAI() {
@@ -3580,10 +5463,11 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         if (!deckContainer) return;
 
         const slides = this.activePresentation.slides;
-        if (badgeCounter) badgeCounter.textContent = `${slides.length} Slides`;
+        if (badgeCounter) badgeCounter.textContent = slides.length === 1 ? '1 Slide' : `${slides.length} Slides`;
 
+        // Render danh sách slide có hỗ trợ kéo - thả (Drag & Drop)
         deckContainer.innerHTML = slides.map((s, idx) => `
-            <div class="slide-thumb-card ${idx === this.activeSlideIndex ? 'active' : ''}" data-index="${idx}">
+            <div class="slide-thumb-card ${idx === this.activeSlideIndex ? 'active' : ''}" data-index="${idx}" draggable="true" title="Kéo thả để đổi thứ tự slide">
                 <div class="slide-thumb-num">${idx + 1}</div>
                 <div class="slide-thumb-preview">
                     <div class="slide-thumb-title">${s.title || 'Slide ' + (idx + 1)}</div>
@@ -3592,7 +5476,46 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             </div>
         `).join('');
 
+        // Gắn sự kiện kéo - thả (Drag & Drop) và chọn slide
+        let dragSrcIdx = null;
         deckContainer.querySelectorAll('.slide-thumb-card').forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                dragSrcIdx = parseInt(e.currentTarget.dataset.index);
+                e.dataTransfer.setData('text/plain', String(dragSrcIdx));
+                e.dataTransfer.effectAllowed = 'move';
+                e.currentTarget.classList.add('dragging');
+            });
+
+            card.addEventListener('dragend', (e) => {
+                e.currentTarget.classList.remove('dragging');
+                deckContainer.querySelectorAll('.slide-thumb-card').forEach(c => c.classList.remove('drag-over'));
+            });
+
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                card.classList.add('drag-over');
+            });
+
+            card.addEventListener('dragleave', () => {
+                card.classList.remove('drag-over');
+            });
+
+            card.addEventListener('drop', (e) => {
+                e.preventDefault();
+                card.classList.remove('drag-over');
+                const toIdx = parseInt(card.dataset.index);
+                if (dragSrcIdx !== null && dragSrcIdx !== toIdx) {
+                    const movedSlide = this.activePresentation.slides.splice(dragSrcIdx, 1)[0];
+                    this.activePresentation.slides.splice(toIdx, 0, movedSlide);
+                    this.activeSlideIndex = toIdx;
+                    try { sound.playClick(); } catch(err) {}
+                    this.renderSlideDeck();
+                    this.renderCurrentSlideCanvas();
+                    this.showToast(`✨ Đã chuyển slide sang vị trí ${toIdx + 1}!`, 2000);
+                }
+            });
+
             card.addEventListener('click', (e) => {
                 const idx = parseInt(e.currentTarget.dataset.index);
                 this.selectSlide(idx);
@@ -3609,24 +5532,111 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         // Cập nhật tiêu đề và nội dung trên slide 16:9
         const titleInput = document.getElementById('slideTitleInput');
         const contentInput = document.getElementById('slideContentInput');
+        const content2Input = document.getElementById('slideContent2Input');
         const pageTag = document.getElementById('slidePageNumberTag');
         const footerSubject = document.getElementById('slideFooterSubject');
         const stepSelect = document.getElementById('slideStepSelect');
         const notesInput = document.getElementById('slideSpeakerNotes');
         const viewport = document.getElementById('slideActiveViewport');
         const interactiveBox = document.getElementById('slideInteractiveBox');
+        const bodyZone = document.getElementById('slideBodyZone');
+        const col2Zone = document.getElementById('slideCol2Zone');
+        const imageZone = document.getElementById('slideImageZone');
+        const mainImg = document.getElementById('slideMainImg');
+        const imgPlaceholder = document.getElementById('slideImgPlaceholder');
+        const layoutBadge = document.getElementById('slideLayoutNameBadge');
+        const layoutSelect = document.getElementById('slideLayoutSelect');
 
-        if (titleInput) titleInput.value = s.title;
-        if (contentInput) contentInput.value = s.content;
+        if (titleInput) titleInput.value = s.title || '';
+        if (contentInput) contentInput.value = s.content || '';
+        if (content2Input) content2Input.value = s.content2 || '• Nội dung đối sánh 1: Điểm khác biệt cơ bản.\n• Nội dung đối sánh 2: Phân tích trường hợp ngoại lệ.\n• Ghi chú thảo luận: Câu hỏi tư duy mở rộng.';
         if (pageTag) pageTag.textContent = `Slide ${this.activeSlideIndex + 1} / ${slides.length}`;
-        if (footerSubject) footerSubject.textContent = `${this.activePresentation.subject} ${this.activePresentation.grade} • EduStudio`;
+        if (footerSubject) footerSubject.textContent = `${this.activePresentation.subject || 'GDPT'} ${this.activePresentation.grade || 'Lớp 8'} • EduStudio`;
         if (stepSelect) stepSelect.value = s.step || 1;
         if (notesInput) notesInput.value = s.speakerNotes || '';
 
-        // Đổi theme màu slide
-        if (viewport) {
-            viewport.className = `slide-169-viewport theme-${this.activePresentation.theme || 'navy'}`;
+        // Bố cục slide (Layout)
+        const layout = s.layout || 'title_content';
+        if (layoutSelect) layoutSelect.value = layout;
+        if (bodyZone) {
+            bodyZone.className = `slide-body-zone layout-${layout.replace(/_/g, '-')}`;
         }
+
+        const layoutNames = {
+            'title_content': 'Tiêu đề & Nội dung cốt lõi',
+            'two_cols': 'So sánh 2 cột nội dung',
+            'text_image': 'Một cột Chữ + Một cột Ảnh',
+            'quiz': 'Khung Trắc nghiệm tương tác',
+            'game': 'Minigame Khởi động nhúng',
+            'lab': 'Thí nghiệm ảo KHTN nhúng'
+        };
+        if (layoutBadge) layoutBadge.textContent = layoutNames[layout] || 'Tiêu đề & Nội dung';
+
+        if (col2Zone) {
+            col2Zone.style.display = (layout === 'two_cols') ? 'flex' : 'none';
+        }
+
+        if (imageZone) {
+            imageZone.style.display = (layout === 'text_image') ? 'flex' : 'none';
+            if (s.image && mainImg) {
+                mainImg.src = s.image;
+                mainImg.style.display = 'block';
+                if (imgPlaceholder) imgPlaceholder.style.display = 'none';
+            } else {
+                if (mainImg) mainImg.style.display = 'none';
+                if (imgPlaceholder) imgPlaceholder.style.display = 'block';
+            }
+        }
+
+        // Áp dụng định dạng văn bản
+        if (s.fontFamily && contentInput) {
+            contentInput.style.fontFamily = s.fontFamily;
+            if (content2Input) content2Input.style.fontFamily = s.fontFamily;
+            if (titleInput) titleInput.style.fontFamily = s.fontFamily;
+        }
+        if (s.fontSize && contentInput) {
+            contentInput.style.fontSize = s.fontSize;
+            if (content2Input) content2Input.style.fontSize = s.fontSize;
+        }
+        if (s.fontWeight && contentInput) {
+            contentInput.style.fontWeight = s.fontWeight;
+            if (content2Input) content2Input.style.fontWeight = s.fontWeight;
+        }
+        if (s.fontStyle && contentInput) {
+            contentInput.style.fontStyle = s.fontStyle;
+            if (content2Input) content2Input.style.fontStyle = s.fontStyle;
+        }
+        if (s.textDecoration && contentInput) {
+            contentInput.style.textDecoration = s.textDecoration;
+            if (content2Input) content2Input.style.textDecoration = s.textDecoration;
+        }
+        if (s.textColor && contentInput) {
+            contentInput.style.color = s.textColor;
+            if (content2Input) content2Input.style.color = s.textColor;
+            if (titleInput) titleInput.style.color = s.textColor;
+        }
+        if (s.textAlign && contentInput) {
+            contentInput.style.textAlign = s.textAlign;
+            if (content2Input) content2Input.style.textAlign = s.textAlign;
+        }
+
+        // Đổi theme màu slide hoặc ảnh nền tùy chỉnh từ máy tính
+        if (viewport) {
+            if (s.customBgImage || this.activePresentation.customBgImage) {
+                const bg = s.customBgImage || this.activePresentation.customBgImage;
+                viewport.className = 'slide-169-viewport';
+                viewport.style.background = `url("${bg}") center/cover no-repeat`;
+            } else if (this.activePresentation.customBg) {
+                viewport.className = 'slide-169-viewport';
+                viewport.style.background = this.activePresentation.customBg;
+            } else {
+                viewport.style.background = '';
+                viewport.className = `slide-169-viewport theme-${this.activePresentation.theme || 'navy'}`;
+            }
+        }
+
+        // Hiển thị các đối tượng động trên canvas (Hộp chữ, Ảnh, Bảng, Toán, Hình học)
+        this.renderDynamicCanvasObjects();
 
         // Cập nhật theme picker pills
         document.querySelectorAll('.theme-pill').forEach(pill => {
@@ -3635,9 +5645,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         // Khung tương tác nhúng
         if (interactiveBox) {
-            if (s.interactiveType === 'quiz') {
+            if (s.interactiveType === 'quiz' || layout === 'quiz') {
                 interactiveBox.style.display = 'block';
-                const opts = s.quizOptions || ['A', 'B', 'C', 'D'];
+                const opts = s.quizOptions || ['A. Lựa chọn đúng chuẩn kiến thức', 'B. Phương án gây nhiễu 1', 'C. Phương án gây nhiễu 2', 'D. Phương án chưa chính xác'];
                 interactiveBox.innerHTML = `
                     <div style="font-weight:700; margin-bottom:0.4rem; font-size:0.85rem;">❓ ${s.quizQuestion || 'Câu hỏi trắc nghiệm tương tác:'}</div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.4rem;">
@@ -3668,13 +5678,22 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                         }
                     });
                 });
-            } else if (s.interactiveType === 'game') {
+            } else if (s.interactiveType === 'game' || layout === 'game') {
                 interactiveBox.style.display = 'block';
                 interactiveBox.innerHTML = `
-                    <div style="text-align:center; padding:0.5rem; background:rgba(0,0,0,0.2); border-radius:6px;">
-                        <span style="font-size:1.6rem;">🎡</span>
-                        <div style="font-weight:700; font-size:0.85rem; margin-top:0.2rem;">Minigame Vòng Quay Khởi Động Đã Nhúng</div>
-                        <div style="font-size:0.72rem; opacity:0.85;">Khi trình chiếu, Thầy Cô có thể bấm nút để quay số gọi học sinh trực tiếp.</div>
+                    <div style="text-align:center; padding:0.5rem; background:rgba(0,0,0,0.25); border-radius:8px; border: 1px dashed rgba(255,255,255,0.3);">
+                        <span style="font-size:1.8rem;">🎡</span>
+                        <div style="font-weight:700; font-size:0.88rem; margin-top:0.2rem;">Minigame Vòng Quay Khởi Động Đã Nhúng</div>
+                        <div style="font-size:0.74rem; opacity:0.85;">Khi trình chiếu, Thầy Cô có thể bấm nút để quay số gọi học sinh ngẫu nhiên trực tiếp trên màn chiếu.</div>
+                    </div>
+                `;
+            } else if (s.interactiveType === 'lab' || layout === 'lab') {
+                interactiveBox.style.display = 'block';
+                interactiveBox.innerHTML = `
+                    <div style="text-align:center; padding:0.5rem; background:rgba(0,0,0,0.25); border-radius:8px; border: 1px dashed #38bdf8;">
+                        <span style="font-size:1.8rem;">🔬</span>
+                        <div style="font-weight:700; font-size:0.88rem; margin-top:0.2rem; color: #38bdf8;">Thí Nghiệm Ảo KHTN Sư Phạm Đã Nhúng</div>
+                        <div style="font-size:0.74rem; opacity:0.85;">Khi trình chiếu, Thầy Cô có thể tương tác trực tiếp với mô phỏng thí nghiệm ngay trong slide.</div>
                     </div>
                 `;
             } else {
@@ -3709,6 +5728,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         sound.playFanfare();
         this.renderSlideDeck();
         this.renderCurrentSlideCanvas();
+        this.recordPPTHistory('Thêm slide mới');
     }
 
     duplicateCurrentSlide() {
@@ -3724,6 +5744,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         sound.playTick();
         this.renderSlideDeck();
         this.renderCurrentSlideCanvas();
+        this.recordPPTHistory('Nhân bản slide');
     }
 
     deleteCurrentSlide() {
@@ -3741,6 +5762,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             sound.playClick();
             this.renderSlideDeck();
             this.renderCurrentSlideCanvas();
+            this.recordPPTHistory('Xóa slide');
         }
     }
 
@@ -3757,6 +5779,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             sound.playTick();
             this.renderSlideDeck();
             this.renderCurrentSlideCanvas();
+            this.recordPPTHistory('Di chuyển slide');
         }
     }
 
@@ -3898,33 +5921,271 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     // =========================================================================
     // ĐỌC BÀI GIẢNG PPT TỪ BÊN NGOÀI VÀO XƯỞNG SOẠN PPT (THEO YÊU CẦU THẦY QUAN)
     // =========================================================================
-    importExternalPPT(file) {
+    async importExternalPPT(file) {
         if (!file) return;
 
         const fileName = file.name;
         const cleanTitle = fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-        const reader = new FileReader();
+        let loadedSlides = [];
 
-        reader.onload = (event) => {
-            const rawContent = event.target.result;
-            let loadedSlides = [];
-
-            if (fileName.endsWith('.json') && typeof rawContent === 'string') {
+        try {
+            // 1. Nếu là file PPTX chuẩn Microsoft PowerPoint (dạng nén ZIP chứa XML)
+            if (fileName.toLowerCase().endsWith('.pptx') && window.JSZip) {
                 try {
-                    const parsed = JSON.parse(rawContent);
+                    const zip = await window.JSZip.loadAsync(file);
+                    const slideFiles = [];
+                    zip.forEach((relativePath) => {
+                        if (/^ppt\/slides\/slide\d+\.xml$/i.test(relativePath)) {
+                            slideFiles.push(relativePath);
+                        }
+                    });
+
+                    // Sắp xếp tự nhiên theo thứ tự số slide 1, 2, 3...
+                    slideFiles.sort((a, b) => {
+                        const numA = parseInt(a.match(/slide(\d+)\.xml/i)[1], 10);
+                        const numB = parseInt(b.match(/slide(\d+)\.xml/i)[1], 10);
+                        return numA - numB;
+                    });
+
+                    for (let i = 0; i < slideFiles.length; i++) {
+                        const slidePath = slideFiles[i];
+                        const slideNumMatch = slidePath.match(/slide(\d+)\.xml/i);
+                        const slideNum = slideNumMatch ? parseInt(slideNumMatch[1], 10) : (i + 1);
+                        const xmlStr = await zip.file(slidePath).async("string");
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+
+                        // A. Đọc relationships của slide để tìm ảnh và speaker notes
+                        const relsPath = `ppt/slides/_rels/slide${slideNum}.xml.rels`;
+                        const relsMap = {};
+                        if (zip.file(relsPath)) {
+                            try {
+                                const relsXml = await zip.file(relsPath).async("string");
+                                const relsDoc = parser.parseFromString(relsXml, "text/xml");
+                                const relNodes = relsDoc.getElementsByTagName("Relationship");
+                                for (let r = 0; r < relNodes.length; r++) {
+                                    const id = relNodes[r].getAttribute("Id");
+                                    const target = relNodes[r].getAttribute("Target");
+                                    const type = relNodes[r].getAttribute("Type") || '';
+                                    relsMap[id] = { target, type };
+                                }
+                            } catch(e) {}
+                        }
+
+                        // B. Trích xuất speaker notes từ notes slide nếu có
+                        let speakerNotes = `Slide ${i + 1} trích xuất từ ${fileName}.`;
+                        for (const rId in relsMap) {
+                            if (relsMap[rId].type.includes('notesSlide') || relsMap[rId].target.includes('notesSlide')) {
+                                let noteTarget = relsMap[rId].target.replace('../', 'ppt/');
+                                if (!noteTarget.startsWith('ppt/')) noteTarget = 'ppt/' + noteTarget;
+                                if (zip.file(noteTarget)) {
+                                    try {
+                                        const noteXml = await zip.file(noteTarget).async("string");
+                                        const noteDoc = parser.parseFromString(noteXml, "text/xml");
+                                        const noteTexts = Array.from(noteDoc.getElementsByTagName("a:t"))
+                                            .map(t => (t.textContent || '').trim())
+                                            .filter(Boolean);
+                                        if (noteTexts.length > 0) {
+                                            speakerNotes = noteTexts.join(' ');
+                                        }
+                                    } catch(e) {}
+                                }
+                            }
+                        }
+
+                        // C. Phân tích các Shapes trong Slide: Tiêu đề, Nội dung, Bảng, Hình ảnh
+                        let slideTitle = '';
+                        let bodyParagraphs = [];
+                        const canvasObjects = [];
+
+                        // 1. Quét các khối văn bản <p:sp>
+                        const shapes = xmlDoc.getElementsByTagName("p:sp");
+                        for (let s = 0; s < shapes.length; s++) {
+                            const sp = shapes[s];
+                            const ph = sp.querySelector("p\\:nvSpPr p\\:ph, nvSpPr ph");
+                            const phType = ph ? ph.getAttribute("type") : null;
+
+                            // Bỏ qua số trang và ngày tháng để không bị rác chữ
+                            if (phType === 'sldNum' || phType === 'dt' || phType === 'ftr') {
+                                continue;
+                            }
+
+                            // Đọc từng đoạn văn <a:p> và ghép trọn vẹn các <a:t>
+                            const paragraphs = sp.querySelectorAll("a\\:p, p");
+                            const shapeLines = [];
+                            for (let pIdx = 0; pIdx < paragraphs.length; pIdx++) {
+                                const pNode = paragraphs[pIdx];
+                                const tNodes = pNode.querySelectorAll("a\\:t, t");
+                                let lineText = '';
+                                tNodes.forEach(t => {
+                                    lineText += t.textContent || '';
+                                });
+                                lineText = lineText.trim();
+                                if (lineText) {
+                                    shapeLines.push(lineText);
+                                }
+                            }
+
+                            if (shapeLines.length === 0) continue;
+
+                            if ((phType === 'title' || phType === 'ctrTitle') && !slideTitle) {
+                                slideTitle = shapeLines.join(' ');
+                            } else if (!slideTitle && s === 0 && shapeLines.length === 1 && shapeLines[0].length < 120) {
+                                slideTitle = shapeLines[0];
+                            } else {
+                                bodyParagraphs.push(...shapeLines);
+                            }
+                        }
+
+                        // 2. Quét các Bảng biểu <a:tbl>
+                        const tables = xmlDoc.getElementsByTagName("a:tbl");
+                        for (let t = 0; t < tables.length; t++) {
+                            const tbl = tables[t];
+                            const trNodes = tbl.querySelectorAll("a\\:tr, tr");
+                            const tableData = [];
+                            let maxCols = 0;
+                            for (let r = 0; r < trNodes.length; r++) {
+                                const row = [];
+                                const tcNodes = trNodes[r].querySelectorAll("a\\:tc, tc");
+                                maxCols = Math.max(maxCols, tcNodes.length);
+                                for (let c = 0; c < tcNodes.length; c++) {
+                                    const tNodes = tcNodes[c].querySelectorAll("a\\:t, t");
+                                    let cellText = '';
+                                    tNodes.forEach(t => { cellText += t.textContent || ''; });
+                                    row.push(cellText.trim() || '—');
+                                }
+                                tableData.push(row);
+                            }
+
+                            if (tableData.length > 0) {
+                                canvasObjects.push({
+                                    id: 'tbl_ext_' + Date.now() + '_' + t,
+                                    type: 'table',
+                                    title: `Bảng ${tableData.length}x${maxCols}`,
+                                    rows: tableData.length,
+                                    cols: maxCols,
+                                    data: tableData,
+                                    themeColor: 'blue',
+                                    bgType: 'white',
+                                    borderWidth: 1,
+                                    textAlign: 'center',
+                                    x: 60,
+                                    y: 130 + t * 40,
+                                    width: Math.min(680, Math.max(340, maxCols * 110)),
+                                    height: Math.min(320, Math.max(130, tableData.length * 42))
+                                });
+                            }
+                        }
+
+                        // 3. Quét hình ảnh <p:pic>
+                        const pics = xmlDoc.getElementsByTagName("p:pic");
+                        const picList = [];
+                        for (let pIdx = 0; pIdx < Math.min(3, pics.length); pIdx++) {
+                            const pic = pics[pIdx];
+                            const blip = pic.querySelector("a\\:blip, blip");
+                            const embedId = blip ? (blip.getAttribute("r:embed") || blip.getAttribute("embed")) : null;
+                            if (embedId && relsMap[embedId]) {
+                                let imgTarget = relsMap[embedId].target.replace('../', 'ppt/');
+                                if (!imgTarget.startsWith('ppt/')) imgTarget = 'ppt/' + imgTarget;
+                                if (zip.file(imgTarget)) {
+                                    try {
+                                        const ext = imgTarget.split('.').pop().toLowerCase();
+                                        const mime = (ext === 'png') ? 'image/png' : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : (ext === 'svg') ? 'image/svg+xml' : 'image/png';
+                                        const base64Data = await zip.file(imgTarget).async("base64");
+                                        picList.push(`data:${mime};base64,${base64Data}`);
+                                    } catch(imgErr) {}
+                                }
+                            }
+                        }
+
+                        // Phân bổ vị trí các hình ảnh ngang hàng, không chồng lấn lên nhau!
+                        const totalPics = picList.length;
+                        picList.forEach((src, pIdx) => {
+                            let imgW = 240;
+                            let imgH = 180;
+                            let imgX = 460;
+                            let imgY = 80;
+
+                            if (totalPics === 1) {
+                                imgW = 260;
+                                imgH = 200;
+                                imgX = 460;
+                                imgY = 75;
+                            } else if (totalPics === 2) {
+                                imgW = 160;
+                                imgH = 175;
+                                imgX = 390 + pIdx * 175;
+                                imgY = 80;
+                            } else if (totalPics >= 3) {
+                                imgW = 115;
+                                imgH = 150;
+                                imgX = 345 + pIdx * 130;
+                                imgY = 85;
+                            }
+
+                            canvasObjects.push({
+                                id: 'img_ext_' + Date.now() + '_' + pIdx,
+                                type: 'image',
+                                title: 'Hình ảnh ' + (pIdx + 1),
+                                src: src,
+                                x: imgX,
+                                y: imgY,
+                                width: imgW,
+                                height: imgH
+                            });
+                        });
+
+                        // 4. Chuẩn hóa tiêu đề & nội dung
+                        if (!slideTitle) {
+                            if (bodyParagraphs.length > 0) {
+                                slideTitle = bodyParagraphs.shift();
+                            } else {
+                                slideTitle = `Slide ${i + 1}`;
+                            }
+                        }
+
+                        let formattedContent = '';
+                        if (bodyParagraphs.length > 0) {
+                            formattedContent = bodyParagraphs.map(line => {
+                                if (/^[•\-\*\d\.\)]/.test(line)) return line;
+                                return '• ' + line;
+                            }).join('\n');
+                        } else if (canvasObjects.length > 0) {
+                            formattedContent = '• Nội dung bảng biểu và trực quan hóa trích xuất từ file PowerPoint.';
+                        } else {
+                            formattedContent = '• Nội dung bài giảng chuẩn hóa.';
+                        }
+
+                        loadedSlides.push({
+                            id: 'slide_ext_' + Date.now() + '_' + i,
+                            step: Math.min(4, i + 1),
+                            stepName: `Slide ${i + 1}`,
+                            title: slideTitle,
+                            content: formattedContent,
+                            canvasObjects: canvasObjects,
+                            interactiveType: 'none',
+                            speakerNotes: speakerNotes
+                        });
+                    }
+                } catch (zipErr) {
+                    console.warn("Lỗi giải nén cấu trúc PPTX:", zipErr);
+                }
+            } else if (fileName.endsWith('.json')) {
+                const text = await file.text();
+                try {
+                    const parsed = JSON.parse(text);
                     if (Array.isArray(parsed)) {
                         loadedSlides = parsed;
                     } else if (parsed.slides && Array.isArray(parsed.slides)) {
                         loadedSlides = parsed.slides;
-                        if (parsed.title) this.activePresentation.title = parsed.title;
-                        if (parsed.theme) this.activePresentation.theme = parsed.theme;
                     }
                 } catch (e) {
                     console.warn("Lỗi đọc JSON:", e);
                 }
-            } else if ((fileName.endsWith('.html') || fileName.endsWith('.htm')) && typeof rawContent === 'string') {
+            } else if (fileName.endsWith('.html') || fileName.endsWith('.htm')) {
+                const text = await file.text();
                 const parser = new DOMParser();
-                const doc = parser.parseFromString(rawContent, 'text/html');
+                const doc = parser.parseFromString(text, 'text/html');
                 const headings = doc.querySelectorAll('h1, h2, h3');
                 if (headings.length > 0) {
                     headings.forEach((h, idx) => {
@@ -3946,79 +6207,109 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                     });
                 }
             }
-
-            // Nếu là file PPTX hoặc cấu trúc nhị phân:
-            // Hệ thống tự động chuyển đổi thành bộ khung bài giảng 4 bước chuẩn Công văn 5512
-            if (loadedSlides.length === 0) {
-                loadedSlides = [
-                    {
-                        id: 'slide_ext_1',
-                        step: 1,
-                        stepName: '1. Khởi động (Hook)',
-                        title: `KHỞI ĐỘNG: ${cleanTitle.toUpperCase()}`,
-                        content: `• Giới thiệu chủ đề bài học: ${cleanTitle}\n• Kích hoạt nhận thức: Quan sát hình ảnh và nêu cảm nhận ban đầu.\n• Nhiệm vụ: Thảo luận nhóm đôi trong 2 phút.`,
-                        interactiveType: 'none',
-                        speakerNotes: 'Giáo viên chiếu slide mở đầu và giới thiệu mục tiêu bài học.'
-                    },
-                    {
-                        id: 'slide_ext_2',
-                        step: 2,
-                        stepName: '2. Khám phá kiến thức mới',
-                        title: `NỘI DUNG TRỌNG TÂM: ${cleanTitle}`,
-                        content: `• Tệp nguồn: ${fileName} (${(file.size / 1024).toFixed(1)} KB)\n• Bản quyền & Định dạng: Microsoft PowerPoint Presentation (.pptx)\n• Các khái niệm cốt lõi đã được đồng bộ hóa vào chuẩn 16:9 Full HD.\n• Thầy Cô có thể bấm vào khung để chỉnh sửa trực tiếp nội dung các gạch đầu dòng.`,
-                        interactiveType: 'none',
-                        speakerNotes: 'Thầy Cô trình bày kiến thức mới và tổ chức hoạt động phân tích.'
-                    },
-                    {
-                        id: 'slide_ext_3',
-                        step: 3,
-                        stepName: '3. Luyện tập tương tác',
-                        title: 'LUYỆN TẬP: TRẮC NGHIỆM ĐỐ VUI SƯ PHẠM',
-                        content: 'Câu hỏi trắc nghiệm tương tác kiểm tra mức độ tiếp thu kiến thức:',
-                        interactiveType: 'quiz',
-                        quizQuestion: `Nội dung cốt lõi của bài học "${cleanTitle}" là gì?`,
-                        quizOptions: [
-                            'A. Vận dụng kiến thức vào thực tiễn đời sống',
-                            'B. Ghi nhớ máy móc không áp dụng',
-                            'C. Bỏ qua các hoạt động thực hành',
-                            'D. Cả B và C đều sai'
-                        ],
-                        correctIndex: 0,
-                        speakerNotes: 'Cho học sinh bấm trực tiếp đáp án trên bảng hoặc máy chiếu.'
-                    },
-                    {
-                        id: 'slide_ext_4',
-                        step: 4,
-                        stepName: '4. Vận dụng & Mở rộng',
-                        title: 'VẬN DỤNG & NHIỆM VỤ THỰC TIỄN',
-                        content: `• Vận dụng các kiến thức trong bài "${cleanTitle}" để giải quyết tình huống thực tế.\n• Hoàn thành phiếu học tập cá nhân và chuẩn bị nội dung cho bài học kế tiếp.`,
-                        interactiveType: 'none',
-                        speakerNotes: 'Hướng dẫn học sinh tự đánh giá và giao bài tập về nhà.'
-                    }
-                ];
-            }
-
-            // Gán vào bài giảng đang hoạt động
-            this.activePresentation.title = cleanTitle;
-            this.activePresentation.slides = loadedSlides;
-            this.activeSlideIndex = 0;
-
-            // Cập nhật giao diện
-            const titleInput = document.getElementById('pptLessonTitleInput');
-            if (titleInput) titleInput.value = cleanTitle;
-
-            this.renderSlideDeck();
-            this.renderCurrentSlideCanvas();
-
-            sound.playFanfare();
-            alert(`🎉 [ĐỌC PPT THÀNH CÔNG!]\n\n• Tệp tin: ${fileName}\n• Số slide đã nạp: ${loadedSlides.length} slides\n• Chế độ: Đã chuyển đổi chuẩn tỷ lệ 16:9 Full HD\n\nToàn bộ slide đã được nạp vào Xưởng Soạn PPT để Thầy tiếp tục biên tập và trình chiếu!`);
-        };
-
-        if (fileName.endsWith('.json') || fileName.endsWith('.html') || fileName.endsWith('.htm') || fileName.endsWith('.txt')) {
-            reader.readAsText(file, 'utf-8');
-        } else {
-            reader.readAsArrayBuffer(file);
+        } catch (err) {
+            console.error("Lỗi đọc file PPT bên ngoài:", err);
         }
+
+        // 2. Nếu không trích xuất được (hoặc file nhị phân mã hóa), tạo bộ khung 4 bước chuẩn Công văn 5512
+        if (loadedSlides.length === 0) {
+            loadedSlides = [
+                {
+                    id: 'slide_ext_1',
+                    step: 1,
+                    stepName: '1. Khởi động (Hook)',
+                    title: `KHỞI ĐỘNG: ${cleanTitle.toUpperCase()}`,
+                    content: `• Giới thiệu chủ đề bài học: ${cleanTitle}\n• Kích hoạt nhận thức: Quan sát hình ảnh và nêu cảm nhận ban đầu.\n• Nhiệm vụ: Thảo luận nhóm đôi trong 2 phút.`,
+                    interactiveType: 'none',
+                    speakerNotes: 'Giáo viên chiếu slide mở đầu và giới thiệu mục tiêu bài học.'
+                },
+                {
+                    id: 'slide_ext_2',
+                    step: 2,
+                    stepName: '2. Khám phá kiến thức mới',
+                    title: `NỘI DUNG TRỌNG TÂM: ${cleanTitle}`,
+                    content: `• Tệp nguồn: ${fileName} (${(file.size / 1024).toFixed(1)} KB)\n• Bản quyền & Định dạng: Microsoft PowerPoint Presentation (.pptx)\n• Các khái niệm cốt lõi đã được đồng bộ hóa vào chuẩn 16:9 Full HD.\n• Thầy Cô có thể bấm vào khung để chỉnh sửa trực tiếp nội dung các gạch đầu dòng.`,
+                    interactiveType: 'none',
+                    speakerNotes: 'Thầy Cô trình bày kiến thức mới và tổ chức hoạt động phân tích.'
+                },
+                {
+                    id: 'slide_ext_3',
+                    step: 3,
+                    stepName: '3. Luyện tập tương tác',
+                    title: 'LUYỆN TẬP: TRẮC NGHIỆM ĐỐ VUI SƯ PHẠM',
+                    content: 'Câu hỏi trắc nghiệm tương tác kiểm tra mức độ tiếp thu kiến thức:',
+                    interactiveType: 'quiz',
+                    quizQuestion: `Nội dung cốt lõi của bài học "${cleanTitle}" là gì?`,
+                    quizOptions: [
+                        'A. Vận dụng kiến thức vào thực tiễn đời sống',
+                        'B. Ghi nhớ máy móc không áp dụng',
+                        'C. Bỏ qua các hoạt động thực hành',
+                        'D. Cả B và C đều sai'
+                    ],
+                    correctIndex: 0,
+                    speakerNotes: 'Cho học sinh bấm trực tiếp đáp án trên bảng hoặc máy chiếu.'
+                },
+                {
+                    id: 'slide_ext_4',
+                    step: 4,
+                    stepName: '4. Vận dụng & Mở rộng',
+                    title: 'VẬN DỤNG & NHIỆM VỤ THỰC TIỄN',
+                    content: `• Vận dụng các kiến thức trong bài "${cleanTitle}" để giải quyết tình huống thực tế.\n• Hoàn thành phiếu học tập cá nhân và chuẩn bị nội dung cho bài học kế tiếp.`,
+                    interactiveType: 'none',
+                    speakerNotes: 'Hướng dẫn học sinh tự đánh giá và giao bài tập về nhà.'
+                }
+            ];
+        }
+
+        // 3. Thay thế toàn bộ bài giảng bằng các slide từ file PPT vừa nạp (không để slide mặc định lẫn vào)
+        if (!this.activePresentation) {
+            this.activePresentation = {
+                title: cleanTitle,
+                grade: 'Đa cấp học',
+                subject: 'Bài giảng PPT',
+                theme: 'navy',
+                slides: []
+            };
+        }
+
+        this.activePresentation.slides = loadedSlides;
+        this.activePresentation.title = cleanTitle;
+        this.activeSlideIndex = 0;
+
+        // 4. Lưu ngay vào "Bài Giảng Tự Thiết Kế (Của Tôi)" để hiển thị tức thì trong Kho PPT
+        const newRepoItem = {
+            id: 'custom_ppt_' + Date.now(),
+            title: this.activePresentation.title || cleanTitle,
+            grade: this.activePresentation.grade || 'Đa cấp học',
+            subject: this.activePresentation.subject || 'Bài giảng nhập ngoài',
+            author: this.currentUser?.name || 'Giáo viên bộ môn',
+            slidesCount: this.activePresentation.slides.length,
+            duration: `${Math.max(15, this.activePresentation.slides.length * 3)} phút`,
+            icon: '📊',
+            isCustom: true,
+            presentationData: JSON.parse(JSON.stringify(this.activePresentation))
+        };
+        this.saveCustomPPT(newRepoItem);
+        this.renderPPTRepo();
+
+        // 5. Cập nhật giao diện Xưởng Soạn PPT
+        const titleInput = document.getElementById('pptLessonTitleInput');
+        if (titleInput) titleInput.value = this.activePresentation.title || cleanTitle;
+
+        this.renderSlideDeck();
+        this.renderCurrentSlideCanvas();
+        this.initPPTHistory(); // Khởi tạo lịch sử hoàn tác bắt đầu từ bài giảng vừa nạp (mốc gốc để sửa đổi từng bước)
+
+        // 6. Chuyển thẳng sang giao diện Xưởng Soạn PPT để người dùng thấy ngay
+        this.switchTab('ppt-studio');
+
+        // Reset input file để có thể chọn lại cùng một file
+        const inputPPT = document.getElementById('inputExternalPPTFile');
+        if (inputPPT) inputPPT.value = '';
+
+        sound.playFanfare();
+        this.showToast(`📂 Đã bóc tách và copy toàn bộ ${loadedSlides.length} slide từ file "${fileName}" vào bài giảng!`, 4000);
+        alert(`🎉 [COPY SLIDE TỪ FILE PPT THÀNH CÔNG!]\n\n• Tệp tin: ${fileName}\n• Số slide bóc tách: ${loadedSlides.length} slides\n• Tổng số slide hiện có: ${this.activePresentation.slides.length} slides\n• Trạng thái: Đã tự động lưu vào "Bài Giảng Tự Thiết Kế (Của Tôi)" & nạp đầy đủ vào Xưởng Soạn 16:9 Full HD!\n\nThầy có thể tiếp tục kéo thả sắp xếp, chỉnh sửa nội dung và bấm [Trình Chiếu] để giảng dạy.`);
     }
 
     // =========================================================================
@@ -4095,8 +6386,87 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         document.getElementById('presentFooterPage').textContent = `Trang ${idx + 1} / ${p.slides.length}`;
 
         const frame = document.getElementById('presentSlideFrame');
+        const customBg = s.customBgImage || p.customBgImage;
         if (frame) {
-            frame.className = `present-slide-frame theme-${p.theme || 'navy'}`;
+            if (customBg) {
+                frame.className = 'present-slide-frame has-custom-bg-image';
+                frame.style.setProperty('background-image', `url("${customBg}")`, 'important');
+                frame.style.setProperty('background-size', 'cover', 'important');
+                frame.style.setProperty('background-position', 'center', 'important');
+                frame.style.setProperty('background-repeat', 'no-repeat', 'important');
+            } else if (p.customBg) {
+                frame.className = 'present-slide-frame';
+                frame.style.backgroundImage = 'none';
+                frame.style.background = p.customBg;
+            } else {
+                frame.className = `present-slide-frame theme-${p.theme || 'navy'}`;
+                frame.style.backgroundImage = 'none';
+            }
+        }
+
+        // Render các đối tượng động (Bảng, Hộp chữ, Ảnh, Âm thanh, Hình khối...) trên khung trình chiếu
+        const layer = document.getElementById('presentCanvasObjectsLayer');
+        if (layer) {
+            layer.innerHTML = '';
+            if (Array.isArray(s.canvasObjects) && s.canvasObjects.length > 0) {
+                s.canvasObjects.forEach(obj => {
+                    const el = document.createElement('div');
+                    el.style.position = 'absolute';
+                    el.style.left = `${obj.x || 60}px`;
+                    el.style.top = `${obj.y || 60}px`;
+                    if (obj.width) el.style.width = `${obj.width}px`;
+                    if (obj.height) el.style.height = `${obj.height}px`;
+
+                    if (obj.type === 'table') {
+                        const theme = obj.themeColor || 'blue';
+                        const bg = obj.bgType || 'white';
+                        const bw = (obj.borderWidth !== undefined) ? obj.borderWidth : 1;
+                        const align = obj.textAlign || 'center';
+                        let tHtml = `<div style="background: rgba(255,255,255,0.92); border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.3); overflow: hidden; padding: 4px;">`;
+                        tHtml += `<table class="ppt-table-inner ppt-table-theme-${theme} ppt-table-bg-${bg} ppt-table-border-${bw}" style="text-align: ${align}; width: 100%;">`;
+                        const rows = obj.rows || 3;
+                        const cols = obj.cols || 3;
+                        for (let r = 0; r < rows; r++) {
+                            tHtml += '<tr>';
+                            for (let c = 0; c < cols; c++) {
+                                const val = (obj.data && obj.data[r] && obj.data[r][c] !== undefined) ? obj.data[r][c] : (r === 0 ? `Tiêu đề ${c + 1}` : 'Dữ liệu');
+                                const tag = r === 0 ? 'th' : 'td';
+                                tHtml += `<${tag} style="text-align: ${align};">${val}</${tag}>`;
+                            }
+                            tHtml += '</tr>';
+                        }
+                        tHtml += '</table></div>';
+                        el.innerHTML = tHtml;
+                    } else if (obj.type === 'textbox') {
+                        const bgType = obj.bgType || 'white';
+                        let bgStyle = 'background: rgba(255,255,255,0.95); color: #0f172a;';
+                        if (bgType === 'transparent') bgStyle = 'background: transparent; color: #ffffff; text-shadow: 0 2px 8px rgba(0,0,0,0.9);';
+                        else if (bgType === 'dark') bgStyle = 'background: rgba(15,23,42,0.92); color: #f8fafc;';
+                        else if (bgType === 'yellow') bgStyle = 'background: #fef08a; color: #713f12;';
+
+                        el.innerHTML = `
+                            <div style="${bgStyle} border-radius: 8px; padding: 0.6rem 0.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.25); font-size: ${obj.fontSize || '16px'}; font-weight: ${obj.fontWeight || 'normal'}; font-style: ${obj.fontStyle || 'normal'}; text-decoration: ${obj.textDecoration || 'none'}; text-align: ${obj.textAlign || 'left'}; color: ${obj.textColor || 'inherit'};">
+                                ${obj.content || ''}
+                            </div>
+                        `;
+                    } else if (obj.type === 'image') {
+                        el.innerHTML = `<img src="${obj.src}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.35);">`;
+                    } else if (obj.type === 'audio') {
+                        el.innerHTML = `
+                            <div class="ppt-audio-widget" style="box-shadow: 0 4px 14px rgba(0,0,0,0.35); border-radius: 8px;">
+                                <div style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.25rem;">🎵 ${obj.audioTitle || 'Âm thanh'}</div>
+                                <audio controls class="ppt-audio-player" src="${obj.src}"></audio>
+                            </div>
+                        `;
+                    } else if (obj.type === 'shape') {
+                        el.innerHTML = `<svg class="ppt-shape-svg" viewBox="0 0 100 100" preserveAspectRatio="none">${this.getShapeSvgContent(obj.shapeType || 'rect', obj.fillColor || '#3b82f6')}</svg>`;
+                    } else if (obj.type === 'math') {
+                        el.innerHTML = `<div style="background: rgba(255,255,255,0.95); border-radius: 8px; padding: 0.5rem; font-size: 1.15rem; font-weight: 700; color: #0f172a; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25);">$${obj.formula || ''}$</div>`;
+                    }
+
+                    layer.appendChild(el);
+                });
+            }
         }
 
         // Tương tác trắc nghiệm khi trình chiếu
@@ -5765,81 +8135,320 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     initLessonPlanStudio() {
         this.currentLessonPlan = this.getDefaultLessonPlan();
 
-        // Danh mục bài học mẫu chuẩn SGK Kết Nối Tri Thức (KNTT) thống nhất của Bộ GDĐT
-        this.knttLessons = {
-            "mn": [
-                { title: "Khám phá thế giới các bạn động vật nuôi trong gia đình", subject: "Nhận thức - Khám phá", duration: 1, week: 6, obj: "Trẻ nhận diện đúng tên gọi, tiếng kêu và đặc điểm nổi bật của chó, mèo, gà, vịt." },
-                { title: "Vương quốc hoa thơm và quả ngọt bốn mùa", subject: "Nhận thức & Thẩm mỹ", duration: 1, week: 8, obj: "Trẻ phân biệt được hình dáng, màu sắc và hương vị thơm ngon của các loại quả quen thuộc." },
-                { title: "Những hình khối và sắc màu kỳ diệu quanh bé", subject: "Làm quen Toán học sớm", duration: 1, week: 10, obj: "Trẻ nhận biết hình tròn, vuông, tam giác và các màu cơ bản đỏ, vàng, xanh." },
-                { title: "Bé học giao thông an toàn và văn minh", subject: "Kỹ năng sống & Xã hội", duration: 1, week: 12, obj: "Trẻ nhận biết xe ô tô, xe đạp, máy bay và thói quen đội mũ bảo hiểm khi đi xe máy." }
-            ],
-            "th": [
-                { title: "Bài 5: Những bông hoa nhỏ trong vườn đời", subject: "Tiếng Việt 4 (KNTT)", duration: 2, week: 5, obj: "Học sinh hiểu được thông điệp yêu thương, rèn luyện kỹ năng đọc diễn cảm và mở rộng vốn từ nhân ái." },
-                { title: "Bài 12: Đếm và so sánh số tự nhiên trong phạm vi 100.000", subject: "Toán 4 (KNTT)", duration: 2, week: 7, obj: "Học sinh nắm vững cách đọc, viết và so sánh các số có năm chữ số; vận dụng giải bài toán thực tế." },
-                { title: "Chủ đề: Em yêu thiên nhiên và bảo vệ môi trường", subject: "HĐTN 4 (KNTT)", duration: 1, week: 9, obj: "Học sinh xây dựng kế hoạch phân loại rác thải tại trường và tạo không gian xanh lớp học." },
-                { title: "Bài 8: Lắp ráp mô hình robot chuyển động mini (STEM)", subject: "Công nghệ 4 (KNTT)", duration: 2, week: 11, obj: "Thực hành thiết kế mô hình đồ chơi kỹ thuật đơn giản, phát huy tư duy sáng tạo." }
-            ],
-            "thcs": [
-                { title: "Chủ đề 2: Rèn luyện tính kiên trì và chăm chỉ", subject: "Hoạt động trải nghiệm, hướng nghiệp 8 (KNTT)", duration: 1, week: 8, obj: "Học sinh nhận diện biểu hiện của tính kiên trì; tự xây dựng kế hoạch rèn luyện thói quen vượt khó." },
-                { title: "Bài 8: Tác dụng của dung dịch Axit - Bazo - Muối", subject: "Khoa học tự nhiên 8 (KNTT)", duration: 2, week: 6, obj: "Quan sát thí nghiệm ảo đổi màu chỉ thị, tính toán nồng độ và giải thích các hiện tượng thực tế." },
-                { title: "Bài 10: Đoạn mạch nối tiếp và song song trong thực tế", subject: "Khoa học tự nhiên 8 (KNTT)", duration: 2, week: 9, obj: "Vận dụng định luật Ôm để tính điện trở tương đương và cường độ dòng điện trong mạch điện gia đình." },
-                { title: "Bài 6: Phản xạ và khúc xạ ánh sáng", subject: "Khoa học tự nhiên 9 (KNTT)", duration: 2, week: 12, obj: "Học sinh giải thích hiện tượng ảo ảnh quang học, chế tạo mô hình kính lúp quang học đơn giản." },
-                { title: "Chủ đề STEM: Thiết kế hệ thống lọc nước sạch sinh hoạt mini", subject: "Khoa học tự nhiên 8 (STEM KNTT)", duration: 3, week: 14, obj: "Vận dụng kiến thức hỗn hợp và các chất để chế tạo bộ lọc nước đa tầng thân thiện môi trường." }
-            ],
-            "thpt": [
-                { title: "Bài 8: Mạng máy tính và Internet trong cuộc sống hiện đại", subject: "Tin học 10 (KNTT)", duration: 2, week: 8, obj: "Học sinh hiểu cấu trúc mạng LAN/WAN, nguyên tắc an toàn dữ liệu và bảo mật cá nhân trên không gian số." },
-                { title: "Bài 5: Dao động điều hòa và các phương trình động học", subject: "Vật lý 11 (KNTT)", duration: 2, week: 5, obj: "Khảo sát đồ thị ly độ, vận tốc và gia tốc; phân tích bảo toàn năng lượng con lắc lò xo." },
-                { title: "Bài 4: Hóa học polyme và vật liệu compozit thế hệ mới", subject: "Hóa học 12 (KNTT)", duration: 2, week: 10, obj: "Nêu được cấu trúc, tính chất vật lý của chất dẻo, tơ sợi và cao su; ý thức bảo vệ môi trường." }
-            ]
+        // Danh mục chương trình & Bài học chuẩn SGK Kết Nối Tri Thức (KNTT) thống nhất của Bộ GDĐT
+        this.knttCurriculum = {
+            "mn": {
+                grades: [
+                    "Nhà trẻ (24-36 tháng)",
+                    "Mẫu giáo Bé (3-4 tuổi)",
+                    "Mẫu giáo Nhỡ (4-5 tuổi)",
+                    "Mẫu giáo Lớn (5-6 tuổi)"
+                ],
+                subjects: {
+                    "Khám phá khoa học": [
+                        { title: "Khám phá các loài vật nuôi quen thuộc trong gia đình", duration: 1, week: 6, obj: "Trẻ nhận diện đúng tên gọi, tiếng kêu và đặc điểm nổi bật của chó, mèo, gà, vịt." },
+                        { title: "Vương quốc hoa thơm và quả ngọt bốn mùa", duration: 1, week: 8, obj: "Trẻ phân biệt được hình dáng, màu sắc và hương vị thơm ngon của các loại quả quen thuộc." },
+                        { title: "Nước và sự kỳ diệu của các hiện tượng tự nhiên", duration: 1, week: 14, obj: "Bé tìm hiểu ích lợi của nước, sự bốc hơi và hình thành mây mưa đơn giản." }
+                    ],
+                    "Làm quen với Toán": [
+                        { title: "Những hình khối và sắc màu kỳ diệu quanh bé", duration: 1, week: 10, obj: "Trẻ nhận biết hình tròn, vuông, tam giác và các màu cơ bản đỏ, vàng, xanh." },
+                        { title: "Đếm và nhận biết số lượng trong phạm vi 5", duration: 1, week: 12, obj: "Trẻ nhận biết chữ số từ 1 đến 5, biết ghép số lượng tương ứng với đồ vật." },
+                        { title: "So sánh chiều cao và kích thước to - nhỏ của hai đối tượng", duration: 1, week: 15, obj: "Bé rèn kỹ năng so sánh trực quan, phát triển tư duy logic sớm." }
+                    ],
+                    "Phát triển Thể chất": [
+                        { title: "Bật nhảy qua vạch kẻ và bò chui qua cổng hẹp", duration: 1, week: 4, obj: "Rèn luyện sự khéo léo, khả năng định hướng không gian và giữ thăng bằng." },
+                        { title: "Đi trong đường hẹp đầu đội túi cát", duration: 1, week: 9, obj: "Phát triển tố chất khéo léo, kiên trì và phối hợp các nhóm cơ vận động." }
+                    ],
+                    "Phát triển Ngôn ngữ": [
+                        { title: "Kể chuyện: Chú thỏ thông minh vượt qua thử thách", duration: 1, week: 7, obj: "Trẻ lắng nghe hiểu nội dung câu chuyện, tập trả lời câu hỏi và phát triển vốn từ." },
+                        { title: "Làm quen chữ cái O, Ô, Ơ qua trò chơi vui nhộn", duration: 1, week: 11, obj: "Bé phát âm chuẩn, nhận diện mặt chữ và phân biệt nét cong tròn." }
+                    ],
+                    "Phát triển Thẩm mỹ": [
+                        { title: "Dán hoa tặng cô nhân ngày Nhà giáo Việt Nam 20/11", duration: 1, week: 11, obj: "Rèn kỹ năng bôi hồ, dán phẳng và cảm thụ cái đẹp, rèn tính cẩn thận." },
+                        { title: "Hát múa: Cháu yêu bà - Vận động vỗ tay theo phách", duration: 1, week: 13, obj: "Trẻ hát đúng giai điệu, thể hiện tình cảm yêu thương gia đình." }
+                    ],
+                    "Kỹ năng sống & Xã hội": [
+                        { title: "Bé học giao thông an toàn và văn minh khi đi đường", duration: 1, week: 12, obj: "Trẻ nhận biết xe ô tô, xe đạp, thói quen đội mũ bảo hiểm khi đi xe máy." },
+                        { title: "Kỹ năng tự phục vụ: Rửa tay bằng xà phòng đúng 6 bước", duration: 1, week: 3, obj: "Hình thành thói quen vệ sinh cá nhân, phòng chống dịch bệnh." }
+                    ]
+                }
+            },
+            "th": {
+                grades: ["Lớp 1", "Lớp 2", "Lớp 3", "Lớp 4", "Lớp 5"],
+                subjects: {
+                    "Toán": [
+                        { title: "Bài 12: Đếm và so sánh số tự nhiên trong phạm vi 100.000", duration: 2, week: 7, obj: "Học sinh nắm vững cách đọc, viết và so sánh các số có năm chữ số; vận dụng giải bài toán thực tế." },
+                        { title: "Bài 25: Phép cộng và phép trừ các phân số cùng mẫu số", duration: 2, week: 15, obj: "Học sinh hiểu bản chất quy tắc cộng, trừ hai phân số cùng mẫu; giải toán đố liên môn." },
+                        { title: "Bài 38: Tính diện tích hình bình hành và hình thoi", duration: 2, week: 20, obj: "Vận dụng công thức tính diện tích hình phẳng trong đo đạc thực tế sân trường." },
+                        { title: "Chủ đề STEM: Chế tạo đồng hồ đo thời gian và lịch mini", duration: 2, week: 24, obj: "Vận dụng kiến thức xem giờ, lịch năm để tạo sản phẩm thực hành góc học tập." }
+                    ],
+                    "Tiếng Việt": [
+                        { title: "Bài 5: Những bông hoa nhỏ trong vườn đời", duration: 2, week: 5, obj: "Học sinh hiểu thông điệp yêu thương, rèn luyện kỹ năng đọc diễn cảm và mở rộng vốn từ nhân ái." },
+                        { title: "Bài 14: Luyện từ và câu - Dấu gạch ngang và công dụng", duration: 1, week: 8, obj: "Nhận biết tác dụng đánh dấu lời thoại trực tiếp và liệt kê các ý trong đoạn văn." },
+                        { title: "Bài 22: Viết đoạn văn tưởng tượng về chuyến du hành vũ trụ", duration: 2, week: 16, obj: "Rèn luyện trí tưởng tượng, kỹ năng dùng từ gợi cảm và diễn đạt liền mạch." }
+                    ],
+                    "Tiếng Anh": [
+                        { title: "Unit 3: My School Things and Classroom Activities", duration: 2, week: 4, obj: "Students identify school objects and practice asking 'What is this? - It's a pencil case'." },
+                        { title: "Unit 7: Our Wonderful World and Animals", duration: 2, week: 12, obj: "Practice descriptive adjectives and talking about wild animal habitats." }
+                    ],
+                    "Khoa học": [
+                        { title: "Bài 6: Không khí quanh ta có tính chất gì?", duration: 2, week: 6, obj: "Thực hành thí nghiệm nhận biết không khí trong suốt, không màu, không mùi, chiếm chỗ." },
+                        { title: "Bài 18: Chuỗi thức ăn và cân bằng sinh thái trong tự nhiên", duration: 2, week: 14, obj: "Xây dựng sơ đồ chuỗi thức ăn đơn giản; nâng cao ý thức bảo vệ động thực vật." }
+                    ],
+                    "Lịch sử và Địa lí": [
+                        { title: "Bài 9: Thiên nhiên và con người vùng Đồng bằng Bắc Bộ", duration: 2, week: 9, obj: "Xác định vị trí trên bản đồ, mô tả sông Hồng và nền văn minh lúa nước truyền thống." },
+                        { title: "Bài 15: Chiến thắng Bạch Đằng lịch sử năm 938", duration: 2, week: 13, obj: "Tìm hiểu kế sách cắm cọc gỗ của Ngô Quyền; tự hào về truyền thống đánh giặc cứu nước." }
+                    ],
+                    "Tin học và Công nghệ": [
+                        { title: "Bài 8: Lắp ráp mô hình robot chuyển động mini (STEM)", duration: 2, week: 11, obj: "Thực hành thiết kế mô hình đồ chơi kỹ thuật đơn giản, phát huy tư duy sáng tạo." },
+                        { title: "Bài 11: Tìm kiếm thông tin an toàn trên mạng Internet", duration: 1, week: 15, obj: "Học sinh biết dùng từ khóa tìm kiếm trên Google; nhận biết các liên kết rác độc hại." }
+                    ],
+                    "Hoạt động trải nghiệm": [
+                        { title: "Chủ đề 3: Em yêu thiên nhiên và xây dựng không gian xanh lớp học", duration: 1, week: 9, obj: "Xây dựng kế hoạch phân loại rác thải tại trường, cùng nhau chăm sóc bồn hoa lớp." },
+                        { title: "Chủ đề 6: Lòng biết ơn thầy cô và tinh thần đoàn kết bạn bè", duration: 1, week: 18, obj: "Bày tỏ tình cảm tri ân, xây dựng tình bạn thân thiện không bạo lực học đường." }
+                    ],
+                    "Đạo đức": [
+                        { title: "Bài 4: Em biết ơn thầy giáo, cô giáo", duration: 1, week: 10, obj: "Học sinh thể hiện sự kính trọng, lễ phép bằng những hành động cụ thể hàng ngày." }
+                    ]
+                }
+            },
+            "thcs": {
+                grades: ["Lớp 6", "Lớp 7", "Lớp 8", "Lớp 9"],
+                subjects: {
+                    "Khoa học tự nhiên": [
+                        { title: "Bài 8: Tác dụng của dung dịch Axit - Bazơ - Muối", duration: 2, week: 6, obj: "Quan sát thí nghiệm ảo đổi màu chỉ thị, tính toán nồng độ và giải thích các hiện tượng thực tế." },
+                        { title: "Bài 10: Đoạn mạch nối tiếp và song song trong thực tế", duration: 2, week: 9, obj: "Vận dụng định luật Ôm để tính điện trở tương đương và cường độ dòng điện trong mạch điện gia đình." },
+                        { title: "Bài 16: Phản xạ và khúc xạ ánh sáng qua thấu kính", duration: 2, week: 12, obj: "Học sinh giải thích hiện tượng ảo ảnh quang học, chế tạo mô hình kính lúp quang học đơn giản." },
+                        { title: "Chủ đề STEM: Thiết kế hệ thống lọc nước sạch sinh hoạt mini", duration: 3, week: 14, obj: "Vận dụng kiến thức hỗn hợp và các chất để chế tạo bộ lọc nước đa tầng thân thiện môi trường." }
+                    ],
+                    "Toán": [
+                        { title: "Bài 1: Đơn thức và đa thức nhiều biến trong đại số", duration: 2, week: 1, obj: "Nhận biết đơn thức, đa thức thu gọn; thực hiện phép cộng và trừ đa thức nhiều biến." },
+                        { title: "Bài 6: Bảy hằng đẳng thức đáng nhớ và ứng dụng", duration: 2, week: 4, obj: "Nắm vững và vận dụng linh hoạt các hằng đẳng thức để rút gọn biểu thức đại số." },
+                        { title: "Bài 12: Hình chóp tam giác đều và hình chóp tứ giác đều", duration: 2, week: 11, obj: "Nhận dạng đỉnh, cạnh bên, mặt đáy; tính diện tích xung quanh và thể tích trong đời sống." },
+                        { title: "Bài 18: Định lí Thalès trong tam giác và ứng dụng đo đạc", duration: 2, week: 16, obj: "Vận dụng định lí Thalès đo chiều cao ngọn cây, bề rộng khúc sông ngoài thực địa." }
+                    ],
+                    "Ngữ văn": [
+                        { title: "Bài 2: Vẻ đẹp cổ điển trong thơ lục bát và song thất lục bát", duration: 2, week: 3, obj: "Phân tích vần, nhịp, hình ảnh ước lệ và tình cảm nhân đạo sâu sắc trong tác phẩm." },
+                        { title: "Bài 5: Nghị luận xã hội - Tinh thần trách nhiệm của người trẻ", duration: 2, week: 8, obj: "Xác định luận điểm, luận cứ xác đáng; viết bài văn nghị luận thuyết phục, chặt chẽ." },
+                        { title: "Bài 9: Thế giới kì ảo trong truyện truyền kỳ và truyện ngụ ngôn", duration: 2, week: 15, obj: "Khám phá yếu tố hoang đường kỳ ảo phản ánh ước mơ công lý của nhân dân." }
+                    ],
+                    "Tiếng Anh": [
+                        { title: "Unit 2: Life in the Countryside and Modern Traditions", duration: 2, week: 3, obj: "Compare rural and urban lifestyles using comparative forms of adverbs and adjectives." },
+                        { title: "Unit 6: Folk Tales, Fables and Cultural Legends", duration: 2, week: 10, obj: "Use past continuous tense with 'when/while' to narrate classic Vietnamese folk stories." }
+                    ],
+                    "Lịch sử và Địa lí": [
+                        { title: "Bài 4: Các cuộc cách mạng tư sản thời cận đại ở Châu Âu", duration: 2, week: 5, obj: "Phân tích nguyên nhân, diễn biến và ý nghĩa lịch sử của Cách mạng tư sản Pháp 1789." },
+                        { title: "Bài 11: Đặc điểm khí hậu và thủy văn vùng nhiệt đới gió mùa Việt Nam", duration: 2, week: 10, obj: "Đọc biểu đồ nhiệt độ - lượng mưa, giải thích tính chất thất thường của thời tiết nước ta." }
+                    ],
+                    "Tin học": [
+                        { title: "Bài 7: Lập trình thuật toán tuần hoàn và rẽ nhánh trong Scratch/Python", duration: 2, week: 7, obj: "Hiểu cấu trúc điều khiển if-else, vòng lặp; tự xây dựng trò chơi giải toán mini." },
+                        { title: "Bài 12: An toàn thông tin và văn hóa ứng xử trên mạng xã hội", duration: 1, week: 13, obj: "Nhận biết hành vi bắt nạt qua mạng, kỹ năng bảo vệ mật khẩu hai lớp an toàn." }
+                    ],
+                    "Hoạt động trải nghiệm, hướng nghiệp": [
+                        { title: "Chủ đề 2: Rèn luyện tính kiên trì và chăm chỉ", duration: 1, week: 8, obj: "Học sinh nhận diện biểu hiện của tính kiên trì; tự xây dựng kế hoạch rèn luyện thói quen vượt khó." },
+                        { title: "Chủ đề 5: Tìm hiểu các nhóm nghề truyền thống và hiện đại tại địa phương", duration: 2, week: 14, obj: "Khảo sát nghề thủ công, lập hồ sơ năng khiếu cá nhân định hướng chọn trường THPT." }
+                    ],
+                    "Giáo dục công dân": [
+                        { title: "Bài 3: Tôn trọng sự đa dạng văn hóa giữa các dân tộc", duration: 1, week: 6, obj: "Học sinh hiểu nét đẹp phong tục tập quán các vùng miền, có thái độ tôn trọng khác biệt." }
+                    ],
+                    "Công nghệ": [
+                        { title: "Bài 5: Gia công cơ khí bằng tay và bản vẽ kỹ thuật đơn giản", duration: 2, week: 9, obj: "Đọc bản vẽ chi tiết cơ khí, thực hành cưa đục kim loại đảm bảo an toàn lao động." }
+                    ]
+                }
+            },
+            "thpt": {
+                grades: ["Lớp 10", "Lớp 11", "Lớp 12"],
+                subjects: {
+                    "Toán": [
+                        { title: "Bài 4: Hàm số bậc hai và ứng dụng đồ thị trong kinh tế", duration: 2, week: 5, obj: "Khảo sát sự biến thiên, vẽ parabol; tìm giá trị lớn nhất, nhỏ nhất trong bài toán tối ưu." },
+                        { title: "Bài 15: Tích vô hướng của hai vectơ và ứng dụng hình học", duration: 2, week: 12, obj: "Tính góc giữa hai vectơ, chứng minh hai đường thẳng vuông góc trong mặt phẳng tọa độ." },
+                        { title: "Bài 22: Phương trình đường thẳng và đường tròn trong mặt phẳng Oxy", duration: 2, week: 18, obj: "Lập phương trình tiếp tuyến, giải bài toán giao điểm và khoảng cách thực tế." }
+                    ],
+                    "Ngữ văn": [
+                        { title: "Bài 3: Nghệ thuật tự sự trong sử thi Đăm Săn và anh hùng ca dân gian", duration: 2, week: 4, obj: "Phân tích nghệ thuật so sánh phóng đại, vẻ đẹp dũng cảm của người anh hùng cộng đồng." },
+                        { title: "Bài 7: Văn tế nghĩa sĩ Cần Giuộc - Bản hùng ca bất tử của nhân dân", duration: 2, week: 11, obj: "Cảm nhận tượng đài nông dân nghĩa sĩ qua ngòi bút xót xa, bi tráng của Nguyễn Đình Chiểu." }
+                    ],
+                    "Vật lí": [
+                        { title: "Bài 5: Dao động điều hòa và các phương trình động học", duration: 2, week: 5, obj: "Khảo sát đồ thị ly độ, vận tốc và gia tốc; phân tích bảo toàn năng lượng con lắc lò xo." },
+                        { title: "Bài 14: Sóng cơ và hiện tượng giao thoa sóng trong không gian", duration: 2, week: 13, obj: "Xác định cực đại, cực tiểu giao thoa sóng nước; đo bước sóng bằng thí nghiệm ảo." }
+                    ],
+                    "Hóa học": [
+                        { title: "Bài 4: Hóa học polyme và vật liệu compozit thế hệ mới", duration: 2, week: 10, obj: "Nêu được cấu trúc, tính chất vật lý của chất dẻo, tơ sợi và cao su; ý thức bảo vệ môi trường." },
+                        { title: "Bài 12: Cân bằng hóa học và hằng số cân bằng Kc", duration: 2, week: 7, obj: "Vận dụng nguyên lý chuyển dịch cân bằng Le Chatelier trong sản xuất amoniac công nghiệp." }
+                    ],
+                    "Sinh học": [
+                        { title: "Bài 8: Cấu trúc tế bào nhân thực và các bào quan chức năng", duration: 2, week: 6, obj: "Phân biệt tế bào thực vật và động vật, chức năng màng sinh chất, ti thể và lục lạp." },
+                        { title: "Bài 16: Di truyền học Mendel và các quy luật phân ly độc lập", duration: 2, week: 14, obj: "Giải thích cơ sở tế bào học của phép lai hai cặp tính trạng, tính xác suất biến dị tổ hợp." }
+                    ],
+                    "Tin học": [
+                        { title: "Bài 8: Mạng máy tính và Internet trong cuộc sống hiện đại", duration: 2, week: 8, obj: "Học sinh hiểu cấu trúc mạng LAN/WAN, nguyên tắc an toàn dữ liệu và bảo mật cá nhân trên không gian số." },
+                        { title: "Bài 15: Thiết kế cơ sở dữ liệu quan hệ với SQL căn bản", duration: 2, week: 16, obj: "Tạo bảng dữ liệu, thiết lập khóa chính - khóa ngoại; viết câu lệnh SELECT lọc báo cáo." }
+                    ],
+                    "Lịch sử": [
+                        { title: "Bài 6: Văn minh Đông Sơn và nhà nước Văn Lang - Âu Lạc", duration: 2, week: 6, obj: "Phân tích giá trị khảo cổ trống đồng Đông Sơn, cấu trúc xã hội thời kỳ đầu dựng nước." }
+                    ],
+                    "Địa lí": [
+                        { title: "Bài 9: Tác động của nội lực và ngoại lực đến địa hình bề mặt Trái Đất", duration: 2, week: 8, obj: "Giải thích các hiện tượng uốn nếp, đứt gãy, phong hóa và xâm thực địa mạo." }
+                    ],
+                    "Giáo dục kinh tế và pháp luật": [
+                        { title: "Bài 3: Thị trường và cơ chế giá cả trong nền kinh tế thị trường", duration: 2, week: 5, obj: "Hiểu quy luật cung - cầu, tác động của cạnh tranh lành mạnh đến người tiêu dùng." }
+                    ],
+                    "Hoạt động trải nghiệm, hướng nghiệp": [
+                        { title: "Chủ đề 4: Xây dựng kế hoạch tài chính cá nhân và khởi nghiệp sáng tạo", duration: 2, week: 12, obj: "Học sinh lập bảng thu chi cá nhân, mô phỏng ý tưởng dự án khởi nghiệp nhỏ của nhóm." }
+                    ]
+                }
+            }
         };
 
-        const updateKNTTTitlesDropdown = () => {
-            const lvl = document.getElementById('lpLevelSelect')?.value || 'thcs';
-            const titleSelect = document.getElementById('lpTitleSelect');
-            const titleInput = document.getElementById('lpTitleInput');
-            const subjectInput = document.getElementById('lpSubjectInput');
-            const durationInput = document.getElementById('lpDurationInput');
-            const weekInput = document.getElementById('lpWeekInput');
-            const objectivesInput = document.getElementById('lpObjectivesInput');
+        const levelSelect = document.getElementById('lpLevelSelect');
+        const gradeSelect = document.getElementById('lpGradeSelect');
+        const subjectSelect = document.getElementById('lpSubjectSelect');
+        const subjectInput = document.getElementById('lpSubjectInput');
+        const titleSelect = document.getElementById('lpTitleSelect');
+        const titleInput = document.getElementById('lpTitleInput');
+        const durationInput = document.getElementById('lpDurationInput');
+        const weekInput = document.getElementById('lpWeekInput');
+        const objectivesInput = document.getElementById('lpObjectivesInput');
 
+        // Hàm kiểm tra thẩm quyền Nhóm 2 (VIP PRO) hoặc Quản Trị Viên (Admin)
+        const checkIsNhom2OrAdmin = () => {
+            const role = this.currentUser?.role;
+            return this.currentUser?.isLoggedIn && ['admin', 'vip_pro'].includes(role);
+        };
+
+        const promptNhom2Upgrade = (featureName = 'Tự động chọn Bài học theo SGK KNTT') => {
+            try { sound.playWrong?.(); } catch(err) {}
+            alert(`💎 [ĐẶC QUYỀN NHÓM 2: THÀNH VIÊN VIP PRO]\n\nTính năng "${featureName}" là đặc quyền dành riêng cho NHÓM 2 (VIP PRO) hoặc Quản Trị Viên!\n\nThầy/Cô vui lòng nâng cấp tài khoản lên Nhóm 2 để mở khóa và tự động chọn toàn bộ kho bài dạy chuẩn SGK Kết Nối Tri Thức (KNTT).`);
+            this.openModal('membershipUpgradeModal');
+        };
+
+        // Hàm nạp danh sách Khối Lớp theo Cấp Học
+        const populateGrades = (lvl) => {
+            if (!gradeSelect) return;
+            const curData = this.knttCurriculum[lvl] || this.knttCurriculum['thcs'];
+            const grades = curData.grades || [];
+            const currentVal = gradeSelect.value;
+            gradeSelect.innerHTML = grades.map(g => `<option value="${g}">${g}</option>`).join('');
+            if (grades.includes(currentVal)) {
+                gradeSelect.value = currentVal;
+            } else if (grades.length > 0) {
+                gradeSelect.value = grades[Math.floor(grades.length / 2)] || grades[0];
+            }
+        };
+
+        // Hàm nạp danh sách Môn Học theo Cấp Học & Khối Lớp
+        const populateSubjects = (lvl) => {
+            if (!subjectSelect) return;
+            const curData = this.knttCurriculum[lvl] || this.knttCurriculum['thcs'];
+            const subjectsObj = curData.subjects || {};
+            const subjectNames = Object.keys(subjectsObj);
+
+            subjectSelect.innerHTML = subjectNames.map(s => `<option value="${s}">${s}</option>`).join('');
+            
+            // Chọn môn đầu tiên hoặc giữ nguyên nếu tồn tại
+            if (subjectNames.length > 0) {
+                subjectSelect.value = subjectNames[0];
+                if (subjectInput) subjectInput.value = subjectNames[0];
+            }
+        };
+
+        // Hàm nạp danh sách Bài Học theo SGK KNTT
+        const populateLessons = (lvl, subjectName) => {
             if (!titleSelect) return;
-            const lessons = this.knttLessons[lvl] || this.knttLessons['thcs'];
-            titleSelect.innerHTML = lessons.map(les => `<option value="${les.title}">${les.title} (${les.subject})</option>`).join('');
+            const curData = this.knttCurriculum[lvl] || this.knttCurriculum['thcs'];
+            const subjectsObj = curData.subjects || {};
+            let lessons = subjectsObj[subjectName] || [];
 
-            // Tự động gán bài học đầu tiên
+            if (!lessons || lessons.length === 0) {
+                lessons = [
+                    { title: `Bài 1: Khởi động và kiến thức trọng tâm môn ${subjectName}`, duration: 1, week: 1, obj: `Học sinh nắm vững các khái niệm cơ bản và phương pháp học tập hiệu quả môn ${subjectName}.` },
+                    { title: `Bài 2: Thực hành và vận dụng giải quyết vấn đề thực tế`, duration: 2, week: 5, obj: `Vận dụng lý thuyết giải bài tập thực hành, rèn luyện tư duy logic và năng lực giải quyết vấn đề.` },
+                    { title: `Chủ đề STEM / Dự án: Trải nghiệm sáng tạo môn ${subjectName}`, duration: 2, week: 10, obj: `Tích hợp liên môn, thực hiện dự án nhóm phát huy phẩm chất chăm chỉ, trách nhiệm.` }
+                ];
+            }
+
+            titleSelect.innerHTML = lessons.map(les => `<option value="${les.title}">${les.title}</option>`).join('');
+
+            // Tự động gán thông số bài đầu tiên
             if (lessons.length > 0) {
                 const first = lessons[0];
                 if (titleInput) titleInput.value = first.title;
-                if (subjectInput) subjectInput.value = first.subject;
                 if (durationInput) durationInput.value = first.duration;
                 if (weekInput) weekInput.value = first.week;
                 if (objectivesInput) objectivesInput.value = first.obj;
             }
         };
 
-        document.getElementById('lpTitleSelect')?.addEventListener('change', (e) => {
-            const lvl = document.getElementById('lpLevelSelect')?.value || 'thcs';
-            const lessons = this.knttLessons[lvl] || [];
-            const selectedTitle = e.target.value;
-            const found = lessons.find(x => x.title === selectedTitle);
-            if (found) {
-                document.getElementById('lpTitleInput').value = found.title;
-                document.getElementById('lpSubjectInput').value = found.subject;
-                document.getElementById('lpDurationInput').value = found.duration;
-                document.getElementById('lpWeekInput').value = found.week;
-                document.getElementById('lpObjectivesInput').value = found.obj;
-            } else {
-                document.getElementById('lpTitleInput').value = selectedTitle;
+        // Bắt sự kiện thay đổi Cấp Học
+        levelSelect?.addEventListener('change', () => {
+            sound.playClick?.();
+            const lvl = levelSelect.value;
+            const modelSelect = document.getElementById('lpModelSelect');
+            if (modelSelect) {
+                modelSelect.value = (lvl === 'mn') ? 'custom_preschool' : 'cv5512';
+            }
+            populateGrades(lvl);
+            populateSubjects(lvl);
+            const currentSub = subjectSelect ? subjectSelect.value : '';
+            populateLessons(lvl, currentSub);
+        });
+
+        // Bắt sự kiện thay đổi Khối Lớp
+        gradeSelect?.addEventListener('change', () => {
+            sound.playClick?.();
+            const lvl = levelSelect ? levelSelect.value : 'thcs';
+            const currentSub = subjectSelect ? subjectSelect.value : '';
+            populateLessons(lvl, currentSub);
+        });
+
+        // Bắt sự kiện thay đổi Môn Học
+        subjectSelect?.addEventListener('change', () => {
+            sound.playClick?.();
+            const lvl = levelSelect ? levelSelect.value : 'thcs';
+            const selectedSub = subjectSelect.value;
+            if (subjectInput) subjectInput.value = selectedSub;
+            populateLessons(lvl, selectedSub);
+        });
+
+        // Bắt sự kiện click vào Badge "Nhóm 2 (VIP PRO)"
+        document.getElementById('lpVipProBadgeBtn')?.addEventListener('click', () => {
+            sound.playClick?.();
+            this.openModal('membershipUpgradeModal');
+        });
+
+        // Bắt sự kiện chọn Bài Học SGK KNTT (BẮT BUỘC NHÓM 2 HOẶC ADMIN)
+        titleSelect?.addEventListener('mousedown', (e) => {
+            if (!checkIsNhom2OrAdmin()) {
+                e.preventDefault();
+                e.stopPropagation();
+                promptNhom2Upgrade('Tự động chọn Bài học theo SGK KNTT');
+                return false;
             }
         });
 
-        document.getElementById('lpLevelSelect')?.addEventListener('change', () => {
-            updateKNTTTitlesDropdown();
+        titleSelect?.addEventListener('change', (e) => {
+            if (!checkIsNhom2OrAdmin()) {
+                e.preventDefault();
+                e.stopPropagation();
+                promptNhom2Upgrade('Tự động chọn Bài học theo SGK KNTT');
+                return false;
+            }
+            sound.playClick?.();
+            const lvl = levelSelect ? levelSelect.value : 'thcs';
+            const sub = subjectSelect ? subjectSelect.value : '';
+            const curData = this.knttCurriculum[lvl] || this.knttCurriculum['thcs'];
+            const lessons = (curData.subjects && curData.subjects[sub]) || [];
+            const selectedTitle = e.target.value;
+            const found = lessons.find(x => x.title === selectedTitle);
+            if (found) {
+                if (titleInput) titleInput.value = found.title;
+                if (durationInput) durationInput.value = found.duration;
+                if (weekInput) weekInput.value = found.week;
+                if (objectivesInput) objectivesInput.value = found.obj;
+            } else {
+                if (titleInput) titleInput.value = selectedTitle;
+            }
         });
-
-        // Nạp lần đầu
-        updateKNTTTitlesDropdown();
-
 
         // 1. Chuyển đổi Theo Tiết / Theo Tuần
         const btnScopeLesson = document.getElementById('btnLPScopeLesson');
@@ -5865,54 +8474,12 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             document.getElementById('lpDurationInput').value = '3';
         });
 
-        // 2. Chuyển cấp học -> tự động cập nhật khối lớp
-        const levelSelect = document.getElementById('lpLevelSelect');
-        const gradeSelect = document.getElementById('lpGradeSelect');
-        levelSelect?.addEventListener('change', () => {
-            sound.playClick();
-            const lvl = levelSelect.value;
-            if (lvl === 'mn') {
-                gradeSelect.innerHTML = `
-                    <option value="Nhà trẻ (24-36 tháng)">Nhà trẻ (24-36 tháng)</option>
-                    <option value="Mẫu giáo Bé (3-4 tuổi)">Mẫu giáo Bé (3-4 tuổi)</option>
-                    <option value="Mẫu giáo Nhỡ (4-5 tuổi)">Mẫu giáo Nhỡ (4-5 tuổi)</option>
-                    <option value="Mẫu giáo Lớn (5-6 tuổi)" selected>Mẫu giáo Lớn (5-6 tuổi)</option>
-                `;
-                document.getElementById('lpSubjectInput').value = 'Hoạt động Nhận thức - Khám phá khoa học';
-                document.getElementById('lpTitleInput').value = 'Khám phá thế giới các bạn động vật nuôi trong gia đình';
-                document.getElementById('lpModelSelect').value = 'custom_preschool';
-            } else if (lvl === 'th') {
-                gradeSelect.innerHTML = `
-                    <option value="Lớp 1">Lớp 1</option>
-                    <option value="Lớp 2">Lớp 2</option>
-                    <option value="Lớp 3">Lớp 3</option>
-                    <option value="Lớp 4" selected>Lớp 4</option>
-                    <option value="Lớp 5">Lớp 5</option>
-                `;
-                document.getElementById('lpSubjectInput').value = 'Tiếng Việt 4';
-                document.getElementById('lpTitleInput').value = 'Bài 5: Những bông hoa nhỏ trong vườn đời';
-                document.getElementById('lpModelSelect').value = 'cv5512';
-            } else if (lvl === 'thcs') {
-                gradeSelect.innerHTML = `
-                    <option value="Lớp 6">Lớp 6</option>
-                    <option value="Lớp 7">Lớp 7</option>
-                    <option value="Lớp 8" selected>Lớp 8</option>
-                    <option value="Lớp 9">Lớp 9</option>
-                `;
-                document.getElementById('lpSubjectInput').value = 'Hoạt động trải nghiệm, hướng nghiệp 8';
-                document.getElementById('lpTitleInput').value = 'Chủ đề 2: Rèn luyện tính kiên trì và chăm chỉ';
-                document.getElementById('lpModelSelect').value = 'cv5512';
-            } else {
-                gradeSelect.innerHTML = `
-                    <option value="Lớp 10" selected>Lớp 10</option>
-                    <option value="Lớp 11">Lớp 11</option>
-                    <option value="Lớp 12">Lớp 12</option>
-                `;
-                document.getElementById('lpSubjectInput').value = 'Tin học 10';
-                document.getElementById('lpTitleInput').value = 'Bài 8: Mạng máy tính trong cuộc sống hiện đại';
-                document.getElementById('lpModelSelect').value = 'cv5512';
-            }
-        });
+        // Nạp lần đầu khởi tạo
+        const initLvl = levelSelect ? levelSelect.value : 'thcs';
+        populateGrades(initLvl);
+        populateSubjects(initLvl);
+        const initSub = subjectSelect ? subjectSelect.value : '';
+        populateLessons(initLvl, initSub);
 
         // 3. Nút bấm: Trí Tuệ Gemini Soạn KHBD Siêu Tốc
         document.getElementById('btnLPGenerateAI')?.addEventListener('click', () => {
@@ -5939,8 +8506,17 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             }
         });
 
-        // 5. Nút Xuất File Word (.DOCX) - Chuẩn phân quyền Nhóm 5 / Nhóm 4 / Nhóm 3-2-1
+        // 5. Nút Xuất File Word (.DOCX) - Chuẩn phân quyền: Yêu cầu nâng quyền thành viên (Nhóm 3 VIP, Nhóm 2 VIP PRO, Nhóm 1 Admin)
         document.getElementById('btnLPExportDocx')?.addEventListener('click', () => {
+            const userRole = this.currentUser?.role;
+            const isEligible = this.currentUser?.isLoggedIn && ['admin', 'vip_pro', 'vip'].includes(userRole);
+            if (!isEligible) {
+                try { sound.playWrong?.(); } catch(e) {}
+                this.showToast('💎 Vui lòng nâng cấp gói Thành Viên để Xuất File Word .DOCX chuẩn mực!', 3500);
+                this.openModal('membershipUpgradeModal');
+                return;
+            }
+
             const title = document.getElementById('lpTitleInput').value || 'KHBD';
             const htmlContent = document.getElementById('lpPreviewContainer').innerHTML;
 
@@ -7977,6 +10553,7 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
 
         // 3. Lối tắt chuyển đổi qua lại giữa Kho và Xưởng
         document.getElementById('btnCreatePPT')?.addEventListener('click', () => {
+            this.startNewBlankPresentation();
             this.switchTab('ppt-studio');
         });
 
@@ -8975,6 +11552,12 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 this.openModal('membershipUpgradeModal');
                 return;
             }
+            if (this.isGuest() || !this.currentUser?.isLoggedIn) {
+                try { sound.playWrong(); } catch(e) {}
+                alert("🔒 YÊU CẦU ĐĂNG NHẬP GOOGLE\n\nVui lòng đăng nhập bằng tài khoản Google để sử dụng tính năng Chiếu Toàn Màn Hình Máy Chiếu!");
+                this.openAuthModal();
+                return;
+            }
             sound.playFanfare();
             this.startSlideShow(this.activeSlideIndex);
             const presentBox = document.querySelector('.ppt-present-box');
@@ -8984,16 +11567,77 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             }
         });
 
+        // Nút Soạn Bài Mới (Làm mới xưởng)
+        document.getElementById('btnNewPPTBlank')?.addEventListener('click', () => {
+            this.startNewBlankPresentation();
+        });
+
+        // Chọn Mẫu Bài Giảng trong Kho -> Nạp nhanh vào Xưởng
+        document.getElementById('pptTemplatePresetSelect')?.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (!val) {
+                this.startNewBlankPresentation();
+                return;
+            }
+            const p = this.pptRepo.find(x => x.id === val);
+            if (p) {
+                this.loadPPTIntoStudio(p);
+            }
+        });
+
+        // Đổi Lớp ở Xưởng PPT -> Tự động đồng bộ danh mục Môn học chuẩn Bộ GD&ĐT
+        document.getElementById('pptGradeSelect')?.addEventListener('change', (e) => {
+            const val = e.target.value;
+            this.populateSubjectSelect('pptSubjectSelect', val);
+            if (this.activePresentation) {
+                this.activePresentation.grade = val;
+                this.activePresentation.subject = document.getElementById('pptSubjectSelect')?.value || '';
+            }
+            this.renderCurrentSlideCanvas();
+        });
+
+        document.getElementById('pptSubjectSelect')?.addEventListener('change', (e) => {
+            if (this.activePresentation) {
+                this.activePresentation.subject = e.target.value;
+            }
+            this.renderCurrentSlideCanvas();
+        });
+
+        // Lưu và Xuất Gói Bài Giảng PPT (Áp dụng phân quyền 5 nhóm người dùng)
         document.getElementById('btnPPTSaveAndExport')?.addEventListener('click', () => {
-            const title = document.getElementById('pptLessonTitleInput')?.value.trim() || 'Bài Giảng PPT';
+            const titleInput = document.getElementById('pptLessonTitleInput');
+            const title = titleInput?.value.trim();
+            if (!title) {
+                alert("Vui lòng nhập Tên bài học (trường bắt buộc)!");
+                titleInput?.focus();
+                return;
+            }
+
+            if (!this.activePresentation?.slides || this.activePresentation.slides.length === 0) {
+                alert("Bài giảng chưa có slide nào để lưu và xuất gói! Vui lòng thêm ít nhất 1 slide.");
+                return;
+            }
+
             this.enforceSaveAndExportTier(
-                () => this.savePresentationToRepo(true),
+                () => {
+                    this.savePresentationToRepo(true);
+                    this.renderPPTRepo();
+                    sound.playFanfare();
+                    this.showToast(`🎉 Đã lưu bài giảng "${title}" (${this.activePresentation.slides.length} slides) vào Kho của bạn!`, 3500);
+                },
                 () => this.exportPresentationPPTX(),
-                title
+                `Bài giảng: ${title}`
             );
         });
 
         document.getElementById('btnSavePresentation')?.addEventListener('click', () => {
+            const titleInput = document.getElementById('pptLessonTitleInput');
+            const title = titleInput?.value.trim();
+            if (!title) {
+                alert("Vui lòng nhập Tên bài học (trường bắt buộc)!");
+                titleInput?.focus();
+                return;
+            }
             if (this.isGuest() || !this.currentUser?.isLoggedIn) {
                 this.openAuthModal();
                 return;
@@ -9002,11 +11646,20 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
         });
 
         document.getElementById('btnExportPresentation')?.addEventListener('click', () => {
-            const title = document.getElementById('pptLessonTitleInput')?.value.trim() || 'Bài Giảng PPT';
+            const titleInput = document.getElementById('pptLessonTitleInput');
+            const title = titleInput?.value.trim();
+            if (!title) {
+                alert("Vui lòng nhập Tên bài học (trường bắt buộc)!");
+                titleInput?.focus();
+                return;
+            }
             this.enforceSaveAndExportTier(
-                () => this.savePresentationToRepo(true),
+                () => {
+                    this.savePresentationToRepo(true);
+                    this.renderPPTRepo();
+                },
                 () => this.exportPresentationPPTX(),
-                title
+                `Bài giảng: ${title}`
             );
         });
 
@@ -9022,27 +11675,39 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             }
         });
 
-        // Sự kiện gõ trực tiếp tiêu đề và nội dung slide (Live Sync)
+        // Sự kiện gõ trực tiếp tiêu đề và nội dung slide (Live Sync & Undo Snapshot)
         document.getElementById('slideTitleInput')?.addEventListener('input', (e) => {
             const cur = this.activePresentation.slides[this.activeSlideIndex];
             if (cur) {
                 cur.title = e.target.value;
                 this.renderSlideDeck();
+                this.recordPPTHistoryDebounced('Sửa tiêu đề slide');
             }
+        });
+        document.getElementById('slideTitleInput')?.addEventListener('change', () => {
+            this.recordPPTHistory('Sửa tiêu đề slide');
         });
 
         document.getElementById('slideContentInput')?.addEventListener('input', (e) => {
             const cur = this.activePresentation.slides[this.activeSlideIndex];
             if (cur) {
                 cur.content = e.target.value;
+                this.recordPPTHistoryDebounced('Sửa nội dung slide');
             }
+        });
+        document.getElementById('slideContentInput')?.addEventListener('change', () => {
+            this.recordPPTHistory('Sửa nội dung slide');
         });
 
         document.getElementById('slideSpeakerNotes')?.addEventListener('input', (e) => {
             const cur = this.activePresentation.slides[this.activeSlideIndex];
             if (cur) {
                 cur.speakerNotes = e.target.value;
+                this.recordPPTHistoryDebounced('Sửa ghi chú lời giảng');
             }
+        });
+        document.getElementById('slideSpeakerNotes')?.addEventListener('change', () => {
+            this.recordPPTHistory('Sửa ghi chú lời giảng');
         });
 
         document.getElementById('slideStepSelect')?.addEventListener('change', (e) => {

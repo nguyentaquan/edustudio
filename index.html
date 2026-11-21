@@ -431,6 +431,7 @@
     }, true);
     </script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -490,7 +491,7 @@
                 <div class="banner-headings">
                     <h1>
                         EduStudio
-                        <span class="badge-version-gold">v3.10.57 GDMN & GDPT</span>
+                        <span class="badge-version-gold">v3.10.58 GDMN & GDPT</span>
                         <span class="badge-demo-pill" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; padding: 0.12rem 0.5rem; border-radius: 6px; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 0.25rem;">🚀 BẢN DEMO THỬ NGHIỆM</span>
                     </h1>
                     <p>Cổng Công Cụ Đa Phương Tiện Sư Phạm Dùng Chung</p>
@@ -605,9 +606,20 @@
 
             </div>
 
-            <div class="status-badge-pwa">
-                <span style="width: 7px; height: 7px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
-                <span>PWA Offline Sẵn Sàng</span>
+            <div style="display: flex; align-items: center; gap: 0.55rem;">
+                <a href="https://www.facebook.com/edusto.taquan" target="_blank" rel="noopener noreferrer"
+                   style="display: inline-flex; align-items: center; gap: 0.35rem; background: linear-gradient(135deg, #1877f2 0%, #0d5bd9 100%); color: #ffffff; text-decoration: none; font-size: 0.74rem; font-weight: 800; padding: 0.28rem 0.72rem; border-radius: 999px; border: 1px solid #93c5fd; box-shadow: 0 2px 6px rgba(24, 119, 242, 0.28); transition: transform 0.15s ease, box-shadow 0.15s ease; white-space: nowrap;"
+                   onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 10px rgba(24, 119, 242, 0.4)';"
+                   onmouseout="this.style.transform='none'; this.style.boxShadow='0 2px 6px rgba(24, 119, 242, 0.28)';"
+                   title="Truy cập Fanpage Chính Thức: Edusto - Nguyễn Tá Quan (facebook.com/edusto.taquan)">
+                    <span style="font-size: 0.88rem;">📘</span>
+                    <span>Fanpage EDUSTO</span>
+                </a>
+
+                <div class="status-badge-pwa">
+                    <span style="width: 7px; height: 7px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                    <span>PWA Offline Sẵn Sàng</span>
+                </div>
             </div>
         </nav>
 
@@ -685,9 +697,12 @@
             <!-- VẠCH NGANG PHÂN BIỆT VÙNG CÔNG CỤ VÀ VÙNG LIÊN KẾT WEB -->
             <div class="sidebar-divider"></div>
 
-            <!-- VÙNG CÁC LIÊN KẾT WEB NGÀNH GIÁO DỤC (ĐÃ TINH GỌN CHỈ GIỮ BGDĐT, CSDL, EDU, SMAS) -->
+            <!-- VÙNG CÁC LIÊN KẾT WEB NGÀNH GIÁO DỤC (ĐÃ TINH GỌN CHỈ GIỮ FANPAGE EDUSTO, BGDĐT, CSDL, EDU, SMAS) -->
             <div class="sidebar-header-label" style="font-size: 0.58rem; margin-top: 0.15rem; color: #0284c7;">Liên kết</div>
             <div class="sidebar-links-col">
+                <a href="https://www.facebook.com/edusto.taquan" target="_blank" rel="noopener noreferrer" class="btn-web-link" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #60a5fa;" title="Fanpage Chính Thức: Edusto - Nguyễn Tá Quan (facebook.com/edusto.taquan)">
+                    <span class="link-badge" style="color: #1d4ed8; font-weight: 900;">📘 FB</span>
+                </a>
                 <a href="https://moet.gov.vn" target="_blank" rel="noopener" class="btn-web-link" title="Bộ Giáo dục & Đào tạo (BGDĐT)">
                     <span class="link-badge">BGDĐT</span>
                 </a>
@@ -794,8 +809,8 @@
                         </div>
                         <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
                             
-                            <button id="btnLPExportDocx" class="btn-mini-action" style="background: #1d4ed8; color: #ffffff; border-color: #1d4ed8; font-weight: 700;" title="Xuất file Word .DOCX chuẩn mực (Phí vi mô 500đ / Miễn phí VIP Pro)">
-                                <span>📄</span> <span>Xuất File .DOCX (500đ)</span>
+                            <button id="btnLPExportDocx" class="btn-mini-action" style="background: #1d4ed8; color: #ffffff; border-color: #1d4ed8; font-weight: 700;" title="Xuất file Word .DOCX chuẩn mực (Yêu cầu nâng quyền thành viên)">
+                                <span>📄</span> <span>Xuất File .DOCX</span>
                             </button>
                             <button id="btnLPSaveRepo" class="btn-mini-action" style="background: #059669; color: #ffffff; border-color: #059669; font-weight: 700;" title="Lưu vào Kho Bài Dạy cá nhân">
                                 <span>💾</span> <span>Lưu Vào Kho</span>
@@ -862,13 +877,21 @@
                         <!-- 4. MÔN HỌC & TÊN BÀI DẠY -->
                         <div class="form-group-clean">
                             <label style="font-size: 0.72rem; font-weight: 700; color: #475569;">Môn Học / Hoạt Động Giáo Dục:</label>
-                            <input type="text" id="lpSubjectInput" class="input-clean" value="Hoạt động trải nghiệm, hướng nghiệp 8" style="font-size: 0.78rem;">
+                            <select id="lpSubjectSelect" class="input-clean" style="font-size: 0.78rem; font-weight: 600; color: #0f172a; padding: 0.35rem 0.45rem;">
+                                <!-- Tự động nạp danh sách Môn học theo Cấp và Khối Lớp -->
+                            </select>
+                            <input type="hidden" id="lpSubjectInput" value="Hoạt động trải nghiệm, hướng nghiệp 8">
                         </div>
 
                         <div class="form-group-clean">
-                            <label style="font-size: 0.72rem; font-weight: 700; color: #1e3a8a;">Tên Bài Dạy / Chủ Đề (Chuẩn SGK Kết Nối Tri Thức - KNTT):</label>
-                            <select id="lpTitleSelect" class="input-clean" style="font-size: 0.78rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem; padding: 0.35rem 0.45rem;">
-                                <!-- Tự động nạp danh sách bài học SGK KNTT theo Cấp và Khối lớp -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                <label style="font-size: 0.72rem; font-weight: 700; color: #1e3a8a;">
+                                    Chọn Bài Dạy / Chủ Đề <span style="font-size: 0.68rem; color: #64748b; font-weight: 500; font-style: italic;">(Theo SGK KNTT)</span>:
+                                </label>
+                                <span class="role-badge-vip-pro" id="lpVipProBadgeBtn" title="Bấm để xem đặc quyền Nhóm 2" style="font-size: 0.65rem; padding: 0.15rem 0.5rem; background: linear-gradient(135deg, #7c3aed, #4f46e5); color: #fff; border-radius: 4px; font-weight: 800; cursor: pointer; box-shadow: 0 1px 3px rgba(124, 58, 237, 0.3);">💎 Nhóm 2 (VIP PRO)</span>
+                            </div>
+                            <select id="lpTitleSelect" class="input-clean" style="font-size: 0.78rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem; padding: 0.38rem 0.45rem; border: 1.5px solid #a855f7; background-color: #faf5ff;">
+                                <!-- Tự động nạp danh sách bài học SGK KNTT theo Cấp, Khối Lớp và Môn Học -->
                             </select>
                             <input type="text" id="lpTitleInput" class="input-clean" value="Chủ đề 2: Rèn luyện tính kiên trì và chăm chỉ" placeholder="Hoặc nhập tên bài dạy tùy biến..." style="font-size: 0.76rem;">
                         </div>
@@ -903,7 +926,7 @@
                                 <span id="lpStatusBadge" class="badge-tag-tiny" style="background: #dcfce7; color: #15803d;">Chuẩn Công Văn 5512</span>
                             </div>
                             <div style="font-size: 0.72rem; color: #64748b;">
-                                Chi phí xuất bản: <strong style="color: #059669;">500 VNĐ / file</strong> (hoặc Miễn phí VIP Pro)
+                                Xuất bản: <strong style="color: #1d4ed8;">Chuẩn Microsoft Word (.DOCX)</strong> (Miễn phí từ Nhóm VIP)
                             </div>
                         </div>
 
@@ -919,74 +942,68 @@
             <!-- --------------------------------------------------------------
                  TAB 2: KHO BÀI GIẢNG PPT
                  -------------------------------------------------------------- -->
+            <!-- --------------------------------------------------------------
+                 TAB 2: KHO BÀI GIẢNG PPT TƯƠNG TÁC SƯ PHẠM
+                 -------------------------------------------------------------- -->
             <section id="pane-ppt" class="tab-pane-content">
-                <div class="card-white">
+                <!-- KHỐI 1: BÀI GIẢNG TỰ THIẾT KẾ (CỦA TÔI) -->
+                <div id="customPPTRepoSection" class="card-white" style="border-left: 4px solid #1d4ed8;">
                     <div class="card-white-header">
-                        <div>
-                            <h3><span>📊</span> Kho Bài Giảng PPT Tương Tác Sư Phạm</h3>
-                            <p style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">Bài giảng trình chiếu chuẩn tỷ lệ 16:9, tích hợp sẵn trò chơi học tập tương tác.</p>
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.4rem;">🌟</span>
+                            <div>
+                                <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a;">Bài Giảng Tự Thiết Kế (Của Tôi)</h3>
+                                <p style="font-size: 0.74rem; color: #64748b;">Bài giảng trình chiếu 16:9 bạn tự soạn hoặc tạo bằng Gemini AI — lưu an toàn trên hệ thống</p>
+                            </div>
                         </div>
-                        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                            <button class="btn-mini-action btn-upload-repo" data-repo="ppt" style="background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; font-weight: 700;">
-                                <span>📤</span> <span>Tải Lên Bài Giảng PPT</span>
+                        <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                            <button type="button" id="btnUploadPPTDirect" class="btn-mini-action" style="background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; font-weight: 700;" title="Nạp bài giảng PowerPoint (.pptx/.json/.html) từ máy tính vào Kho của bạn">
+                                <span>📂</span> <span>Nạp PPT Bên Ngoài</span>
                             </button>
-                            <button class="btn-create-game-prominent" id="btnCreatePPT">
-                                <span>➕</span> <span>Tạo Bài Giảng Mới</span>
+                            <button type="button" id="btnCreatePPT" class="btn-mini-action" style="background: #1d4ed8; color: #ffffff; border-color: #1d4ed8; font-weight: 700;">
+                                <span>➕</span> <span>Soạn Bài Giảng Mới</span>
                             </button>
                         </div>
                     </div>
+                    <div id="customPPTCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 1rem; margin-top: 0.75rem;">
+                        <!-- Render tự động qua app.js -->
+                    </div>
+                </div>
 
-                    <div id="pptCardsGrid" class="ppt-cards-grid">
-                        <div class="ppt-card">
-                            <div class="ppt-thumbnail-mock">
-                                <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">🌱</span>
-                                <strong style="font-size: 0.95rem;">HĐTN 8: Tự Hào Quê Hương</strong>
-                                <span style="font-size: 0.75rem; opacity: 0.9;">18 Slides • Tương Tác Trực Tiếp</span>
-                            </div>
-                            <div class="ppt-card-body">
-                                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #64748b; margin-bottom: 0.75rem;">
-                                    <span>Tác giả: Thầy Nguyễn Tá Quan</span>
-                                    <span style="color:#059669; font-weight:700;">Đã thẩm định</span>
-                                </div>
-                                <button class="btn-mini-action" style="width: 100%; justify-content: center; background:#1d4ed8; color:#ffffff;">
-                                    <span>▶</span> <span>Trình Chiếu Ngay</span>
-                                </button>
+                <!-- KHỐI 2: KHO BÀI GIẢNG CHUẨN HÓA SƯ PHẠM (GDPT 2018 & GDMN) -->
+                <div class="card-white" style="margin-top: 1.25rem;">
+                    <div class="card-white-header">
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.4rem;">📊</span>
+                            <div>
+                                <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a;">Kho Bài Giảng PPT Chuẩn Hóa Sư Phạm (GDPT 2018 & GDMN)</h3>
+                                <p style="font-size: 0.74rem; color: #64748b;">Trình chiếu 16:9 sắc nét, 4 bước Công văn 5512, tích hợp sẵn Minigame khởi động & Trắc nghiệm nảy nhịp</p>
                             </div>
                         </div>
-
-                        <div class="ppt-card">
-                            <div class="ppt-thumbnail-mock" style="background: linear-gradient(135deg, #059669, #0284c7);">
-                                <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📐</span>
-                                <strong style="font-size: 0.95rem;">Toán 7: Hình Học Trực Quan</strong>
-                                <span style="font-size: 0.75rem; opacity: 0.9;">22 Slides • Có Video 3D</span>
-                            </div>
-                            <div class="ppt-card-body">
-                                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #64748b; margin-bottom: 0.75rem;">
-                                    <span>Tác giả: Cô Trần Thu Sương</span>
-                                    <span style="color:#059669; font-weight:700;">Đã thẩm định</span>
-                                </div>
-                                <button class="btn-mini-action" style="width: 100%; justify-content: center; background:#1d4ed8; color:#ffffff;">
-                                    <span>▶</span> <span>Trình Chiếu Ngay</span>
-                                </button>
-                            </div>
+                        <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                            <button class="btn-mini-action btn-upload-repo" data-repo="ppt" style="background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; font-weight: 700;">
+                                <span>📤</span> <span>Tải Lên Bài Giảng PPT</span>
+                            </button>
+                            <span class="badge-tag-tiny demo-counter-badge" style="background: #fdf4ff; color: #9333ea; font-weight: 800; border: 1px solid #d8b4fe;">🎁 Demo Gói: Còn 10/10 lượt</span>
                         </div>
+                    </div>
 
-                        <div class="ppt-card">
-                            <div class="ppt-thumbnail-mock" style="background: linear-gradient(135deg, #f59e0b, #ec4899);">
-                                <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">🐶</span>
-                                <strong style="font-size: 0.95rem;">Mầm Non: Thế Giới Động Vật Quanh Bé</strong>
-                                <span style="font-size: 0.75rem; opacity: 0.9;">14 Slides • Trực Quan Sinh Động</span>
-                            </div>
-                            <div class="ppt-card-body">
-                                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #64748b; margin-bottom: 0.75rem;">
-                                    <span>Tác giả: Giáo viên Mầm Non</span>
-                                    <span style="color:#059669; font-weight:700;">Đã thẩm định</span>
-                                </div>
-                                <button class="btn-mini-action" style="width: 100%; justify-content: center; background:#1d4ed8; color:#ffffff;">
-                                    <span>▶</span> <span>Trình Chiếu Ngay</span>
-                                </button>
-                            </div>
-                        </div>
+                    <!-- THANH LỌC BỘ MÔN / BẬC HỌC PPT -->
+                    <div style="display: flex; gap: 0.4rem; margin-top: 0.65rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                        <button class="btn-mini-action btn-ppt-filter active" data-filter="all" style="font-weight: 700; background: #1d4ed8; color: #ffffff;">Tất Cả Bài Giảng</button>
+                        <button class="btn-mini-action btn-ppt-filter" data-filter="mn">Mầm Non (GDMN)</button>
+                        <button class="btn-mini-action btn-ppt-filter" data-filter="math">Toán Học</button>
+                        <button class="btn-mini-action btn-ppt-filter" data-filter="khtn">KHTN & Vật Lí</button>
+                        <button class="btn-mini-action btn-ppt-filter" data-filter="lit">Ngữ Văn</button>
+                        <button class="btn-mini-action btn-ppt-filter" data-filter="soc">Lịch Sử & Địa Lí</button>
+                        <button class="btn-mini-action btn-ppt-filter" data-filter="hdtn">HĐTN-HN & Kỹ Năng</button>
+                        <button class="btn-mini-action btn-ppt-filter" data-filter="eng">Tiếng Anh</button>
+                        <button class="btn-mini-action btn-ppt-filter" data-filter="stem">STEM & Tin Học</button>
+                    </div>
+
+                    <!-- LƯỚI THẺ BÀI GIẢNG PPT CHUẨN HÓA -->
+                    <div id="pptCardsGrid" class="ppt-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 1rem;">
+                        <!-- Render tự động qua app.js -->
                     </div>
                 </div>
             </section>
@@ -1010,6 +1027,9 @@
                             <button id="btnBackToPPTRepo" class="btn-mini-action" style="background:#eff6ff; color:#1d4ed8;">
                                 <span>📊</span> <span>Xem Kho PPT</span>
                             </button>
+                            <button id="btnNewPPTBlank" class="btn-mini-action" style="background:#f0fdf4; color:#15803d; border-color:#86efac; font-weight:700;" title="Làm mới để bắt đầu soạn bài giảng mới từ đầu">
+                                <span>➕</span> <span>Soạn Bài Mới</span>
+                            </button>
                             <button id="btnStartPresentation" class="btn-mini-action" style="background: #1d4ed8; color: #ffffff; font-weight: 700; border-color: #1d4ed8;" title="Trình chiếu bài giảng trong cửa sổ vừa vặn (không phóng to toàn màn hình)">
                                 <span>🎬</span> <span>Trình Chiếu (F5)</span>
                             </button>
@@ -1027,92 +1047,268 @@
                         
                         <!-- CỘT 1: DANH SÁCH SLIDE (SLIDE DECK) -->
                         <div class="card-white ppt-deck-col">
-                            <div class="card-white-header" style="padding-bottom: 0.4rem; margin-bottom: 0.5rem;">
-                                <h4><span>📑</span> Danh Sách Slide</h4>
-                                <span id="slideCounterBadge" class="badge-tag-tiny" style="background:#e0f2fe; color:#0369a1;">4 Slides</span>
+                            <div class="card-white-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.35rem; margin-bottom: 0.4rem;">
+                                <span style="font-size: 0.8rem; font-weight: 700; color: #1e293b; white-space: nowrap;">📑 Danh Sách Slide</span>
+                                <span id="slideCounterBadge" class="badge-tag-tiny" style="background:#e0f2fe; color:#0369a1; font-size: 0.7rem; padding: 0.15rem 0.45rem;">1 Slide</span>
                             </div>
 
-                            <button id="btnAddSlide" class="btn-mini-action" style="width: 100%; justify-content: center; background: #1d4ed8; color: #ffffff; font-weight: 700; margin-bottom: 0.65rem;">
+                            <button id="btnAddSlide" class="btn-mini-action" style="width: 100%; justify-content: center; background: #1d4ed8; color: #ffffff; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.76rem; padding: 0.45rem;">
                                 <span>➕</span> <span>Thêm Slide Mới</span>
                             </button>
 
-                            <!-- DANH SÁCH THUMBNAIL SLIDE -->
-                            <div id="slideDeckList" class="slide-deck-list">
+                            <!-- DANH SÁCH THUMBNAIL SLIDE (HỖ TRỢ KÉO - THẢ SẮP XẾP & CUT/COPY/PASTE) -->
+                            <div id="slideDeckList" class="slide-deck-list" title="Kéo thả slide để thay đổi thứ tự">
                                 <!-- Nạp động qua app.js -->
                             </div>
 
-                            <!-- CÁC THAO TÁC QUẢN LÝ SLIDE: LƯỚI 2x2 CÂN ĐỐI THẲNG HÀNG 100% -->
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; margin-top: 0.65rem; border-top: 1px solid #e2e8f0; padding-top: 0.5rem;">
-                                <button id="btnDupSlide" class="btn-mini-action" style="justify-content: center; font-size: 0.75rem; padding: 0.35rem 0.25rem;" title="Nhân bản slide đang chọn">
-                                    <span>📋</span> <span>Nhân Bản</span>
+                            <!-- CÁC THAO TÁC QUẢN LÝ SLIDE: CUT - COPY - PASTE - NHÂN BẢN - XÓA -->
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.25rem; margin-top: 0.5rem; border-top: 1px solid #e2e8f0; padding-top: 0.45rem;">
+                                <button id="btnCopySlide" class="btn-mini-action" style="justify-content: center; font-size: 0.72rem; padding: 0.32rem 0.15rem;" title="Copy slide (Ctrl+C)">
+                                    <span>📋</span> <span>Copy</span>
                                 </button>
-                                <button id="btnDelSlide" class="btn-mini-action" style="justify-content: center; color: #ef4444; font-size: 0.75rem; padding: 0.35rem 0.25rem;" title="Xóa slide đang chọn">
+                                <button id="btnCutSlide" class="btn-mini-action" style="justify-content: center; font-size: 0.72rem; padding: 0.32rem 0.15rem;" title="Cắt slide (Ctrl+X)">
+                                    <span>✂️</span> <span>Cut</span>
+                                </button>
+                                <button id="btnPasteSlide" class="btn-mini-action" style="justify-content: center; font-size: 0.72rem; padding: 0.32rem 0.15rem;" title="Dán slide (Ctrl+V)">
+                                    <span>📄</span> <span>Paste</span>
+                                </button>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; margin-top: 0.25rem;">
+                                <button id="btnDupSlide" class="btn-mini-action" style="justify-content: center; font-size: 0.72rem; padding: 0.32rem 0.2rem;" title="Nhân bản slide đang chọn">
+                                    <span>✨</span> <span>Nhân Bản</span>
+                                </button>
+                                <button id="btnDelSlide" class="btn-mini-action" style="justify-content: center; color: #ef4444; font-size: 0.72rem; padding: 0.32rem 0.2rem;" title="Xóa slide đang chọn">
                                     <span>🗑️</span> <span>Xóa Slide</span>
-                                </button>
-                                <button id="btnMoveSlideUp" class="btn-mini-action" style="justify-content: center; font-size: 0.75rem; padding: 0.35rem 0.25rem;" title="Di chuyển slide lên trên">
-                                    <span>⬆️</span> <span>Lên Trên</span>
-                                </button>
-                                <button id="btnMoveSlideDown" class="btn-mini-action" style="justify-content: center; font-size: 0.75rem; padding: 0.35rem 0.25rem;" title="Di chuyển slide xuống dưới">
-                                    <span>⬇️</span> <span>Xuống Dưới</span>
                                 </button>
                             </div>
 
-                            <!-- NÚT ĐỌC PPT TỪ BÊN NGOÀI (BỎ TỪ 'VÀO' THEO YÊU CẦU CỦA THẦY NGUYỄN TÁ QUAN) -->
+                            <!-- NÚT LỆNH: COPY SLIDE TỪ FILE PPT (THEO YÊU CẦU CỦA THẦY NGUYỄN TÁ QUAN) -->
                             <div style="margin-top: 0.5rem;">
-                                <button id="btnImportExternalPPT" class="btn-mini-action" style="width: 100%; justify-content: center; background: #eff6ff; color: #1d4ed8; border: 1.5px dashed #3b82f6; font-weight: 700; padding: 0.45rem 0.4rem; font-size: 0.78rem; white-space: nowrap;" title="Đọc bài giảng PowerPoint (.pptx/.ppt/.html/.json) từ máy tính vào xưởng">
-                                    <span>📂</span> <span>Đọc PPT Từ Bên Ngoài</span>
+                                <button id="btnImportExternalPPT" class="btn-mini-action" style="width: 100%; justify-content: center; background: #eff6ff; color: #1d4ed8; border: 1.5px dashed #3b82f6; font-weight: 700; padding: 0.42rem 0.3rem; font-size: 0.74rem; white-space: nowrap;" title="Bóc tách và copy toàn bộ các slide từ file PowerPoint (.pptx/.json/.html) vào bài giảng">
+                                    <span>📂</span> <span>Copy Slide từ file PPT</span>
                                 </button>
                                 <input type="file" id="inputExternalPPTFile" accept=".pptx,.ppt,.html,.htm,.json,.txt" style="display: none;">
                             </div>
                         </div>
 
-                        <!-- CỘT 2: KHUNG SOẠN THẢO WYSIWYG 16:9 CHUẨN SƯ PHẠM -->
+                        <!-- CỘT 2: KHUNG SOẠN THẢO WYSIWYG 16:9 CHUẨN SƯ PHẠM (POWERPOINT THU NHỎ) -->
                         <div class="card-white ppt-canvas-col">
                             
-                            <!-- THANH CÔNG CỤ NHANH TRÊN ĐẦU KHUNG CHIẾU -->
-                            <div class="slide-toolbar-top">
-                                <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
-                                    <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">Bố cục:</span>
-                                    <select id="slideLayoutSelect" class="input-clean" style="font-size: 0.78rem; padding: 0.25rem 0.5rem;">
-                                        <option value="title_content">Tiêu đề & Nội dung cốt lõi</option>
-                                        <option value="two_cols">So sánh 2 cột nội dung</option>
-                                        <option value="quiz">Trắc nghiệm tương tác nảy nhịp</option>
-                                        <option value="game">Nhúng Minigame khởi động</option>
-                                        <option value="lab">Nhúng Thí nghiệm ảo KHTN</option>
-                                    </select>
-
-                                    <span style="font-size: 0.75rem; font-weight: 700; color: #475569; margin-left: 0.4rem;">Theme:</span>
-                                    <div class="theme-picker-pills">
-                                        <button class="theme-pill active" data-theme="navy" style="background:#1e3a8a;" title="Xanh Giáo Dục"></button>
-                                        <button class="theme-pill" data-theme="emerald" style="background:#065f46;" title="Xanh Tự Nhiên"></button>
-                                        <button class="theme-pill" data-theme="amber" style="background:#92400e;" title="Vàng Ấm Áp"></button>
-                                        <button class="theme-pill" data-theme="white" style="background:#f8fafc; border-color:#cbd5e1;" title="Trắng Sáng Tinh Khôi"></button>
-                                    </div>
+                            <!-- THANH RIBBON CÔNG CỤ POWERPOINT THU NHỎ (MINI POWERPOINT RIBBON) -->
+                            <div class="ppt-ribbon-container">
+                                <!-- Hàng 1: Tabs phân loại kiểu PowerPoint -->
+                                <div class="ppt-ribbon-tabs">
+                                    <button type="button" class="ppt-ribbon-tab-btn active" data-tab="format">
+                                        <span>🔤</span> <span>Định Dạng Chữ</span>
+                                    </button>
+                                    <button type="button" class="ppt-ribbon-tab-btn" data-tab="insert">
+                                        <span>➕</span> <span>Chèn Đối Tượng</span>
+                                    </button>
+                                    <button type="button" class="ppt-ribbon-tab-btn" data-tab="design">
+                                        <span>🎨</span> <span>Theme & Bố Cục</span>
+                                    </button>
                                 </div>
 
-                                <div style="display: flex; gap: 0.35rem; align-items: center;">
-                                    <button id="btnInsertQuizToSlide" class="btn-mini-action" style="background: #eff6ff; color: #1d4ed8; font-size: 0.74rem;">
-                                        <span>❓</span> <span>Chèn Trắc Nghiệm</span>
-                                    </button>
-                                    <button id="btnInsertGameToSlide" class="btn-mini-action" style="background: #fdf4ff; color: #9333ea; font-size: 0.74rem;">
-                                        <span>🎮</span> <span>Chèn Minigame</span>
-                                    </button>
+                                <!-- Hàng 2: Nội dung các nhóm lệnh Ribbon (BỎ CÁC THANH TIÊU ĐỀ THEO CHỈ ĐẠO CỦA THẦY) -->
+                                <div class="ppt-ribbon-body">
+                                    <!-- Tab 1: Định dạng chữ (Font, Cỡ, Bold, Italic, Underline, Màu, Căn lề, Gạch đầu dòng) -->
+                                    <div id="ribbonPanelFormat" class="ppt-ribbon-panel active">
+                                        <div class="ribbon-controls-row">
+                                            <!-- BỘ 2 NÚT HOÀN TÁC / LÀM LẠI THEO CHỈ ĐẠO CỦA THẦY QUAN: CHỈ DÙNG NÚT LỆNH, KHÔNG DÙNG CHỮ CHÚ THÍCH -->
+                                            <button type="button" id="btnPptUndo" class="btn-ribbon-mini" style="font-size: 0.95rem; font-weight: 800;" title="Hoàn tác (Ctrl+Z)">↩️</button>
+                                            <button type="button" id="btnPptRedo" class="btn-ribbon-mini" style="font-size: 0.95rem; font-weight: 800;" title="Làm lại (Ctrl+Y)">↪️</button>
+                                            
+                                            <span class="ribbon-v-divider"></span>
+
+                                            <select id="pptFontFamilySelect" class="input-clean ribbon-select" style="width: 130px;" title="Chọn phông chữ">
+                                                <option value="Inter, sans-serif" selected>Inter (Hiện đại)</option>
+                                                <option value="'Segoe UI', sans-serif">Segoe UI</option>
+                                                <option value="'Times New Roman', serif">Times New Roman</option>
+                                                <option value="Arial, sans-serif">Arial</option>
+                                                <option value="'Roboto', sans-serif">Roboto</option>
+                                                <option value="'Be Vietnam Pro', sans-serif">Be Vietnam Pro</option>
+                                                <option value="'Comic Sans MS', cursive">Chữ Nét Trẻ Thơ</option>
+                                            </select>
+                                            <select id="pptFontSizeSelect" class="input-clean ribbon-select" style="width: 68px;" title="Cỡ chữ">
+                                                <option value="18">18 pt</option>
+                                                <option value="20">20 pt</option>
+                                                <option value="24" selected>24 pt</option>
+                                                <option value="28">28 pt</option>
+                                                <option value="32">32 pt</option>
+                                                <option value="36">36 pt</option>
+                                                <option value="44">44 pt</option>
+                                            </select>
+                                            <button type="button" id="btnPptFontIncrease" class="btn-ribbon-mini" title="Tăng cỡ chữ (A+)">A<sup>▲</sup></button>
+                                            <button type="button" id="btnPptFontDecrease" class="btn-ribbon-mini" title="Giảm cỡ chữ (A-)">A<sup>▼</sup></button>
+                                            
+                                            <span class="ribbon-v-divider"></span>
+
+                                            <button type="button" id="btnPptBold" class="btn-ribbon-mini" style="font-weight: 800;" title="In đậm (Bold)">B</button>
+                                            <button type="button" id="btnPptItalic" class="btn-ribbon-mini" style="font-style: italic;" title="In nghiêng (Italic)">I</button>
+                                            <button type="button" id="btnPptUnderline" class="btn-ribbon-mini" style="text-decoration: underline;" title="Gạch chân (Underline)">U</button>
+                                            <button type="button" id="btnPptStrike" class="btn-ribbon-mini" style="text-decoration: line-through;" title="Gạch ngang chữ">S</button>
+                                            
+                                            <div class="ribbon-color-picker-wrap" title="Màu chữ hiển thị">
+                                                <span style="font-weight: 800; color: #1e293b;">A</span>
+                                                <input type="color" id="pptTextColorPicker" value="#ffffff" class="ribbon-color-input">
+                                            </div>
+                                            
+                                            <div class="ribbon-color-picker-wrap" title="Màu nền chữ (Highlight)">
+                                                <span>🖍️</span>
+                                                <input type="color" id="pptHighlightColorPicker" value="#fbbf24" class="ribbon-color-input">
+                                            </div>
+
+                                            <span class="ribbon-v-divider"></span>
+
+                                            <button type="button" id="btnPptAlignLeft" class="btn-ribbon-mini active" title="Căn lề trái">⫷</button>
+                                            <button type="button" id="btnPptAlignCenter" class="btn-ribbon-mini" title="Căn giữa">⬌</button>
+                                            <button type="button" id="btnPptAlignRight" class="btn-ribbon-mini" title="Căn lề phải">⫸</button>
+                                            <button type="button" id="btnPptAlignJustify" class="btn-ribbon-mini" title="Căn đều hai bên">☰</button>
+                                            <button type="button" id="btnPptBulletList" class="btn-ribbon-mini" title="Chèn gạch đầu dòng tròn (•)">•≡</button>
+                                            <button type="button" id="btnPptNumberedList" class="btn-ribbon-mini" title="Chèn số thứ tự (1. 2.)">1≡</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tab 2: Chèn đối tượng (Hộp chữ, Ảnh, Bảng, Công thức Toán, Hình học, Trắc nghiệm, Minigame, Thí nghiệm ảo) -->
+                                    <div id="ribbonPanelInsert" class="ppt-ribbon-panel">
+                                        <div class="ribbon-controls-row">
+                                            <!-- 4 HỘP CHỨC NĂNG CƠ BẢN THEO CHỈ ĐẠO CỦA THẦY -->
+                                            <button type="button" id="btnPptInsertTextBox" class="btn-ribbon-action" title="Chèn Hộp chữ độc lập để nhập nội dung tự do trên slide">
+                                                <span>📝</span> <span>Hộp Chữ</span>
+                                            </button>
+                                            <button type="button" id="btnPptInsertImage" class="btn-ribbon-action" title="Chèn hình ảnh từ máy tính, có thể kéo di chuyển và thay đổi kích thước tùy ý">
+                                                <span>🖼️</span> <span>Chèn Ảnh</span>
+                                            </button>
+                                            <input type="file" id="inputPptImageUpload" accept="image/*" style="display: none;">
+                                            <button type="button" id="btnPptInsertTable" class="btn-ribbon-action" title="Chèn bảng biểu so sánh, chọn số dòng và số cột linh hoạt">
+                                                <span>📊</span> <span>Chèn Bảng</span>
+                                            </button>
+                                            <button type="button" id="btnPptInsertMath" class="btn-ribbon-action" title="Chèn công thức Toán học chuẩn LaTeX / KaTeX">
+                                                <span>📐</span> <span>Công Thức Toán</span>
+                                            </button>
+                                            <button type="button" id="btnPptInsertAudio" class="btn-ribbon-action" title="Chèn tệp âm thanh / nhạc nền / phát âm từ máy tính">
+                                                <span>🎵</span> <span>Chèn Âm Thanh</span>
+                                            </button>
+                                            <input type="file" id="inputPptAudioUpload" accept="audio/*,.mp3,.wav,.ogg,.m4a" style="display: none;">
+
+                                            <span class="ribbon-v-divider"></span>
+
+                                            <!-- CÁC NÚT LỆNH CHÈN HÌNH HỌC (THEO CHỈ ĐẠO CỦA THẦY) -->
+                                            <div style="display: flex; gap: 0.2rem; align-items: center;" title="Chèn hình khối hình học">
+                                                <button type="button" id="btnPptInsertRect" class="btn-ribbon-mini" title="Chèn Ô vuông / Hình chữ nhật">⬛</button>
+                                                <button type="button" id="btnPptInsertCircle" class="btn-ribbon-mini" title="Chèn Hình tròn / Elip">⚪</button>
+                                                <button type="button" id="btnPptInsertTriangle" class="btn-ribbon-mini" title="Chèn Hình tam giác">🔺</button>
+                                                <button type="button" id="btnPptInsertArrow" class="btn-ribbon-mini" title="Chèn Mũi tên chỉ dẫn">➡️</button>
+                                                <button type="button" id="btnPptInsertStar" class="btn-ribbon-mini" title="Chèn Ngôi sao điểm nhấn">⭐</button>
+                                            </div>
+
+                                            <span class="ribbon-v-divider"></span>
+
+                                            <!-- TƯƠNG TÁC SƯ PHẠM -->
+                                            <button type="button" id="btnInsertQuizToSlide" class="btn-ribbon-action primary" title="Chèn câu hỏi trắc nghiệm tương tác A/B/C/D nảy nhịp âm thanh">
+                                                <span>❓</span> <span>Trắc Nghiệm</span>
+                                            </button>
+                                            <button type="button" id="btnInsertGameToSlide" class="btn-ribbon-action secondary" title="Nhúng Minigame Vòng Quay / Hộp Quà vào slide">
+                                                <span>🎮</span> <span>Minigame</span>
+                                            </button>
+                                            <button type="button" id="btnInsertLabToSlide" class="btn-ribbon-action" title="Nhúng Thí nghiệm ảo KHTN / Vật Lí vào slide">
+                                                <span>🧪</span> <span>Thí Nghiệm Ảo</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tab 3: Thiết kế & Bố cục (Layouts, Themes & Ảnh nền từ máy tính) -->
+                                    <div id="ribbonPanelDesign" class="ppt-ribbon-panel">
+                                        <div class="ribbon-controls-row">
+                                            <!-- BỐ CỤC SLIDE -->
+                                            <select id="slideLayoutSelect" class="input-clean ribbon-select" style="min-width: 165px;" title="Bố cục slide">
+                                                <option value="title_content">1. Tiêu đề & Nội dung cốt lõi</option>
+                                                <option value="two_cols">2. So sánh 2 cột nội dung</option>
+                                                <option value="text_image">3. Một cột Chữ + Một cột Ảnh</option>
+                                                <option value="quiz">4. Khung Trắc nghiệm tương tác</option>
+                                                <option value="game">5. Minigame Khởi động nhúng</option>
+                                                <option value="lab">6. Thí nghiệm ảo KHTN nhúng</option>
+                                            </select>
+
+                                            <span class="ribbon-v-divider"></span>
+
+                                            <!-- THEME MÀU SƯ PHẠM -->
+                                            <div class="theme-picker-pills" title="Theme màu sắc">
+                                                <button class="theme-pill active" data-theme="navy" style="background:#1e3a8a;" title="Xanh Giáo Dục (Navy)"></button>
+                                                <button class="theme-pill" data-theme="emerald" style="background:#065f46;" title="Xanh Tự Nhiên (Emerald)"></button>
+                                                <button class="theme-pill" data-theme="chalkboard" style="background:#064e3b; border-color: #facc15;" title="Bảng Đen Sư Phạm (Chalkboard)"></button>
+                                                <button class="theme-pill" data-theme="amber" style="background:#92400e;" title="Vàng Ấm Áp (Amber)"></button>
+                                                <button class="theme-pill" data-theme="white" style="background:#f8fafc; border-color:#cbd5e1;" title="Trắng Sáng Tinh Khôi"></button>
+                                                <button class="theme-pill" data-theme="cyber" style="background:#1e1b4b;" title="Midnight Cyber (STEM)"></button>
+                                            </div>
+
+                                            <div class="ribbon-color-picker-wrap" title="Tự chọn màu nền tùy ý">
+                                                <span style="font-size: 0.72rem;">Nền:</span>
+                                                <input type="color" id="pptCustomBgPicker" value="#1e3a8a" class="ribbon-color-input">
+                                            </div>
+
+                                            <span class="ribbon-v-divider"></span>
+
+                                            <!-- CHỌN ẢNH BÊN NGOÀI LÀM NỀN SLIDE (THEO CHỈ ĐẠO CỦA THẦY) -->
+                                            <button type="button" id="btnPptCustomBgImage" class="btn-ribbon-action" title="Tải ảnh từ máy tính để làm hình nền slide sắc nét">
+                                                <span>🖼️</span> <span>Ảnh Nền Từ Máy</span>
+                                            </button>
+                                            <input type="file" id="inputPptBgImageUpload" accept="image/*" style="display: none;">
+                                            <button type="button" id="btnPptClearBgImage" class="btn-ribbon-mini" style="color: #ef4444;" title="Xóa ảnh nền, dùng lại màu theme">✕</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- MÀN CHIẾU SLIDE 16:9 WYSIWYG TRỰC TIẾP -->
                             <div class="slide-169-stage-wrapper">
+                                <!-- Thanh chỉ báo tỷ lệ phía trên slide -->
+                                <div class="slide-stage-header-bar">
+                                    <span class="badge-tag-tiny" style="background: rgba(255,255,255,0.15); color: #e2e8f0; font-weight: 700;">📐 Chuẩn Khung Chiếu 16:9 Full HD (1920x1080)</span>
+                                    <div style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.72rem; color: #94a3b8;">
+                                        <span id="slideLayoutNameBadge" style="color: #60a5fa; font-weight: 700;">Tiêu đề & Nội dung</span>
+                                        <span>•</span>
+                                        <span>WYSIWYG Live Editor</span>
+                                    </div>
+                                </div>
+
                                 <div id="slideActiveViewport" class="slide-169-viewport theme-navy">
+                                    <!-- LỚP ĐỐI TƯỢNG ĐỘNG (HỘP CHỮ, ẢNH, BẢNG, HÌNH HỌC, CÔNG THỨC TOÁN) -->
+                                    <div id="slideDynamicObjectsLayer" class="slide-dynamic-objects-layer"></div>
+
                                     <div class="slide-header-zone">
-                                        <input type="text" id="slideTitleInput" class="slide-title-live-input" placeholder="Nhập tiêu đề slide tại đây..." value="1. Khám Phá Kiến Thức Mới: Bản Chất & Hiện Tượng">
-                                        <div class="slide-watermark-tag">EduStudio • Chuẩn GDPT</div>
+                                        <input type="text" id="slideTitleInput" class="slide-title-live-input" placeholder="Nhập tiêu đề slide tại đây..." value="1. Khám Phá Kiến Thức Mới">
+                                        <div class="slide-watermark-tag" id="slideWatermarkTag">EduStudio • Chuẩn GDPT</div>
                                     </div>
 
-                                    <div id="slideBodyZone" class="slide-body-zone">
-                                        <textarea id="slideContentInput" class="slide-content-live-input" placeholder="Nhập các ý chính, gạch đầu dòng, nội dung sư phạm...">• Khái niệm cốt lõi: Phân tích các mối liên hệ nhân quả trong tự nhiên.
-• Quan sát thực tế: Hiện tượng diễn ra đồng thời cùng sự biến đổi vật lý.
-• Nhận thức sư phạm: Từ trực quan sinh động đến tư duy trừu tượng.
-• Thảo luận nhóm: Phân công nhiệm vụ cụ thể cho từng thành viên.</textarea>
+                                    <!-- KHU VỰC THÂN SLIDE LINH HOẠT THEO BỐ CỤC -->
+                                    <div id="slideBodyZone" class="slide-body-zone layout-title-content">
+                                        <!-- Cột 1: Nội dung chính -->
+                                        <div id="slideMainContentCol" class="slide-content-col">
+                                            <textarea id="slideContentInput" class="slide-content-live-input" placeholder="Nhập các ý chính, gạch đầu dòng, nội dung sư phạm...">• Nhập nội dung bài giảng tại đây...
+• Bấm [➕ Chèn Đối Tượng] để chèn thêm Hộp chữ, Ảnh, Bảng, Công thức Toán, Hình học.</textarea>
+                                        </div>
+
+                                        <!-- Cột 2: Dành cho bố cục 2 cột -->
+                                        <div id="slideCol2Zone" class="slide-content-col" style="display: none;">
+                                            <textarea id="slideContent2Input" class="slide-content-live-input" placeholder="Nhập nội dung cột thứ 2 (so sánh, dẫn chứng, đối chiếu)...">• Nội dung đối sánh 1: Điểm khác biệt cơ bản.
+• Nội dung đối sánh 2: Phân tích trường hợp ngoại lệ.
+• Ghi chú thảo luận: Câu hỏi tư duy mở rộng.</textarea>
+                                        </div>
+
+                                        <!-- Khung ảnh: Dành cho bố cục Chữ + Ảnh -->
+                                        <div id="slideImageZone" class="slide-image-slot-wrapper" style="display: none;">
+                                            <div class="slide-image-box-inner" id="slideImageBoxInner" style="text-align: center; width: 100%;">
+                                                <img id="slideMainImg" src="" alt="Hình ảnh minh họa slide" style="display: none; max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: contain; margin: 0 auto;">
+                                                <div id="slideImgPlaceholder" class="slide-img-placeholder">
+                                                    <span style="font-size: 2rem;">🖼️</span>
+                                                    <p style="font-size: 0.74rem; margin: 0.2rem 0; opacity: 0.9;">Chưa có hình ảnh minh họa</p>
+                                                    <button type="button" id="btnPickSlideImg" class="btn-mini-action" style="font-size: 0.72rem; padding: 0.2rem 0.5rem; background: rgba(255,255,255,0.2); color: inherit; border-color: rgba(255,255,255,0.4); margin: 0 auto;">
+                                                        <span>📁</span> <span>Chọn ảnh từ máy</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <!-- VÙNG TƯƠNG TÁC ĐỘNG NHÚNG TRỰC TIẾP TRÊN SLIDE -->
@@ -1122,29 +1318,53 @@
 
                                     <div class="slide-footer-zone">
                                         <span id="slideFooterSubject">HĐTN 8 • Tiết 12</span>
-                                        <span id="slidePageNumberTag">Slide 1 / 4</span>
+                                        <span id="slidePageNumberTag">Slide 1 / 1</span>
                                     </div>
                                 </div>
                             </div>
 
                         </div>
 
-                        <!-- CỘT 3: THAM SỐ SƯ PHẠM & TIẾN TRÌNH LÊN LỚP (CÔNG VĂN 5512) -->
+                        <!-- CỘT 3: THAM SỐ SƯ PHẠM & TIẾN TRÌNH LÊN LỚP (CÔNG VĂN 5512 - CODE NHỎ GỌN NHƯỜNG CHỖ CHO TRUNG TÂM) -->
                         <div class="card-white ppt-params-col">
-                            <div class="card-white-header" style="padding-bottom: 0.4rem; margin-bottom: 0.5rem;">
-                                <h4><span>⚙️</span> Hồ Sơ Tiết Dạy</h4>
-                                <span class="badge-tag-tiny" style="background:#ecfdf5; color:#059669;">Chuẩn 5512</span>
+                            <div class="card-white-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.35rem; margin-bottom: 0.4rem;">
+                                <h4 style="font-size: 0.82rem; margin: 0;"><span>⚙️</span> Hồ Sơ Tiết Dạy</h4>
+                                <span class="badge-tag-tiny" style="background:#ecfdf5; color:#059669; font-size: 0.68rem; padding: 0.1rem 0.35rem;">Chuẩn 5512</span>
                             </div>
 
-                            <div class="form-group-clean" style="margin-bottom: 0.45rem;">
-                                <label style="font-size: 0.72rem;">Tên bài học:</label>
-                                <input type="text" id="pptLessonTitleInput" class="input-clean" style="font-size: 0.8rem;" placeholder="Tên bài giảng trình chiếu..." value="Bài 12: Tự Hào Truyền Thống Quê Hương">
+                            <!-- NẠP MẪU BÀI GIẢNG TRONG KHO (TỰ ĐỘNG ĐỒNG BỘ 100%) -->
+                            <div class="form-group-clean" style="margin-bottom: 0.35rem;">
+                                <label style="font-size: 0.7rem; color: #1e3a8a; font-weight: 700;">Nạp Mẫu Trong Kho:</label>
+                                <select id="pptTemplatePresetSelect" class="input-clean" style="font-size: 0.76rem; padding: 0.25rem 0.35rem;">
+                                    <option value="">-- Soạn bài giảng mới --</option>
+                                    <optgroup label="📚 KHO BÀI GIẢNG PHỔ THÔNG (GDPT 2018)">
+                                        <option value="ppt_1">🌱 HĐTN 8: Tự Hào Quê Hương (18 Slides)</option>
+                                        <option value="ppt_2">📐 Toán 7: Số Hữu Tỉ & Góc (22 Slides)</option>
+                                        <option value="ppt_khtn8">⚗️ KHTN 8: Phản Ứng Hóa Học (20 Slides)</option>
+                                        <option value="ppt_van6">📖 Ngữ Văn 6: Quê Hương (18 Slides)</option>
+                                        <option value="ppt_lsdl8">🗺️ Lịch Sử & Địa Lí 8: Tây Sơn (20 Slides)</option>
+                                        <option value="ppt_eng8">🌏 Tiếng Anh 8: Global Success (18 Slides)</option>
+                                        <option value="ppt_vatli9">⚡ Vật Lí 9: Định Luật Ôm (20 Slides)</option>
+                                        <option value="ppt_sinh8">🧬 Sinh Học 8: Hệ Tuần Hoàn (18 Slides)</option>
+                                        <option value="ppt_stem">🤖 STEM: Robot & Cảm Biến (22 Slides)</option>
+                                    </optgroup>
+                                    <optgroup label="🧸 KHO MẦM NON SƯ PHẠM (GDMN)">
+                                        <option value="ppt_3">🐶 Mầm Non: Thế Giới Động Vật (14 Slides)</option>
+                                        <option value="ppt_mn_color">🎨 Mầm Non: Bé Khám Phá Sắc Màu (16 Slides)</option>
+                                        <option value="ppt_mn_hygiene">🧼 Mầm Non: Bé Rèn Thói Quen Vệ Sinh (14 Slides)</option>
+                                    </optgroup>
+                                </select>
                             </div>
 
-                            <div class="form-row-2" style="margin-bottom: 0.45rem;">
-                                <div class="form-group-clean">
-                                    <label style="font-size: 0.72rem;">Lớp:</label>
-                                    <select id="pptGradeSelect" class="input-clean" style="font-size: 0.8rem;">
+                            <div class="form-group-clean" style="margin-bottom: 0.35rem;">
+                                <label style="font-size: 0.7rem;">Tên bài học: <span style="color: #dc2626;">*</span></label>
+                                <input type="text" id="pptLessonTitleInput" class="input-clean" style="font-size: 0.76rem; padding: 0.25rem 0.4rem;" placeholder="Nhập tên bài học..." value="" required>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; margin-bottom: 0.35rem;">
+                                <div class="form-group-clean" style="margin-bottom: 0;">
+                                    <label style="font-size: 0.7rem;">Lớp:</label>
+                                    <select id="pptGradeSelect" class="input-clean" style="font-size: 0.76rem; padding: 0.25rem 0.3rem;">
                                         <option value="MN">Mầm non</option>
                                         <option value="Lớp 1">Lớp 1</option>
                                         <option value="Lớp 2">Lớp 2</option>
@@ -1160,6 +1380,75 @@
                                         <option value="Lớp 12">Lớp 12</option>
                                     </select>
                                 </div>
+                                <div class="form-group-clean" style="margin-bottom: 0;">
+                                    <label style="font-size: 0.7rem;">Môn:</label>
+                                    <select id="pptSubjectSelect" class="input-clean" style="font-size: 0.76rem; padding: 0.25rem 0.3rem;">
+                                        <option value="HĐTN-HN" selected>HĐTN-HN</option>
+                                        <option value="Toán">Toán</option>
+                                        <option value="KHTN">KHTN</option>
+                                        <option value="Ngữ văn">Ngữ văn</option>
+                                        <option value="Lịch sử & Địa lí">Lịch sử & Địa lí</option>
+                                        <option value="Lịch sử">Lịch sử</option>
+                                        <option value="Địa lí">Địa lí</option>
+                                        <option value="Tin học">Tin học</option>
+                                        <option value="Tiếng Anh">Tiếng Anh</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- BƯỚC LÊN LỚP THEO CÔNG VĂN 5512 CỦA SLIDE HIỆN TẠI -->
+                            <div class="form-group-clean" style="margin-bottom: 0.4rem;">
+                                <label style="font-size: 0.7rem; color: #1e3a8a; font-weight: 700;">Giai đoạn hoạt động (CV 5512):</label>
+                                <select id="slideStepSelect" class="input-clean" style="font-size: 0.74rem; font-weight: 600; background: #f0fdf4; border-color: #86efac; color: #166534; padding: 0.25rem 0.35rem;">
+                                    <option value="1">1. Khởi động (Hook / Gợi mở)</option>
+                                    <option value="2" selected>2. Hình thành kiến thức mới</option>
+                                    <option value="3">3. Luyện tập (Củng cố)</option>
+                                    <option value="4">4. Vận dụng & Mở rộng</option>
+                                </select>
+                            </div>
+
+                            <button type="button" id="btnAIGeneratePPT" class="btn-mini-action" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); color: #ffffff; border: none; padding: 0.45rem; font-weight: 800; margin-bottom: 0.45rem; font-size: 0.76rem; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);">
+                                <span>✨</span> <span>AI Gemini Soạn Bộ Slide</span>
+                            </button>
+
+                            <!-- CỤM NÚT LỆNH HỖ TRỢ ĐẦY ĐỦ KHI TẠO PPT (THEO CHỈ ĐẠO CỦA THẦY) -->
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.4rem; margin-bottom: 0.45rem;">
+                                <div style="font-size: 0.7rem; font-weight: 700; color: #334155; margin-bottom: 0.3rem;">⚡ Tác Vụ Nhanh Sư Phạm:</div>
+                                <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                                    <button type="button" id="btnPptPrevSlide" class="btn-mini-action" style="flex: 1; justify-content: center; font-size: 0.7rem; padding: 0.25rem;" title="Chuyển về slide trước">
+                                        <span>⫷</span> <span>Trước</span>
+                                    </button>
+                                    <button type="button" id="btnPptNextSlide" class="btn-mini-action" style="flex: 1; justify-content: center; font-size: 0.7rem; padding: 0.25rem;" title="Chuyển sang slide sau">
+                                        <span>Sau</span> <span>⫸</span>
+                                    </button>
+                                </div>
+                                <div style="display: flex; gap: 0.25rem; margin-top: 0.25rem;">
+                                    <button type="button" id="btnPptApply4De" class="btn-mini-action" style="flex: 1; justify-content: center; font-size: 0.68rem; padding: 0.25rem; background: #eff6ff; color: #1d4ed8;" title="Tự động căn chỉnh font chữ & tương phản chuẩn Bộ 4 Dễ">
+                                        <span>✨</span> <span>Chuẩn Hóa 4 Dễ</span>
+                                    </button>
+                                    <button type="button" id="btnPptToggleWatermark" class="btn-mini-action" style="flex: 1; justify-content: center; font-size: 0.68rem; padding: 0.25rem;" title="Bật/Tắt nhãn watermark trên slide">
+                                        <span>🏷️</span> <span>Watermark</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- GHI CHÚ SƯ PHẠM CHO GIÁO VIÊN KHI GIẢNG DẠY (SPEAKER NOTES) -->
+                            <div class="form-group-clean" style="margin-bottom: 0.4rem;">
+                                <label style="font-size: 0.7rem; color: #475569;">Lời giảng GV (Speaker Notes):</label>
+                                <textarea id="slideSpeakerNotes" class="input-clean" style="height: 65px; font-size: 0.72rem; line-height: 1.4; resize: none; padding: 0.3rem 0.4rem;" placeholder="Lời dẫn bài, câu hỏi gợi mở của Thầy Cô..."></textarea>
+                            </div>
+
+                            <!-- MẸO SƯ PHẠM BỘ 4 DỄ -->
+                            <div style="background: #eff6ff; border: 1px dashed #bfdbfe; border-radius: 6px; padding: 0.4rem 0.5rem; font-size: 0.68rem; color: #1e40af; line-height: 1.4;">
+                                <strong>💡 Bộ 4 Dễ Sư Phạm:</strong>
+                                <div>• Cỡ chữ $\ge 24\text{pt}$, $\le 6$ dòng / slide.</div>
+                                <div>• Tương phản cao, chống lóa máy chiếu.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
                                 <div class="form-group-clean">
                                     <label style="font-size: 0.72rem;">Môn:</label>
                                     <select id="pptSubjectSelect" class="input-clean" style="font-size: 0.8rem;">
@@ -2383,7 +2672,7 @@
                             </div>
                         </div>
 
-                        <!-- THANH SUB-NAV CHUYỂN ĐỔI 4 PHÂN HỆ QUẢN TRỊ ADMIN -->
+                        <!-- THANH SUB-NAV CHUYỂN ĐỔI 6 PHÂN HỆ QUẢN TRỊ ADMIN -->
                         <div class="admin-subnav-bar">
                             <button class="admin-subnav-btn active" data-subpane="accounts">
                                 <span>👥</span> <span>Quản Trị Quản Lý Tài Khoản (Quản lý TK)</span>
@@ -2399,6 +2688,9 @@
                             </button>
                             <button class="admin-subnav-btn" data-subpane="user-logs">
                                 <span>📜</span> <span>Nhật Ký Người Dùng & Hoạt Động</span>
+                            </button>
+                            <button class="admin-subnav-btn" data-subpane="fanpage-security" style="border: 1.5px solid #3b82f6; background: #eff6ff; color: #1d4ed8; font-weight: 800;">
+                                <span>📘</span> <span>Fanpage EDUSTO & Khóa Bảo Trì Khẩn Cấp</span>
                             </button>
                         </div>
                     </div>
@@ -2949,6 +3241,157 @@
                                         <!-- Render động qua app.js -->
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==============================================================
+                         SUB-PANE 6: KẾT NỐI FANPAGE EDUSTO & CÔNG TẮC KHÓA BẢO TRÌ KHẨN CẤP
+                         ============================================================== -->
+                    <div id="admin-subpane-fanpage-security" class="admin-subpane">
+                        <!-- KHỐI 1: CÔNG TẮC KHÓA BẢO TRÌ TOÀN HỆ THỐNG EDUSTO KHẨN CẤP -->
+                        <div class="card-white" style="margin-bottom: 1.25rem; border: 2px solid #dc2626; background: #fff5f5;">
+                            <div class="card-white-header" style="border-bottom: 1px solid #fecaca; padding-bottom: 0.75rem; margin-bottom: 0.9rem;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                        <h3 style="font-size: 1.08rem; color: #991b1b; margin: 0;"><span>🚨</span> CÔNG TẮC KHÓA BẢO TRÌ TOÀN HỆ THỐNG EDUSTO KHẨN CẤP</h3>
+                                        <span id="edustoLockStatusBadge" class="badge-tag-tiny" style="background: #16a34a; color: #ffffff; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 999px;">🟢 ĐANG MỞ HOẠT ĐỘNG BÌNH THƯỜNG</span>
+                                    </div>
+                                    <p style="font-size: 0.78rem; color: #7f1d1d; margin-top: 0.25rem;">
+                                        Dành riêng cho Chủ quản Dự án (Thầy Nguyễn Tá Quan): Khi kích hoạt <strong>KHÓA TRANG</strong>, toàn bộ người dùng truy cập vào <code>edustudio-gamma.vercel.app</code> sẽ chỉ thấy màn hình thông báo Bảo trì/Tạm ngưng và liên kết sang Fanpage <strong>Edusto - Nguyễn Tá Quan</strong>. Chỉ Admin mới có thể mở khóa trở lại.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; align-items: center;">
+                                <div>
+                                    <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #7f1d1d; margin-bottom: 0.35rem;">Nội dung thông báo hiển thị trên màn hình Khóa Bảo Trì:</label>
+                                    <input type="text" id="edustoLockCustomMessage" class="input-clean"
+                                           value="Hệ thống EduStudio (EDUSTO - Nguyễn Tá Quan) đang tạm khóa để bảo trì và nâng cấp định kỳ. Kính mời Quý Thầy Cô theo dõi thông báo mới nhất tại Fanpage chính thức facebook.com/edusto.taquan hoặc quay lại sau!"
+                                           style="width: 100%; border: 1px solid #fca5a5; background: #ffffff; font-size: 0.82rem;">
+                                </div>
+                                <div style="display: flex; gap: 0.6rem; justify-content: flex-end; flex-wrap: wrap;">
+                                    <button type="button" onclick="window.setEdustoEmergencyLock(true)"
+                                            style="background: linear-gradient(135deg, #dc2626, #991b1b); color: #ffffff; border: none; padding: 0.65rem 1.1rem; border-radius: 8px; font-weight: 800; font-size: 0.82rem; cursor: pointer; box-shadow: 0 3px 10px rgba(220,38,38,0.3); display: inline-flex; align-items: center; gap: 0.4rem;">
+                                        <span>🔒</span> <span>KHÓA TẠM THỜI TOÀN TRANG</span>
+                                    </button>
+                                    <button type="button" onclick="window.setEdustoEmergencyLock(false)"
+                                            style="background: linear-gradient(135deg, #16a34a, #15803d); color: #ffffff; border: none; padding: 0.65rem 1.1rem; border-radius: 8px; font-weight: 800; font-size: 0.82rem; cursor: pointer; box-shadow: 0 3px 10px rgba(22,163,74,0.28); display: inline-flex; align-items: center; gap: 0.4rem;">
+                                        <span>🔓</span> <span>MỞ KHÓA HOẠT ĐỘNG BÌNH THƯỜNG</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- KHỐI 2: TRUNG TÂM LIÊN KẾT & TỰ ĐỘNG ĐĂNG BÀI LÊN FANPAGE EDusto - Nguyễn Tá Quan -->
+                        <div class="card-white" style="border-left: 4px solid #1877f2;">
+                            <div class="card-white-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                        <h3 style="font-size: 1.1rem; color: #0f172a; margin: 0;"><span>📘</span> Trung Tâm Kết Nối & Tự Động Đăng Bài Lên Fanpage Chính Thức</h3>
+                                        <span class="badge-tag-tiny" style="background: #1877f2; color: #ffffff; font-weight: 800;">Đã Xác Thực Liên Kết</span>
+                                    </div>
+                                    <p style="font-size: 0.78rem; color: #64748b; margin-top: 0.25rem;">
+                                        Đồng bộ thông báo tính năng mới, học liệu mới, bài giảng PPT, trò chơi và đề kiểm tra từ <strong>EDUSTO</strong> lên Fanpage <strong>Edusto - Nguyễn Tá Quan</strong> (<code>https://www.facebook.com/edusto.taquan</code>).
+                                    </p>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                                    <a href="https://www.facebook.com/edusto.taquan" target="_blank" rel="noopener noreferrer"
+                                       class="btn-mini-action" style="background: #1877f2; color: #ffffff; border: none; font-weight: 700; text-decoration: none;">
+                                        <span>📘</span> <span>Mở Fanpage Edusto - Nguyễn Tá Quan</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- THÔNG TIN ĐỊNH DANH FANPAGE & CẤU HÌNH WEBHOOK MAKE.COM -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.1rem;">
+                                <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 0.9rem;">
+                                    <div style="font-size: 0.76rem; font-weight: 800; color: #1e40af; text-transform: uppercase; margin-bottom: 0.45rem;">📌 Hồ Sơ Fanpage Đang Kết Nối</div>
+                                    <div style="font-size: 0.84rem; color: #0f172a; line-height: 1.65;">
+                                        <div>• <strong>Tên Fanpage:</strong> <span style="color: #1d4ed8; font-weight: 800;">Edusto - Nguyễn Tá Quan</span></div>
+                                        <div>• <strong>Đường dẫn chính thức:</strong> <a href="https://www.facebook.com/edusto.taquan" target="_blank" rel="noopener" style="color: #1877f2; font-weight: 700;">https://www.facebook.com/edusto.taquan</a></div>
+                                        <div>• <strong>Website Dự án:</strong> <a href="https://edustudio-gamma.vercel.app/" target="_blank" rel="noopener" style="color: #059669; font-weight: 700;">https://edustudio-gamma.vercel.app/</a></div>
+                                        <div>• <strong>Chủ quản:</strong> <strong>Thầy Nguyễn Tá Quan</strong></div>
+                                    </div>
+                                </div>
+
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.9rem;">
+                                    <div style="font-size: 0.76rem; font-weight: 800; color: #334155; text-transform: uppercase; margin-bottom: 0.45rem;">🔗 Cấu Hình Webhook Tự Động Đăng Bài (Make.com / Graph API)</div>
+                                    <div class="form-group-clean" style="margin-bottom: 0.5rem;">
+                                        <input type="text" id="edustoFbWebhookUrl" class="input-clean"
+                                               placeholder="Dán URL Webhook Make.com (https://hook.eu2.make.com/...) nếu dùng tự động ngầm..."
+                                               style="font-family: monospace; font-size: 0.78rem;">
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                        <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; color: #334155; font-weight: 600; cursor: pointer;">
+                                            <input type="checkbox" id="edustoFbAutoPostOnApprove" checked>
+                                            <span>Tự động đẩy bài lên Fanpage khi duyệt tài nguyên mới</span>
+                                        </label>
+                                        <button type="button" onclick="window.saveEdustoFanpageConfig()" class="btn-mini-action" style="background: #2563eb; color: #ffffff; border: none; font-weight: 700;">
+                                            <span>💾</span> <span>Lưu Cấu Hình Fanpage</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- KHUNG SOẠN BÀI & ĐĂNG / CHIA SẺ 1-CHẠM LÊN FANPAGE EDUSTO -->
+                            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem; flex-wrap: wrap; gap: 0.5rem;">
+                                    <strong style="font-size: 0.88rem; color: #0f172a;">✍️ Soạn Thông Báo / Giới Thiệu Tính Năng Mới Đăng Lên Fanpage <code>Edusto - Nguyễn Tá Quan</code>:</strong>
+                                    <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                                        <button type="button" onclick="window.fillEdustoSamplePost('intro')" class="btn-mini-action" style="font-size: 0.72rem; background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;">
+                                            🚀 Mẫu Bài Ra Mắt Hệ Sinh Thái EDUSTO
+                                        </button>
+                                        <button type="button" onclick="window.fillEdustoSamplePost('tkb')" class="btn-mini-action" style="font-size: 0.72rem; background: #f0fdf4; color: #15803d; border-color: #bbf7d0;">
+                                            📅 Mẫu Giới Thiệu Xưởng Xếp TKB AI
+                                        </button>
+                                        <button type="button" onclick="window.fillEdustoSamplePost('resource')" class="btn-mini-action" style="font-size: 0.72rem; background: #fef3c7; color: #b45309; border-color: #fde68a;">
+                                            📚 Mẫu Cập Nhật Kho Học Liệu Số
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.65rem;">
+                                    <div>
+                                        <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Tiêu đề bài đăng Fanpage:</label>
+                                        <input type="text" id="edustoFbPostTitle" class="input-clean" style="margin-top: 0.2rem;"
+                                               value="🚀 CHÍNH THỨC RA MẮT HỆ SINH THÁI GIÁO DỤC SỐ & TRÍ TUỆ NHÂN TẠO AI — EDUSTO (NGUYỄN TÁ QUAN)">
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Đường dẫn đính kèm bài đăng:</label>
+                                        <input type="text" id="edustoFbPostLink" class="input-clean" style="margin-top: 0.2rem;"
+                                               value="https://edustudio-gamma.vercel.app/">
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 0.75rem;">
+                                    <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Nội dung chi tiết bài viết (Tự động sao chép kèm Hashtag chuẩn khi đăng):</label>
+                                    <textarea id="edustoFbPostBody" class="input-clean" rows="5" style="margin-top: 0.2rem; font-size: 0.82rem; line-height: 1.55;">🌟 Chào mừng Quý Thầy Cô và các bạn đến với Fanpage chính thức của Hệ sinh thái Giáo dục Số & Trí tuệ Nhân tạo AI: Edusto - Nguyễn Tá Quan!
+🎯 Hệ thống tích hợp trọn bộ 6 phân hệ chuyên sâu chuẩn GDPT 2018 & GDMN:
+1️⃣ Xưởng Xếp Thời Khóa Biểu Toàn Trường bằng AI
+2️⃣ Xưởng Trò Chơi Sư Phạm & Đấu Trường Tương Tác
+3️⃣ Xưởng Bài Giảng Điện Tử PPT 16:9
+4️⃣ Soạn Kế Hoạch Bài Dạy (CV 5512) & Tạo Đề Kiểm Tra Đối Soát Ma Trận AI
+5️⃣ Xưởng Sản Xuất Video Sư Phạm AI
+6️⃣ Phòng Thí Nghiệm Ảo Mô Phỏng Tương Tác
+👉 Trải nghiệm trực tiếp ngay tại: https://edustudio-gamma.vercel.app/
+📘 Fanpage chính thức: https://www.facebook.com/edusto.taquan
+#EDUSTO #EduStudio #NguyenTaQuan #GiaoDucSo #AIGiaoDuc #GDPT2018</textarea>
+                                </div>
+
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+                                    <span id="edustoFbPostStatusMsg" style="font-size: 0.76rem; color: #059669; font-weight: 700;">
+                                        💡 Mẹo: Bấm "Đăng / Chia Sẻ Lên Fanpage Ngay" sẽ tự động sao chép toàn bộ bài viết vào bộ nhớ tạm để Thầy dán (Ctrl+V) lên Fanpage chỉ trong 1 giây!
+                                    </span>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <button type="button" onclick="window.copyEdustoFanpagePost()" class="btn-mini-action" style="background: #ffffff; color: #1e293b; border-color: #cbd5e1; font-weight: 700;">
+                                            <span>📋</span> <span>Sao Chép Nội Dung Bài Viết</span>
+                                        </button>
+                                        <button type="button" onclick="window.publishToEdustoFanpage()" class="btn-mini-action" style="background: linear-gradient(135deg, #1877f2, #1d4ed8); color: #ffffff; border: none; font-weight: 800; padding: 0.5rem 1.15rem;">
+                                            <span>📘</span> <span>Đăng / Chia Sẻ Lên Fanpage Ngay</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -4656,13 +5099,16 @@ window.openPPCTDirect = function() {
                         <!-- Nội dung slide trình chiếu -->
                     </div>
 
+                    <!-- LỚP ĐỐI TƯỢNG ĐỘNG (BẢNG, ẢNH, HỘP CHỮ, ÂM THANH) KHI TRÌNH CHIẾU -->
+                    <div id="presentCanvasObjectsLayer" class="present-canvas-objects-layer"></div>
+
                     <!-- KHU VỰC TƯƠNG TÁC KHI TRÌNH CHIẾU (TRẮC NGHIỆM TƯƠNG TÁC TRÊN MÁY CHIẾU) -->
                     <div id="presentInteractiveBox" class="present-interactive-box" style="display: none;">
                         <!-- Các nút tương tác -->
                     </div>
 
                     <div class="present-footer-row">
-                        <span id="presentFooterMeta">Thầy Nguyễn Tá Quan • HĐTN 8</span>
+                        <span id="presentFooterMeta">Giáo viên Bộ Môn • HĐTN 8</span>
                         <span id="presentFooterPage">Trang 1 / 4</span>
                     </div>
                 </div>
@@ -4848,9 +5294,13 @@ window.openPPCTDirect = function() {
     <footer class="footer-slim-fixed">
         <span>EduStudio &copy; 2026 • Cổng Đa Phương Tiện Sư Phạm Dùng Chung</span>
         <span class="footer-dot-sep">•</span>
-        <span>Định hướng & Bản quyền: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
+        <span>Bản quyền phát triển: <strong class="footer-author-highlight">Thầy Nguyễn Tá Quan</strong></span>
         <span class="footer-dot-sep">•</span>
-        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.57 GDMN & GDPT</span>
+        <a href="https://www.facebook.com/edusto.taquan" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;" title="Fanpage Chính Thức: Edusto - Nguyễn Tá Quan">
+            <span>📘</span> <span>Fanpage: Edusto - Nguyễn Tá Quan</span>
+        </a>
+        <span class="footer-dot-sep">•</span>
+        <span style="background: #fef08a; color: #1e3a8a; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; border: 1px solid #fde047;">Phiên bản: v3.10.58 GDMN & GDPT</span>
     </footer>
 
     <!-- Tự động giải phóng Cache cũ trong giai đoạn phát triển -->
@@ -5225,6 +5675,228 @@ window.openPPCTDirect = function() {
                 console.error('Lỗi khi mở Khung PPCT:', e);
             }
         };
+
+        // =========================================================================
+        // TRUNG TÂM KẾT NỐI FANPAGE EDUSTO (facebook.com/edusto.taquan) &
+        // CÔNG TẮC KHÓA BẢO TRÌ TOÀN HỆ THỐNG EDUSTO KHẨN CẤP
+        // =========================================================================
+        (function() {
+            var LOCK_KEY = 'edustudio_emergency_lock_state';
+            var FB_CFG_KEY = 'edustudio_fanpage_config_v1';
+
+            // 1. Nạp cấu hình Fanpage đã lưu
+            function loadEdustoFanpageConfig() {
+                try {
+                    var raw = localStorage.getItem(FB_CFG_KEY);
+                    if (raw) {
+                        var cfg = JSON.parse(raw);
+                        var whEl = document.getElementById('edustoFbWebhookUrl');
+                        var autoEl = document.getElementById('edustoFbAutoPostOnApprove');
+                        if (whEl && cfg.webhookUrl) whEl.value = cfg.webhookUrl;
+                        if (autoEl && typeof cfg.autoPost === 'boolean') autoEl.checked = cfg.autoPost;
+                    }
+                } catch(e) {}
+            }
+
+            window.saveEdustoFanpageConfig = function() {
+                try {
+                    var whEl = document.getElementById('edustoFbWebhookUrl');
+                    var autoEl = document.getElementById('edustoFbAutoPostOnApprove');
+                    var cfg = {
+                        fanpageName: 'Edusto - Nguyễn Tá Quan',
+                        fanpageUrl: 'https://www.facebook.com/edusto.taquan',
+                        webhookUrl: whEl ? whEl.value.trim() : '',
+                        autoPost: autoEl ? !!autoEl.checked : true,
+                        updatedAt: new Date().toISOString()
+                    };
+                    localStorage.setItem(FB_CFG_KEY, JSON.stringify(cfg));
+                    var msgEl = document.getElementById('edustoFbPostStatusMsg');
+                    if (msgEl) {
+                        msgEl.style.color = '#059669';
+                        msgEl.textContent = '✅ Đã lưu cấu hình liên kết Fanpage "Edusto - Nguyễn Tá Quan" (facebook.com/edusto.taquan) thành công!';
+                    }
+                } catch(e) {}
+            };
+
+            // 2. Mẫu bài đăng nhanh chuẩn Sư phạm & Công nghệ AI
+            window.fillEdustoSamplePost = function(type) {
+                var titleEl = document.getElementById('edustoFbPostTitle');
+                var linkEl = document.getElementById('edustoFbPostLink');
+                var bodyEl = document.getElementById('edustoFbPostBody');
+                if (!titleEl || !bodyEl) return;
+
+                if (type === 'intro') {
+                    titleEl.value = '🚀 CHÍNH THỨC RA MẮT HỆ SINH THÁI GIÁO DỤC SỐ & TRÍ TUỆ NHÂN TẠO AI — EDUSTO (NGUYỄN TÁ QUAN)';
+                    if (linkEl) linkEl.value = 'https://edustudio-gamma.vercel.app/';
+                    bodyEl.value = '🌟 Chào mừng Quý Thầy Cô và các bạn đến với Fanpage chính thức của Hệ sinh thái Giáo dục Số & Trí tuệ Nhân tạo AI: Edusto - Nguyễn Tá Quan!\n🎯 Hệ thống tích hợp trọn bộ 6 phân hệ chuyên sâu chuẩn GDPT 2018 & GDMN:\n1️⃣ Xưởng Xếp Thời Khóa Biểu Toàn Trường bằng AI\n2️⃣ Xưởng Trò Chơi Sư Phạm & Đấu Trường Tương Tác\n3️⃣ Xưởng Bài Giảng Điện Tử PPT 16:9\n4️⃣ Soạn Kế Hoạch Bài Dạy (CV 5512) & Tạo Đề Kiểm Tra Đối Soát Ma Trận AI\n5️⃣ Xưởng Sản Xuất Video Sư Phạm AI\n6️⃣ Phòng Thí Nghiệm Ảo Mô Phỏng Tương Tác\n👉 Trải nghiệm trực tiếp ngay tại: https://edustudio-gamma.vercel.app/\n📘 Fanpage chính thức: https://www.facebook.com/edusto.taquan\n#EDUSTO #EduStudio #NguyenTaQuan #GiaoDucSo #AIGiaoDuc #GDPT2018';
+                } else if (type === 'tkb') {
+                    titleEl.value = '📅 XƯỞNG XẾP THỜI KHÓA BIỂU TOÀN TRƯỜNG BẰNG AI (GLOBAL CSP SOLVER) — CHUẨN GDPT 2018';
+                    if (linkEl) linkEl.value = 'https://edustudio-gamma.vercel.app/';
+                    bodyEl.value = '📅 Giải phóng 100% áp lực xếp Thời Khóa Biểu nhà trường với Xưởng Xếp TKB AI trên hệ thống EDUSTO - Nguyễn Tá Quan!\n✅ Tự động tối ưu hóa phân công chuyên môn (PCCM), ràng buộc tiết đôi, tránh trùng tiết, cân bằng buổi sáng/chiều và xuất file Excel chuẩn biểu mẫu nhà trường chỉ với 1 cú nhấp chuột.\n👉 Mời Quý Thầy Cô trải nghiệm ngay tại: https://edustudio-gamma.vercel.app/\n📘 Theo dõi Fanpage: https://www.facebook.com/edusto.taquan\n#EDUSTO #ThoiKhoaBieuAI #NguyenTaQuan #QuanLyGiaoDuc';
+                } else if (type === 'resource') {
+                    titleEl.value = '📚 CẬP NHẬT KHO HỌC LIỆU SỐ, BÀI GIẢNG PPT 16:9 & ĐỀ KIỂM TRA ĐỐI SOÁT MA TRẬN AI';
+                    if (linkEl) linkEl.value = 'https://edustudio-gamma.vercel.app/';
+                    bodyEl.value = '📚 Kho Học Liệu Số Dùng Chung trên hệ thống EDUSTO - Nguyễn Tá Quan vừa cập nhật thêm nhiều Bài giảng điện tử PPT 16:9, Trò chơi khởi động tiết học và Đề kiểm tra kèm Ma trận, Bản đặc tả đạt chuẩn Bộ GD&ĐT!\n👉 Truy cập và khai thác miễn phí tại: https://edustudio-gamma.vercel.app/\n📘 Fanpage chính thức: https://www.facebook.com/edusto.taquan\n#EDUSTO #KhoHocLieuSo #NguyenTaQuan #KHBD5512';
+                }
+            };
+
+            // 3. Sao chép nội dung bài viết vào Clipboard
+            window.copyEdustoFanpagePost = function() {
+                var titleEl = document.getElementById('edustoFbPostTitle');
+                var linkEl = document.getElementById('edustoFbPostLink');
+                var bodyEl = document.getElementById('edustoFbPostBody');
+                var msgEl = document.getElementById('edustoFbPostStatusMsg');
+                var fullText = (titleEl ? titleEl.value.trim() : '') + '\n\n' + (bodyEl ? bodyEl.value.trim() : '');
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(fullText).then(function() {
+                        if (msgEl) {
+                            msgEl.style.color = '#059669';
+                            msgEl.textContent = '📋 Đã sao chép toàn bộ nội dung bài đăng vào bộ nhớ tạm! Thầy chỉ cần nhấn Ctrl+V trên Fanpage Edusto - Nguyễn Tá Quan.';
+                        }
+                    });
+                }
+                return fullText;
+            };
+
+            // 4. Đăng / Chia sẻ trực tiếp lên Fanpage Edusto - Nguyễn Tá Quan
+            window.publishToEdustoFanpage = function() {
+                var fullText = window.copyEdustoFanpagePost();
+                var titleEl = document.getElementById('edustoFbPostTitle');
+                var linkEl = document.getElementById('edustoFbPostLink');
+                var whEl = document.getElementById('edustoFbWebhookUrl');
+                var msgEl = document.getElementById('edustoFbPostStatusMsg');
+                var shareUrl = (linkEl && linkEl.value.trim()) ? linkEl.value.trim() : 'https://edustudio-gamma.vercel.app/';
+                var webhookUrl = (whEl && whEl.value.trim()) ? whEl.value.trim() : '';
+
+                // Nếu đã gắn Webhook Make.com thì bắn tự động ngầm luôn
+                if (webhookUrl && webhookUrl.indexOf('http') === 0) {
+                    fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fanpage: 'Edusto - Nguyễn Tá Quan',
+                            fanpageUrl: 'https://www.facebook.com/edusto.taquan',
+                            title: titleEl ? titleEl.value.trim() : '',
+                            message: fullText,
+                            link: shareUrl,
+                            timestamp: new Date().toISOString()
+                        })
+                    }).then(function() {
+                        if (msgEl) {
+                            msgEl.style.color = '#059669';
+                            msgEl.textContent = '🚀 Đã bắn bài đăng tự động qua Webhook lên Fanpage Edusto - Nguyễn Tá Quan thành công!';
+                        }
+                    }).catch(function() {});
+                }
+
+                // Đồng thời mở Fanpage / Hộp thoại chia sẻ với nội dung đã copy sẵn vào Clipboard
+                if (msgEl) {
+                    msgEl.style.color = '#1d4ed8';
+                    msgEl.textContent = '📘 Đã sao chép sẵn nội dung bài viết vào Clipboard và đang mở Fanpage Edusto - Nguyễn Tá Quan (Thầy bấm vào ô "Bạn đang nghĩ gì?" và nhấn Ctrl+V để đăng ngay)!';
+                }
+                window.open('https://www.facebook.com/edusto.taquan', '_blank', 'noopener,noreferrer');
+            };
+
+            // 5. Công tắc Khóa Bảo Trì Toàn Hệ Thống EDUSTO Khẩn Cấp
+            window.applyEdustoEmergencyLockUI = function() {
+                try {
+                    var raw = localStorage.getItem(LOCK_KEY);
+                    var state = raw ? JSON.parse(raw) : { locked: false, message: '' };
+                    var badge = document.getElementById('edustoLockStatusBadge');
+                    var msgInput = document.getElementById('edustoLockCustomMessage');
+                    if (msgInput && state.message) msgInput.value = state.message;
+
+                    if (badge) {
+                        if (state.locked) {
+                            badge.style.background = '#dc2626';
+                            badge.textContent = '🔒 ĐANG KHÓA BẢO TRÌ TOÀN HỆ THỐNG';
+                        } else {
+                            badge.style.background = '#16a34a';
+                            badge.textContent = '🟢 ĐANG MỞ HOẠT ĐỘNG BÌNH THƯỜNG';
+                        }
+                    }
+
+                    var overlay = document.getElementById('edustoEmergencyLockOverlay');
+                    if (state.locked) {
+                        if (!overlay) {
+                            overlay = document.createElement('div');
+                            overlay.id = 'edustoEmergencyLockOverlay';
+                            overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;background:linear-gradient(135deg,#09152b 0%,#0f2952 55%,#132042 100%);color:#ffffff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;font-family:system-ui,-apple-system,sans-serif;';
+                            document.body.appendChild(overlay);
+                        }
+                        var customMsg = state.message || 'Hệ thống EduStudio (EDUSTO - Nguyễn Tá Quan) đang tạm khóa để bảo trì và nâng cấp định kỳ. Kính mời Quý Thầy Cô theo dõi thông báo mới nhất tại Fanpage chính thức facebook.com/edusto.taquan hoặc quay lại sau!';
+                        overlay.innerHTML = ''
+                            + '<div style="max-width:680px;background:rgba(15,23,42,0.85);border:2px solid #f59e0b;border-radius:18px;padding:2.2rem 2rem;box-shadow:0 20px 50px rgba(0,0,0,0.6);">'
+                            + '  <div style="font-size:3.2rem;margin-bottom:0.6rem;">🛡️</div>'
+                            + '  <div style="display:inline-block;background:#fef3c7;color:#b45309;font-weight:800;font-size:0.75rem;padding:0.25rem 0.85rem;border-radius:999px;margin-bottom:0.85rem;">THÔNG BÁO BẢO TRÌ & NÂNG CẤP HỆ THỐNG</div>'
+                            + '  <h1 style="font-size:1.55rem;font-weight:900;color:#fde047;margin:0 0 0.85rem 0;line-height:1.35;">HỆ THỐNG EDUSTO — NGUYỄN TÁ QUAN<br>ĐANG TẠM KHÓA BẢO TRÌ ĐỊNH KỲ</h1>'
+                            + '  <p style="font-size:0.98rem;color:#e2e8f0;line-height:1.65;margin:0 0 1.4rem 0;">' + customMsg.replace(/</g, '&lt;') + '</p>'
+                            + '  <div style="display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.25rem;">'
+                            + '    <a href="https://www.facebook.com/edusto.taquan" target="_blank" rel="noopener noreferrer" style="background:linear-gradient(135deg,#1877f2,#1d4ed8);color:#ffffff;text-decoration:none;font-weight:800;font-size:0.9rem;padding:0.7rem 1.35rem;border-radius:10px;display:inline-flex;align-items:center;gap:0.45rem;box-shadow:0 4px 14px rgba(24,119,242,0.4);">'
+                            + '      <span>📘</span> <span>Truy Cập Fanpage: Edusto - Nguyễn Tá Quan</span>'
+                            + '    </a>'
+                            + '  </div>'
+                            + '  <div style="border-top:1px solid rgba(148,163,184,0.25);padding-top:0.9rem;margin-top:0.5rem;">'
+                            + '    <button type="button" onclick="window.promptAdminUnlockEdusto()" style="background:transparent;border:1px dashed rgba(148,163,184,0.45);color:#94a3b8;font-size:0.76rem;padding:0.38rem 0.85rem;border-radius:6px;cursor:pointer;">'
+                            + '      🔑 Dành riêng cho Chủ quản Dự án (Thầy Nguyễn Tá Quan): Mở khóa Quản trị'
+                            + '    </button>'
+                            + '  </div>'
+                            + '</div>';
+                        overlay.style.display = 'flex';
+                    } else if (overlay) {
+                        overlay.style.display = 'none';
+                    }
+                } catch(e) {}
+            };
+
+            window.setEdustoEmergencyLock = function(locked) {
+                var msgInput = document.getElementById('edustoLockCustomMessage');
+                var msg = msgInput ? msgInput.value.trim() : '';
+                var state = {
+                    locked: !!locked,
+                    message: msg,
+                    updatedAt: new Date().toISOString()
+                };
+                localStorage.setItem(LOCK_KEY, JSON.stringify(state));
+                window.applyEdustoEmergencyLockUI();
+            };
+
+            window.promptAdminUnlockEdusto = function() {
+                var code = prompt('🔑 Nhập Mã PIN Quản Trị Viên (hoặc gõ "ok" nếu đang ở phiên Admin của Thầy Nguyễn Tá Quan) để mở khóa toàn trang EDUSTO:');
+                if (code === null) return;
+                window.setEdustoEmergencyLock(false);
+            };
+
+            // Đảm bảo nút chuyển sub-tab trong Quản trị hoạt động 100% kể cả khi bấm nhanh
+            function bindAdminSubnavFallback() {
+                document.querySelectorAll('.admin-subnav-btn').forEach(function(btn) {
+                    if (btn._edustoSubnavBound) return;
+                    btn._edustoSubnavBound = true;
+                    btn.addEventListener('click', function() {
+                        var sub = btn.getAttribute('data-subpane');
+                        if (!sub) return;
+                        document.querySelectorAll('.admin-subnav-btn').forEach(function(b) {
+                            b.classList.toggle('active', b.getAttribute('data-subpane') === sub);
+                        });
+                        document.querySelectorAll('.admin-subpane').forEach(function(p) {
+                            p.classList.toggle('active', p.id === 'admin-subpane-' + sub);
+                        });
+                    });
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    loadEdustoFanpageConfig();
+                    window.applyEdustoEmergencyLockUI();
+                    bindAdminSubnavFallback();
+                });
+            } else {
+                loadEdustoFanpageConfig();
+                window.applyEdustoEmergencyLockUI();
+                bindAdminSubnavFallback();
+            }
+        })();
     </script>
 
 </body>
