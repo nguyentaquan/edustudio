@@ -611,13 +611,13 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                             <label style="display:block; font-size:0.74rem; font-weight:700; color:#334155; margin-bottom:0.2rem;">🏫 Tên Trường Học: <span style="color:#dc2626;">*</span></label>
                             <input type="text" id="quickNewSchoolName" value="${s.schoolName}" placeholder="VD: Trường THCS Nguyễn Du"
                                    style="width:100%; height:34px; padding:0 0.65rem; font-size:0.8rem; font-weight:700; border:1.5px solid ${s.schoolName ? '#86efac' : '#f87171'}; border-radius:6px; background:#ffffff;">
-                            <div style="font-size:0.67rem; color:#64748b; margin-top:0.2rem;">↳ <em>HD: Nhập tên chính thức của trường để in lên TKB.</em></div>
+                            <div style="font-size:0.68rem; color:#dc2626; font-weight:600; margin-top:0.2rem;">↳ <em>HD: Nhập tên chính thức của trường để in lên TKB.</em></div>
                         </div>
                         <div>
                             <label style="display:block; font-size:0.74rem; font-weight:700; color:#334155; margin-bottom:0.2rem;">🎒 Danh Sách Lớp Học (Cách nhau dấu phẩy): <span style="color:#dc2626;">*</span></label>
                             <input type="text" id="quickNewClassesList" value="${(this.engine.classes || []).join(', ')}" placeholder="VD: 6A1, 6A2, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2"
                                    style="width:100%; height:34px; padding:0 0.65rem; font-size:0.8rem; font-weight:700; border:1.5px solid ${s.classCount > 0 ? '#86efac' : '#f87171'}; border-radius:6px; background:#ffffff;">
-                            <div style="font-size:0.67rem; color:#64748b; margin-top:0.2rem;">↳ <em>HD: Nhập tất cả các lớp của trường, phân cách bằng dấu phẩy (,).</em></div>
+                            <div style="font-size:0.68rem; color:#dc2626; font-weight:600; margin-top:0.2rem;">↳ <em>HD: Nhập tất cả các lớp của trường, phân cách bằng dấu phẩy (,).</em></div>
                         </div>
                         <div style="padding-top:1.3rem;">
                             <button type="button" onclick="window.smartTKBUI.saveQuickNewTKBSetup()"
@@ -638,7 +638,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                                     ${s.teacherCount > 0 && s.assignmentCount > 0 ? `✅ ${s.teacherCount} GV • ${s.assignmentCount} PCCM` : '❌ Chưa có GV & PCCM'}
                                 </span>
                             </div>
-                            <p style="font-size:0.74rem; color:#475569; margin:0 0 0.65rem 0; line-height:1.45;">
+                            <p style="font-size:0.74rem; color:#dc2626; font-weight:600; margin:0 0 0.65rem 0; line-height:1.45;">
                                 <em>HD: Mở bảng Phân công chuyên môn để nhập Họ tên Giáo viên, chọn Lớp, Môn học và Số tiết/tuần (hoặc nhập từ file Excel mẫu).</em>
                             </p>
                         </div>
@@ -656,7 +656,7 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
                                     ${check.isComplete ? '✅ Sẵn sàng' : '⏳ Chờ đủ Bước 1 & 2'}
                                 </span>
                             </div>
-                            <p style="font-size:0.74rem; color:#475569; margin:0 0 0.65rem 0; line-height:1.45;">
+                            <p style="font-size:0.74rem; color:#dc2626; font-weight:600; margin:0 0 0.65rem 0; line-height:1.45;">
                                 <em>HD: Sau khi khai báo đủ Trường, Lớp và PCCM, bấm [⚡ AI Xếp TKB] để thuật toán tự động xếp lịch không trùng tiết.</em>
                             </p>
                         </div>
@@ -681,7 +681,14 @@ const savedYear = localStorage.getItem('edustudio_custom_school_year');
      * Chạy thuật toán AI xếp lịch tự động & báo cáo thời gian thực
      */
     handleAutoSolve() {
-        // Kiểm tra các mục khai báo bắt buộc trước khi chạy AI
+        // 1. KIỂM TRA PHÂN QUYỀN AI HỆ THỐNG & 5 NHÓM NGƯỜI DÙNG (BẮT BUỘC BẬT THÔNG BÁO QUYỀN)
+        if (window.app && typeof window.app.requireGeminiAccess === 'function') {
+            if (!window.app.requireGeminiAccess('AI Xếp Thời Khóa Biểu Toàn Trường (Global AI CSP Solver)')) {
+                return;
+            }
+        }
+
+        // 2. Kiểm tra các mục khai báo bắt buộc trước khi chạy AI
         const check = this.getMissingTKBRequirements();
         this.renderDeclarationStatusBanner();
         if (check.hasCriticalMissing) {
@@ -3050,6 +3057,15 @@ setPCCMFilter(filterName) {
     }
 
     printTimetable() {
+        if (window.app && typeof window.app.enforceSaveAndExportTier === 'function') {
+            const check = window.app.enforceSaveAndExportTier(
+                () => { try { this.engine.saveState?.(); } catch(e) {} },
+                () => { window.print(); },
+                'Bản in Thời khóa biểu chuẩn A4'
+            );
+            if (check !== 'exported') return;
+            return;
+        }
         window.print();
     }
 
@@ -5949,7 +5965,7 @@ setPCCMFilter(filterName) {
                                     ${!sc.schoolName ? '<span style="font-size:0.68rem; font-weight:800; color:#dc2626; background:#fef2f2; border:1px solid #fca5a5; padding:0.1rem 0.45rem; border-radius:4px;">❌ Đang thiếu Tên trường</span>' : '<span style="font-size:0.68rem; font-weight:800; color:#15803d; background:#dcfce7; padding:0.1rem 0.45rem; border-radius:4px;">✅ Đã nhập</span>'}
                                 </div>
                                 <input type="text" id="mcfgSchoolName" value="${sc.schoolName || ''}" placeholder="Nhập tên trường của bạn (Ví dụ: Trường THCS Nguyễn Du)..." style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.85rem; font-weight: 700; border: 1.5px solid ${sc.schoolName ? '#cbd5e1' : '#f87171'}; border-radius: 6px;">
-                                <div style="font-size:0.69rem; color:#64748b; margin-top:0.2rem;">↳ <em>HD: Nhập tên chính thức của trường học (sẽ hiển thị trên bản in A4 và file Excel xuất ra).</em></div>
+                                <div style="font-size:0.69rem; color:#dc2626; font-weight:600; margin-top:0.2rem;">↳ <em>HD: Nhập tên chính thức của trường học (sẽ hiển thị trên bản in A4 và file Excel xuất ra).</em></div>
                             </div>
 
                             <div style="grid-column: 1 / -1;">
@@ -5962,7 +5978,7 @@ setPCCMFilter(filterName) {
                                 <input type="text" id="mcfgClassesInputTab1" value="${(this.engine.classes || []).join(', ')}" placeholder="Ví dụ: 6A1, 6A2, 7A1, 7A2, 8A1, 8A2, 9A1, 9A2"
                                        oninput="const el5 = document.getElementById('mcfgClassesInput'); if(el5) el5.value = this.value;"
                                        style="width: 100%; padding: 0.45rem 0.7rem; font-size: 0.84rem; font-weight: 700; border: 1.5px solid ${(this.engine.classes && this.engine.classes.length > 0) ? '#cbd5e1' : '#f87171'}; border-radius: 6px; color: #1e40af;">
-                                <div style="font-size:0.69rem; color:#64748b; margin-top:0.2rem;">↳ <em>HD: Nhập tất cả các lớp học của trường, cách nhau bởi dấu phẩy (,). Bắt buộc phải có lớp học để phân công giáo viên.</em></div>
+                                <div style="font-size:0.69rem; color:#dc2626; font-weight:600; margin-top:0.2rem;">↳ <em>HD: Nhập tất cả các lớp học của trường, cách nhau bởi dấu phẩy (,). Bắt buộc phải có lớp học để phân công giáo viên.</em></div>
                             </div>
 
                             <div>
@@ -7725,7 +7741,7 @@ setPCCMFilter(filterName) {
                             <strong id="pccmFormTitle" style="font-size: 0.85rem; color: #166534; display: flex; align-items: center; gap: 0.35rem;">
                                 <span>➕</span> <span>NHẬP PHÂN CÔNG MÔN HỌC - GIÁO VIÊN MỚI:</span>
                             </strong>
-                            <span style="font-size:0.71rem; color:#15803d;">💡 <em>HD: Nhập tên Giáo viên ➔ Chọn Lớp ➔ Chọn Môn ➔ Nhập Số tiết/tuần ➔ Bấm [+ Thêm Phân Công]</em></span>
+                            <span style="font-size:0.71rem; color:#dc2626; font-weight:700;">💡 <em>HD: Nhập tên Giáo viên ➔ Chọn Lớp ➔ Chọn Môn ➔ Nhập Số tiết/tuần ➔ Bấm [+ Thêm Phân Công]</em></span>
                             <span id="pccmEditingBadge" style="display: none; background: #fef08a; color: #854d0e; padding: 0.15rem 0.55rem; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">
                                 ✏️ Đang Chỉnh Sửa Phân Công
                             </span>
@@ -7742,7 +7758,7 @@ setPCCMFilter(filterName) {
                                 <datalist id="pccmTeacherDatalist">
                                     ${teachers.map(t => `<option value="${t}">`).join('')}
                                 </datalist>
-                                <div style="font-size:0.65rem; color:#64748b; margin-top:0.18rem;">↳ <em>HD: Gõ tên GV mới hoặc chọn GV đã nhập.</em></div>
+                                <div style="font-size:0.65rem; color:#dc2626; font-weight:600; margin-top:0.18rem;">↳ <em>HD: Gõ tên GV mới hoặc chọn GV đã nhập.</em></div>
                                 <div id="pccmTeacherError" style="display: none; color: #dc2626; font-size: 0.72rem; font-weight: 800; margin-top: 0.25rem;">
                                     ⚠️ Thiếu Họ Tên Thầy Cô: Vui lòng nhập tên trước khi Thêm!
                                 </div>
@@ -7756,7 +7772,7 @@ setPCCMFilter(filterName) {
                                 <select id="pccmInputClass" style="width: 100%; padding: 0.45rem 0.5rem; font-size: 0.78rem; font-weight: 700; border: 1px solid ${classes.length > 0 ? '#cbd5e1' : '#dc2626'}; border-radius: 6px; background: #ffffff; color: #0f172a;">
                                     ${classes.length > 0 ? classes.map(c => `<option value="${c}">Lớp ${c}</option>`).join('') : '<option value="">(Chưa có lớp)</option>'}
                                 </select>
-                                <div style="font-size:0.65rem; color:#64748b; margin-top:0.18rem;">↳ <em>HD: Chọn lớp GV phụ trách dạy.</em></div>
+                                <div style="font-size:0.65rem; color:#dc2626; font-weight:600; margin-top:0.18rem;">↳ <em>HD: Chọn lớp GV phụ trách dạy.</em></div>
                             </div>
 
                             <!-- 3. Môn Học (CHỈ LIST TÊN MÔN, HỖ TRỢ ĐA CẤP GDMN & GDPT QUỐC TẾ) -->
@@ -7825,7 +7841,7 @@ setPCCMFilter(filterName) {
                                     ⏱️ Số Tiết/Tuần:
                                 </label>
                                 <input type="number" id="pccmInputPeriods" value="3" min="1" max="30" onkeydown="if(event.key==='Enter') window.smartTKBUI.savePCCMFromDetailModal()" style="width: 100%; padding: 0.45rem 0.5rem; font-size: 0.8rem; font-weight: 800; text-align: center; border: 1.5px solid #0284c7; border-radius: 6px; color: #0369a1; background: #f0f9ff;">
-                                <div style="font-size:0.65rem; color:#64748b; margin-top:0.18rem;">↳ <em>HD: Số tiết/tuần của môn này.</em></div>
+                                <div style="font-size:0.65rem; color:#dc2626; font-weight:600; margin-top:0.18rem;">↳ <em>HD: Số tiết/tuần của môn này.</em></div>
                             </div>
 
                             <!-- 5. Nút Thao Tác -->
@@ -8211,6 +8227,14 @@ setPCCMFilter(filterName) {
      * Xuất danh sách phân công chuyên môn trực tiếp sang Excel (CSV UTF-8 BOM chuẩn tiếng Việt)
      */
     exportPCCMExcel() {
+        if (window.app && typeof window.app.enforceSaveAndExportTier === 'function') {
+            const check = window.app.enforceSaveAndExportTier(
+                () => { try { this.engine.saveState?.(); } catch(e) {} },
+                null,
+                'Bảng Phân Công Chuyên Môn Toàn Trường (.csv)'
+            );
+            if (check !== 'exported') return;
+        }
         const assignments = this.engine.assignments || [];
         if (assignments.length === 0) {
             this.showToast('⚠️ Hiện tại chưa có phân công nào để xuất file!');

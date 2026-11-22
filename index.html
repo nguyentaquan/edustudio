@@ -3472,12 +3472,12 @@
                                     </button>
                                 </div>
 
-                                <!-- DÒNG HƯỚNG DẪN NHỎ SÁT CỤM NÚT LỆNH -->
-                                <div style="font-size: 0.71rem; color: #475569; margin-bottom: 0.45rem; padding: 0.22rem 0.55rem; background: #f8fafc; border-left: 3px solid #2563eb; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem;">
+                                <!-- DÒNG HƯỚNG DẪN NHỎ SÁT CỤM NÚT LỆNH (TEXT MÀU ĐỎ THEO CHỈ ĐẠO CỦA THẦY QUAN) -->
+                                <div style="font-size: 0.72rem; color: #dc2626; margin-bottom: 0.45rem; padding: 0.25rem 0.6rem; background: #fef2f2; border: 1px solid #fecaca; border-left: 3.5px solid #dc2626; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem; font-weight: 600;">
                                     <span>💡 <strong>Hướng dẫn:</strong> Bấm <strong>[📁 Dùng thử TKB mẫu]</strong> để nạp sẵn dữ liệu trải nghiệm ngay • Hoặc bấm <strong>[➕ Tạo TKB Mới]</strong> để xóa trắng và khai báo mới theo thứ tự: <strong>(1) Khai Báo Toàn Diện</strong> (Trường, Lớp) ➔ <strong>(2) PCCM Môn</strong> (Giáo viên, Số tiết) ➔ <strong>(3) AI Xếp TKB</strong>.</span>
                                 </div>
 
-                                <!-- HÀNG 3: THANH ĐỊNH DANH TRƯỜNG • NGÀY ÁP DỤNG • GÓC NHÌN • CẤU HÌNH SỬ - ĐỊA (KÈM DÒNG HD NHỎ SÁT TỪNG MỤC) -->
+                                <!-- HÀNG 3: THANH ĐỊNH DANH TRƯỜNG • NGÀY ÁP DỤNG • GÓC NHÌN • CẤU HÌNH SỬ - ĐỊA (KÈM DÒNG HD NHỎ MÀU ĐỎ SÁT TỪNG MỤC) -->
                                 <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.45rem 0.65rem;">
                                     <!-- Khối 1: Định danh Trường + Năm học + Ngày áp dụng -->
                                     <div style="display: flex; flex-direction: column; gap: 0.18rem;">
@@ -3502,7 +3502,7 @@
                                                    style="height: 28px; width: 88px; padding: 0 0.35rem; font-size: 0.74rem; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 5px; color: #1e3a8a; background: #ffffff; text-align: center; outline: none;"
                                                    title="Nhập ngày bắt đầu áp dụng bảng TKB này">
                                         </div>
-                                        <span style="font-size: 0.65rem; color: #64748b; padding-left: 0.2rem;">↳ <em>HD: Nhập tên trường, chọn năm học và ngày bắt đầu áp dụng TKB.</em></span>
+                                        <span style="font-size: 0.68rem; color: #dc2626; font-weight: 600; padding-left: 0.2rem;">↳ <em>HD: Nhập tên trường, chọn năm học và ngày bắt đầu áp dụng TKB.</em></span>
                                     </div>
 
                                     <!-- Khối 2: Góc nhìn bàn cờ + Bộ lọc Lớp/GV/Phòng -->
@@ -3527,7 +3527,7 @@
                                             <select id="tkbTeacherSelect" class="tkb-select-filter" style="display: none; height: 28px; padding: 0 0.45rem; font-size: 0.74rem; border-radius: 5px; font-weight: 700; color: #0f172a; background: #ffffff; border: 1px solid #cbd5e1;"></select>
                                             <select id="tkbRoomSelect" class="tkb-select-filter" style="display: none; height: 28px; padding: 0 0.45rem; font-size: 0.74rem; border-radius: 5px; font-weight: 700; color: #0f172a; background: #ffffff; border: 1px solid #cbd5e1;"></select>
                                         </div>
-                                        <span style="font-size: 0.65rem; color: #64748b; padding-left: 0.2rem;">↳ <em>HD: Chọn chế độ xem TKB theo từng Lớp, từng Giáo viên, Phòng bộ môn hoặc Toàn trường.</em></span>
+                                        <span style="font-size: 0.68rem; color: #dc2626; font-weight: 600; padding-left: 0.2rem;">↳ <em>HD: Chọn chế độ xem TKB theo từng Lớp, từng Giáo viên, Phòng bộ môn hoặc Toàn trường.</em></span>
                                     </div>
 
                                     <!-- Khối 3: Phân môn Sử - Địa đồng bộ gam màu xanh-xám trang nhã -->
@@ -3554,7 +3554,7 @@
                                             <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.applyQuickLSDLPreset('canhthuan_9stages')" style="height: 22px; padding: 0 0.4rem; font-size: 0.68rem; font-weight: 700; background: #eff6ff; border: 1px solid #93c5fd; color: #1e3a8a; border-radius: 4px; cursor: pointer; white-space: nowrap;" title="Nạp nhanh chuẩn phân phối 9 chặng tuần (ĐL 52t - LS 53t)">9 Chặng</button>
                                             <button type="button" onclick="if(window.smartTKBUI) window.smartTKBUI.openCanhThuanLSDLMatrixModal()" style="height: 22px; padding: 0 0.4rem; font-size: 0.68rem; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; border-radius: 4px; cursor: pointer; white-space: nowrap;" title="Xem bảng ma trận 9 chặng tuần chi tiết">Xem Bảng</button>
                                         </div>
-                                        <span style="font-size: 0.65rem; color: #64748b; padding-left: 0.2rem;">↳ <em>HD: Tùy chỉnh số tiết phân môn Lịch sử &amp; Địa lí theo từng học kỳ hoặc chặng tuần.</em></span>
+                                        <span style="font-size: 0.68rem; color: #dc2626; font-weight: 600; padding-left: 0.2rem;">↳ <em>HD: Tùy chỉnh số tiết phân môn Lịch sử &amp; Địa lí theo từng học kỳ hoặc chặng tuần.</em></span>
                                     </div>
                                 </div>
 
@@ -5493,8 +5493,8 @@
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script src="js/cloud-sync.js?v=20261122_v31059"></script>
-    <script type="module" src="js/app.js?v=20261122_v31059"></script>
+    <script src="js/cloud-sync.js?v=20261122_v31060"></script>
+    <script type="module" src="js/app.js?v=20261122_v31060"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>

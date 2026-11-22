@@ -16,11 +16,11 @@ import { SpeedQuizGame } from './games/speed_quiz.js';
 import { GuessObjectGame } from './games/guess_object.js';
 import { QuestionImporter } from './studio/question_importer.js';
 import { VideoStudioScaffold } from './studio/video_scaffold.js';
-import { SmartTKBUI } from './tkb-ui.js?v=3.10.59';
+import { SmartTKBUI } from './tkb-ui.js?v=3.10.60';
 
 class EduStudioApp {
         syncVersionLabels() {
-        const label = 'v3.10.59 GDMN & GDPT';
+        const label = 'v3.10.60 GDMN & GDPT';
         document.querySelectorAll('.badge-version-gold, [data-version-badge]').forEach(el => {
             el.textContent = label;
         });
@@ -5400,6 +5400,9 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     }
 
     async generatePresentationWithAI() {
+        if (!this.requireGeminiAccess('AI Gemini Soạn Bộ Slide PPT')) {
+            return;
+        }
         const btn = document.getElementById('btnAIGeneratePPT');
         const title = document.getElementById('pptLessonTitleInput')?.value.trim() || 'Bài giảng tương tác';
         const grade = document.getElementById('pptGradeSelect')?.value || 'Lớp 8';
@@ -5447,7 +5450,16 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
             this.showToast(`✨ Gemini AI đã soạn xong ${this.activePresentation.slides.length} slide cho "${title}"!`, 4000);
         } catch (err) {
             if (err.message !== 'AUTH_OR_KEY_REQUIRED') {
-                alert('❌ Không thể soạn bộ Slide bằng Gemini AI:\n' + err.message);
+                const accepted = await this.promptAIStandardResourceConfirmation();
+                if (accepted) {
+                    this.activePresentation.title = title;
+                    this.activePresentation.grade = grade;
+                    this.activePresentation.subject = subject;
+                    this.renderSlideDeck();
+                    this.renderCurrentSlideCanvas();
+                    sound.playFanfare();
+                    this.showToast(`📚 Đã nạp Bộ Slide Chuẩn Sư Phạm 5 Bước cho "${title}"!`, 4000);
+                }
             }
         } finally {
             if (btn) {
@@ -8558,7 +8570,10 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
                 statusBadge.style.color = "#b91c1c";
             }
             if (err.message !== 'AUTH_OR_KEY_REQUIRED') {
-                alert('❌ Không thể soạn KHBD bằng Gemini AI:\n' + err.message);
+                const accepted = await this.promptAIStandardResourceConfirmation();
+                if (accepted) {
+                    this.renderLessonPlanTemplate(params);
+                }
             }
         } finally {
             if (btnLP) {
@@ -10310,6 +10325,15 @@ Toàn bộ quyền hạn và giao diện đã được đồng bộ chuẩn xác
     }
 
     runExamAudit() {
+        if (!this.isVIPPro()) {
+            sound.playWrong();
+            alert("💎 [YÊU CẦU THÀNH VIÊN VIP PRO]\n\nChức năng 'Kiểm Tra & Đối Soát Đề (AI Đối Chiếu PPCT & Ma Trận BGD)' dành riêng cho Nhóm 2: THÀNH VIÊN VIP PRO (hoặc Quản Trị Viên)!\n\nThầy/Cô vui lòng nâng cấp VIP Pro để kích hoạt tính năng này.");
+            this.openModal('membershipUpgradeModal');
+            return;
+        }
+        if (!this.requireGeminiAccess('AI Đối Chiếu & Thẩm Định Đề Kiểm Tra')) {
+            return;
+        }
         const examText = document.getElementById('auditExamInput')?.value || '';
         const reportEl = document.getElementById('auditReportOutput');
         const badgeEl = document.getElementById('auditBadgeStatus');
@@ -14575,6 +14599,9 @@ Thầy/Cô hãy bấm [Bắt Đầu] để lớp học cùng tranh tài!`);
     // TRÒ CHƠI TỰ THIẾT KẾ & TẠO BỘ CÂU HỎI BẰNG GEMINI AI THẬT (BYOK)
     // =========================================================================
     async generateGameQuestionsWithAI() {
+        if (!this.requireGeminiAccess('Tạo Bộ Câu Hỏi Trò Chơi bằng Gemini AI')) {
+            return;
+        }
         const btn = document.getElementById('btnAIGenerateGameQuestions');
         const titleInput = document.getElementById('creatorGameTitle');
         const grade = document.getElementById('creatorGrade')?.value || 'Lớp 8';
