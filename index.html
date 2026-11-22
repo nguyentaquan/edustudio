@@ -605,6 +605,15 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 0.55rem;">
+                <button type="button" onclick="window.openEdustoUserGuideModal()"
+                   style="display: inline-flex; align-items: center; gap: 0.35rem; background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: #ffffff; border: 1px solid #5eead4; font-size: 0.74rem; font-weight: 800; padding: 0.28rem 0.72rem; border-radius: 999px; box-shadow: 0 2px 6px rgba(13, 148, 136, 0.28); cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; white-space: nowrap;"
+                   onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 10px rgba(13, 148, 136, 0.4)';"
+                   onmouseout="this.style.transform='none'; this.style.boxShadow='0 2px 6px rgba(13, 148, 136, 0.28)';"
+                   title="Mở Hướng Dẫn Sử Dụng Chi Tiết Các Tính Năng EDUSTO">
+                    <span style="font-size: 0.88rem;">📖</span>
+                    <span>Hướng Dẫn Sử Dụng</span>
+                </button>
+
                 <a href="https://www.facebook.com/edusto.taquan" target="_blank" rel="noopener noreferrer"
                    style="display: inline-flex; align-items: center; gap: 0.35rem; background: linear-gradient(135deg, #1877f2 0%, #0d5bd9 100%); color: #ffffff; text-decoration: none; font-size: 0.74rem; font-weight: 800; padding: 0.28rem 0.72rem; border-radius: 999px; border: 1px solid #93c5fd; box-shadow: 0 2px 6px rgba(24, 119, 242, 0.28); transition: transform 0.15s ease, box-shadow 0.15s ease; white-space: nowrap;"
                    onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 10px rgba(24, 119, 242, 0.4)';"
@@ -5493,8 +5502,8 @@
 
     <!-- Nạp Ứng Dụng Chính (Module ES6 với Cache Buster) -->
     <script src="js/xlsx.full.min.js"></script>
-    <script src="js/cloud-sync.js?v=20261122_v31061"></script>
-    <script type="module" src="js/app.js?v=20261122_v31061"></script>
+    <script src="js/cloud-sync.js?v=20261122_v31062"></script>
+    <script type="module" src="js/app.js?v=20261122_v31062"></script>
 
     <!-- ĐĂNG KÝ PWA SERVICE WORKER CHÍNH THỨC (CÀI ĐẶT APP 1 CHẠM & OFFLINE) -->
     <script>
@@ -5787,6 +5796,125 @@
                 bindAdminSubnavFallback();
             }
         })();
+    </script>
+
+    <!-- ========================================================================= -->
+    <!-- HỘP THOẠI HƯỚNG DẪN SỬ DỤNG NGƯỜI DÙNG EDUSTO (CHỈ HƯỚNG DẪN THAO TÁC)   -->
+    <!-- ========================================================================= -->
+    <div id="edustoUserGuideModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.78); backdrop-filter:blur(6px); z-index:9999998; align-items:center; justify-content:center; padding:1rem;" onclick="if(event.target===this) window.closeEdustoUserGuideModal()">
+        <div style="background:#ffffff; border-radius:14px; max-width:920px; width:100%; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px rgba(0,0,0,0.35); border:1px solid #cbd5e1;">
+            <div style="flex-shrink:0; background:linear-gradient(135deg, #0f172a 0%, #0f766e 100%); color:#ffffff; padding:1rem 1.3rem; display:flex; justify-content:space-between; align-items:center; gap:0.75rem;">
+                <div style="display:flex; align-items:center; gap:0.65rem;">
+                    <span style="font-size:1.6rem;">📖</span>
+                    <div>
+                        <h3 style="margin:0; font-size:1.05rem; font-weight:800; letter-spacing:0.2px;">HƯỚNG DẪN SỬ DỤNG HỆ SINH THÁI GIÁO DỤC SỐ EDUSTO</h3>
+                        <p style="margin:0.15rem 0 0 0; font-size:0.74rem; color:#99f6e4;">Hướng dẫn thao tác nhanh từng bước cho Giáo viên &amp; Cán bộ Quản lý</p>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.45rem;">
+                    <button type="button" onclick="window.printEdustoUserGuide()" style="background:#ffffff; color:#0f766e; border:none; padding:0.35rem 0.75rem; border-radius:6px; font-size:0.74rem; font-weight:800; cursor:pointer;">🖨️ In Hướng Dẫn</button>
+                    <button type="button" onclick="window.closeEdustoUserGuideModal()" style="background:rgba(255,255,255,0.16); color:#ffffff; border:none; font-size:1.35rem; line-height:1; padding:0.2rem 0.55rem; border-radius:6px; cursor:pointer;">&times;</button>
+                </div>
+            </div>
+
+            <div id="edustoUserGuideBody" style="flex:1 1 auto; min-height:0; overflow-y:auto; padding:1.25rem 1.4rem; color:#1e293b; font-size:0.86rem; line-height:1.65;">
+                <div style="background:#f0fdfa; border:1px solid #99f6e4; border-radius:10px; padding:0.85rem 1rem; margin-bottom:1rem;">
+                    <strong style="color:#0f766e; font-size:0.9rem;">🔐 1. Đăng nhập &amp; Bắt đầu làm việc</strong>
+                    <ul style="margin:0.4rem 0 0 1.2rem; padding:0;">
+                        <li>Bấm nút <strong>Đăng nhập</strong> ở góc trên bên phải ➔ Chọn <strong>Đăng nhập bằng Google (Gmail)</strong> để lưu dữ liệu cá nhân, đồng bộ đa thiết bị và kích hoạt đầy đủ các tính năng AI (hoặc chọn <strong>Khách vãng lai</strong> để xem trải nghiệm nhanh).</li>
+                        <li>Bấm vào <strong>biểu tượng tài khoản</strong> để xem quyền hạn hiện tại hoặc cập nhật thông tin cá nhân.</li>
+                    </ul>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr; gap:0.85rem;">
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:0.9rem 1rem;">
+                        <h4 style="margin:0 0 0.45rem 0; color:#1e3a8a; font-size:0.92rem;">🗓️ 2.1. Xưởng Xếp Thời Khóa Biểu (TKB AI)</h4>
+                        <p style="margin:0 0 0.35rem 0;"><strong>• Trải nghiệm nhanh:</strong> Bấm <strong>[📁 Dùng thử TKB mẫu]</strong> để nạp sẵn dữ liệu mẫu (Tên trường, Lớp, Giáo viên, PCCM) và bấm <strong>[⚡ AI Xếp TKB]</strong>.</p>
+                        <p style="margin:0;"><strong>• Tạo mới cho trường mình:</strong></p>
+                        <ol style="margin:0.25rem 0 0 1.25rem; padding:0;">
+                            <li>Bấm <strong>[➕ Tạo TKB Mới]</strong> để xóa trắng dữ liệu mẫu.</li>
+                            <li>Bấm <strong>[📋 Khai Báo Toàn Diện]</strong>: Nhập <em>Tên trường, Danh sách lớp</em> (cách nhau dấu phẩy), chọn <em>Cấp học &amp; Mô hình trường</em> (hoặc bấm 1 nút <em>Nạp nhanh mẫu chuẩn Quốc gia</em> theo Thông tư Bộ GD&amp;ĐT), điều chỉnh <em>Khung PPCT Môn</em> ➔ bấm <strong>[💾 Lưu &amp; Kích Hoạt Toàn Trường]</strong>.</li>
+                            <li>Bấm <strong>[⚖️ PCCM Môn]</strong> (hoặc <strong>[📥 Nhập Excel (.xls)]</strong>) để khai báo Giáo viên, Môn dạy, Lớp dạy, Số tiết/tuần.</li>
+                            <li><em>(Tùy chọn)</em> Bấm <strong>[🎖️ Ưu Tiên Sư Phạm]</strong> hoặc <strong>[🏖️ Tùy Chỉnh Nghỉ GV]</strong> để chọn ngày nghỉ T2–T7 cho từng Thầy Cô.</li>
+                            <li>Bấm <strong>[⚡ AI Xếp TKB]</strong> ➔ Xem theo <em>Lớp / Giáo viên / Phòng / Toàn trường</em> ➔ Bấm <strong>[🖨️ In TKB Chuẩn A4]</strong> hoặc <strong>[📥 Xuất Excel (.xls)]</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:0.9rem 1rem;">
+                        <h4 style="margin:0 0 0.45rem 0; color:#1e3a8a; font-size:0.92rem;">🎮 2.2. Xưởng Tạo Trò Chơi Sư Phạm &amp; Đấu Trường</h4>
+                        <ol style="margin:0 0 0 1.25rem; padding:0;">
+                            <li>Chọn mẫu trò chơi (<em>Vòng Quay May Mắn, Hộp Quà Bí Mật, Đố Vui Tốc Độ, Đoán Đồ Vật Mầm Non</em>).</li>
+                            <li>Nhập tên trò chơi, chọn <strong>Cấp học – Môn học – Năng lực</strong>.</li>
+                            <li>Nhập câu hỏi thủ công, dán nhanh từ Word/Excel, hoặc bấm <strong>[✨ AI Gemini Tạo Câu Hỏi]</strong> để AI tự soạn bộ câu hỏi trắc nghiệm 4 đáp án.</li>
+                            <li>Bấm <strong>[▶️ Trình Chiếu / Chơi Ngay]</strong> để tổ chức trực tiếp trên lớp học.</li>
+                        </ol>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:0.9rem 1rem;">
+                        <h4 style="margin:0 0 0.45rem 0; color:#1e3a8a; font-size:0.92rem;">📊 2.3. Xưởng Bài Giảng Điện Tử PPT 16:9</h4>
+                        <ol style="margin:0 0 0 1.25rem; padding:0;">
+                            <li>Nhập <strong>Tên bài học</strong>, chọn <strong>Khối lớp</strong> và <strong>Môn học</strong>.</li>
+                            <li>Bấm <strong>[✨ AI Gemini Soạn Bộ Slide]</strong> để tạo nhanh 5 slide chuẩn tiến trình sư phạm (Khởi động ➔ Hình thành kiến thức ➔ Luyện tập ➔ Vận dụng).</li>
+                            <li>Biên tập trực tiếp nội dung và lời giảng trên từng slide ➔ Bấm <strong>Trình chiếu</strong> hoặc <strong>Xuất file PPTX</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:0.9rem 1rem;">
+                        <h4 style="margin:0 0 0.45rem 0; color:#1e3a8a; font-size:0.92rem;">📑 2.4. Soạn Kế Hoạch Bài Dạy (KHBD Chuẩn CV 5512 &amp; GDMN)</h4>
+                        <ol style="margin:0 0 0 1.25rem; padding:0;">
+                            <li>Chọn <strong>Bậc học</strong> (Mầm non chuẩn 5 lĩnh vực hoặc Phổ thông chuẩn Công văn 5512), nhập <strong>Tên bài học, Môn học, Khối lớp, Thời lượng, Tuần dạy</strong>.</li>
+                            <li>Bấm <strong>[✨ Trí Tuệ Gemini Soạn KHBD Siêu Tốc]</strong> để nhận trọn bộ giáo án chi tiết 4 hoạt động.</li>
+                            <li>Chỉnh sửa trực tiếp trên khung xem trước và bấm <strong>Xuất file Word / In A4</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:0.9rem 1rem;">
+                        <h4 style="margin:0 0 0.45rem 0; color:#1e3a8a; font-size:0.92rem;">📝 2.5. Tạo &amp; Đối Soát Đề Kiểm Tra</h4>
+                        <ul style="margin:0 0 0 1.2rem; padding:0;">
+                            <li><strong>Tạo đề mới:</strong> Chọn Khối lớp, Môn học, Chủ đề &amp; tỉ lệ mức độ nhận thức ➔ Bấm <strong>[✨ Tạo Đề Kiểm Tra &amp; Ma Trận Chuẩn]</strong> để xuất trọn bộ <em>Ma trận + Bản đặc tả + Đề + Đáp án</em>.</li>
+                            <li><strong>Đối soát đề (VIP Pro):</strong> Mở thẻ <em>Kiểm Tra &amp; Đối Soát Đề</em>, dán nội dung đề kiểm tra ➔ Bấm <strong>[🤖 Kích Hoạt AI Đối Chiếu &amp; Thẩm Định Đề]</strong>.</li>
+                        </ul>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:0.9rem 1rem;">
+                        <h4 style="margin:0 0 0.45rem 0; color:#1e3a8a; font-size:0.92rem;">🎬 2.6. Xưởng Tạo Video Sư Phạm AI &amp; 🧪 Phòng Thí Nghiệm Ảo</h4>
+                        <ul style="margin:0 0 0 1.2rem; padding:0;">
+                            <li><strong>Tạo Video AI:</strong> Chọn mục đích sư phạm (Khởi động, Tình huống, Mô phỏng), nhập chủ đề bài học ➔ Bấm <strong>[✨ Tạo Kịch Bản &amp; Dựng Video AI]</strong>.</li>
+                            <li><strong>Phòng Thí Nghiệm Ảo:</strong> Chọn môn học (KHTN, Lý, Hóa, Sinh, Toán) và chủ đề mô phỏng để trình chiếu, tương tác trực quan ngay tại lớp.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:0.8rem 1rem; margin-top:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                    <span style="font-size:0.8rem; color:#1e40af; font-weight:700;">📘 Cần hỗ trợ hoặc cập nhật học liệu mới? Theo dõi Fanpage chính thức <strong>Edusto - Nguyễn Tá Quan</strong>!</span>
+                    <a href="https://www.facebook.com/edusto.taquan" target="_blank" rel="noopener noreferrer" style="background:#1877f2; color:#ffffff; text-decoration:none; padding:0.35rem 0.75rem; border-radius:6px; font-size:0.75rem; font-weight:800;">Truy cập Fanpage EDUSTO ↗</a>
+                </div>
+            </div>
+
+            <div style="flex-shrink:0; background:#f8fafc; border-top:1px solid #e2e8f0; padding:0.75rem 1.25rem; display:flex; justify-content:flex-end;">
+                <button type="button" onclick="window.closeEdustoUserGuideModal()" style="background:#0f766e; color:#ffffff; border:none; padding:0.45rem 1.15rem; border-radius:6px; font-size:0.8rem; font-weight:800; cursor:pointer;">Đã hiểu • Đóng lại</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.openEdustoUserGuideModal = function() {
+            var m = document.getElementById('edustoUserGuideModal');
+            if (m) m.style.display = 'flex';
+        };
+        window.closeEdustoUserGuideModal = function() {
+            var m = document.getElementById('edustoUserGuideModal');
+            if (m) m.style.display = 'none';
+        };
+        window.printEdustoUserGuide = function() {
+            var body = document.getElementById('edustoUserGuideBody');
+            if (!body) return;
+            var w = window.open('', '_blank', 'width=900,height=700');
+            if (!w) return;
+            w.document.write('<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>Hướng Dẫn Sử Dụng EDUSTO</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#0f172a;line-height:1.6;}h2{color:#0f766e;border-bottom:2px solid #0f766e;padding-bottom:6px;}</style></head><body><h2>📖 HƯỚNG DẪN SỬ DỤNG HỆ SINH THÁI GIÁO DỤC SỐ EDUSTO</h2>' + body.innerHTML + '</body></html>');
+            w.document.close();
+            w.focus();
+            setTimeout(function(){ w.print(); }, 250);
+        };
     </script>
 
 </body>
